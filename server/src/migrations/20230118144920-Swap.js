@@ -24,14 +24,6 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      seller: {
-        type: Sequelize.STRING(50),
-        allowNull: true,
-      },
-      buyer: {
-        type: Sequelize.STRING(50),
-        allowNull: true,
-      },
       sellerDeposit: {
         type: Sequelize.INTEGER,
         allowNull: true,
@@ -44,7 +36,21 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
+      liquidationPrice: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
       status: {
+        type: Sequelize.ENUM(
+          'pending',
+          'active',
+          'expired',
+          'overdue',
+          'liquidated',
+        ),
+        allowNull: false,
+      },
+      updatableStatus: {
         type: Sequelize.ENUM(
           'pending',
           'active',
@@ -63,6 +69,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: new Date(),
+      },
+      deletedAt: {
+        allowNull: true,
+        type: Sequelize.DATE,
+        defaultValue: null,
       },
     });
   },

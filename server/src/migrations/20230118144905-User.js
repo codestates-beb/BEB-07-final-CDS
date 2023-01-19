@@ -11,10 +11,15 @@ module.exports = {
      */
     await queryInterface.createTable('users', {
       address: {
-        type: Sequelize.INTEGER(50),
+        type: Sequelize.STRING(100),
         allowNull: false,
         unique: true,
         primaryKey: true,
+      },
+      nickname: {
+        type: Sequelize.STRING(50),
+        allowNull: true,
+        defaultValue: 'unnamed',
       },
       soldCount: {
         type: Sequelize.INTEGER,
@@ -43,6 +48,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: new Date(),
+      },
+      deletedAt: {
+        allowNull: true,
+        type: Sequelize.DATE,
+        defaultValue: null,
       },
     });
   },
