@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .create-container .input-group input{
+        @apply border text-right;
+    }
+
+    .create-container .input-group {
+        @apply flex justify-between py-2;
+    }
+}
