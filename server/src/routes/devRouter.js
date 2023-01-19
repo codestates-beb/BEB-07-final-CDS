@@ -37,7 +37,7 @@ router.get('/users', async (req, res, next) => {
 router.get('/users/:address', async (req, res, next) => {
   try {
     const address = req.params.address;
-    const singleUser = await Swap.findOne({ where: { address } });
+    const singleUser = await User.findOne({ where: { address } });
     return res.status(200).json(singleUser);
   } catch (err) {
     console.error(err);
