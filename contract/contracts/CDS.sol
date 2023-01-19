@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import './Swap/Swaps.sol';
+import './Swaps/Swaps.sol';
 
 contract CDS is Swaps {
   event MakeSwap(
