@@ -58,13 +58,5 @@ module.exports = class User extends Sequelize.Model {
       foreignKey: 'seller',
       sourceKey: 'address',
     });
-    db.User.hasMany(db.Transaction, {
-      foreignKey: 'seller',
-      sourceKey: 'address',
-    });
-    db.User.hasMany(db.Transaction, {
-      foreignKey: 'buyer',
-      sourceKey: 'address',
-    });
   }
 };

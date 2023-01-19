@@ -19,6 +19,7 @@
     "http-errors": "^2.0.0",
     "morgan": "^1.10.0",
     "mysql2": "^3.0.1",
+    "pm2": "^5.2.2",
     "sequelize": "^6.28.0",
     "sequelize-cli": "^6.5.2"
   },
