@@ -1,0 +1,45 @@
+name: React Build
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths: 
+      - 'client/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    defaults: 
+      run: 
+        working-directory: client
+    
+    steps:
+      - name: Checkout Source Code.
+        uses: actions/checkout@v3
+      
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+
+      - name: Install Dependencies
+        run: npm install
+      
+      - name: Build
+        run: CI=false npm run build
+
+      - name: Deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.CLIENT_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CLIENT_AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws s3 cp \
+            --recursive \
+            --region ap-northeast-2 \
+            build s3://cds-client  
+      
