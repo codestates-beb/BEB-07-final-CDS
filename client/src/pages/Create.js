@@ -6,6 +6,7 @@ import useMetamask from '../utils/hooks/useMetamask';
 
 // utils
 import {
+    calculateTotalAssets,
     calculateClaimPrice,
     calculatePremiumPrice,
     calculateLiquidationPrice,
@@ -47,6 +48,10 @@ function Create() {
                     <input/>
                 </div>
                 <div className='input-group'>
+                    <label>Total Assets</label>
+                    <input disabled={true}/>
+                </div>
+                <div className='input-group'>
                     <label>Claim Price</label>
                     <input/>
                 </div>
@@ -56,19 +61,31 @@ function Create() {
                 </div>
                 <div className='input-group'>
                     <label>Premium Rate</label>
-                    <input disabled={true}/>
+                    <input value="2" disabled={true}/>
                 </div>
                 <div className='input-group'>
                     <label>Premium Price</label>
                     <input/>
                 </div>
                 <div className='input-group'>
+                    <label>Expiration Period</label>
+                    <select>
+                        <option>12 Month</option>
+                        <option>6 Month</option>
+                        <option>3 Month</option>
+                    </select>
+                </div>
+                <div className='input-group'>
                     <label>Seller Deposit</label>
                     <input/>
                 </div>
+                <div className='input-group'>
+                    <label>Liquidated Price</label>
+                    <input disabled={true}/>
+                </div>
                 <div className="input-group">
                     <label>Buyer Deposit</label>
-                    <input/>
+                    <input disabled={true}/>
                 </div>
             </div>
             <button className='p-2 border rounded-xl'>Create CDS</button>
