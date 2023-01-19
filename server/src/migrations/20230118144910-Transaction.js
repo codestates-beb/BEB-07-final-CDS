@@ -16,15 +16,6 @@ module.exports = {
         unique: true,
         primaryKey: true,
       },
-      blockHash: {
-        type: Sequelize.STRING(100),
-        allowNull: false,
-        defaultValue: 0,
-      },
-      swapId: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-      },
       blockNum: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -38,6 +29,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: new Date(),
+      },
+      deletedAt: {
+        allowNull: true,
+        type: Sequelize.DATE,
+        defaultValue: null,
       },
     });
   },

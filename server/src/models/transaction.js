@@ -22,11 +22,6 @@ module.exports = class Transaction extends Sequelize.Model {
           unique: true,
           primaryKey: true,
         },
-        blockHash: {
-          type: Sequelize.STRING(100),
-          allowNull: false,
-          defaultValue: 0,
-        },
         swapId: {
           type: Sequelize.INTEGER,
           allowNull: true,

@@ -12,10 +12,15 @@ module.exports = class User extends Sequelize.Model {
     return super.init(
       {
         address: {
-          type: Sequelize.STRING(50),
+          type: Sequelize.STRING(100),
           allowNull: false,
           unique: true,
           primaryKey: true,
+        },
+        nickname: {
+          type: Sequelize.STRING(50),
+          allowNull: true,
+          defaultValue: 'unnamed',
         },
         soldCount: {
           type: Sequelize.INTEGER,
@@ -49,7 +54,10 @@ module.exports = class User extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.User.hasMany(db.Swap);
+    db.User.hasMany(db.Swap, {
+      foreignKey: 'seller',
+      sourceKey: 'address',
+    });
     db.User.hasMany(db.Transaction, {
       foreignKey: 'seller',
       sourceKey: 'address',

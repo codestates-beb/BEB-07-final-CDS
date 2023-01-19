@@ -40,11 +40,11 @@ module.exports = class Swap extends Sequelize.Model {
           allowNull: false,
         },
         seller: {
-          type: Sequelize.STRING(50),
+          type: Sequelize.STRING(100),
           allowNull: true,
         },
         buyer: {
-          type: Sequelize.STRING(50),
+          type: Sequelize.STRING(100),
           allowNull: true,
         },
         sellerDeposit: {
@@ -59,6 +59,10 @@ module.exports = class Swap extends Sequelize.Model {
           type: Sequelize.INTEGER,
           allowNull: false,
         },
+        liquidationPrice: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+        },
         status: {
           type: Sequelize.ENUM(
             'pending',
@@ -68,6 +72,17 @@ module.exports = class Swap extends Sequelize.Model {
             'liquidated',
           ),
           allowNull: false,
+        },
+        updatableStatus: {
+          type: Sequelize.ENUM(
+            'pending',
+            'active',
+            'expired',
+            'overdue',
+            'liquidated',
+          ),
+          allowNull: true,
+          defaultValue: null,
         },
       },
       {
