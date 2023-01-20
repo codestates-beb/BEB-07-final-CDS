@@ -120,4 +120,9 @@ contract('CDS', (accounts) => {
     );
     await assert.strictEqual(seller.addr, accounts[1]);
   });
+
+  it('owner checker', async () => {
+    const ownerAddr = await cds.owner();
+    await assert.strictEqual(accounts[0], ownerAddr);
+  });
 });
