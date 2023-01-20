@@ -12,5 +12,8 @@ module.exports = async function (deployer, network, accounts) {
 
   await deployer.deploy(CDS);
   const cds = await CDS.deployed();
-  await cds.makeSwap(accounts[0], 10, 30, 60, 24);
+  console.log(accounts[0]);
+  await cds.setOracle(priceOracleMock.address);
+  await cds.makeSwap(accounts[0], 10, 30, 60, 2);
+  console.log(await cds.getSwap(1));
 };
