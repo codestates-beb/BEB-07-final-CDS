@@ -35,8 +35,6 @@ contract Swaps is PriceConsumer {
   struct Swap {
     Buyer buyer;
     Seller seller;
-    uint256 numBlocks;
-    uint256 priceOfAsset;
     uint256 claimPrice;
     uint256 liquidationPrice;
     uint256 premium;
@@ -46,48 +44,47 @@ contract Swaps is PriceConsumer {
 
   function _makeSwap(
     address _addr,
-    uint256 _numBlocks,
-    uint256 _claimRate,
-    uint256 _liquidationRate,
+    uint256 _claimPrice,
+    uint256 _liquidationPrice,
+    uint256 _sellerDeposit,
+    uint256 _premium,
     uint256 _expirationMonth
   ) internal returns (uint256) {
     _swapId.increment();
     uint256 newSwapId = _swapId.current();
+    Swap storage newSwap = _swaps[newSwapId];
 
-    _swaps[newSwapId].buyer.addr = _addr;
-    _swaps[newSwapId].numBlocks = _numBlocks;
+    newSwap.buyer.addr = _addr;
 
-    uint256 _priceOfAsset = getPriceFromOracle();
-    _swaps[newSwapId].priceOfAsset = _priceOfAsset;
+    newSwap.claimPrice = _claimPrice;
+    newSwap.liquidationPrice = _liquidationPrice;
+    newSwap.premium = _premium;
+    newSwap.expirationMonth = _expirationMonth;
 
-    uint256 _claimPrice = _priceOfAsset.calcPrice(_claimRate);
-    _swaps[newSwapId].claimPrice = _claimPrice;
-    uint256 _liquidationPrice = _priceOfAsset.calcPrice(_liquidationRate);
-    _swaps[newSwapId].liquidationPrice = _liquidationPrice;
-    uint256 _premium = _claimPrice.calcPremium();
-    _swaps[newSwapId].premium = _premium;
-
-    _swaps[newSwapId].expirationMonth = _expirationMonth;
-
-    uint256 _sellerDeposit = _numBlocks.calcTotalLiquidationPrice(
-      _priceOfAsset,
-      _liquidationRate
-    );
-    _swaps[newSwapId].seller.deposit = _sellerDeposit;
+    newSwap.seller.deposit = _sellerDeposit;
 
     return newSwapId;
   }
 
-  function getSwap(uint256 _swapId) external view returns (Swap memory) {
-    return _swaps[_swapId];
+  function _acceptSwap(address _addr, uint256 _acceptedSwapId)
+    internal
+    returns (uint256)
+  {
+    Swap storage aSwap = _swaps[_acceptedSwapId];
+
+    aSwap.seller.addr = _addr;
+    // seller deposit 이후
+    aSwap.seller.isDeposited = true;
+
+    // buyer deposit 이후
+    uint256 buyerDeposit = aSwap.premium.calcBuyerDepo();
+    aSwap.buyer.deposit = buyerDeposit;
+    // buyer premium 납부 이후
+    aSwap.buyer.lastPayDate = block.timestamp;
+    aSwap.buyer.nextPayDate = block.timestamp + 4 weeks;
+
+    aSwap.status = Status.active;
+
+    return _acceptedSwapId;
   }
-
-  // function _offerSwap(uint256 _offerSwapId) {}
-
-  // function _acceptSwap(address _addr, uint256 _acceptedSwapId) public returns (uint256) {
-  //     _swaps[_acceptedSwapId].seller.addr = _addr;
-
-  //     _swaps[_acceptedSwapId].status = Status.active;
-  //     return _acceptedSwapId;
-  // }
 }
