@@ -7,7 +7,7 @@ const truffleAssert = require('truffle-assertions');
 const PriceOracleMock = artifacts.require('PriceOracleMock');
 const CDS = artifacts.require('CDS');
 
-contract('PriceOraclMock', (accounts) => {
+contract('CDS', (accounts) => {
   const initialPrice = 20000;
   let priceOracle;
   let cds;
