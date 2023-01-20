@@ -1,6 +1,5 @@
 // modules
 import { useState, useEffect } from 'react';
-import web3 from "web3";
 
 // hooks
 import useMetamask from '../utils/hooks/useMetamask';
@@ -21,7 +20,7 @@ import createContract from '../utils/CDS';
 // Configure
 const CONTRACT_ADDR = '0x1550811D9B07Cfdde36085307b526d2D5072Da46';
 
-function Test() {
+function MakeTest() {
     const metamask = useMetamask();
     const CDS = createContract( CONTRACT_ADDR );
 
@@ -227,4 +226,4 @@ function Test() {
     )
 }
 
-export default Test;
+export default MakeTest;
