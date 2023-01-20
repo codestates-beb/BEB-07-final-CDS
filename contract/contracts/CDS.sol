@@ -60,4 +60,8 @@ contract CDS is Swaps {
   function getSeller(uint256 swapId) public view returns (Seller memory) {
     return _swaps[swapId].seller;
   }
+
+  function getSwapId() public view returns (Counters.Counter memory) {
+    return _swapId;
+  }
 }
