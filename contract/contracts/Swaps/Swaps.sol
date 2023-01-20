@@ -22,8 +22,8 @@ contract Swaps is PriceConsumer {
   struct Buyer {
     address addr;
     uint256 deposit;
-    uint lastPayDate;
-    uint nextPayDate;
+    uint256 lastPayDate;
+    uint256 nextPayDate;
   }
 
   struct Seller {
@@ -66,10 +66,10 @@ contract Swaps is PriceConsumer {
     return newSwapId;
   }
 
-  function _acceptSwap(
-    address _addr,
-    uint256 _acceptedSwapId
-  ) internal returns (uint256) {
+  function _acceptSwap(address _addr, uint256 _acceptedSwapId)
+    internal
+    returns (uint256)
+  {
     Swap storage aSwap = _swaps[_acceptedSwapId];
 
     aSwap.seller.addr = _addr;

@@ -39,15 +39,15 @@ contract CDS is Swaps {
     return acceptedSwapId;
   }
 
-  function swap(uint256 swapId) public view returns (Swap memory) {
+  function getSwap(uint256 swapId) public view returns (Swap memory) {
     return _swaps[swapId];
   }
 
-  function buyer(uint256 swapId) public view returns (Buyer memory) {
+  function getBuyer(uint256 swapId) public view returns (Buyer memory) {
     return _swaps[swapId].buyer;
   }
 
-  function seller(uint256 swapId) public view returns (Seller memory) {
+  function getSeller(uint256 swapId) public view returns (Seller memory) {
     return _swaps[swapId].seller;
   }
 }
