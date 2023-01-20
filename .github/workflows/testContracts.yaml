@@ -1,0 +1,40 @@
+name: testContracts
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - contract/contracts/**
+
+jobs:
+  contractTester:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./contract
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install node 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install node packages
+        run: npm install --production
+
+      - name: Install ganache-cli
+        run: npm install -g ganache-cli
+
+      - name: Launch ganache-cli network
+        run: ganache-cli &
+
+      - name: Install truffle
+        run: npm install -g truffle
+
+      - name: Test with Truffle test
+        run: truffle test --network local
