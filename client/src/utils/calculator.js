@@ -1,3 +1,8 @@
+// Calculating Total Assets function // 전체 자산 계산 함수
+export function calculateTotalAssets( initialPriceOfAsset, amount ) {
+    return initialPriceOfAsset * amount ;
+}
+
 // Calculating Drop Rate function // 하락률 계산함수 
 export function calculateDropRate( initialPriceOfAsset, claimPrice ) {
     return 100 - ( claimPrice / initialPriceOfAsset ) * 100;
