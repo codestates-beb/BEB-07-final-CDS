@@ -49,14 +49,33 @@ function Test() {
     const [sellerDeposit, setSellerDeposit] = useState('');
     const [liquidationPrice, setLiquidationPrice] = useState('');
 
+
+    // Contracdt & User Setting Handler
     const connectButtonHandler = async()=>{
         const result = await metamask.request({method: 'eth_requestAccounts'});
         if (result && result.length > 0) setBuyerAddress(result[0]);
     }
 
+    const setContractAddressHandler = ()=>{
+        if (contractAddress.length !== 42) {
+            console.log(new Error("Invalid Address"));
+            return;
+        }
+        CDS.setAddr(contractAddress);
+        console.log(CDS.contract);
+    }
+
+    // make Swap Handler
     const makeButtonHandler = async()=>{
         const data = {
-            contractAddress, buyerAddress, totalAssets, claimPrice, premiumPrice, sellerDeposit, liquidationPrice
+            contractAddress, 
+            buyerAddress, 
+            totalAssets, 
+            claimPrice, 
+            premiumPrice, 
+            sellerDeposit, 
+            liquidationPrice, 
+            expiration
         }
 
         console.log(data);
@@ -72,8 +91,14 @@ function Test() {
         .send({from: buyerAddress});
 
         console.log(result);
+
+        setInterval(()=>{
+            
+        })
     }
 
+
+    // Input Client View Logic
     const changeContractAddressHandler = (e)=>{
         setContractAddress(e.target.value);
     }
@@ -88,15 +113,6 @@ function Test() {
             setAmountOfAssets(onlyNumber);
             setTotalAssets( calculateTotalAssets(initialPriceOfAssets, onlyNumber) );
         }
-    }
-
-    const setContractAddressHandler = ()=>{
-        if (contractAddress.length !== 42) {
-            console.log(new Error("Invalid Address"));
-            return;
-        }
-        CDS.setAddr(contractAddress);
-        console.log(CDS.contract);
     }
 
     useEffect(()=>{
