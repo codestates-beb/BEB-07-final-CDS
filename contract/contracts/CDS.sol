@@ -9,7 +9,8 @@ contract CDS is Swaps {
     uint256 claimPrice,
     uint256 liquidationPrice,
     uint256 _premium,
-    uint256 expirationMonth
+    uint256 premiumInterval,
+    uint256 totalPremiumRounds
   );
   event AcceptSwap(address indexed seller, uint256 swapId);
 
@@ -19,7 +20,8 @@ contract CDS is Swaps {
     uint256 liquidationPrice,
     uint256 sellerDeposit,
     uint256 premium,
-    uint256 expirationMonth
+    uint256 premiumInterval,
+    uint256 totalPremiumRounds
   ) public returns (uint256) {
     uint256 newSwapId = _makeSwap(
       addr,
@@ -27,9 +29,17 @@ contract CDS is Swaps {
       liquidationPrice,
       sellerDeposit,
       premium,
-      expirationMonth
+      premiumInterval,
+      totalPremiumRounds
     );
-    emit MakeSwap(addr, claimPrice, liquidationPrice, premium, expirationMonth);
+    emit MakeSwap(
+      addr,
+      claimPrice,
+      liquidationPrice,
+      premium,
+      premiumInterval,
+      totalPremiumRounds
+    );
     return newSwapId;
   }
 
