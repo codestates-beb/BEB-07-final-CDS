@@ -14,6 +14,7 @@ contract Swaps is PriceConsumer {
     pending,
     active,
     claimable,
+    overdue,
     expired,
     liquidated
   }
@@ -38,7 +39,8 @@ contract Swaps is PriceConsumer {
     uint256 claimPrice;
     uint256 liquidationPrice;
     uint256 premium;
-    uint256 expirationMonth;
+    uint256 premiumInterval;
+    uint256 totalPremiumRounds;
     Status status;
   }
 
@@ -48,7 +50,8 @@ contract Swaps is PriceConsumer {
     uint256 _liquidationPrice,
     uint256 _sellerDeposit,
     uint256 _premium,
-    uint256 _expirationMonth
+    uint256 _premiumInterval,
+    uint256 _totalPremiumRounds
   ) internal returns (uint256) {
     _swapId.increment();
     uint256 newSwapId = _swapId.current();
@@ -59,7 +62,8 @@ contract Swaps is PriceConsumer {
     newSwap.claimPrice = _claimPrice;
     newSwap.liquidationPrice = _liquidationPrice;
     newSwap.premium = _premium;
-    newSwap.expirationMonth = _expirationMonth;
+    newSwap.premiumInterval = _premiumInterval;
+    newSwap.totalPremiumRounds = _totalPremiumRounds;
 
     newSwap.seller.deposit = _sellerDeposit;
 
@@ -81,7 +85,7 @@ contract Swaps is PriceConsumer {
     aSwap.buyer.deposit = buyerDeposit;
     // buyer premium 납부 이후
     aSwap.buyer.lastPayDate = block.timestamp;
-    aSwap.buyer.nextPayDate = block.timestamp + 4 weeks;
+    aSwap.buyer.nextPayDate = block.timestamp + aSwap.premiumInterval;
 
     aSwap.status = Status.active;
 

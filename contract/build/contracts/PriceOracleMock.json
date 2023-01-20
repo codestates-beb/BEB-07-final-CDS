@@ -1712,10 +1712,16 @@
       "links": {},
       "address": "0x233bBE98fb2dE229482D6aF34b75EDf2B1499245",
       "transactionHash": "0x250aa414b949e6648a511bb1dba030f52cc45e9f3de65e054a85fed4a02a7c52"
+    },
+    "1674179657143": {
+      "events": {},
+      "links": {},
+      "address": "0xA58d80b92fB83d53c26aE5F53EBEF08dD98638EA",
+      "transactionHash": "0x9742de394a9f6809b64a1714b085b3d1be4702952dec6f43409302eaeac4840e"
     }
   },
   "schemaVersion": "3.4.9",
-  "updatedAt": "2023-01-19T13:17:04.006Z",
+  "updatedAt": "2023-01-20T02:23:31.874Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
