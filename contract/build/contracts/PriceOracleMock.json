@@ -1710,12 +1710,12 @@
     "1674132869145": {
       "events": {},
       "links": {},
-      "address": "0x77213C56D5a6Af39762d2da92A880da5c20c4026",
-      "transactionHash": "0x7d44af5e9b1b4742fbde23ff884c957b2b032a577ed819fc011d14d158009763"
+      "address": "0x233bBE98fb2dE229482D6aF34b75EDf2B1499245",
+      "transactionHash": "0x250aa414b949e6648a511bb1dba030f52cc45e9f3de65e054a85fed4a02a7c52"
     }
   },
   "schemaVersion": "3.4.9",
-  "updatedAt": "2023-01-19T13:01:04.542Z",
+  "updatedAt": "2023-01-19T13:17:04.006Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
