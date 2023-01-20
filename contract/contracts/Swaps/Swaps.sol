@@ -8,7 +8,7 @@ import '@openzeppelin/contracts/utils/Counters.sol';
 contract Swaps is PriceConsumer {
   using Counters for Counters.Counter;
   using LibSwapCalc for uint256;
-  Counters.Counter private _swapId;
+  Counters.Counter internal _swapId;
 
   enum Status {
     pending,
