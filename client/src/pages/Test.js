@@ -41,9 +41,8 @@ function Test() {
         // Premium State Var
     const [premiumRate, setPremiumRate] = useState(2);
     const [premiumPrice, setPremiumPrice] = useState('');
-
-        // Expiration State Var
-    const [expiration, SetExpiration] = useState('');
+    const [premiumInterval, setPremiumInterval] = useState('');
+    const [premiumRounds, setPremiumRounds] = useState('');
 
         // Liqudation State Var
     const [sellerDeposit, setSellerDeposit] = useState('');
@@ -75,25 +74,30 @@ function Test() {
             premiumPrice, 
             sellerDeposit, 
             liquidationPrice, 
-            expiration
+            premiumInterval,
+            premiumRounds,
         }
 
         console.log(data);
 
         const result = await CDS.contract.methods
         .makeSwap(
-            buyerAddress, 
-            Number(claimPrice), 
-            Number(liquidationPrice), 
-            Number(sellerDeposit), 
-            Number(premiumPrice), 
-            Number(expiration))
-        .send({from: buyerAddress});
-
-        console.log(result);
-
-        setInterval(()=>{
-            
+                buyerAddress, 
+                Number(claimPrice), 
+                Number(liquidationPrice), 
+                Number(sellerDeposit), 
+                Number(premiumPrice), 
+                Number(premiumInterval),
+                Number(premiumRounds),
+            )
+        .send({from: buyerAddress}, (result)=>{
+            console.log(result)
+        })
+        .once('sent', (payload)=>{
+            console.log(payload);
+        })
+        .once('receipt', (receipt)=>{   
+            console.log(receipt)
         })
     }
 
@@ -116,16 +120,10 @@ function Test() {
     }
 
     useEffect(()=>{
-        setDropRate( calculateDropRate(totalAssets, claimPrice) )
-    }, [totalAssets, claimPrice])
-
-    useEffect(()=>{
-        setPremiumPrice( calculatePremiumPrice(initialPriceOfAssets, amountOfAssets, dropRate, premiumRate) )
-    }, [totalAssets, claimPrice, dropRate])
-
-    useEffect(()=>{
-        setLiquidationPrice( calculateLiquidationPrice(initialPriceOfAssets, amountOfAssets, sellerDeposit) )
-    }, [totalAssets, sellerDeposit])
+        setDropRate( calculateDropRate(totalAssets, claimPrice) );
+        setPremiumPrice( calculatePremiumPrice(initialPriceOfAssets, amountOfAssets, dropRate, premiumRate) );
+        setLiquidationPrice( calculateLiquidationPrice(initialPriceOfAssets, amountOfAssets, sellerDeposit) );
+    }, [totalAssets, claimPrice, dropRate, sellerDeposit])
 
     return (
         <div className='create-container flex flex-col justify-center items-center'>
@@ -193,14 +191,17 @@ function Test() {
                     <label>Premium Price</label>
                     <input value={premiumPrice} disabled={true}/>
                 </div>
-                <h1 className="text-xl font-bold">Expiration</h1>
                 <div className='input-group'>
-                    <label>Expiration Period</label>
-                    <select onChange={e=>SetExpiration(e.target.value)}>
+                    <label>Premium Interval</label>
+                    <select onChange={e=>setPremiumInterval(e.target.value)}>
                         <option value={12}>12 Month</option>
                         <option value={6}>6 Month</option>
                         <option value={3}>3 Month</option>
                     </select>
+                </div>
+                <div className='input-group'>
+                    <label>Premium Rounds</label>
+                    <input value={premiumRounds} onChange={e=>setPremiumRounds(e.target.value)}/>
                 </div>
                 <h1 className="text-xl font-bold">Liquidation</h1>
                 <div className='input-group'>
