@@ -1,0 +1,70 @@
+/* eslint-disable node/no-unsupported-features/es-builtins */
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-undef */
+// eslint-disable-next-line import/no-extraneous-dependencies
+const Web3 = require('web3');
+
+const web3 = new Web3('http://localhost:8545');
+
+const OracleABI = require('../build/contracts/PriceOracleMock.json');
+const CDSABI = require('../build/contracts/CDS.json');
+
+const OracleCA = '0x62f98AFF6349DfF21a184e10CAbB9C3AcA10fa74';
+const CDSCA = '0x21960Bb1eae929A36756C6ee910ba529347309e8';
+
+const kimAccount = web3.eth.accounts.privateKeyToAccount(
+  '0x5174aa507a6e17e6a8de6b2739b62e8f780d8c8223b2f2d1a4fca17104fd47ee',
+);
+const seolAccount = web3.eth.accounts.privateKeyToAccount(
+  '0xf2d71b463bacb967278534e20de6824aeddf21968ee6c47635729eb177b785c8',
+);
+
+const initialPrice = 20000;
+const defaultClaimPrice = 15000;
+const defaultLiquidationPrice = 10000;
+const defaultSellerDeposit = 100000;
+const defaultPremium = 3000;
+const defaultPremiumInterval = 60 * 10; // 10 minutes
+const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
+
+// create contract objects
+const priceOracleMock = new web3.eth.Contract(OracleABI.abi, CDSCA);
+const cds = new web3.eth.Contract(CDSABI.abi, CDSCA);
+
+console.log(seolAccount);
+// set priceoracle berfore init
+const runner = async () => {
+  console.log('----------');
+  console.log(await web3.eth.getBalance(kimAccount.address));
+  console.log(await web3.eth.getBalance(seolAccount.address));
+  console.log('----------');
+  await cds.methods.setOracle(OracleCA).send({ from: kimAccount.address });
+
+  // invoke makeSwap event
+  await cds.methods
+    .makeSwap(
+      kimAccount.address,
+      defaultClaimPrice,
+      defaultLiquidationPrice,
+      defaultSellerDeposit,
+      defaultPremium,
+      defaultPremiumInterval,
+      defaultPremiumRounds,
+    )
+    .send({
+      from: kimAccount.address,
+      gasPrice: '20000000000',
+      gas: '6721975',
+    });
+
+  // get current swapId for acceptSwap
+  const [currentSwapId] = await cds.methods.getSwapId().call();
+  // invoke acceptSwap event
+  await cds.methods.acceptSwap(seolAccount.address, currentSwapId).send({
+    from: seolAccount.address,
+    gasPrice: '20000000000',
+    gas: '6721975',
+  });
+};
+
+runner();
