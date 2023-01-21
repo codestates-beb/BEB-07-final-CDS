@@ -6,7 +6,7 @@ import { Link, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 
 // pages
-import Create from './pages/Create';
+import Test from './pages/Test';
 
 // css
 import './App.css';
@@ -16,7 +16,7 @@ function App() {
     <div className="App">
       <h1 className="text-3xl font-bold underline">Hello World!</h1>
       <Routes>
-        <Route path="" element={<Create/>} />
+        <Route path="" element={<Test/>} />
       </Routes>
     </div>
   );

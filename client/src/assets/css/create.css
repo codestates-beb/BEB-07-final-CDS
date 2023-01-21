@@ -8,6 +8,6 @@
     }
 
     .create-container .input-group {
-        @apply flex justify-between py-2;
+        @apply flex justify-between py-2 items-center;
     }
 }
