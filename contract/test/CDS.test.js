@@ -133,7 +133,7 @@ contract('CDS', (accounts) => {
     const [currentSwapId] = await cds.getSwapId();
 
     await truffleAssert.passes(
-      cds.acceptSwap(accounts[1], currentSwapId, {
+      cds.acceptSwap(accounts[1], defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
         value: 10 ** 18 * defaultSellerDeposit,
       }),
@@ -202,7 +202,7 @@ contract('CDS', (accounts) => {
     const [currentSwapId] = await cds.getSwapId();
 
     await truffleAssert.fails(
-      cds.acceptSwap(accounts[1], currentSwapId, {
+      cds.acceptSwap(accounts[1], defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
         value: 10 ** 18 * (defaultSellerDeposit + 1),
       }),
