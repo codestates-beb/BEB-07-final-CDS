@@ -69,7 +69,7 @@ contract CDS is Swaps, Ownable {
     uint256 initAssetPrice,
     uint256 swapId
   ) public payable isNotOwner returns (uint256) {
-    uint256 sellerDeposit = _swaps[swapId].seller.deposit;
+    uint256 sellerDeposit = _swaps[swapId].seller.deposit * 1 ether;
     require(sellerDeposit == msg.value, 'Invalid eth amount');
     payable(owner()).transfer(msg.value);
 
