@@ -41,7 +41,7 @@ function MakeTest() {
         // Premium State Var
     const [premiumRate, setPremiumRate] = useState(2);
     const [premiumPrice, setPremiumPrice] = useState('');
-    const [premiumInterval, setPremiumInterval] = useState('');
+    const [premiumInterval, setPremiumInterval] = useState("12");
     const [premiumRounds, setPremiumRounds] = useState('');
 
         // Liqudation State Var
@@ -181,7 +181,11 @@ function MakeTest() {
                 </div>
                 <div className='input-group'>
                     <label>Premium Interval</label>
-                    <select onChange={e=>setPremiumInterval(e.target.value)}>
+                    <select 
+                        onChange={e=>setPremiumInterval(e.target.value)}
+                        defaultValue={12}
+                        value={premiumInterval}
+                    >
                         <option value={12}>12 Month</option>
                         <option value={6}>6 Month</option>
                         <option value={3}>3 Month</option>
