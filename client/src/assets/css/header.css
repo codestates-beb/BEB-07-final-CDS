@@ -3,7 +3,19 @@
 @tailwind utilities;
 
 @layer components {
+    .header {
+        @apply font-bold;
+        background-color: var(--black-color);
+        color: var(--white-color);
+    }
+
     .navbar .navbar-item {
         @apply mx-2
     }
+
+    .navbar .navbar-button {
+        @apply py-2 px-4 rounded-xl;
+        background-color: var(--primary-color);
+    }
+
 }
