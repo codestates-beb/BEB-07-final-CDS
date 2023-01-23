@@ -48,6 +48,7 @@ contract('CDS', (accounts) => {
         -3000,
         60 * 10,
         12,
+        { from: accounts[2], value: defaultBuyerDeposit },
       ),
     );
     await truffleAssert.fails(
@@ -60,6 +61,7 @@ contract('CDS', (accounts) => {
         -3000,
         60 * 10,
         -12,
+        { from: accounts[2], value: defaultBuyerDeposit },
       ),
     );
     await truffleAssert.fails(
