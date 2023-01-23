@@ -18,7 +18,7 @@ function App() {
       <Header></Header>
       <Routes>
         <Route path="" element={<MakeTest/>} />
-        <Route path="/accepTest/:swapId" element={<AcceptTest/>} />
+        <Route path="/acceptTest/:swapId" element={<AcceptTest/>} />
       </Routes>
     </div>
   );
