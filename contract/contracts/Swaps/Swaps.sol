@@ -36,6 +36,7 @@ contract Swaps is PriceConsumer {
   struct Swap {
     Buyer buyer;
     Seller seller;
+    uint256 initAssetPrice;
     uint256 claimPrice;
     uint256 liquidationPrice;
     uint256 premium;
@@ -46,6 +47,7 @@ contract Swaps is PriceConsumer {
 
   function _makeSwap(
     address _addr,
+    uint256 _initAssetPrice,
     uint256 _claimPrice,
     uint256 _liquidationPrice,
     uint256 _sellerDeposit,
@@ -59,6 +61,7 @@ contract Swaps is PriceConsumer {
 
     newSwap.buyer.addr = _addr;
 
+    newSwap.initAssetPrice = _initAssetPrice;
     newSwap.claimPrice = _claimPrice;
     newSwap.liquidationPrice = _liquidationPrice;
     newSwap.premium = _premium;
@@ -70,13 +73,16 @@ contract Swaps is PriceConsumer {
     return newSwapId;
   }
 
-  function _acceptSwap(address _addr, uint256 _acceptedSwapId)
-    internal
-    returns (uint256)
-  {
+  function _acceptSwap(
+    address _addr,
+    uint256 _initAssetPrice,
+    uint256 _acceptedSwapId
+  ) internal returns (uint256) {
     Swap storage aSwap = _swaps[_acceptedSwapId];
 
     aSwap.seller.addr = _addr;
+    aSwap.initAssetPrice = _initAssetPrice;
+
     // seller deposit 이후
     aSwap.seller.isDeposited = true;
 
