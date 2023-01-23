@@ -2,7 +2,7 @@
 import axios from "axios";
 
 // URL
-import config from 'config'
+import config from '../config/config'
 
 export function getSwaps() {
     const requestURL = `${config.devURL}/swaps`;
