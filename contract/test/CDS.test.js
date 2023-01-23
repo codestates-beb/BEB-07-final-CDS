@@ -27,7 +27,7 @@ contract('CDS', (accounts) => {
     cds = await CDS.new({ from: accounts[0] });
   });
 
-  it('should throw error if priceOrcle is not set', async () => {
+  it('should throw error if priceOracle is not set', async () => {
     await truffleAssert.fails(cds.getPriceFromOracle());
   });
 

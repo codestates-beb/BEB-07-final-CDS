@@ -6,7 +6,8 @@ import { Link, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 
 // pages
-import Test from './pages/Test';
+import MakeTest from './pages/MakeTest';
+import AcceptTest from "./pages/AcceptTest";
 
 // css
 import './App.css';
@@ -14,9 +15,10 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <h1 className="text-3xl font-bold underline">Hello World!</h1>
+      <Header></Header>
       <Routes>
-        <Route path="" element={<Test/>} />
+        <Route path="" element={<MakeTest/>} />
+        <Route path="/acceptTest/:swapId" element={<AcceptTest/>} />
       </Routes>
     </div>
   );
