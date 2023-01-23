@@ -1,6 +1,6 @@
 // modules
 import { useState, useEffect } from 'react';
-import web3 from "web3";
+import { useSelector } from 'react-redux';
 
 // hooks
 import useMetamask from '../utils/hooks/useMetamask';
@@ -19,15 +19,15 @@ import '../assets/css/create.css'
 import createContract from '../utils/CDS';
 
 // Configure
-const CONTRACT_ADDR = '0x1550811D9B07Cfdde36085307b526d2D5072Da46';
+const CONTRACT_ADDR = '0xc8b72E2736221CC438eBe4FA8411242D9929382D';
 
-function Test() {
+function MakeTest() {
     const metamask = useMetamask();
     const CDS = createContract( CONTRACT_ADDR );
 
     // CDS Content State Variable
     const [contractAddress, setContractAddress] = useState('');
-    const [buyerAddress, setBuyerAddress] = useState('');
+    const buyerAddress = useSelector(state=>state.auth.user_addr);
 
         // Assets State Var
     const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('');
@@ -41,19 +41,12 @@ function Test() {
         // Premium State Var
     const [premiumRate, setPremiumRate] = useState(2);
     const [premiumPrice, setPremiumPrice] = useState('');
-    const [premiumInterval, setPremiumInterval] = useState('');
+    const [premiumInterval, setPremiumInterval] = useState("12");
     const [premiumRounds, setPremiumRounds] = useState('');
 
         // Liqudation State Var
     const [sellerDeposit, setSellerDeposit] = useState('');
     const [liquidationPrice, setLiquidationPrice] = useState('');
-
-
-    // Contracdt & User Setting Handler
-    const connectButtonHandler = async()=>{
-        const result = await metamask.request({method: 'eth_requestAccounts'});
-        if (result && result.length > 0) setBuyerAddress(result[0]);
-    }
 
     const setContractAddressHandler = ()=>{
         if (contractAddress.length !== 42) {
@@ -78,18 +71,18 @@ function Test() {
             premiumRounds,
         }
 
-        console.log(data);
+        console.log( data );
 
         const result = await CDS.contract.methods
         .makeSwap(
-                buyerAddress, 
-                Number(claimPrice), 
-                Number(liquidationPrice), 
-                Number(sellerDeposit), 
-                Number(premiumPrice), 
-                Number(premiumInterval),
-                Number(premiumRounds),
-            )
+            buyerAddress, 
+            Number(claimPrice), 
+            Number(liquidationPrice), 
+            Number(sellerDeposit), 
+            Number(premiumPrice), 
+            Number(premiumInterval),
+            Number(premiumRounds),
+        )
         .send({from: buyerAddress}, (result)=>{
             console.log(result)
         })
@@ -128,11 +121,6 @@ function Test() {
     return (
         <div className='create-container flex flex-col justify-center items-center'>
             <h1 className='text-2xl font-bold'>Create CDS</h1>
-            <button 
-                className='p-2 border rounded-xl'
-                onClick={connectButtonHandler}
-            >
-                Connect Metamask</button>
             <div className='width-[600px]'>
                 <div className='input-group'>
                     <label>Contract Address</label>
@@ -193,7 +181,11 @@ function Test() {
                 </div>
                 <div className='input-group'>
                     <label>Premium Interval</label>
-                    <select onChange={e=>setPremiumInterval(e.target.value)}>
+                    <select 
+                        onChange={e=>setPremiumInterval(e.target.value)}
+                        defaultValue={12}
+                        value={premiumInterval}
+                    >
                         <option value={12}>12 Month</option>
                         <option value={6}>6 Month</option>
                         <option value={3}>3 Month</option>
@@ -227,4 +219,4 @@ function Test() {
     )
 }
 
-export default Test;
+export default MakeTest;
