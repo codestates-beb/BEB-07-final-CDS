@@ -20,7 +20,7 @@ const syncArtifacts = async () => {
     ),
   );
   targetDirs.push(
-    path.resolve(__dirname, '..', '..', 'client', 'src', 'contractArtifacts'),
+    path.resolve(__dirname, '..', '..', 'client', 'src', 'assets', 'contract'),
   );
   targetDirs.forEach((destDir) => {
     try {

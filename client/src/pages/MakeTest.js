@@ -60,7 +60,8 @@ function MakeTest() {
     // make Swap Handler
     const makeButtonHandler = async()=>{
         const data = {
-            contractAddress, 
+            contractAddress,
+            initialPriceOfAssets, 
             buyerAddress, 
             totalAssets, 
             claimPrice, 
@@ -76,6 +77,7 @@ function MakeTest() {
         const result = await CDS.contract.methods
         .makeSwap(
             buyerAddress, 
+            Number(initialPriceOfAssets),
             Number(claimPrice), 
             Number(liquidationPrice), 
             Number(sellerDeposit), 
@@ -83,7 +85,7 @@ function MakeTest() {
             Number(premiumInterval),
             Number(premiumRounds),
         )
-        .send({from: buyerAddress}, (result)=>{
+        .send({from: buyerAddress, value: premiumPrice * 3}, (result)=>{
             console.log(result)
         })
         .once('sent', (payload)=>{
@@ -183,12 +185,11 @@ function MakeTest() {
                     <label>Premium Interval</label>
                     <select 
                         onChange={e=>setPremiumInterval(e.target.value)}
-                        defaultValue={12}
-                        value={premiumInterval}
+                        defaultValue="12"
                     >
-                        <option value={12}>12 Month</option>
-                        <option value={6}>6 Month</option>
-                        <option value={3}>3 Month</option>
+                        <option value="12">12 Month</option>
+                        <option value="6">6 Month</option>
+                        <option value="3">3 Month</option>
                     </select>
                 </div>
                 <div className='input-group'>
