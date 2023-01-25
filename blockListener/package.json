@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx nodemon --exec 'ts-node' src/index.ts",
+    "start": "npx nodemon  build/index.js",
     "typeorm": "typeorm-ts-node-commonjs"
   },
   "author": "",

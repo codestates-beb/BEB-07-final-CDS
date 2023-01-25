@@ -4,9 +4,9 @@ dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { Users } from './entity/Users';
-import { Transactions } from './entity/Transactions';
-import { Swaps } from './entity/Swaps';
+import { Users } from './entities/Users';
+import { Transactions } from './entities/Transactions';
+import { Swaps } from './entities/Swaps';
 import getEnv from './utils/getEnv';
 
 export const AppDataSource = new DataSource({
@@ -15,7 +15,7 @@ export const AppDataSource = new DataSource({
   port: 3306,
   username: getEnv('DB_USERNAME'),
   password: getEnv('DB_PASSWORD'),
-  database: 'typeormtest',
+  database: 'cds_dev2',
   synchronize: true,
   logging: false,
   entities: [Users, Transactions, Swaps],

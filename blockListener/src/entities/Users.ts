@@ -1,4 +1,4 @@
-import { Column, Entity, Index, OneToMany } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, OneToMany } from 'typeorm';
 import { Swaps } from './Swaps';
 
 @Index('address', ['address'], { unique: true })
@@ -27,16 +27,10 @@ export class Users {
   @Column('datetime', { name: 'lastBought', nullable: true })
   lastBought: Date | null;
 
-  @Column('datetime', {
-    name: 'createdAt',
-    default: () => new Date(),
-  })
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column('datetime', {
-    name: 'updatedAt',
-    default: () => new Date(),
-  })
+  @CreateDateColumn()
   updatedAt: Date;
 
   @Column('datetime', { name: 'deletedAt', nullable: true })

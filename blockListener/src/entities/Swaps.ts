@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   Index,
   JoinColumn,
@@ -79,16 +80,10 @@ export class Swaps {
     | 'overdue'
     | 'liquidated';
 
-  @Column('datetime', {
-    name: 'createdAt',
-    default: () => new Date(),
-  })
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column('datetime', {
-    name: 'updatedAt',
-    default: () => new Date(),
-  })
+  @CreateDateColumn()
   updatedAt: Date;
 
   @Column('datetime', { name: 'deletedAt', nullable: true })

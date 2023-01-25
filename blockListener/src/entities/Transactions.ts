@@ -1,4 +1,11 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  CreateDateColumn,
+} from 'typeorm';
 import { Swaps } from './Swaps';
 
 @Index('transactions_swapId_foreign_idx', ['swapId'], {})
@@ -11,16 +18,10 @@ export class Transactions {
   @Column('int', { name: 'blockNum' })
   blockNum: number;
 
-  @Column('datetime', {
-    name: 'createdAt',
-    default: () => new Date(),
-  })
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column('datetime', {
-    name: 'updatedAt',
-    default: () => new Date(),
-  })
+  @CreateDateColumn()
   updatedAt: Date;
 
   @Column('datetime', { name: 'deletedAt', nullable: true })

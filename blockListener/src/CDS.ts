@@ -7,9 +7,8 @@ import { EntityManager } from 'typeorm';
 import { Users } from './entities/Users';
 import { Transactions } from './entities/Transactions';
 import { Swaps } from './entities/Swaps';
-// const web3 = new Web3('ws://localhost:8545');
 
-interface ContractEvent {
+interface CreateSwapEvent {
   logIndex: number;
   transactionIndex: number;
   transactionHash: string;
@@ -26,6 +25,24 @@ interface ContractEvent {
     premiumInterval: string;
     totalPremiumRounds: string;
     buyerDeposit: string;
+    swapId: string;
+  };
+  event: string;
+  signature: string;
+  raw: any;
+}
+
+interface AcceptSwapEvent {
+  logIndex: number;
+  transactionIndex: number;
+  transactionHash: string;
+  blockHash: string;
+  blockNumber: number;
+  address: string;
+  type: string;
+  removed: false;
+  returnValues: {
+    seller: string;
     swapId: string;
   };
   event: string;
@@ -85,16 +102,23 @@ export default class CDS {
       .CreateSwap({}, (err: Error, event) => {
         console.log('**Create Swap Emitted**');
       })
-      .on('data', async (event: ContractEvent) => {
-        //0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b kim
-        //0xE11BA2b4D45Eaed5996Cd0823791E0C93114882d seol
-        // user를 찾는다. 있으면 업데이트하고, 없으면 새로 만든다.
-        const { buyer, swapId } = event.returnValues;
+      .on('data', async (event: CreateSwapEvent) => {
+        const {
+          buyer,
+          swapId,
+          claimPrice,
+          liquidationPrice,
+          premium,
+          premiumInterval,
+          totalPremiumRounds,
+          buyerDeposit,
+        } = event.returnValues;
         const currentTime: Date = new Date();
         let user = await this.manager.findOneBy(Users, {
           address: buyer,
         });
         if (!user) {
+          console.log('** no such user');
           user = new Users();
           user.address = buyer;
           user.nickname = null;
@@ -106,47 +130,103 @@ export default class CDS {
           user.updatedAt = currentTime;
           this.manager.save(user);
         } else {
+          console.log('** user found! **');
           user.boughtCount++;
           user.lastBought = currentTime;
           user.updatedAt = currentTime;
-          this.manager.save(user);
+          await this.manager.save(user);
         }
-        console.log(user);
 
         let swap = await this.manager.findOneBy(Swaps, {
-          swapId,
+          swapId: +swapId,
         });
 
         if (!swap) {
           swap = new Swaps();
-          swap.swapId = swapId;
-          swap.claimPrice = claimPrice;
-          swap.liquidationPrice = liquidationPrice;
-          swap.premium = premium;
-          swap.premiumInterval = premiumInterval;
-          swap.totalPremiumRounds = totalPremiumRounds;
-          swap.buyerDeposit = buyerDeposit;
+          swap.swapId = +swapId;
+          swap.claimPrice = +claimPrice;
+          swap.liquidationPrice = +liquidationPrice;
+          swap.premium = +premium;
+          swap.premiumInterval = +premiumInterval;
+          swap.totalPremiumRounds = +totalPremiumRounds;
+          swap.buyerDeposit = +buyerDeposit;
+          await this.manager.save(swap);
         }
 
         let transaction = await this.manager.findOneBy(Transactions, {
           txHash: event.transactionHash,
         });
         if (!transaction) {
+          console.log('** New Transaction **');
           transaction = new Transactions();
           transaction.txHash = event.transactionHash;
           transaction.blockNum = event.blockNumber;
-          transaction.swapId = 0;
+          transaction.swapId = +swapId;
           transaction.createdAt = currentTime;
           transaction.updatedAt = currentTime;
-          this.manager.save(user);
+          await this.manager.save(transaction);
         }
       });
 
     this.contract.events
-      .AcceptSwap({}, (err: Error, event) => {
-        console.log('**Acceps Swap Emitted**');
+      .AcceptSwap({}, (err: Error, event: AcceptSwapEvent) => {
+        console.log('**Accept Swap Emitted**');
       })
-      .on('data', (event) => {});
+      .on('data', async (event: AcceptSwapEvent) => {
+        console.log(event);
+        const { seller, swapId } = event.returnValues;
+        const currentTime: Date = new Date();
+        try {
+          let transaction = await this.manager.findOneBy(Transactions, {
+            txHash: event.transactionHash,
+          });
+          if (transaction)
+            throw new Error('This transaction already processed');
+
+          let swap = await this.manager.findOneBy(Swaps, {
+            swapId: +swapId,
+          });
+          if (!swap) throw new Error(`swapId ${swapId} is not on database`);
+          swap.status = 'active';
+          await this.manager.save(swap);
+
+          let user = await this.manager.findOneBy(Users, {
+            address: seller,
+          });
+          if (!user) {
+            console.log('** no such user, creating**');
+            user = new Users();
+            user.address = seller;
+            user.nickname = null;
+            user.soldCount = 1;
+            user.boughtCount = 0;
+            user.lastBought = null;
+            user.lastSold = currentTime;
+            user.createdAt = currentTime;
+            user.updatedAt = currentTime;
+            this.manager.save(user);
+          } else {
+            console.log('** user found! **');
+            user.soldCount++;
+            user.lastSold = currentTime;
+            user.updatedAt = currentTime;
+            await this.manager.save(user);
+          }
+
+          if (!transaction) {
+            console.log('** New Transaction **');
+            transaction = new Transactions();
+            transaction.txHash = event.transactionHash;
+            transaction.blockNum = event.blockNumber;
+            transaction.swapId = +swapId;
+            transaction.createdAt = currentTime;
+            transaction.updatedAt = currentTime;
+            await this.manager.save(transaction);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      });
   }
 
   public sync() {

@@ -10,7 +10,7 @@ const OracleABI = require('../build/contracts/PriceOracleMock.json');
 const CDSABI = require('../build/contracts/CDS.json');
 
 const OracleCA = '0x62f98AFF6349DfF21a184e10CAbB9C3AcA10fa74';
-const CDSCA = '0x89c320c75520777AB36f4924cE57c65960370fE1';
+const CDSCA = '0x6E62eFEAb443bd1B233C4DF795Da4794511a8907';
 
 const kimAccount = web3.eth.accounts.privateKeyToAccount(
   '0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c',
