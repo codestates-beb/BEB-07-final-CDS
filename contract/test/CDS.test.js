@@ -210,7 +210,7 @@ contract('CDS', (accounts) => {
       }),
     );
   });
-  it('should throw error if the caller of cancleSwap is not the buyer', async () => {
+  it('should throw error if the caller of cancelSwap is not the buyer', async () => {
     await cds.createSwap(
       accounts[2],
       defaultInitAssetPrice,
@@ -224,10 +224,10 @@ contract('CDS', (accounts) => {
     );
     const [currentSwapId] = await cds.getSwapId();
     await truffleAssert.fails(
-      cds.cancleSwap(currentSwapId, { from: accounts[1] }),
+      cds.cancelSwap(currentSwapId, { from: accounts[1] }),
     );
   });
-  it('should be able to cancle if the buyer calls cancleSwap and check the swap', async () => {
+  it('should be able to cancel if the buyer calls cancelSwap and check the swap', async () => {
     await cds.createSwap(
       accounts[2],
       defaultInitAssetPrice,
@@ -242,7 +242,7 @@ contract('CDS', (accounts) => {
     const [currentSwapId] = await cds.getSwapId();
 
     await truffleAssert.passes(
-      cds.cancleSwap(currentSwapId, { from: accounts[2] }),
+      cds.cancelSwap(currentSwapId, { from: accounts[2] }),
     );
     const currentSwap = await cds.getSwap(currentSwapId);
 

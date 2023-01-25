@@ -20,6 +20,7 @@ contract CDS is Swaps, Ownable {
   event CreateSwap(
     address indexed buyer,
     uint256 swapId,
+    uint256 initAssetPrice,
     uint256 claimPrice,
     uint256 liquidationPrice,
     uint256 premium,
@@ -62,6 +63,7 @@ contract CDS is Swaps, Ownable {
     emit CreateSwap(
       addr,
       newSwapId,
+      initAssetPrice,
       claimPrice,
       liquidationPrice,
       premium,
@@ -87,8 +89,8 @@ contract CDS is Swaps, Ownable {
     return acceptedSwapId;
   }
 
-  function cancleSwap(uint256 swapId) public isNotOwner returns (bool) {
-    _cancleSwap(swapId);
+  function cancelSwap(uint256 swapId) public isNotOwner returns (bool) {
+    _cancelSwap(swapId);
     Swap memory targetSwap = _swaps[swapId];
     (bool sent, ) = msg.sender.call{value: targetSwap.buyer.deposit}('');
     require(sent, 'Sending failed');
