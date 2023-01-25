@@ -1,23 +1,3 @@
-// id	int	notnull, autoincrement, pk
-// swapId	int	notnull, pk	컨트랙트의 id
-// initialAssetPrice	int	notnull	계약 생성당시 준거자산의 가격
-// premium	int	not null
-// seller	string	FK
-// buyer	string	FK
-// sellerCollateral	int	not null
-// buyerCollateral	int 	not null
-// claimPrice	int	not null	권리행사가능기준
-// liquidationPrice	int 	not null	청산
-// swapExpiration	UTC timestamp	not null	계약만기
-// proposalExpiration	timestamp	not null	바이어의 제한 유효기간
-// status	enum	not null
-// address	string	PK, NOT NULL
-// lastBought	DATE		마지막으로 CDS를 구매한 날짜
-// lastSold	DATE		마지막으로 CDS를 판매한 날짜
-// sellerCount	INT	0부터 시작
-// buyerCount	INT	0부터 시작
-// createdAt	DATE	NOT NULL
-// updatedAt	DATE	NOT NULL
 const Sequelize = require('sequelize');
 const User = require('./user');
 
