@@ -3,65 +3,65 @@
 @tailwind utilities;
 
 @layer components {
-    .create-container .input-group input{
+    .accept-container .input-group input{
         @apply border text-right;
     }
 
-    .create-container .input-group {
+    .accept-container .input-group {
         @apply flex justify-between py-2 items-center;
     }
 
-    .container.container-create {
+    .container.container-accept {
         margin: auto;
         width: 1440px;
     }
 
-    .container-create .create-form {
+    .container-accept .accept-form {
         width: 720px;
     }
 
-    /* create-banner */
-    .create-banner{
-        @apply mb-32;
-        height: 465px;
-        background-color: var(--white-color);
+    /* accept-banner */
+    .accept-banner{
+      @apply mb-32;
+      height: 465px;
+      background-color: var(--white-color);
     }
 
-    /* create-head */
-    .container-create .create-head {
+    /* accept-head */
+    .container-accept .accept-head {
         @apply mb-16;
     }
 
-    .create-head .create-head-title{
+    .accept-head .accept-head-title{
         @apply py-4 text-5xl font-bold;
     }
 
-    .create-head .line{
+    .accept-head .line{
         @apply my-4;
         background-color: var(--primary-color);
         border-bottom-width: 1px;
         border-color: var(--primary-color);
     }
 
-    /* Create Form */
-    .create-form .input-group{
+    /* accept Form */
+    .accept-form .input-group{
         @apply flex flex-col;
     }
 
-    .create-form .form-section .section-title{
+    .accept-form .form-section .section-title{
         @apply py-4 text-3xl font-bold;
     }
 
-    .create-form .input-group input{
+    .accept-form .input-group input{
         @apply py-2 px-3 rounded-xl mb-8
     }
 
-    .create-form button{
+    .accept-form button{
         @apply rounded-xl;
         background-color: var(--primary-color);
     }
 
-    .create-form .input-group .input-select select {
+    .accept-form .input-group .input-select select {
         @apply rounded-xl border-2 px-2;
         border-color: var(--primary-color);
         color: var(--white-color);
@@ -69,30 +69,30 @@
         outline: none;
     }
 
-    .create-form .input-group .input-button,
-    .create-form .input-group .input-select
+    .accept-form .input-group .input-button,
+    .accept-form .input-group .input-select
     {
         @apply flex w-full mb-8;
         gap: 1rem;
     }
     
-    .create-form .input-group .input-button input,
-    .create-form .input-group .input-select input
+    .accept-form .input-group .input-button input,
+    .accept-form .input-group .input-select input
     {
         @apply mb-0 w-[70%];
     }
 
-    .create-form .input-group .input-button button,
-    .create-form .input-group .input-select select
+    .accept-form .input-group .input-button button,
+    .accept-form .input-group .input-select select
     {
         @apply w-[30%];
     }
 
-    .create-form .form-section .button-group{
+    .accept-form .form-section .button-group{
         @apply flex justify-end;
     }
 
-    .create-form .form-section .create-button {
+    .accept-form .form-section .accept-button {
         @apply p-4 font-bold
     }
 }
