@@ -26,35 +26,40 @@ function Header() {
   };
 
   return (
-    <div className="header py-2 px-4 flex justify-between">
-      <div className="header-logo-wrapper">
-        <Link to="/" className="logo-link">
-          <img className="service-logo" />
-          <div className="service-name">
-            <p>Crypto</p>
-            <p>Default Swap</p>
-          </div>
-        </Link>
-      </div>
-      <div className="navbar flex items-center">
-        <ul className="navbar-wrapper flex">
-          <Link>
-            <li className="navbar-item">MyPage</li>
+    <div className="header py-2 px-4 flex justify-center">
+      <div className="container container-header flex justify-between">
+        <div className="header-logo-wrapper">
+          <Link to="/" className="logo-link">
+            <img 
+              className="service-logo w-10 h-10" 
+              src={process.env.PUBLIC_URL + "/img/CDS_Symbol_bright_removebg.png"} 
+            />
+            <div className="service-name">
+              <p>Crypto</p>
+              <p>Default Swap</p>
+            </div>
           </Link>
-          <Link>
-            <li className="navbar-item">About</li>
-          </Link>
-          <Link to="/createTest">
-            <li className="navbar-item">Create CDS</li>
-          </Link>
-        </ul>
-        {isLogin ? (
-          <></>
-        ) : (
-          <button className="navbar-button" onClick={connectButtonHandler}>
-            Connect Wallet
-          </button>
-        )}
+        </div>
+        <div className="navbar flex items-center">
+          <ul className="navbar-wrapper flex">
+            <Link>
+              <li className="navbar-item">MyPage</li>
+            </Link>
+            <Link>
+              <li className="navbar-item">About</li>
+            </Link>
+            <Link to="/createTest">
+              <li className="navbar-item">Create CDS</li>
+            </Link>
+          </ul>
+          {isLogin ? (
+            <></>
+          ) : (
+            <button className="navbar-button" onClick={connectButtonHandler}>
+              Connect Wallet
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

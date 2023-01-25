@@ -17,7 +17,7 @@ function Detail() {
         <div className='detail-head-section'>
           <div className='detail-title-group'>
             <h1 className='detail-title'>Bitcoin Crypto Default Swap</h1>
-            <p className='detail-issued'>Issued On Jan 22, 2023</p>
+            <p className='detail-issued'>Issued on Jan 22, 2023</p>
           </div>
           <div className='detail-party'>
             <div className='party-item'>
