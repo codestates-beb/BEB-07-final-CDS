@@ -7,7 +7,8 @@ import Header from './components/Header';
 
 // pages
 import MakeTest from './pages/MakeTest';
-import AcceptTest from "./pages/AcceptTest";
+import AcceptTest from './pages/AcceptTest';
+import Main from './pages/Main';
 
 // css
 import './App.css';
@@ -17,8 +18,9 @@ function App() {
     <div className="App">
       <Header></Header>
       <Routes>
-        <Route path="" element={<MakeTest/>} />
-        <Route path="/acceptTest/:swapId" element={<AcceptTest/>} />
+        <Route path="" element={<MakeTest />} />
+        <Route path="/acceptTest/:swapId" element={<AcceptTest />} />
+        <Route path="/main" element={<Main />} />
       </Routes>
     </div>
   );

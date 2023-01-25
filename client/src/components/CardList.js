@@ -1,16 +1,16 @@
 // components
-import Card from './Card' ;
+import Card from './Card';
 
 function CardList() {
-    const data = new Array(4);
+  const data = new Array(4);
 
-    return (
-        <>
-            {
-                data.map(ele=>{
-                    return <Card/>
-                })
-            }
-        </>
-    )
+  return (
+    <>
+      {data.map((ele) => {
+        return <Card />;
+      })}
+    </>
+  );
 }
+
+export default CardList;
