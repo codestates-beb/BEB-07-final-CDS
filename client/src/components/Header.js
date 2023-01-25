@@ -27,10 +27,6 @@ function Header() {
     if (result && result.length > 0) dispatch( setAuth(result[0]) );
   }
 
-  useEffect(()=>{
-    console.log(isLogin);
-  }, [isLogin])
-
   return (
     <div className='header py-2 px-4 flex justify-between'>
       <div className='header-logo-wrapper'>
