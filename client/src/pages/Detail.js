@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 
 // components
 import Card from '../components/Card';
+import MarketPrice from '../components/MarketPrice';
 
 // css
 import '../assets/css/detail.css';
@@ -51,6 +52,63 @@ function Detail() {
             </div>
           </div>
         </div>
+        <div className='detail-content-section'>
+          <h2 className='content-section-title'>Claim</h2>
+          <div className='content-box'>
+            <div className='content-item'>
+              <p className='item-name'>Claim Price</p>
+              <p className='item-figures'>$ 150,000</p>
+            </div>
+            <div className='content-item'>
+              <p className='item-name'>Drop Rate</p>
+              <p className='item-figures'>28.4 %</p>
+            </div>
+          </div>
+        </div>
+        <div className='detail-content-section'>
+          <h2 className='content-section-title'>Premium</h2>
+          <div className='content-box'>
+            <div className='content-item'>
+              <p className='item-name'>Premium Rate</p>
+              <p className='item-figures'>2 %</p>
+            </div>
+            <div className='content-item'>
+              <p className='item-name'>Premium Price</p>
+              <p className='item-figures'>$ 10,000</p>
+            </div>
+            <div className='content-item'>
+              <p className='item-name'>Premium Interval</p>
+              <p className='item-figures'>6 months</p>
+            </div>
+            <div className='content-item'>
+              <p className='item-name'>Premium Rounds</p>
+              <p className='item-figures'>4</p>
+            </div>
+          </div>
+        </div>
+        <div className='detail-content-section'>
+          <h2 className='content-section-title'>Liquidation</h2>
+          <div className='content-box'>
+            <div className='content-item'>
+              <p className='item-name'>Seller Deposit</p>
+              <p className='item-figures'>$ 100,000</p>
+            </div>
+            <div className='content-item'>
+              <p className='item-name'>Liquidation Price</p>
+              <p className='item-figures'>$ 10,964</p>
+            </div>
+            <div className='content-item'>
+              <p className='item-name'>Buyer Deposit</p>
+              <p className='item-figures'>$ 3,579</p>
+            </div>
+          </div>
+        </div>
+      </div>{/* content */}
+      <div className='flex justify-center mt-16 py-14'>
+        <hr className='line w-[720px] border-b-2 border-primaryColor' />
+      </div>
+      <div className='detail-tail flex justify-center mb-24'>
+        <MarketPrice/>
       </div>
     </div>
   )
