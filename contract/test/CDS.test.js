@@ -18,7 +18,7 @@ contract('CDS', (accounts) => {
   const defaultPremiumInterval = 60 * 10; // 10 minutes
   const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
 
-  const defaultBuyerDeposit = 10 ** 18 * defaultPremium * 3;
+  const defaultBuyerDeposit = defaultPremium * 3;
 
   beforeEach(async () => {
     priceOracle = await PriceOracleMock.new(defaultInitAssetPrice, {
@@ -37,9 +37,9 @@ contract('CDS', (accounts) => {
     await assert.strictEqual(defaultInitAssetPrice, currentPrice.toNumber());
   });
 
-  it('should throw error when invalid input or deposit provided to makeswap', async () => {
+  it('should throw error when invalid input or deposit provided to create swap', async () => {
     await truffleAssert.fails(
-      cds.makeSwap(
+      cds.createSwap(
         accounts[2],
         20000,
         15000,
@@ -52,7 +52,7 @@ contract('CDS', (accounts) => {
       ),
     );
     await truffleAssert.fails(
-      cds.makeSwap(
+      cds.createSwap(
         accounts[2],
         20000,
         15000,
@@ -65,7 +65,7 @@ contract('CDS', (accounts) => {
       ),
     );
     await truffleAssert.fails(
-      cds.makeSwap(
+      cds.createSwap(
         accounts[2],
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -74,14 +74,14 @@ contract('CDS', (accounts) => {
         defaultPremium,
         defaultPremiumInterval,
         defaultPremiumRounds,
-        { from: accounts[2], value: 10 ** 18 * (defaultPremium + 1) * 3 },
+        { from: accounts[2], value: (defaultPremium + 1) * 3 },
       ),
     );
   });
 
-  it('should be able to makeSwap when valid input provided and check it from mapping', async () => {
+  it('should be able to create Swap when valid input provided and check it from mapping', async () => {
     await truffleAssert.passes(
-      cds.makeSwap(
+      cds.createSwap(
         accounts[2],
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -121,7 +121,7 @@ contract('CDS', (accounts) => {
   });
 
   it('should be able to accept Swap when valid deposit provided and check it from mapping', async () => {
-    await cds.makeSwap(
+    await cds.createSwap(
       accounts[2],
       defaultInitAssetPrice,
       defaultClaimPrice,
@@ -137,7 +137,7 @@ contract('CDS', (accounts) => {
     await truffleAssert.passes(
       cds.acceptSwap(accounts[1], defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
-        value: 10 ** 18 * defaultSellerDeposit,
+        value: defaultSellerDeposit,
       }),
     );
 
@@ -173,9 +173,9 @@ contract('CDS', (accounts) => {
     await assert.strictEqual(accounts[0], ownerAddr);
   });
 
-  it('should throw error when owner calls makeswap', async () => {
+  it('should throw error when owner calls createSwap', async () => {
     await truffleAssert.fails(
-      cds.makeSwap(
+      cds.createSwap(
         accounts[0],
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -190,7 +190,7 @@ contract('CDS', (accounts) => {
   });
 
   it('should throw error if the seller provides invalid deposit', async () => {
-    await cds.makeSwap(
+    await cds.createSwap(
       accounts[2],
       defaultInitAssetPrice,
       defaultClaimPrice,
@@ -206,7 +206,7 @@ contract('CDS', (accounts) => {
     await truffleAssert.fails(
       cds.acceptSwap(accounts[1], defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
-        value: 10 ** 18 * (defaultSellerDeposit + 1),
+        value: defaultSellerDeposit + 1,
       }),
     );
   });

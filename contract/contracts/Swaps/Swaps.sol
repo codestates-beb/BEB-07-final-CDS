@@ -45,7 +45,7 @@ contract Swaps is PriceConsumer {
     Status status;
   }
 
-  function _makeSwap(
+  function _createSwap(
     address _addr,
     uint256 _initAssetPrice,
     uint256 _claimPrice,
