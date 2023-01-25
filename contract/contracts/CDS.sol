@@ -15,7 +15,7 @@ contract CDS is Swaps, Ownable {
     _;
   }
 
-  event MakeSwap(
+  event CreateSwap(
     address indexed buyer,
     uint256 claimPrice,
     uint256 liquidationPrice,
@@ -26,7 +26,7 @@ contract CDS is Swaps, Ownable {
   );
   event AcceptSwap(address indexed seller, uint256 swapId);
 
-  function makeSwap(
+  function createSwap(
     address addr,
     uint256 initAssetPrice,
     uint256 claimPrice,
@@ -40,7 +40,7 @@ contract CDS is Swaps, Ownable {
     require(buyerDeposit == msg.value, 'Invalid eth amount');
     payable(owner()).transfer(msg.value);
 
-    uint256 newSwapId = _makeSwap(
+    uint256 newSwapId = _createSwap(
       addr,
       initAssetPrice,
       claimPrice,
@@ -51,7 +51,7 @@ contract CDS is Swaps, Ownable {
       totalPremiumRounds
     );
 
-    emit MakeSwap(
+    emit CreateSwap(
       addr,
       claimPrice,
       liquidationPrice,
