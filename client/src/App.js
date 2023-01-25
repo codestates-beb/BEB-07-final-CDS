@@ -6,6 +6,7 @@ import { Link, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 
 // pages
+import Main from './pages/Main';
 import MakeTest from './pages/MakeTest';
 import AcceptTest from "./pages/AcceptTest";
 
@@ -15,9 +16,10 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <Header></Header>
+      <Header/>
       <Routes>
-        <Route path="" element={<MakeTest/>} />
+        <Route path='/' element={<Main/>}/>
+        <Route path='/createTest' element={<MakeTest/>} />
         <Route path="/acceptTest/:swapId" element={<AcceptTest/>} />
       </Routes>
     </div>

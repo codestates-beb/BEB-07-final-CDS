@@ -17,6 +17,7 @@ contract CDS is Swaps, Ownable {
 
   event CreateSwap(
     address indexed buyer,
+    uint256 swapId,
     uint256 claimPrice,
     uint256 liquidationPrice,
     uint256 premium,
@@ -25,6 +26,7 @@ contract CDS is Swaps, Ownable {
     uint256 buyerDeposit
   );
   event AcceptSwap(address indexed seller, uint256 swapId);
+  event CancleSwap(uint256 swapId);
 
   function createSwap(
     address addr,
@@ -53,6 +55,7 @@ contract CDS is Swaps, Ownable {
 
     emit CreateSwap(
       addr,
+      newSwapId,
       claimPrice,
       liquidationPrice,
       premium,
@@ -76,6 +79,11 @@ contract CDS is Swaps, Ownable {
     uint256 acceptedSwapId = _acceptSwap(addr, initAssetPrice, swapId);
     emit AcceptSwap(addr, swapId);
     return acceptedSwapId;
+  }
+
+  function cancleSwap(uint256 swapId) public isNotOwner returns (bool) {
+    _cancleSwap(swapId);
+    return true;
   }
 
   function getSwap(uint256 swapId) public view returns (Swap memory) {

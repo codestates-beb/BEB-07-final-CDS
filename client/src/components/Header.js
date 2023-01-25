@@ -30,7 +30,7 @@ function Header() {
   return (
     <div className='header py-2 px-4 flex justify-between'>
       <div className='header-logo-wrapper'>
-        <Link to="/" className='logo-link'>
+        <Link to='/' className='logo-link'>
             <img className='service-logo' />
             <div className='service-name'>
               <p>Crypto</p>
@@ -38,11 +38,11 @@ function Header() {
             </div>
         </Link>
       </div>
-      <div className="navbar flex items-center">
+      <div className='navbar flex items-center'>
         <ul className='navbar-wrapper flex'>
           <Link><li className='navbar-item'>MyPage</li></Link>
           <Link><li className='navbar-item'>About</li></Link>
-          <Link><li className='navbar-item'>Create CDS</li></Link>
+          <Link to='/createTest'><li className='navbar-item'>Create CDS</li></Link>
         </ul>
         {isLogin? 
         <></>
