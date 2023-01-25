@@ -1,7 +1,53 @@
-//css
-import '../assets/css/create.css' ;
+// modules
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+
+// hooks
+import useMetamask from '../utils/hooks/useMetamask';
+
+// utils
+import {
+  calculateTotalAssets,
+  calculateClaimPrice,
+  calculateDropRate,
+  calculateLiquidationPrice,
+  calculatePremiumPrice,
+} from '../utils/calculator';
+import createContract from '../utils/CDS';
+
+// config
+import config from '../config/config';
+
+// css
+import '../assets/css/create.css';
 
 function Create() {
+  const metamask = useMetamask();
+  const CDS = createContract(config.contractAddr);
+
+  // CDS Content State Variable
+  const [contractAddress, setContractAddress] = useState('');
+  const buyerAddress = useSelector(state=>state.auth.user_addr);
+
+      // Assets State Var
+  const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('');
+  const [amountOfAssets, setAmountOfAssets] = useState('');
+  const [totalAssets, setTotalAssets] = useState('');
+
+      // Claim State Var
+  const [claimPrice, setClaimPrice] = useState('');
+  const [dropRate, setDropRate] = useState('');
+
+      // Premium State Var
+  const [premiumRate, setPremiumRate] = useState(2);
+  const [premiumPrice, setPremiumPrice] = useState('');
+  const [premiumInterval, setPremiumInterval] = useState("12");
+  const [premiumRounds, setPremiumRounds] = useState('');
+
+      // Liqudation State Var
+  const [sellerDeposit, setSellerDeposit] = useState('');
+  const [liquidationPrice, setLiquidationPrice] = useState('');
+
   return (
     <>
       <div className='create-banner'>
@@ -10,7 +56,9 @@ function Create() {
       <div className='container container-create'>
         <div className='create-head'>
           <h1 className='create-head-title'>Propose Crypto Default Swap</h1>
-          <p className='create-head-notice text-2xl font-semibold py-2'>Welcome! Enter Your Details And Start Creating Crypto Default Swap!</p>
+          <p className='create-head-notice text-2xl font-semibold py-2'>
+            Welcome! Enter Your Details And Start Creating Crypto Default Swap!
+          </p>
           <hr className='line w-[150px] color-[var(--primary-color)]'/>
         </div>
         <div className='create-form'>
