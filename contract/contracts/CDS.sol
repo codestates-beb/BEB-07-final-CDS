@@ -10,6 +10,8 @@ contract CDS is Swaps, Ownable {
 
   constructor() payable {}
 
+  receive() external payable {}
+
   modifier isNotOwner() {
     require(msg.sender != owner(), 'Owner can not call the method');
     _;
@@ -26,7 +28,7 @@ contract CDS is Swaps, Ownable {
     uint256 buyerDeposit
   );
   event AcceptSwap(address indexed seller, uint256 swapId);
-  event CancleSwap(uint256 swapId);
+  event Close(uint256 swapId);
 
   function createSwap(
     address addr,
@@ -40,7 +42,7 @@ contract CDS is Swaps, Ownable {
   ) public payable isNotOwner returns (uint256) {
     uint256 buyerDeposit = premium.mul(3) * 1 wei;
     require(buyerDeposit == msg.value, 'Invalid eth amount');
-    payable(owner()).transfer(msg.value);
+    payable(address(this)).transfer(msg.value);
 
     uint256 newSwapId = _createSwap(
       addr,
@@ -74,7 +76,7 @@ contract CDS is Swaps, Ownable {
   ) public payable isNotOwner returns (uint256) {
     uint256 sellerDeposit = _swaps[swapId].seller.deposit * 1 wei;
     require(sellerDeposit == msg.value, 'Invalid eth amount');
-    payable(owner()).transfer(msg.value);
+    payable(address(this)).transfer(msg.value);
 
     uint256 acceptedSwapId = _acceptSwap(addr, initAssetPrice, swapId);
     emit AcceptSwap(addr, swapId);
@@ -100,5 +102,9 @@ contract CDS is Swaps, Ownable {
 
   function getSwapId() public view returns (Counters.Counter memory) {
     return _swapId;
+  }
+
+  function getContractBalance() public view returns (uint256) {
+    return address(this).balance;
   }
 }
