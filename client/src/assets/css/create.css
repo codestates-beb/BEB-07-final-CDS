@@ -12,6 +12,7 @@
     }
 
     .container.container-create {
+        @apply px-20;
         margin: auto;
         width: 1440px;
     }
