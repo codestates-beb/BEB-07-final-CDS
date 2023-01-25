@@ -10,7 +10,8 @@ import Main from './pages/Main';
 import Create from './pages/Create';
 import Accept from './pages/Accept';
 import MakeTest from './pages/MakeTest';
-import AcceptTest from "./pages/AcceptTest";
+import AcceptTest from './pages/AcceptTest';
+import Main from './pages/Main';
 
 // css
 import './App.css';
@@ -18,13 +19,14 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <Header/>
+      <Header />
       <Routes>
-        <Route path='/' element={<Main/>}/>
-        <Route path='/create' element={<Create/>}/>
-        <Route path='/accept' element={<Accept/>}/>
-        <Route path='/createTest' element={<MakeTest/>} />
-        <Route path="/acceptTest/:swapId" element={<AcceptTest/>} />
+        <Route path="/" element={<Main />} />
+        <Route path="/create" element={<Create />} />
+        <Route path="/accept" element={<Accept />} />
+        <Route path="/createTest" element={<MakeTest />} />
+        <Route path="/acceptTest/:swapId" element={<AcceptTest />} />
+        <Route path="/main" element={<Main />} />
       </Routes>
     </div>
   );
