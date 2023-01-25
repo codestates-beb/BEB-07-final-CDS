@@ -85,7 +85,10 @@ contract CDS is Swaps, Ownable {
 
   function cancleSwap(uint256 swapId) public isNotOwner returns (bool) {
     _cancleSwap(swapId);
-    return true;
+    Swap memory targetSwap = _swaps[swapId];
+    (bool sent, ) = msg.sender.call{value: targetSwap.buyer.deposit}('');
+    require(sent, 'Sending failed');
+    return sent;
   }
 
   function getSwap(uint256 swapId) public view returns (Swap memory) {
