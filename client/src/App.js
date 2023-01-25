@@ -12,7 +12,6 @@ import Accept from './pages/Accept';
 import Detail from './pages/Detail';
 import MakeTest from './pages/MakeTest';
 import AcceptTest from './pages/AcceptTest';
-import Main from './pages/Main';
 
 // css
 import './App.css';
@@ -28,7 +27,6 @@ function App() {
         <Route path='/detail' element={<Detail/>}/>
         <Route path="/createTest" element={<MakeTest />} />
         <Route path="/acceptTest/:swapId" element={<AcceptTest />} />
-        <Route path="/main" element={<Main />} />
       </Routes>
     </div>
   );
