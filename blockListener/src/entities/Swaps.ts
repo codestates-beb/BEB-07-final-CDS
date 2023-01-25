@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   Index,
   JoinColumn,
@@ -10,9 +11,9 @@ import { Users } from './Users';
 import { Transactions } from './Transactions';
 
 @Index('swapId', ['swapId'], { unique: true })
-@Index('swaps_seller_foreign_idx', ['seller'], {})
 @Index('swaps_buyer_foreign_idx', ['buyer'], {})
-@Entity('swaps', { schema: 'cds_dev1' })
+@Index('swaps_seller_foreign_idx', ['seller'], {})
+@Entity('swaps', { schema: 'cds_dev2' })
 export class Swaps {
   @Column('int', { primary: true, name: 'swapId' })
   swapId: number;
@@ -22,6 +23,12 @@ export class Swaps {
 
   @Column('int', { name: 'premium' })
   premium: number;
+
+  @Column('int', { name: 'premiumInterval' })
+  premiumInterval: number;
+
+  @Column('int', { name: 'totalPremiumRounds' })
+  totalPremiumRounds: number;
 
   @Column('int', { name: 'sellerDeposit', nullable: true })
   sellerDeposit: number | null;
@@ -37,26 +44,46 @@ export class Swaps {
 
   @Column('enum', {
     name: 'status',
-    enum: ['pending', 'active', 'expired', 'overdue', 'liquidated'],
+    enum: [
+      'pending',
+      'active',
+      'claimable',
+      'expired',
+      'overdue',
+      'liquidated',
+    ],
   })
-  status: 'pending' | 'active' | 'expired' | 'overdue' | 'liquidated';
+  status:
+    | 'pending'
+    | 'active'
+    | 'claimable'
+    | 'expired'
+    | 'overdue'
+    | 'liquidated';
 
   @Column('enum', {
     name: 'updatableStatus',
-    enum: ['pending', 'active', 'expired', 'overdue', 'liquidated'],
+    enum: [
+      'pending',
+      'active',
+      'claimable',
+      'expired',
+      'overdue',
+      'liquidated',
+    ],
   })
-  updatableStatus: 'pending' | 'active' | 'expired' | 'overdue' | 'liquidated';
+  updatableStatus:
+    | 'pending'
+    | 'active'
+    | 'claimable'
+    | 'expired'
+    | 'overdue'
+    | 'liquidated';
 
-  @Column('datetime', {
-    name: 'createdAt',
-    default: () => "'2023-01-19 03:04:17'",
-  })
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column('datetime', {
-    name: 'updatedAt',
-    default: () => "'2023-01-19 03:04:17'",
-  })
+  @CreateDateColumn()
   updatedAt: Date;
 
   @Column('datetime', { name: 'deletedAt', nullable: true })

@@ -29,6 +29,9 @@ client/yarn-error.log*
 #  Server
 #################################################################################
 
+# ganache-daemon
+ganache-daemone/database
+ganache-daemon
 
 # Logs
 logs

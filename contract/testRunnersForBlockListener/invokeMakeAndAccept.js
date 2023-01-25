@@ -4,19 +4,19 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const Web3 = require('web3');
 
-const web3 = new Web3('http://localhost:8545');
+const web3 = new Web3('http://20.214.105.181:8545');
 
 const OracleABI = require('../build/contracts/PriceOracleMock.json');
 const CDSABI = require('../build/contracts/CDS.json');
 
 const OracleCA = '0x62f98AFF6349DfF21a184e10CAbB9C3AcA10fa74';
-const CDSCA = '0x21960Bb1eae929A36756C6ee910ba529347309e8';
+const CDSCA = '0x6E62eFEAb443bd1B233C4DF795Da4794511a8907';
 
 const kimAccount = web3.eth.accounts.privateKeyToAccount(
-  '0x5174aa507a6e17e6a8de6b2739b62e8f780d8c8223b2f2d1a4fca17104fd47ee',
+  '0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c',
 );
 const seolAccount = web3.eth.accounts.privateKeyToAccount(
-  '0xf2d71b463bacb967278534e20de6824aeddf21968ee6c47635729eb177b785c8',
+  '0x646f1ce2fdad0e6deeeb5c7e8e5543bdde65e86029e2fd9fc169899c440a7913',
 );
 
 const initialPrice = 20000;
@@ -33,38 +33,50 @@ const cds = new web3.eth.Contract(CDSABI.abi, CDSCA);
 
 console.log(seolAccount);
 // set priceoracle berfore init
-const runner = async () => {
-  console.log('----------');
-  console.log(await web3.eth.getBalance(kimAccount.address));
-  console.log(await web3.eth.getBalance(seolAccount.address));
-  console.log('----------');
-  await cds.methods.setOracle(OracleCA).send({ from: kimAccount.address });
+const create = async () => {
+  try {
+    console.log('----------');
+    console.log(await web3.eth.getBalance(kimAccount.address));
+    console.log(await web3.eth.getBalance(seolAccount.address));
+    console.log('----------');
+    await cds.methods.setOracle(OracleCA).send({ from: kimAccount.address });
 
-  // invoke makeSwap event
-  await cds.methods
-    .makeSwap(
-      kimAccount.address,
-      defaultClaimPrice,
-      defaultLiquidationPrice,
-      defaultSellerDeposit,
-      defaultPremium,
-      defaultPremiumInterval,
-      defaultPremiumRounds,
-    )
-    .send({
-      from: kimAccount.address,
-      gasPrice: '20000000000',
-      gas: '6721975',
-    });
+    // invoke makeSwap event
+    await cds.methods
+      .createSwap(
+        kimAccount.address,
+        initialPrice,
+        defaultClaimPrice,
+        defaultLiquidationPrice,
+        defaultSellerDeposit,
+        defaultPremium,
+        defaultPremiumInterval,
+        defaultPremiumRounds,
+      )
+      .send({
+        from: kimAccount.address,
+        gasPrice: '20000000000',
+        gas: '6721975',
+        value: defaultPremium * 3,
+      });
+  } catch (err) {
+    console.error(err);
+  }
+};
 
+const accept = async () => {
   // get current swapId for acceptSwap
   const [currentSwapId] = await cds.methods.getSwapId().call();
   // invoke acceptSwap event
-  await cds.methods.acceptSwap(seolAccount.address, currentSwapId).send({
-    from: seolAccount.address,
-    gasPrice: '20000000000',
-    gas: '6721975',
-  });
+  await cds.methods
+    .acceptSwap(seolAccount.address, initialPrice, currentSwapId)
+    .send({
+      from: seolAccount.address,
+      gasPrice: '20000000000',
+      gas: '6721975',
+      value: defaultSellerDeposit,
+    });
 };
 
-runner();
+create();
+setTimeout(accept, 2000);
