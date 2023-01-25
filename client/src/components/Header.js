@@ -29,11 +29,12 @@ function Header() {
   };
 
   return (
-    <div className="header py-2 px-4 flex justify-between">
+    <div className="header py-2 px-16 flex justify-between">
       <div className="header-logo-wrapper">
         <Link to="/" className="logo-link flex">
           <img
             className="service-logo  w-[3rem] h-[3rem]"
+            alt="service-logo"
             src={process.env.PUBLIC_URL + '/img/CDS_Symbol_bright_removebg.png'}
           />
           <div className="service-name">
