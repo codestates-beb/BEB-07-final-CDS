@@ -9,6 +9,18 @@
         color: var(--white-color);
     }
 
+    .header .container.container-header {
+        width: 1440px;
+    }
+
+    .header .logo-link {
+        @apply flex items-center;
+    }
+
+    .header .logo-link * {
+        @apply mr-5;
+    }
+
     .navbar .navbar-item {
         @apply mx-2
     }

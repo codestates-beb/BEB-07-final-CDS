@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .container.container-detail {
+    @apply pt-20;
+    width: 1440px;
+    margin: auto;
+  }
+
+  /* detail head */
+  .container.container-detail .detail-head{
+    @apply flex justify-between;
+  }
+
+  .detail-head .detail-title-group {
+    @apply mb-20;
+  }
+
+  .detail-head .detail-title-group .detail-title {
+    @apply mb-5 text-6xl font-bold;
+  }
+
+  .detail-head .detail-title-group .detail-issued {
+    @apply text-2xl;
+    color: var(--dark-gray-color);
+  }
+
+  .detail-head .detail-party .party-item {
+    @apply mb-16 text-2xl;
+  }
+
+  .detail-head .detail-party .party-role {
+    color: var(--dark-gray-color);
+  }
+
+  /* detail content */
+
+  .detail-content .detail-content-section .content-section-title {
+    @apply text-5xl font-semibold mb-10;
+  }
+
+  .detail-content .content-box {
+    @apply rounded-xl inline-block mb-20;
+    gap: 1rem;
+    background-color: var(--black-color);
+  }
+  
+  .detail-content .content-box .content-item {
+    @apply py-4 px-16 inline-block;
+  }
+
+  .detail-content .content-box .content-item .item-name{
+    @apply py-4 font-semibold text-2xl text-darkGrayColor;
+  }
+
+  .detail-content .content-box .content-item .item-figures{
+    @apply py-4 font-normal text-2xl;
+  }
+}
