@@ -2,14 +2,12 @@ import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 import { Transaction } from 'web3-core';
 import { AbiItem } from 'web3-utils';
-import abi from './CDSABI';
-// console.log(abi.abi);
-const web3 = new Web3('ws://localhost:8545');
+import { abi } from './contractArtifacts/CDS.json';
+// const web3 = new Web3('ws://localhost:8545');
 
-class CDS {
+export default class CDS {
   private static instance: CDS;
   private contract: Contract = null;
-  // private web3 = new Web3('ws://20.214.105.181:8545');
   private web3: Web3 = null;
 
   private constructor(webSocketURI: string) {
@@ -27,14 +25,21 @@ class CDS {
 
   public async setContract(abi: any, address: string) {
     this.contract = new this.web3.eth.Contract(abi, address);
+    this.subEvents();
     return this.contract;
   }
 
   public getContract() {
+    if (!this.contract) {
+      throw new Error('contract not set!');
+    }
     return this.contract;
   }
 
   public removeContract() {
+    if (!this.contract) {
+      throw new Error('contract not set!');
+    }
     this.contract = null;
   }
 
@@ -52,13 +57,15 @@ class CDS {
     // );
     //emit AcceptSwap(addr, swapId);
     if (!this.contract) {
-      throw new Error('contract not specifed!');
+      throw new Error('contract not set!');
     }
     this.contract.events
       .allEvents({}, (err: Error, event) => {
         // console.log(event);
       })
-      .on('data', (event) => console.log(event));
+      .on('data', (event) => {
+        console.log(event);
+      });
   }
 
   public sync() {
@@ -70,9 +77,9 @@ class CDS {
   private createOrUpdateSwap(): any {}
 }
 
-let cds = CDS.getInstance('ws://localhost:8545');
-cds.setContract(abi.abi, '0x21960Bb1eae929A36756C6ee910ba529347309e8');
-// console.log(cds.getContract());
+let cds = CDS.getInstance('ws://20.214.105.181:8545');
+// let cds = CDS.getInstance('ws://localhost:8545');
+cds.setContract(abi, '0x21960Bb1eae929A36756C6ee910ba529347309e8');
 cds.subEvents();
 
 // 'logs' subscription does not prints deployed contract
