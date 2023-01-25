@@ -94,9 +94,9 @@ contract Swaps is PriceConsumer {
     return _acceptedSwapId;
   }
 
-  function _cancleSwap(uint256 _targetSwapId) internal returns (bool) {
+  function _cancelSwap(uint256 _targetSwapId) internal returns (bool) {
     Swap storage cSwap = _swaps[_targetSwapId];
-    require(msg.sender == cSwap.buyer.addr, 'Only buyer of the CDS can cancle');
+    require(msg.sender == cSwap.buyer.addr, 'Only buyer of the CDS can cancel');
 
     cSwap.status = Status.inactive;
     return true;
