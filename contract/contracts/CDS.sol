@@ -27,7 +27,11 @@ contract CDS is Swaps, Ownable {
     uint256 totalPremiumRounds,
     uint256 buyerDeposit
   );
-  event AcceptSwap(address indexed seller, uint256 swapId);
+  event AcceptSwap(
+    address indexed seller,
+    uint256 swapId,
+    uint256 sellerDeposit
+  );
   event Close(uint256 swapId);
 
   function createSwap(
@@ -79,7 +83,7 @@ contract CDS is Swaps, Ownable {
     payable(address(this)).transfer(msg.value);
 
     uint256 acceptedSwapId = _acceptSwap(addr, initAssetPrice, swapId);
-    emit AcceptSwap(addr, swapId);
+    emit AcceptSwap(addr, swapId, sellerDeposit);
     return acceptedSwapId;
   }
 
