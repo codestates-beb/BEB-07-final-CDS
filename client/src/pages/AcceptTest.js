@@ -1,6 +1,13 @@
 // modules
 import { useState, useEffect } from 'react';
-import web3 from "web3";
+import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
+// config
+import config from '../config/config';
+
+// apis
+import { getSwapById } from '../apis/request';
 
 // hooks
 import useMetamask from '../utils/hooks/useMetamask';
@@ -14,20 +21,20 @@ import {
     calculateLiquidationPrice,
 } from '../utils/calculator';
 
-// css
-import '../assets/css/create.css'
 import createContract from '../utils/CDS';
 
-// Configure
-const CONTRACT_ADDR = '0x1550811D9B07Cfdde36085307b526d2D5072Da46';
+// css
+import '../assets/css/create.css'
 
-function Test() {
+function AcceptTest() {
     const metamask = useMetamask();
-    const CDS = createContract( CONTRACT_ADDR );
+    const CDS = createContract( config.contractAddr );
+    const {swapId} = useParams();
 
     // CDS Content State Variable
     const [contractAddress, setContractAddress] = useState('');
     const [buyerAddress, setBuyerAddress] = useState('');
+    const sellerAddress = useSelector(state=>state.auth.user_addr);
 
         // Assets State Var
     const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('');
@@ -41,20 +48,12 @@ function Test() {
         // Premium State Var
     const [premiumRate, setPremiumRate] = useState(2);
     const [premiumPrice, setPremiumPrice] = useState('');
-
-        // Expiration State Var
-    const [expiration, SetExpiration] = useState('');
+    const [premiumInterval, setPremiumInterval] = useState('');
+    const [premiumRounds, setPremiumRounds] = useState('');
 
         // Liqudation State Var
-    const [sellerDeposit, setSellerDeposit] = useState('');
+    const [sellerDeposit, setSellerDeposit] = useState('5000');
     const [liquidationPrice, setLiquidationPrice] = useState('');
-
-
-    // Contracdt & User Setting Handler
-    const connectButtonHandler = async()=>{
-        const result = await metamask.request({method: 'eth_requestAccounts'});
-        if (result && result.length > 0) setBuyerAddress(result[0]);
-    }
 
     const setContractAddressHandler = ()=>{
         if (contractAddress.length !== 42) {
@@ -65,35 +64,38 @@ function Test() {
         console.log(CDS.contract);
     }
 
-    // make Swap Handler
-    const makeButtonHandler = async()=>{
+    // accept Swap Handler
+    const acceptButtonHandler = async()=>{
         const data = {
             contractAddress, 
-            buyerAddress, 
+            buyerAddress,
+            sellerAddress, 
             totalAssets, 
             claimPrice, 
             premiumPrice, 
             sellerDeposit, 
             liquidationPrice, 
-            expiration
+            premiumInterval,
+            premiumRounds,
         }
 
         console.log(data);
 
         const result = await CDS.contract.methods
-        .makeSwap(
-            buyerAddress, 
-            Number(claimPrice), 
-            Number(liquidationPrice), 
-            Number(sellerDeposit), 
-            Number(premiumPrice), 
-            Number(expiration))
-        .send({from: buyerAddress});
-
-        console.log(result);
-
-        setInterval(()=>{
-            
+        .acceptSwap(
+                sellerAddress,
+                swapId,
+            )
+        .send({
+            from: sellerAddress,
+        }, (result)=>{
+            console.log(result)
+        })
+        .once('sent', (payload)=>{
+            console.log(payload);
+        })
+        .once('receipt', (receipt)=>{   
+            console.log(receipt)
         })
     }
 
@@ -116,25 +118,27 @@ function Test() {
     }
 
     useEffect(()=>{
-        setDropRate( calculateDropRate(totalAssets, claimPrice) )
-    }, [totalAssets, claimPrice])
+        getSwapById(swapId)
+        .then(res=>{
+            console.log(res);
+            const {swapId, initialAssetPrice, premium, buyer, claimPrice, liquidationPrice} = res;
+            setBuyerAddress(buyer);
+            setClaimPrice(claimPrice);
+            setInitialPriceOfAssets(initialAssetPrice);
+            setPremiumRate(premium);
+            setLiquidationPrice(liquidationPrice);
+        })
+    }, [])
 
     useEffect(()=>{
-        setPremiumPrice( calculatePremiumPrice(initialPriceOfAssets, amountOfAssets, dropRate, premiumRate) )
-    }, [totalAssets, claimPrice, dropRate])
-
-    useEffect(()=>{
-        setLiquidationPrice( calculateLiquidationPrice(initialPriceOfAssets, amountOfAssets, sellerDeposit) )
-    }, [totalAssets, sellerDeposit])
+        setDropRate( calculateDropRate(totalAssets, claimPrice) );
+        setPremiumPrice( calculatePremiumPrice(initialPriceOfAssets, amountOfAssets, dropRate, premiumRate) );
+        setLiquidationPrice( calculateLiquidationPrice(initialPriceOfAssets, amountOfAssets, sellerDeposit) );
+    }, [totalAssets, claimPrice, dropRate, sellerDeposit])
 
     return (
         <div className='create-container flex flex-col justify-center items-center'>
-            <h1 className='text-2xl font-bold'>Create CDS</h1>
-            <button 
-                className='p-2 border rounded-xl'
-                onClick={connectButtonHandler}
-            >
-                Connect Metamask</button>
+            <h1 className='text-2xl font-bold'>Accept CDS</h1>
             <div className='width-[600px]'>
                 <div className='input-group'>
                     <label>Contract Address</label>
@@ -157,6 +161,7 @@ function Test() {
                         name="initial-price-of-assets" 
                         value={initialPriceOfAssets}
                         onChange={changeAssetsHandler}
+                        disabled={true}
                     />
                 </div>
                 <div className='input-group'>
@@ -165,6 +170,7 @@ function Test() {
                         name="amount-of-assets" 
                         value={amountOfAssets}
                         onChange={changeAssetsHandler}    
+                        disabled={true}
                     />
                 </div>
                 <div className='input-group'>
@@ -178,6 +184,7 @@ function Test() {
                         name="claim-price" 
                         value={claimPrice}
                         onChange={e=>setClaimPrice(e.target.value)}
+                        disabled
                     />
                 </div>
                 <div className='input-group'>
@@ -193,19 +200,22 @@ function Test() {
                     <label>Premium Price</label>
                     <input value={premiumPrice} disabled={true}/>
                 </div>
-                <h1 className="text-xl font-bold">Expiration</h1>
                 <div className='input-group'>
-                    <label>Expiration Period</label>
-                    <select onChange={e=>SetExpiration(e.target.value)}>
+                    <label>Premium Interval</label>
+                    <select onChange={e=>setPremiumInterval(e.target.value)}>
                         <option value={12}>12 Month</option>
                         <option value={6}>6 Month</option>
                         <option value={3}>3 Month</option>
                     </select>
                 </div>
+                <div className='input-group'>
+                    <label>Premium Rounds</label>
+                    <input value={premiumRounds} onChange={e=>setPremiumRounds(e.target.value)} disabled/>
+                </div>
                 <h1 className="text-xl font-bold">Liquidation</h1>
                 <div className='input-group'>
                     <label>Seller Deposit</label>
-                    <input value={sellerDeposit} onChange={e=>setSellerDeposit(e.target.value)}/>
+                    <input value={sellerDeposit} onChange={e=>setSellerDeposit(e.target.value)} disabled/>
                 </div>
                 <div className='input-group'>
                     <label>Liquidated Price</label>
@@ -218,12 +228,13 @@ function Test() {
             </div>
             <button 
                 className='p-2 border rounded-xl'
-                onClick={makeButtonHandler}
+                onClick={acceptButtonHandler}
             >
-                Make CDS
+                Accept Swap
             </button>
         </div>
     )
 }
 
-export default Test;
+
+export default AcceptTest;

@@ -2,7 +2,7 @@
 import Web3 from "web3";
 
 // Contract Data
-import CDScontractABI from "../assets/contract/CDScontractABI.json";
+import CDScontractABI from "../assets/contract/CDS.json";
 
 // create CDS contract instnace by contract address deployed in blockchain
 // 배포된 주소를 인자로 사용하여 web3 컨트랙트 객체를 생성하는 함수입니다.

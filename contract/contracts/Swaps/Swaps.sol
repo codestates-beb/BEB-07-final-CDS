@@ -16,7 +16,8 @@ contract Swaps is PriceConsumer {
     claimable,
     overdue,
     expired,
-    liquidated
+    liquidated,
+    inactive
   }
   mapping(uint256 => Swap) internal _swaps;
 
@@ -36,6 +37,7 @@ contract Swaps is PriceConsumer {
   struct Swap {
     Buyer buyer;
     Seller seller;
+    uint256 initAssetPrice;
     uint256 claimPrice;
     uint256 liquidationPrice;
     uint256 premium;
@@ -44,8 +46,9 @@ contract Swaps is PriceConsumer {
     Status status;
   }
 
-  function _makeSwap(
+  function _createSwap(
     address _addr,
+    uint256 _initAssetPrice,
     uint256 _claimPrice,
     uint256 _liquidationPrice,
     uint256 _sellerDeposit,
@@ -59,6 +62,7 @@ contract Swaps is PriceConsumer {
 
     newSwap.buyer.addr = _addr;
 
+    newSwap.initAssetPrice = _initAssetPrice;
     newSwap.claimPrice = _claimPrice;
     newSwap.liquidationPrice = _liquidationPrice;
     newSwap.premium = _premium;
@@ -70,13 +74,17 @@ contract Swaps is PriceConsumer {
     return newSwapId;
   }
 
-  function _acceptSwap(address _addr, uint256 _acceptedSwapId)
-    internal
-    returns (uint256)
-  {
+  function _acceptSwap(
+    address _addr,
+    uint256 _initAssetPrice,
+    uint256 _acceptedSwapId
+  ) internal returns (uint256) {
     Swap storage aSwap = _swaps[_acceptedSwapId];
+    require(aSwap.status == Status.pending, 'The CDS is not pending state');
 
     aSwap.seller.addr = _addr;
+    aSwap.initAssetPrice = _initAssetPrice;
+
     // seller deposit 이후
     aSwap.seller.isDeposited = true;
 
@@ -90,5 +98,14 @@ contract Swaps is PriceConsumer {
     aSwap.status = Status.active;
 
     return _acceptedSwapId;
+  }
+
+  function _cancleSwap(uint256 _targetSwapId) internal returns (address) {
+    Swap storage cSwap = _swaps[_targetSwapId];
+    address buyerAddr = cSwap.buyer.addr;
+    require(msg.sender == buyerAddr, 'Only buyer of the CDS can cancle');
+
+    cSwap.status = Status.inactive;
+    return buyerAddr;
   }
 }

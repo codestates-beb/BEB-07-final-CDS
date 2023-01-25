@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx nodemon  build/index.js",
+    "typeorm": "typeorm-ts-node-commonjs"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +22,14 @@
     "eslint-plugin-react": "^7.32.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^2.8.3",
-    "prettier-plugin-solidity": "^1.1.1"
+    "prettier-plugin-solidity": "^1.1.1",
+    "ts-node": "10.7.0",
+    "@types/node": "^16.11.10",
+    "typescript": "4.5.2"
+  },
+  "dependencies": {
+    "typeorm": "0.3.11",
+    "reflect-metadata": "^0.1.13",
+    "mysql": "^2.14.1"
   }
 }

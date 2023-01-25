@@ -1,8 +1,17 @@
-//modules
+// modules
 import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
+// Redux actions
+import { 
+    setAuth,
+    resetAuth,
+} from '../../features/authSlice' ;
+
 
 function useMetamask() {
     const [metamask, setMetamask] = useState();
+    const dispatch = useDispatch();
 
     useEffect(()=>{
         if(!window.ethereum) {
@@ -10,6 +19,10 @@ function useMetamask() {
             console.log(err);
             return false;
         } else {
+            window.ethereum.on('accountsChanged', accounts=>{
+                console.log(accounts[0]);
+                dispatch( setAuth(accounts[0]) );
+            })
             setMetamask(window.ethereum);
         }
     }, [])
