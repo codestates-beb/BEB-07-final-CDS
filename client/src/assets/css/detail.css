@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .container.container-detail {
+    width: 1440px;
+    margin: auto;
+  }
+
+  /* detail head */
+  .container.container-detail .detail-head{
+    @apply flex;
+  }
+
+  .detail-head .detail-title-group {
+    @apply mb-20;
+  }
+
+  .detail-head .detail-title-group .detail-title {
+    @apply text-6xl font-bold;
+  }
+
+  .detail-head .detail-title-group .detail-issued {
+    @apply text-2xl;
+    color: var(--dark-gray-color);
+  }
+
+  .detail-head .detail-party .party-item {
+    @apply mb-16 text-2xl;
+  }
+
+  .detail-head .detail-party .party-role {
+    color: var(--dark-gray-color);
+  }
+
+  /* detail content */
+
+  .detail-content .detail-content-section .content-section-title {
+    @apply text-5xl font-semibold;
+  }
+
+  .detail-content .content-box {
+    @apply flex rounded-xl;
+    width: auto;
+    background-color: var(--dark-gray-color);
+  }
+  
+  .detail-content .content-box .content-item {
+    @apply p-8 ;
+  }
+}
