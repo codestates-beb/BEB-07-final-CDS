@@ -150,6 +150,7 @@ export default class CDS {
           swap.premiumInterval = +premiumInterval;
           swap.totalPremiumRounds = +totalPremiumRounds;
           swap.buyerDeposit = +buyerDeposit;
+          swap.buyer = buyer;
           await this.manager.save(swap);
         }
 
@@ -188,6 +189,7 @@ export default class CDS {
           });
           if (!swap) throw new Error(`swapId ${swapId} is not on database`);
           swap.status = 'active';
+          swap.seller = seller;
           await this.manager.save(swap);
 
           let user = await this.manager.findOneBy(Users, {
@@ -237,24 +239,3 @@ export default class CDS {
   private createOrUpdateTransaction(): any {}
   private createOrUpdateSwap(): any {}
 }
-
-// 'logs' subscription does not prints deployed contract
-// web3.eth
-//   .subscribe('logs', {}, (err, result) => {
-//     if (!err) console.log(result);
-//   })
-//   .on('data', function (transaction) {
-//     console.log(transaction);
-//   });
-// const cds = web3.web3.eth
-//   .subscribe('newBlockHeaders', (err, result) => {
-//     if (!err) console.log(result);
-//   })
-//   .on('connected', function (subscriptionId) {
-//     console.log(subscriptionId);
-//   })
-//   .on('data', function (transaction) {
-//     console.log(transaction);
-//   });
-
-//https://github.com/web3/web3.js/issues/4301k
