@@ -16,7 +16,8 @@ contract Swaps is PriceConsumer {
     claimable,
     overdue,
     expired,
-    liquidated
+    liquidated,
+    inactive
   }
   mapping(uint256 => Swap) internal _swaps;
 
@@ -79,6 +80,7 @@ contract Swaps is PriceConsumer {
     uint256 _acceptedSwapId
   ) internal returns (uint256) {
     Swap storage aSwap = _swaps[_acceptedSwapId];
+    require(aSwap.status == Status.pending, 'The CDS is not pending state');
 
     aSwap.seller.addr = _addr;
     aSwap.initAssetPrice = _initAssetPrice;
@@ -96,5 +98,14 @@ contract Swaps is PriceConsumer {
     aSwap.status = Status.active;
 
     return _acceptedSwapId;
+  }
+
+  function _cancleSwap(uint256 _targetSwapId) internal returns (address) {
+    Swap storage cSwap = _swaps[_targetSwapId];
+    address buyerAddr = cSwap.buyer.addr;
+    require(msg.sender == buyerAddr, 'Only buyer of the CDS can cancle');
+
+    cSwap.status = Status.inactive;
+    return buyerAddr;
   }
 }

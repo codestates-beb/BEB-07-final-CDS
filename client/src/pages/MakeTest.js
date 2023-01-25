@@ -2,6 +2,9 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
+// config
+import config from '../config/config';
+
 // hooks
 import useMetamask from '../utils/hooks/useMetamask';
 
@@ -18,12 +21,9 @@ import {
 import '../assets/css/create.css'
 import createContract from '../utils/CDS';
 
-// Configure
-const CONTRACT_ADDR = '0xc8b72E2736221CC438eBe4FA8411242D9929382D';
-
 function MakeTest() {
     const metamask = useMetamask();
-    const CDS = createContract( CONTRACT_ADDR );
+    const CDS = createContract( config.contractAddr );
 
     // CDS Content State Variable
     const [contractAddress, setContractAddress] = useState('');
@@ -58,7 +58,7 @@ function MakeTest() {
     }
 
     // make Swap Handler
-    const makeButtonHandler = async()=>{
+    const createButtonHandler = async()=>{
         const data = {
             contractAddress,
             initialPriceOfAssets, 
@@ -73,9 +73,10 @@ function MakeTest() {
         }
 
         console.log( data );
+        console.log( CDS.contract );
 
         const result = await CDS.contract.methods
-        .makeSwap(
+        .createSwap(
             buyerAddress, 
             Number(initialPriceOfAssets),
             Number(claimPrice), 
@@ -212,7 +213,7 @@ function MakeTest() {
             </div>
             <button 
                 className='p-2 border rounded-xl'
-                onClick={makeButtonHandler}
+                onClick={createButtonHandler}
             >
                 Make CDS
             </button>

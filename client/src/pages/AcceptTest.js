@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
+// config
+import config from '../config/config';
+
 // apis
 import { getSwapById } from '../apis/request';
 
@@ -23,12 +26,9 @@ import createContract from '../utils/CDS';
 // css
 import '../assets/css/create.css'
 
-// configure
-const CONTRACT_ADDR = '0xc8b72E2736221CC438eBe4FA8411242D9929382D';
-
 function AcceptTest() {
     const metamask = useMetamask();
-    const CDS = createContract( CONTRACT_ADDR );
+    const CDS = createContract( config.contractAddr );
     const {swapId} = useParams();
 
     // CDS Content State Variable
