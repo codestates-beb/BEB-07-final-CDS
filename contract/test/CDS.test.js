@@ -210,4 +210,62 @@ contract('CDS', (accounts) => {
       }),
     );
   });
+  it('should throw error if the caller of cancleSwap is not the buyer', async () => {
+    await cds.createSwap(
+      accounts[2],
+      defaultInitAssetPrice,
+      defaultClaimPrice,
+      defaultLiquidationPrice,
+      defaultSellerDeposit,
+      defaultPremium,
+      defaultPremiumInterval,
+      defaultPremiumRounds,
+      { from: accounts[2], value: defaultBuyerDeposit },
+    );
+    const [currentSwapId] = await cds.getSwapId();
+    await truffleAssert.fails(
+      cds.cancleSwap(currentSwapId, { from: accounts[1] }),
+    );
+  });
+  it('should be able to cancle if the buyer calls cancleSwap and check the swap', async () => {
+    await cds.createSwap(
+      accounts[2],
+      defaultInitAssetPrice,
+      defaultClaimPrice,
+      defaultLiquidationPrice,
+      defaultSellerDeposit,
+      defaultPremium,
+      defaultPremiumInterval,
+      defaultPremiumRounds,
+      { from: accounts[2], value: defaultBuyerDeposit },
+    );
+    const [currentSwapId] = await cds.getSwapId();
+
+    await truffleAssert.passes(
+      cds.cancleSwap(currentSwapId, { from: accounts[2] }),
+    );
+    const currentSwap = await cds.getSwap(currentSwapId);
+
+    const {
+      buyer,
+      seller,
+      initAssetPrice,
+      claimPrice,
+      liquidationPrice,
+      premium,
+      premiumInterval,
+      totalPremiumRounds,
+      status,
+    } = currentSwap;
+
+    await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
+    await assert.strictEqual(defaultClaimPrice, +claimPrice);
+    await assert.strictEqual(defaultLiquidationPrice, +liquidationPrice);
+    await assert.strictEqual(defaultPremium, +premium);
+    await assert.strictEqual(defaultPremiumInterval, +premiumInterval);
+    await assert.strictEqual(defaultPremiumRounds, +totalPremiumRounds);
+
+    await assert.strictEqual(buyer.addr, accounts[2]);
+    await assert.strictEqual(2, +status);
+  });
 });
