@@ -33,7 +33,7 @@ const cds = new web3.eth.Contract(CDSABI.abi, CDSCA);
 
 console.log(seolAccount);
 // set priceoracle berfore init
-const runner = async () => {
+const create = async () => {
   try {
     console.log('----------');
     console.log(await web3.eth.getBalance(kimAccount.address));
@@ -59,21 +59,24 @@ const runner = async () => {
         gas: '6721975',
         value: defaultPremium * 3,
       });
-
-    // get current swapId for acceptSwap
-    const [currentSwapId] = await cds.methods.getSwapId().call();
-    // invoke acceptSwap event
-    await cds.methods
-      .acceptSwap(seolAccount.address, initialPrice, currentSwapId)
-      .send({
-        from: seolAccount.address,
-        gasPrice: '20000000000',
-        gas: '6721975',
-        value: defaultSellerDeposit,
-      });
   } catch (err) {
     console.error(err);
   }
 };
 
-runner();
+const accept = async () => {
+  // get current swapId for acceptSwap
+  const [currentSwapId] = await cds.methods.getSwapId().call();
+  // invoke acceptSwap event
+  await cds.methods
+    .acceptSwap(seolAccount.address, initialPrice, currentSwapId)
+    .send({
+      from: seolAccount.address,
+      gasPrice: '20000000000',
+      gas: '6721975',
+      value: defaultSellerDeposit,
+    });
+};
+
+create();
+setTimeout(accept, 2000);
