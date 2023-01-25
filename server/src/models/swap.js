@@ -19,6 +19,14 @@ module.exports = class Swap extends Sequelize.Model {
           type: Sequelize.INTEGER,
           allowNull: false,
         },
+        premiumInterval: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+        },
+        totalPremiumRounds: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+        },
         seller: {
           type: Sequelize.STRING(100),
           allowNull: true,
@@ -47,6 +55,7 @@ module.exports = class Swap extends Sequelize.Model {
           type: Sequelize.ENUM(
             'pending',
             'active',
+            'claimable',
             'expired',
             'overdue',
             'liquidated',
