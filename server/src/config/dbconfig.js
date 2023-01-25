@@ -5,7 +5,7 @@ module.exports = {
   development: {
     username: getEnv('DB_USERNAME'),
     password: getEnv('DB_PASSWORD'),
-    database: 'cds_dev1',
+    database: 'cds_dev2',
     host: getEnv('DB_HOST'),
     dialect: 'mysql',
   },

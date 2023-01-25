@@ -1,9 +1,11 @@
 import { AppDataSource } from './data-source';
-import { Swaps } from './entity/Swaps';
-import { Transactions } from './entity/Transactions';
-import { Users } from './entity/Users';
+import { Swaps } from './entities/Swaps';
+import { Transactions } from './entities/Transactions';
+import { Users } from './entities/Users';
 import { abi } from './contractArtifacts/CDS.json';
 import CDS from './CDS';
+import getEnv from './utils/getEnv';
+
 AppDataSource.initialize()
   .then(async () => {
     console.log('Inserting a new user into the database...');
@@ -21,13 +23,15 @@ AppDataSource.initialize()
     console.log('Loading users from the database...');
     const users = await AppDataSource.manager.find(Users);
     console.log('Loaded users: ', users);
-
     console.log(
       'Here you can setup and run express / fastify / any other framework.',
     );
-    let cds = CDS.getInstance('ws://20.214.105.181:8545');
+    let cds = CDS.getInstance(
+      'ws://20.214.105.181:8545',
+      AppDataSource.manager,
+    );
     // let cds = CDS.getInstance('ws://localhost:8545');
-    cds.setContract(abi, '0x21960Bb1eae929A36756C6ee910ba529347309e8');
+    cds.setContract(abi, getEnv('CDS_CA'));
     cds.subEvents();
   })
   .catch((error) => console.log(error));
