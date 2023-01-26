@@ -28,7 +28,7 @@ module.exports = class Swap extends Sequelize.Model {
           allowNull: false,
         },
         premiumRate: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.DECIMAL(10, 4),
           allowNull: false,
         },
         dropRate: {

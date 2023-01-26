@@ -37,7 +37,7 @@ module.exports = {
         allowNull: false,
       },
       dropRate: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DECIMAL(10, 4),
         allowNull: false,
       },
       premiumInterval: {
