@@ -33,7 +33,7 @@ contract CDS is Swaps, Ownable {
     uint256 swapId,
     uint256 sellerDeposit
   );
-  event Close(uint256 swapId);
+  event CancelSwap(uint256 swapId, address buyer);
 
   function createSwap(
     address addr,
@@ -94,6 +94,7 @@ contract CDS is Swaps, Ownable {
     Swap memory targetSwap = _swaps[swapId];
     (bool sent, ) = msg.sender.call{value: targetSwap.buyer.deposit}('');
     require(sent, 'Sending failed');
+    emit CancelSwap(swapId, targetSwap.buyer.addr); // check
     return sent;
   }
 
