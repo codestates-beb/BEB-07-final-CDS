@@ -13,6 +13,14 @@ AppDataSource.initialize()
       AppDataSource.manager,
     );
     // let cds = CDS.getInstance('ws://localhost:8545');
+    const userRepository = AppDataSource.getRepository(Users);
+    const transactionRepository = AppDataSource.getRepository(Transactions);
+    const swapRepository = AppDataSource.getRepository(Swaps);
+    await userRepository
+      .createQueryBuilder()
+      .delete()
+      .from(Users)
+      .where('address=*');
     cds.setContract(abi, getEnv('CDS_CA'));
     cds.subEvents();
     await cds.getPastEvents();

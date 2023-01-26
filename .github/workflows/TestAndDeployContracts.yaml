@@ -32,17 +32,17 @@ jobs:
       - name: Install node packages
         run: npm install --production
 
-      - name: Install ganache-cli
-        run: npm install -g ganache-cli
+      # - name: Install ganache-cli
+      #   run: npm install -g ganache-cli
 
-      - name: Launch ganache-cli network
-        run: ganache-cli &
+      # - name: Launch ganache-cli network
+      #   run: ganache-cli &
 
       - name: Install truffle
         run: npm install -g truffle
 
       - name: Test with Truffle test
-        run: truffle test --network local
+        run: truffle test --network remote
 
       - name: Deploy Contract to Remote Server
         run: truffle migrate --network remote
