@@ -7,6 +7,7 @@ import MainLogo from '../img/CDS_Symbol_bright_removebg.png';
 // components
 import MarketPrice from '../components/MarketPrice.js';
 import Card from '../components/Card.js';
+import Footer from '../components/Footer.js';
 
 function Main() {
   return (
@@ -78,6 +79,9 @@ function Main() {
           <Card />
           <Card />
         </div>
+      </div>
+      <div>
+        <Footer />
       </div>
     </div>
   );
