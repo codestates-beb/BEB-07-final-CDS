@@ -108,8 +108,8 @@ contract Swaps is PriceConsumer {
 
     // seller
     targetSwap.seller.deposit = 0;
-    targerSwap.seller.isDeposited = false;
+    targetSwap.seller.isDeposited = false;
 
-    targetSwap.targetSwap.status = Status.claimed;
+    targetSwap.status = Status.claimed;
   }
 }
