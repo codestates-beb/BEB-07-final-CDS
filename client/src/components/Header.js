@@ -51,7 +51,7 @@ function Header() {
           <Link>
             <li className="navbar-item mx-[1rem]">About</li>
           </Link>
-          <Link to="/createTest">
+          <Link to="/create">
             <li className="navbar-item mx-[1rem]">Create CDS</li>
           </Link>
         </ul>
