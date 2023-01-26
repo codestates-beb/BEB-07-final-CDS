@@ -18,18 +18,12 @@ contract CDS is Swaps, Ownable {
     require(msg.sender != owner(), 'Owner can not call the method');
     _;
   }
-  modifier isBuyer(uint256 swapId) {
-    require(
-      msg.sender == _swaps[swapId].buyer.addr,
-      'Only buyer of the CDS can call'
-    );
-    _;
-  }
 
   event CreateSwap(
     address indexed buyer,
     uint256 swapId,
     uint256 initAssetPrice,
+    uint256 amountOfAssets,
     uint256 claimPrice,
     uint256 liquidationPrice,
     uint256 premium,
@@ -53,6 +47,7 @@ contract CDS is Swaps, Ownable {
   function createSwap(
     address addr,
     uint256 initAssetPrice,
+    uint256 amountOfAssets,
     uint256 claimPrice,
     uint256 liquidationPrice,
     uint256 sellerDeposit,
@@ -67,6 +62,7 @@ contract CDS is Swaps, Ownable {
     uint256 newSwapId = _createSwap(
       addr,
       initAssetPrice,
+      amountOfAssets,
       claimPrice,
       liquidationPrice,
       sellerDeposit,
@@ -79,6 +75,7 @@ contract CDS is Swaps, Ownable {
       addr,
       newSwapId,
       initAssetPrice,
+      amountOfAssets,
       claimPrice,
       liquidationPrice,
       premium,
@@ -94,7 +91,7 @@ contract CDS is Swaps, Ownable {
     address addr,
     uint256 initAssetPrice,
     uint256 swapId
-  ) external payable isNotOwner returns (uint256) {
+  ) external payable isNotOwner isPending(swapId) returns (uint256) {
     uint256 sellerDeposit = _swaps[swapId].seller.deposit * 1 wei;
     require(sellerDeposit == msg.value, 'Invalid eth amount');
     payable(address(this)).transfer(msg.value);
@@ -106,7 +103,7 @@ contract CDS is Swaps, Ownable {
 
   function cancelSwap(
     uint256 swapId
-  ) external isNotOwner isBuyer(swapId) returns (bool) {
+  ) external isNotOwner isBuyer(swapId) isPending(swapId) returns (bool) {
     Swap memory targetSwap = _swaps[swapId];
     (bool sent, ) = msg.sender.call{value: targetSwap.buyer.deposit}('');
     require(sent, 'Sending failed');
@@ -117,7 +114,7 @@ contract CDS is Swaps, Ownable {
 
   function claimSwap(
     uint256 swapId
-  ) external isNotOwner isBuyer(swapId) returns (bool) {
+  ) external isNotOwner isBuyer(swapId) isActive(swapId) returns (bool) {
     uint256 claimReward = getClaimReward(swapId);
     require(
       claimReward != 0,
@@ -151,6 +148,7 @@ contract CDS is Swaps, Ownable {
     uint256 claimReward = sellerDeposit.calcClaimReward(
       targetSwap.liquidationPrice,
       targetSwap.initAssetPrice,
+      targetSwap.amountOfAssets,
       currPrice
     );
     return claimReward;
