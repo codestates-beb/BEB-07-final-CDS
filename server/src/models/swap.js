@@ -11,11 +11,15 @@ module.exports = class Swap extends Sequelize.Model {
           unique: true,
           primaryKey: true,
         },
+        initialAssetPrice: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+        },
         amountOfAssets: {
           type: Sequelize.INTEGER,
           allowNull: false,
         },
-        initialAssetPrice: {
+        totalAssets: {
           type: Sequelize.INTEGER,
           allowNull: false,
         },
