@@ -65,28 +65,12 @@ module.exports = {
         allowNull: false,
       },
       status: {
-        type: Sequelize.ENUM(
-          'pending',
-          'active',
-          'claimable',
-          'expired',
-          'overdue',
-          'liquidated',
-          'inactive',
-        ),
-        allowNull: false,
+        type: Sequelize.STRING(20),
+        allowNull: true,
       },
       updatableStatus: {
-        type: Sequelize.ENUM(
-          'pending',
-          'active',
-          'claimable',
-          'expired',
-          'overdue',
-          'liquidated',
-          'inactive',
-        ),
-        allowNull: false,
+        type: Sequelize.STRING(20),
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,
