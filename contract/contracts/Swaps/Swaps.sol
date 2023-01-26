@@ -102,6 +102,7 @@ contract Swaps is PriceConsumer {
     newSwap.premiumRate = _premiumRate;
     newSwap.premiumInterval = _premiumInterval;
     newSwap.totalPremiumRounds = _totalPremiumRounds;
+    newSwap.status = Status.pending;
 
     newSwap.seller.deposit = _sellerDeposit;
 
