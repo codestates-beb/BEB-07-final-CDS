@@ -20,7 +20,7 @@ contract CDS is Swaps, Ownable {
   }
   modifier isBuyer(uint256 swapId) {
     require(
-      msg.sender != _swaps[swapId].buyer.addr,
+      msg.sender == _swaps[swapId].buyer.addr,
       'Only buyer of the CDS can call'
     );
     _;
