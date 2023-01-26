@@ -11,9 +11,9 @@ contract Swaps is PriceConsumer {
   Counters.Counter internal _swapId;
 
   enum Status {
+    inactive,
     pending,
     active,
-    inactive,
     claimed
   }
 
@@ -114,7 +114,6 @@ contract Swaps is PriceConsumer {
     uint256 _acceptedSwapId
   ) internal returns (uint256) {
     Swap storage aSwap = _swaps[_acceptedSwapId];
-    require(aSwap.status == Status.pending, 'The CDS is not pending state');
 
     aSwap.seller.addr = _addr;
     aSwap.initAssetPrice = _initAssetPrice;
