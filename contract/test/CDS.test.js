@@ -11,6 +11,7 @@ contract('CDS', (accounts) => {
   let priceOracle;
   let cds;
   const defaultInitAssetPrice = 100;
+  const defaultAmountOfAssets = 10;
   const defaultClaimPrice = 80;
   const defaultLiquidationPrice = 60;
   const defaultSellerDeposit = 60;
@@ -52,6 +53,7 @@ contract('CDS', (accounts) => {
         cds.createSwap(
           accounts[2],
           20000,
+          10,
           15000,
           10000,
           100000,
@@ -65,6 +67,7 @@ contract('CDS', (accounts) => {
         cds.createSwap(
           accounts[2],
           20000,
+          10,
           15000,
           10000,
           100000,
@@ -78,6 +81,7 @@ contract('CDS', (accounts) => {
         cds.createSwap(
           accounts[2],
           defaultInitAssetPrice,
+          defaultAmountOfAssets,
           defaultClaimPrice,
           defaultLiquidationPrice,
           defaultSellerDeposit,
@@ -94,6 +98,7 @@ contract('CDS', (accounts) => {
         cds.createSwap(
           accounts[2],
           defaultInitAssetPrice,
+          defaultAmountOfAssets,
           defaultClaimPrice,
           defaultLiquidationPrice,
           defaultSellerDeposit,
@@ -109,6 +114,7 @@ contract('CDS', (accounts) => {
         buyer,
         seller,
         initAssetPrice,
+        amountOfAssets,
         claimPrice,
         liquidationPrice,
         premium,
@@ -117,6 +123,7 @@ contract('CDS', (accounts) => {
       } = currentSwap;
 
       await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
+      await assert.strictEqual(defaultAmountOfAssets, +amountOfAssets);
       await assert.strictEqual(defaultClaimPrice, +claimPrice);
       await assert.strictEqual(defaultLiquidationPrice, +liquidationPrice);
       await assert.strictEqual(defaultPremium, +premium);
@@ -135,6 +142,7 @@ contract('CDS', (accounts) => {
         cds.createSwap(
           accounts[0],
           defaultInitAssetPrice,
+          defaultAmountOfAssets,
           defaultClaimPrice,
           defaultLiquidationPrice,
           defaultSellerDeposit,
@@ -151,6 +159,7 @@ contract('CDS', (accounts) => {
       const receipt = await cds.createSwap(
         accounts[2],
         defaultInitAssetPrice,
+        defaultAmountOfAssets,
         defaultClaimPrice,
         defaultLiquidationPrice,
         defaultSellerDeposit,
@@ -186,6 +195,7 @@ contract('CDS', (accounts) => {
       await cds.createSwap(
         accounts[2],
         defaultInitAssetPrice,
+        defaultAmountOfAssets,
         defaultClaimPrice,
         defaultLiquidationPrice,
         defaultSellerDeposit,
@@ -208,6 +218,7 @@ contract('CDS', (accounts) => {
         buyer,
         seller,
         initAssetPrice,
+        amountOfAssets,
         claimPrice,
         liquidationPrice,
         premium,
@@ -216,6 +227,7 @@ contract('CDS', (accounts) => {
       } = currentSwap;
 
       await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
+      await assert.strictEqual(defaultAmountOfAssets, +amountOfAssets);
       await assert.strictEqual(defaultClaimPrice, +claimPrice);
       await assert.strictEqual(defaultLiquidationPrice, +liquidationPrice);
       await assert.strictEqual(defaultPremium, +premium);
@@ -234,6 +246,7 @@ contract('CDS', (accounts) => {
       await cds.createSwap(
         accounts[2],
         defaultInitAssetPrice,
+        defaultAmountOfAssets,
         defaultClaimPrice,
         defaultLiquidationPrice,
         defaultSellerDeposit,
@@ -258,6 +271,7 @@ contract('CDS', (accounts) => {
       await cds.createSwap(
         accounts[2],
         defaultInitAssetPrice,
+        defaultAmountOfAssets,
         defaultClaimPrice,
         defaultLiquidationPrice,
         defaultSellerDeposit,
@@ -286,6 +300,7 @@ contract('CDS', (accounts) => {
         buyer,
         seller,
         initAssetPrice,
+        amountOfAssets,
         claimPrice,
         liquidationPrice,
         premium,
@@ -295,6 +310,7 @@ contract('CDS', (accounts) => {
       } = currentSwap;
 
       await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
+      await assert.strictEqual(defaultAmountOfAssets, +amountOfAssets);
       await assert.strictEqual(defaultClaimPrice, +claimPrice);
       await assert.strictEqual(defaultLiquidationPrice, +liquidationPrice);
       await assert.strictEqual(defaultPremium, +premium);
