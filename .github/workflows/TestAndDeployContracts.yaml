@@ -1,4 +1,4 @@
-name: testContracts
+name: Test And Deploy Contract
 
 on:
   workflow_dispatch:
@@ -20,11 +20,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-#       - name: Install node 16
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: 16
-          
       - name: Cache node modules
         uses: actions/cache@v3
         with:
@@ -48,17 +43,10 @@ jobs:
 
       - name: Test with Truffle test
         run: truffle test --network local
-      
+
       - name: Deploy Contract to Remote Server
         run: truffle migrate --network remote
-        
-      - name: Debug
-        run: |
-          pwd
-          ls -al
-          cd ..
-          ls -al
-      
+
       - name: Trigger discord webhook with CDS CA
         uses: tsickert/discord-webhook@v5.3.0
         with:
