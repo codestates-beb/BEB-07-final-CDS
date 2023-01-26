@@ -127,19 +127,19 @@ export default class CDS {
       await this.acceptSwapHandler(event);
     }
 
-    const closeSwapEvents = await this.contract.getPastEvents('Close', {
+    const cancelSwapEvents = await this.contract.getPastEvents('CancelSwap', {
       fromBlock: 0,
       toBlock: 'latest',
     });
 
-    for await (let event of closeSwapEvents) {
+    for await (let event of cancelSwapEvents) {
       const { transactionHash } = event;
       // hit db for this txhash
       let transaction = await this.manager.findOneBy(Transactions, {
         txHash: transactionHash,
       });
       if (transaction) continue;
-      await this.closeSwapHandler(event);
+      await this.cancelSwapHandler(event);
     }
 
     console.log('** DB synchronized with all past events **');
@@ -167,11 +167,11 @@ export default class CDS {
       });
 
     this.contract.events
-      .Close({}, (err: Error, event: EventData) => {
-        console.log(`** Close Swap Emitted ${event.transactionHash} **`);
+      .CancelSwap({}, (err: Error, event: EventData) => {
+        console.log(`** Cancel Swap Emitted ${event.transactionHash} **`);
       })
       .on('data', async (event: EventData) => {
-        await this.closeSwapHandler(event);
+        await this.cancelSwapHandler(event);
       });
   }
 
@@ -304,8 +304,8 @@ export default class CDS {
       console.error(error);
     }
   }
-  private async closeSwapHandler(event: EventData) {
-    console.log('closeSwapHander() is not implemented yet');
+  private async cancelSwapHandler(event: EventData) {
+    console.log('cancelSwapHander() is not implemented yet');
     const { swapId } = event.returnValues;
     const currentTime = new Date();
     try {

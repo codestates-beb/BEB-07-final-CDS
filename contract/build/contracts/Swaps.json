@@ -1868,34 +1868,49 @@
   "sourceMap": "207:2322:7:-:0;;;;;;;;;;;;;;;;;;;",
   "deployedSourceMap": "207:2322:7:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;177:129:5;;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;310:217;;;;;;;;;;;;;:::i;:::-;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;177:129;228:7;243:14;260:11;;;;;;;;;;:20;;;:22;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;243:39;;295:6;288:13;;;177:129;:::o;310:217::-;374:4;425:3;394:35;;:19;:35;;;386:63;;;;;;;;;;;;:::i;:::-;;;;;;;;;485:19;455:11;;:50;;;;;;;;;;;;;;;;;;518:4;511:11;;310:217;;;:::o;7:77:8:-;44:7;73:5;62:16;;7:77;;;:::o;90:118::-;177:24;195:5;177:24;:::i;:::-;172:3;165:37;90:118;;:::o;214:222::-;307:4;345:2;334:9;330:18;322:26;;358:71;426:1;415:9;411:17;402:6;358:71;:::i;:::-;214:222;;;;:::o;523:117::-;632:1;629;622:12;769:126;806:7;846:42;839:5;835:54;824:65;;769:126;;;:::o;901:96::-;938:7;967:24;985:5;967:24;:::i;:::-;956:35;;901:96;;;:::o;1003:122::-;1076:24;1094:5;1076:24;:::i;:::-;1069:5;1066:35;1056:63;;1115:1;1112;1105:12;1056:63;1003:122;:::o;1131:139::-;1177:5;1215:6;1202:20;1193:29;;1231:33;1258:5;1231:33;:::i;:::-;1131:139;;;;:::o;1276:329::-;1335:6;1384:2;1372:9;1363:7;1359:23;1355:32;1352:119;;;1390:79;;:::i;:::-;1352:119;1510:1;1535:53;1580:7;1571:6;1560:9;1556:22;1535:53;:::i;:::-;1525:63;;1481:117;1276:329;;;;:::o;1611:90::-;1645:7;1688:5;1681:13;1674:21;1663:32;;1611:90;;;:::o;1707:109::-;1788:21;1803:5;1788:21;:::i;:::-;1783:3;1776:34;1707:109;;:::o;1822:210::-;1909:4;1947:2;1936:9;1932:18;1924:26;;1960:65;2022:1;2011:9;2007:17;1998:6;1960:65;:::i;:::-;1822:210;;;;:::o;2038:122::-;2111:24;2129:5;2111:24;:::i;:::-;2104:5;2101:35;2091:63;;2150:1;2147;2140:12;2091:63;2038:122;:::o;2166:143::-;2223:5;2254:6;2248:13;2239:22;;2270:33;2297:5;2270:33;:::i;:::-;2166:143;;;;:::o;2315:351::-;2385:6;2434:2;2422:9;2413:7;2409:23;2405:32;2402:119;;;2440:79;;:::i;:::-;2402:119;2560:1;2585:64;2641:7;2632:6;2621:9;2617:22;2585:64;:::i;:::-;2575:74;;2531:128;2315:351;;;;:::o;2672:169::-;2756:11;2790:6;2785:3;2778:19;2830:4;2825:3;2821:14;2806:29;;2672:169;;;;:::o;2847:165::-;2987:17;2983:1;2975:6;2971:14;2964:41;2847:165;:::o;3018:366::-;3160:3;3181:67;3245:2;3240:3;3181:67;:::i;:::-;3174:74;;3257:93;3346:3;3257:93;:::i;:::-;3375:2;3370:3;3366:12;3359:19;;3018:366;;;:::o;3390:419::-;3556:4;3594:2;3583:9;3579:18;3571:26;;3643:9;3637:4;3633:20;3629:1;3618:9;3614:17;3607:47;3671:131;3797:4;3671:131;:::i;:::-;3663:139;;3390:419;;;:::o",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.7;\n\nimport '../Oracle/PriceConsumer.sol';\nimport '@openzeppelin/contracts/utils/Counters.sol';\nimport '@openzeppelin/contracts/utils/math/SafeMath.sol';\n\ncontract Swaps is PriceConsumer {\n  using Counters for Counters.Counter;\n  using SafeMath for uint256;\n  Counters.Counter internal _swapId;\n\n  enum Status {\n    pending,\n    active,\n    inactive,\n    closed\n  }\n\n  mapping(uint256 => Swap) internal _swaps;\n\n  struct Buyer {\n    address addr;\n    uint256 deposit;\n    uint256 lastPayDate;\n    uint256 nextPayDate;\n  }\n\n  struct Seller {\n    address addr;\n    uint256 deposit;\n    bool isDeposited;\n  }\n\n  struct Swap {\n    Buyer buyer;\n    Seller seller;\n    uint256 initAssetPrice;\n    uint256 claimPrice;\n    uint256 liquidationPrice;\n    uint256 premium;\n    uint256 premiumInterval;\n    uint256 totalPremiumRounds;\n    Status status;\n  }\n\n  function _createSwap(\n    address _addr,\n    uint256 _initAssetPrice,\n    uint256 _claimPrice,\n    uint256 _liquidationPrice,\n    uint256 _sellerDeposit,\n    uint256 _premium,\n    uint256 _premiumInterval,\n    uint256 _totalPremiumRounds\n  ) internal returns (uint256) {\n    _swapId.increment();\n    uint256 newSwapId = _swapId.current();\n    Swap storage newSwap = _swaps[newSwapId];\n\n    newSwap.buyer.addr = _addr;\n    newSwap.buyer.deposit = _premium.mul(3);\n\n    newSwap.initAssetPrice = _initAssetPrice;\n    newSwap.claimPrice = _claimPrice;\n    newSwap.liquidationPrice = _liquidationPrice;\n    newSwap.premium = _premium;\n    newSwap.premiumInterval = _premiumInterval;\n    newSwap.totalPremiumRounds = _totalPremiumRounds;\n\n    newSwap.seller.deposit = _sellerDeposit;\n\n    return newSwapId;\n  }\n\n  function _acceptSwap(\n    address _addr,\n    uint256 _initAssetPrice,\n    uint256 _acceptedSwapId\n  ) internal returns (uint256) {\n    Swap storage aSwap = _swaps[_acceptedSwapId];\n    require(aSwap.status == Status.pending, 'The CDS is not pending state');\n\n    aSwap.seller.addr = _addr;\n    aSwap.initAssetPrice = _initAssetPrice;\n\n    aSwap.seller.isDeposited = true;\n\n    aSwap.buyer.lastPayDate = block.timestamp;\n    aSwap.buyer.nextPayDate = block.timestamp + aSwap.premiumInterval;\n\n    aSwap.status = Status.active;\n\n    return _acceptedSwapId;\n  }\n\n  function _cancelSwap(uint256 _targetSwapId) internal returns (bool) {\n    Swap storage cSwap = _swaps[_targetSwapId];\n    require(msg.sender == cSwap.buyer.addr, 'Only buyer of the CDS can cancel');\n\n    cSwap.status = Status.inactive;\n    return true;\n  }\n}\n",
-  "sourcePath": "/Users/yoonsoo/codestates/BEB-07-final-CDS/contract/contracts/Swaps/Swaps.sol",
+  "sourcePath": "/Users/sdh/Study/BEB_07/projects/CDS/contract/contracts/Swaps/Swaps.sol",
   "ast": {
     "absolutePath": "project:/contracts/Swaps/Swaps.sol",
     "exportedSymbols": {
-      "Counters": [208],
-      "PriceConsumer": [879],
-      "PriceOracleMock": [916],
-      "SafeMath": [520],
-      "Swaps": [1201]
+      "Counters": [
+        208
+      ],
+      "PriceConsumer": [
+        888
+      ],
+      "PriceOracleMock": [
+        925
+      ],
+      "SafeMath": [
+        520
+      ],
+      "Swaps": [
+        1210
+      ]
     },
-    "id": 1202,
+    "id": 1211,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 918,
-        "literals": ["solidity", "^", "0.8", ".7"],
+        "id": 927,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".7"
+        ],
         "nodeType": "PragmaDirective",
         "src": "32:23:7"
       },
       {
         "absolutePath": "project:/contracts/Oracle/PriceConsumer.sol",
         "file": "../Oracle/PriceConsumer.sol",
-        "id": 919,
+        "id": 928,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 1202,
-        "sourceUnit": 880,
+        "scope": 1211,
+        "sourceUnit": 889,
         "src": "57:37:7",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1903,10 +1918,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/utils/Counters.sol",
         "file": "@openzeppelin/contracts/utils/Counters.sol",
-        "id": 920,
+        "id": 929,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 1202,
+        "scope": 1211,
         "sourceUnit": 209,
         "src": "95:52:7",
         "symbolAliases": [],
@@ -1915,10 +1930,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/utils/math/SafeMath.sol",
         "file": "@openzeppelin/contracts/utils/math/SafeMath.sol",
-        "id": 921,
+        "id": 930,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 1202,
+        "scope": 1211,
         "sourceUnit": 521,
         "src": "148:57:7",
         "symbolAliases": [],
@@ -1929,14 +1944,16 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 922,
+              "id": 931,
               "name": "PriceConsumer",
-              "nameLocations": ["225:13:7"],
+              "nameLocations": [
+                "225:13:7"
+              ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 879,
+              "referencedDeclaration": 888,
               "src": "225:13:7"
             },
-            "id": 923,
+            "id": 932,
             "nodeType": "InheritanceSpecifier",
             "src": "225:13:7"
           }
@@ -1945,19 +1962,24 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 1201,
-        "linearizedBaseContracts": [1201, 879],
+        "id": 1210,
+        "linearizedBaseContracts": [
+          1210,
+          888
+        ],
         "name": "Swaps",
         "nameLocation": "216:5:7",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "global": false,
-            "id": 927,
+            "id": 936,
             "libraryName": {
-              "id": 924,
+              "id": 933,
               "name": "Counters",
-              "nameLocations": ["249:8:7"],
+              "nameLocations": [
+                "249:8:7"
+              ],
               "nodeType": "IdentifierPath",
               "referencedDeclaration": 208,
               "src": "249:8:7"
@@ -1965,12 +1987,15 @@
             "nodeType": "UsingForDirective",
             "src": "243:36:7",
             "typeName": {
-              "id": 926,
+              "id": 935,
               "nodeType": "UserDefinedTypeName",
               "pathNode": {
-                "id": 925,
+                "id": 934,
                 "name": "Counters.Counter",
-                "nameLocations": ["262:8:7", "271:7:7"],
+                "nameLocations": [
+                  "262:8:7",
+                  "271:7:7"
+                ],
                 "nodeType": "IdentifierPath",
                 "referencedDeclaration": 140,
                 "src": "262:16:7"
@@ -1985,11 +2010,13 @@
           },
           {
             "global": false,
-            "id": 930,
+            "id": 939,
             "libraryName": {
-              "id": 928,
+              "id": 937,
               "name": "SafeMath",
-              "nameLocations": ["288:8:7"],
+              "nameLocations": [
+                "288:8:7"
+              ],
               "nodeType": "IdentifierPath",
               "referencedDeclaration": 520,
               "src": "288:8:7"
@@ -1997,7 +2024,7 @@
             "nodeType": "UsingForDirective",
             "src": "282:27:7",
             "typeName": {
-              "id": 929,
+              "id": 938,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "301:7:7",
@@ -2009,12 +2036,12 @@
           },
           {
             "constant": false,
-            "id": 933,
+            "id": 942,
             "mutability": "mutable",
             "name": "_swapId",
             "nameLocation": "338:7:7",
             "nodeType": "VariableDeclaration",
-            "scope": 1201,
+            "scope": 1210,
             "src": "312:33:7",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2023,12 +2050,15 @@
               "typeString": "struct Counters.Counter"
             },
             "typeName": {
-              "id": 932,
+              "id": 941,
               "nodeType": "UserDefinedTypeName",
               "pathNode": {
-                "id": 931,
+                "id": 940,
                 "name": "Counters.Counter",
-                "nameLocations": ["312:8:7", "321:7:7"],
+                "nameLocations": [
+                  "312:8:7",
+                  "321:7:7"
+                ],
                 "nodeType": "IdentifierPath",
                 "referencedDeclaration": 140,
                 "src": "312:16:7"
@@ -2044,31 +2074,31 @@
           },
           {
             "canonicalName": "Swaps.Status",
-            "id": 938,
+            "id": 947,
             "members": [
               {
-                "id": 934,
+                "id": 943,
                 "name": "pending",
                 "nameLocation": "368:7:7",
                 "nodeType": "EnumValue",
                 "src": "368:7:7"
               },
               {
-                "id": 935,
+                "id": 944,
                 "name": "active",
                 "nameLocation": "381:6:7",
                 "nodeType": "EnumValue",
                 "src": "381:6:7"
               },
               {
-                "id": 936,
+                "id": 945,
                 "name": "inactive",
                 "nameLocation": "393:8:7",
                 "nodeType": "EnumValue",
                 "src": "393:8:7"
               },
               {
-                "id": 937,
+                "id": 946,
                 "name": "closed",
                 "nameLocation": "407:6:7",
                 "nodeType": "EnumValue",
@@ -2082,23 +2112,23 @@
           },
           {
             "constant": false,
-            "id": 943,
+            "id": 952,
             "mutability": "mutable",
             "name": "_swaps",
             "nameLocation": "455:6:7",
             "nodeType": "VariableDeclaration",
-            "scope": 1201,
+            "scope": 1210,
             "src": "421:40:7",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Swap_$981_storage_$",
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Swap_$990_storage_$",
               "typeString": "mapping(uint256 => struct Swaps.Swap)"
             },
             "typeName": {
-              "id": 942,
+              "id": 951,
               "keyType": {
-                "id": 939,
+                "id": 948,
                 "name": "uint256",
                 "nodeType": "ElementaryTypeName",
                 "src": "429:7:7",
@@ -2110,24 +2140,26 @@
               "nodeType": "Mapping",
               "src": "421:24:7",
               "typeDescriptions": {
-                "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Swap_$981_storage_$",
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Swap_$990_storage_$",
                 "typeString": "mapping(uint256 => struct Swaps.Swap)"
               },
               "valueType": {
-                "id": 941,
+                "id": 950,
                 "nodeType": "UserDefinedTypeName",
                 "pathNode": {
-                  "id": 940,
+                  "id": 949,
                   "name": "Swap",
-                  "nameLocations": ["440:4:7"],
+                  "nameLocations": [
+                    "440:4:7"
+                  ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 981,
+                  "referencedDeclaration": 990,
                   "src": "440:4:7"
                 },
-                "referencedDeclaration": 981,
+                "referencedDeclaration": 990,
                 "src": "440:4:7",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                  "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                   "typeString": "struct Swaps.Swap"
                 }
               }
@@ -2136,16 +2168,16 @@
           },
           {
             "canonicalName": "Swaps.Buyer",
-            "id": 952,
+            "id": 961,
             "members": [
               {
                 "constant": false,
-                "id": 945,
+                "id": 954,
                 "mutability": "mutable",
                 "name": "addr",
                 "nameLocation": "493:4:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 952,
+                "scope": 961,
                 "src": "485:12:7",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2154,7 +2186,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 944,
+                  "id": 953,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "485:7:7",
@@ -2168,12 +2200,12 @@
               },
               {
                 "constant": false,
-                "id": 947,
+                "id": 956,
                 "mutability": "mutable",
                 "name": "deposit",
                 "nameLocation": "511:7:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 952,
+                "scope": 961,
                 "src": "503:15:7",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2182,7 +2214,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 946,
+                  "id": 955,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "503:7:7",
@@ -2195,12 +2227,12 @@
               },
               {
                 "constant": false,
-                "id": 949,
+                "id": 958,
                 "mutability": "mutable",
                 "name": "lastPayDate",
                 "nameLocation": "532:11:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 952,
+                "scope": 961,
                 "src": "524:19:7",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2209,7 +2241,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 948,
+                  "id": 957,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "524:7:7",
@@ -2222,12 +2254,12 @@
               },
               {
                 "constant": false,
-                "id": 951,
+                "id": 960,
                 "mutability": "mutable",
                 "name": "nextPayDate",
                 "nameLocation": "557:11:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 952,
+                "scope": 961,
                 "src": "549:19:7",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2236,7 +2268,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 950,
+                  "id": 959,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "549:7:7",
@@ -2251,22 +2283,22 @@
             "name": "Buyer",
             "nameLocation": "473:5:7",
             "nodeType": "StructDefinition",
-            "scope": 1201,
+            "scope": 1210,
             "src": "466:107:7",
             "visibility": "public"
           },
           {
             "canonicalName": "Swaps.Seller",
-            "id": 959,
+            "id": 968,
             "members": [
               {
                 "constant": false,
-                "id": 954,
+                "id": 963,
                 "mutability": "mutable",
                 "name": "addr",
                 "nameLocation": "605:4:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 959,
+                "scope": 968,
                 "src": "597:12:7",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2275,7 +2307,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 953,
+                  "id": 962,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "597:7:7",
@@ -2289,12 +2321,12 @@
               },
               {
                 "constant": false,
-                "id": 956,
+                "id": 965,
                 "mutability": "mutable",
                 "name": "deposit",
                 "nameLocation": "623:7:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 959,
+                "scope": 968,
                 "src": "615:15:7",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2303,7 +2335,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 955,
+                  "id": 964,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "615:7:7",
@@ -2316,12 +2348,12 @@
               },
               {
                 "constant": false,
-                "id": 958,
+                "id": 967,
                 "mutability": "mutable",
                 "name": "isDeposited",
                 "nameLocation": "641:11:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 959,
+                "scope": 968,
                 "src": "636:16:7",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2330,7 +2362,7 @@
                   "typeString": "bool"
                 },
                 "typeName": {
-                  "id": 957,
+                  "id": 966,
                   "name": "bool",
                   "nodeType": "ElementaryTypeName",
                   "src": "636:4:7",
@@ -2345,44 +2377,46 @@
             "name": "Seller",
             "nameLocation": "584:6:7",
             "nodeType": "StructDefinition",
-            "scope": 1201,
+            "scope": 1210,
             "src": "577:80:7",
             "visibility": "public"
           },
           {
             "canonicalName": "Swaps.Swap",
-            "id": 981,
+            "id": 990,
             "members": [
               {
                 "constant": false,
-                "id": 962,
+                "id": 971,
                 "mutability": "mutable",
                 "name": "buyer",
                 "nameLocation": "685:5:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 981,
+                "scope": 990,
                 "src": "679:11:7",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Buyer_$952_storage_ptr",
+                  "typeIdentifier": "t_struct$_Buyer_$961_storage_ptr",
                   "typeString": "struct Swaps.Buyer"
                 },
                 "typeName": {
-                  "id": 961,
+                  "id": 970,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 960,
+                    "id": 969,
                     "name": "Buyer",
-                    "nameLocations": ["679:5:7"],
+                    "nameLocations": [
+                      "679:5:7"
+                    ],
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 952,
+                    "referencedDeclaration": 961,
                     "src": "679:5:7"
                   },
-                  "referencedDeclaration": 952,
+                  "referencedDeclaration": 961,
                   "src": "679:5:7",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Buyer_$952_storage_ptr",
+                    "typeIdentifier": "t_struct$_Buyer_$961_storage_ptr",
                     "typeString": "struct Swaps.Buyer"
                   }
                 },
@@ -2390,34 +2424,36 @@
               },
               {
                 "constant": false,
-                "id": 965,
+                "id": 974,
                 "mutability": "mutable",
                 "name": "seller",
                 "nameLocation": "703:6:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 981,
+                "scope": 990,
                 "src": "696:13:7",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Seller_$959_storage_ptr",
+                  "typeIdentifier": "t_struct$_Seller_$968_storage_ptr",
                   "typeString": "struct Swaps.Seller"
                 },
                 "typeName": {
-                  "id": 964,
+                  "id": 973,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 963,
+                    "id": 972,
                     "name": "Seller",
-                    "nameLocations": ["696:6:7"],
+                    "nameLocations": [
+                      "696:6:7"
+                    ],
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 959,
+                    "referencedDeclaration": 968,
                     "src": "696:6:7"
                   },
-                  "referencedDeclaration": 959,
+                  "referencedDeclaration": 968,
                   "src": "696:6:7",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Seller_$959_storage_ptr",
+                    "typeIdentifier": "t_struct$_Seller_$968_storage_ptr",
                     "typeString": "struct Swaps.Seller"
                   }
                 },
@@ -2425,12 +2461,12 @@
               },
               {
                 "constant": false,
-                "id": 967,
+                "id": 976,
                 "mutability": "mutable",
                 "name": "initAssetPrice",
                 "nameLocation": "723:14:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 981,
+                "scope": 990,
                 "src": "715:22:7",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2439,7 +2475,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 966,
+                  "id": 975,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "715:7:7",
@@ -2452,12 +2488,12 @@
               },
               {
                 "constant": false,
-                "id": 969,
+                "id": 978,
                 "mutability": "mutable",
                 "name": "claimPrice",
                 "nameLocation": "751:10:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 981,
+                "scope": 990,
                 "src": "743:18:7",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2466,7 +2502,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 968,
+                  "id": 977,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "743:7:7",
@@ -2479,12 +2515,12 @@
               },
               {
                 "constant": false,
-                "id": 971,
+                "id": 980,
                 "mutability": "mutable",
                 "name": "liquidationPrice",
                 "nameLocation": "775:16:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 981,
+                "scope": 990,
                 "src": "767:24:7",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2493,7 +2529,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 970,
+                  "id": 979,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "767:7:7",
@@ -2506,12 +2542,12 @@
               },
               {
                 "constant": false,
-                "id": 973,
+                "id": 982,
                 "mutability": "mutable",
                 "name": "premium",
                 "nameLocation": "805:7:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 981,
+                "scope": 990,
                 "src": "797:15:7",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2520,7 +2556,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 972,
+                  "id": 981,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "797:7:7",
@@ -2533,12 +2569,12 @@
               },
               {
                 "constant": false,
-                "id": 975,
+                "id": 984,
                 "mutability": "mutable",
                 "name": "premiumInterval",
                 "nameLocation": "826:15:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 981,
+                "scope": 990,
                 "src": "818:23:7",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2547,7 +2583,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 974,
+                  "id": 983,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "818:7:7",
@@ -2560,12 +2596,12 @@
               },
               {
                 "constant": false,
-                "id": 977,
+                "id": 986,
                 "mutability": "mutable",
                 "name": "totalPremiumRounds",
                 "nameLocation": "855:18:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 981,
+                "scope": 990,
                 "src": "847:26:7",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2574,7 +2610,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 976,
+                  "id": 985,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "847:7:7",
@@ -2587,34 +2623,36 @@
               },
               {
                 "constant": false,
-                "id": 980,
+                "id": 989,
                 "mutability": "mutable",
                 "name": "status",
                 "nameLocation": "886:6:7",
                 "nodeType": "VariableDeclaration",
-                "scope": 981,
+                "scope": 990,
                 "src": "879:13:7",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_enum$_Status_$938",
+                  "typeIdentifier": "t_enum$_Status_$947",
                   "typeString": "enum Swaps.Status"
                 },
                 "typeName": {
-                  "id": 979,
+                  "id": 988,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 978,
+                    "id": 987,
                     "name": "Status",
-                    "nameLocations": ["879:6:7"],
+                    "nameLocations": [
+                      "879:6:7"
+                    ],
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 938,
+                    "referencedDeclaration": 947,
                     "src": "879:6:7"
                   },
-                  "referencedDeclaration": 938,
+                  "referencedDeclaration": 947,
                   "src": "879:6:7",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_Status_$938",
+                    "typeIdentifier": "t_enum$_Status_$947",
                     "typeString": "enum Swaps.Status"
                   }
                 },
@@ -2624,13 +2662,13 @@
             "name": "Swap",
             "nameLocation": "668:4:7",
             "nodeType": "StructDefinition",
-            "scope": 1201,
+            "scope": 1210,
             "src": "661:236:7",
             "visibility": "public"
           },
           {
             "body": {
-              "id": 1085,
+              "id": 1094,
               "nodeType": "Block",
               "src": "1170:535:7",
               "statements": [
@@ -2640,18 +2678,18 @@
                     "expression": {
                       "argumentTypes": [],
                       "expression": {
-                        "id": 1002,
+                        "id": 1011,
                         "name": "_swapId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 933,
+                        "referencedDeclaration": 942,
                         "src": "1176:7:7",
                         "typeDescriptions": {
                           "typeIdentifier": "t_struct$_Counter_$140_storage",
                           "typeString": "struct Counters.Counter storage ref"
                         }
                       },
-                      "id": 1004,
+                      "id": 1013,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -2666,7 +2704,7 @@
                         "typeString": "function (struct Counters.Counter storage pointer)"
                       }
                     },
-                    "id": 1005,
+                    "id": 1014,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2682,21 +2720,23 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1006,
+                  "id": 1015,
                   "nodeType": "ExpressionStatement",
                   "src": "1176:19:7"
                 },
                 {
-                  "assignments": [1008],
+                  "assignments": [
+                    1017
+                  ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 1008,
+                      "id": 1017,
                       "mutability": "mutable",
                       "name": "newSwapId",
                       "nameLocation": "1209:9:7",
                       "nodeType": "VariableDeclaration",
-                      "scope": 1085,
+                      "scope": 1094,
                       "src": "1201:17:7",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -2705,7 +2745,7 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 1007,
+                        "id": 1016,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
                         "src": "1201:7:7",
@@ -2717,24 +2757,24 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 1012,
+                  "id": 1021,
                   "initialValue": {
                     "arguments": [],
                     "expression": {
                       "argumentTypes": [],
                       "expression": {
-                        "id": 1009,
+                        "id": 1018,
                         "name": "_swapId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 933,
+                        "referencedDeclaration": 942,
                         "src": "1221:7:7",
                         "typeDescriptions": {
                           "typeIdentifier": "t_struct$_Counter_$140_storage",
                           "typeString": "struct Counters.Counter storage ref"
                         }
                       },
-                      "id": 1010,
+                      "id": 1019,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -2749,7 +2789,7 @@
                         "typeString": "function (struct Counters.Counter storage pointer) view returns (uint256)"
                       }
                     },
-                    "id": 1011,
+                    "id": 1020,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2769,65 +2809,69 @@
                   "src": "1201:37:7"
                 },
                 {
-                  "assignments": [1015],
+                  "assignments": [
+                    1024
+                  ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 1015,
+                      "id": 1024,
                       "mutability": "mutable",
                       "name": "newSwap",
                       "nameLocation": "1257:7:7",
                       "nodeType": "VariableDeclaration",
-                      "scope": 1085,
+                      "scope": 1094,
                       "src": "1244:20:7",
                       "stateVariable": false,
                       "storageLocation": "storage",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                        "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                         "typeString": "struct Swaps.Swap"
                       },
                       "typeName": {
-                        "id": 1014,
+                        "id": 1023,
                         "nodeType": "UserDefinedTypeName",
                         "pathNode": {
-                          "id": 1013,
+                          "id": 1022,
                           "name": "Swap",
-                          "nameLocations": ["1244:4:7"],
+                          "nameLocations": [
+                            "1244:4:7"
+                          ],
                           "nodeType": "IdentifierPath",
-                          "referencedDeclaration": 981,
+                          "referencedDeclaration": 990,
                           "src": "1244:4:7"
                         },
-                        "referencedDeclaration": 981,
+                        "referencedDeclaration": 990,
                         "src": "1244:4:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                          "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                           "typeString": "struct Swaps.Swap"
                         }
                       },
                       "visibility": "internal"
                     }
                   ],
-                  "id": 1019,
+                  "id": 1028,
                   "initialValue": {
                     "baseExpression": {
-                      "id": 1016,
+                      "id": 1025,
                       "name": "_swaps",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 943,
+                      "referencedDeclaration": 952,
                       "src": "1267:6:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Swap_$981_storage_$",
+                        "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Swap_$990_storage_$",
                         "typeString": "mapping(uint256 => struct Swaps.Swap storage ref)"
                       }
                     },
-                    "id": 1018,
+                    "id": 1027,
                     "indexExpression": {
-                      "id": 1017,
+                      "id": 1026,
                       "name": "newSwapId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1008,
+                      "referencedDeclaration": 1017,
                       "src": "1274:9:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2841,7 +2885,7 @@
                     "nodeType": "IndexAccess",
                     "src": "1267:17:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Swap_$981_storage",
+                      "typeIdentifier": "t_struct$_Swap_$990_storage",
                       "typeString": "struct Swaps.Swap storage ref"
                     }
                   },
@@ -2850,7 +2894,7 @@
                 },
                 {
                   "expression": {
-                    "id": 1026,
+                    "id": 1035,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2858,18 +2902,18 @@
                     "leftHandSide": {
                       "expression": {
                         "expression": {
-                          "id": 1020,
+                          "id": 1029,
                           "name": "newSwap",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1015,
+                          "referencedDeclaration": 1024,
                           "src": "1291:7:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                            "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                             "typeString": "struct Swaps.Swap storage pointer"
                           }
                         },
-                        "id": 1023,
+                        "id": 1032,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -2877,14 +2921,14 @@
                         "memberLocation": "1299:5:7",
                         "memberName": "buyer",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 962,
+                        "referencedDeclaration": 971,
                         "src": "1291:13:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Buyer_$952_storage",
+                          "typeIdentifier": "t_struct$_Buyer_$961_storage",
                           "typeString": "struct Swaps.Buyer storage ref"
                         }
                       },
-                      "id": 1024,
+                      "id": 1033,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -2892,7 +2936,7 @@
                       "memberLocation": "1305:4:7",
                       "memberName": "addr",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 945,
+                      "referencedDeclaration": 954,
                       "src": "1291:18:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -2902,11 +2946,11 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 1025,
+                      "id": 1034,
                       "name": "_addr",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 983,
+                      "referencedDeclaration": 992,
                       "src": "1312:5:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -2919,13 +2963,13 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 1027,
+                  "id": 1036,
                   "nodeType": "ExpressionStatement",
                   "src": "1291:26:7"
                 },
                 {
                   "expression": {
-                    "id": 1037,
+                    "id": 1046,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2933,18 +2977,18 @@
                     "leftHandSide": {
                       "expression": {
                         "expression": {
-                          "id": 1028,
+                          "id": 1037,
                           "name": "newSwap",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1015,
+                          "referencedDeclaration": 1024,
                           "src": "1323:7:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                            "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                             "typeString": "struct Swaps.Swap storage pointer"
                           }
                         },
-                        "id": 1031,
+                        "id": 1040,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -2952,14 +2996,14 @@
                         "memberLocation": "1331:5:7",
                         "memberName": "buyer",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 962,
+                        "referencedDeclaration": 971,
                         "src": "1323:13:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Buyer_$952_storage",
+                          "typeIdentifier": "t_struct$_Buyer_$961_storage",
                           "typeString": "struct Swaps.Buyer storage ref"
                         }
                       },
-                      "id": 1032,
+                      "id": 1041,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -2967,7 +3011,7 @@
                       "memberLocation": "1337:7:7",
                       "memberName": "deposit",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 947,
+                      "referencedDeclaration": 956,
                       "src": "1323:21:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2980,7 +3024,7 @@
                       "arguments": [
                         {
                           "hexValue": "33",
-                          "id": 1035,
+                          "id": 1044,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -3003,18 +3047,18 @@
                           }
                         ],
                         "expression": {
-                          "id": 1033,
+                          "id": 1042,
                           "name": "_premium",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 993,
+                          "referencedDeclaration": 1002,
                           "src": "1347:8:7",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
-                        "id": 1034,
+                        "id": 1043,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -3029,7 +3073,7 @@
                           "typeString": "function (uint256,uint256) pure returns (uint256)"
                         }
                       },
-                      "id": 1036,
+                      "id": 1045,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -3051,31 +3095,31 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1038,
+                  "id": 1047,
                   "nodeType": "ExpressionStatement",
                   "src": "1323:39:7"
                 },
                 {
                   "expression": {
-                    "id": 1043,
+                    "id": 1052,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "expression": {
-                        "id": 1039,
+                        "id": 1048,
                         "name": "newSwap",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1015,
+                        "referencedDeclaration": 1024,
                         "src": "1369:7:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                          "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                           "typeString": "struct Swaps.Swap storage pointer"
                         }
                       },
-                      "id": 1041,
+                      "id": 1050,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -3083,7 +3127,7 @@
                       "memberLocation": "1377:14:7",
                       "memberName": "initAssetPrice",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 967,
+                      "referencedDeclaration": 976,
                       "src": "1369:22:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3093,11 +3137,11 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 1042,
+                      "id": 1051,
                       "name": "_initAssetPrice",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 985,
+                      "referencedDeclaration": 994,
                       "src": "1394:15:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3110,31 +3154,31 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1044,
+                  "id": 1053,
                   "nodeType": "ExpressionStatement",
                   "src": "1369:40:7"
                 },
                 {
                   "expression": {
-                    "id": 1049,
+                    "id": 1058,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "expression": {
-                        "id": 1045,
+                        "id": 1054,
                         "name": "newSwap",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1015,
+                        "referencedDeclaration": 1024,
                         "src": "1415:7:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                          "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                           "typeString": "struct Swaps.Swap storage pointer"
                         }
                       },
-                      "id": 1047,
+                      "id": 1056,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -3142,7 +3186,7 @@
                       "memberLocation": "1423:10:7",
                       "memberName": "claimPrice",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 969,
+                      "referencedDeclaration": 978,
                       "src": "1415:18:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3152,11 +3196,11 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 1048,
+                      "id": 1057,
                       "name": "_claimPrice",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 987,
+                      "referencedDeclaration": 996,
                       "src": "1436:11:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3169,31 +3213,31 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1050,
+                  "id": 1059,
                   "nodeType": "ExpressionStatement",
                   "src": "1415:32:7"
                 },
                 {
                   "expression": {
-                    "id": 1055,
+                    "id": 1064,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "expression": {
-                        "id": 1051,
+                        "id": 1060,
                         "name": "newSwap",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1015,
+                        "referencedDeclaration": 1024,
                         "src": "1453:7:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                          "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                           "typeString": "struct Swaps.Swap storage pointer"
                         }
                       },
-                      "id": 1053,
+                      "id": 1062,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -3201,7 +3245,7 @@
                       "memberLocation": "1461:16:7",
                       "memberName": "liquidationPrice",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 971,
+                      "referencedDeclaration": 980,
                       "src": "1453:24:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3211,11 +3255,11 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 1054,
+                      "id": 1063,
                       "name": "_liquidationPrice",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 989,
+                      "referencedDeclaration": 998,
                       "src": "1480:17:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3228,31 +3272,31 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1056,
+                  "id": 1065,
                   "nodeType": "ExpressionStatement",
                   "src": "1453:44:7"
                 },
                 {
                   "expression": {
-                    "id": 1061,
+                    "id": 1070,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "expression": {
-                        "id": 1057,
+                        "id": 1066,
                         "name": "newSwap",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1015,
+                        "referencedDeclaration": 1024,
                         "src": "1503:7:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                          "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                           "typeString": "struct Swaps.Swap storage pointer"
                         }
                       },
-                      "id": 1059,
+                      "id": 1068,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -3260,7 +3304,7 @@
                       "memberLocation": "1511:7:7",
                       "memberName": "premium",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 973,
+                      "referencedDeclaration": 982,
                       "src": "1503:15:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3270,11 +3314,11 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 1060,
+                      "id": 1069,
                       "name": "_premium",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 993,
+                      "referencedDeclaration": 1002,
                       "src": "1521:8:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3287,31 +3331,31 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1062,
+                  "id": 1071,
                   "nodeType": "ExpressionStatement",
                   "src": "1503:26:7"
                 },
                 {
                   "expression": {
-                    "id": 1067,
+                    "id": 1076,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "expression": {
-                        "id": 1063,
+                        "id": 1072,
                         "name": "newSwap",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1015,
+                        "referencedDeclaration": 1024,
                         "src": "1535:7:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                          "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                           "typeString": "struct Swaps.Swap storage pointer"
                         }
                       },
-                      "id": 1065,
+                      "id": 1074,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -3319,7 +3363,7 @@
                       "memberLocation": "1543:15:7",
                       "memberName": "premiumInterval",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 975,
+                      "referencedDeclaration": 984,
                       "src": "1535:23:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3329,11 +3373,11 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 1066,
+                      "id": 1075,
                       "name": "_premiumInterval",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 995,
+                      "referencedDeclaration": 1004,
                       "src": "1561:16:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3346,31 +3390,31 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1068,
+                  "id": 1077,
                   "nodeType": "ExpressionStatement",
                   "src": "1535:42:7"
                 },
                 {
                   "expression": {
-                    "id": 1073,
+                    "id": 1082,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "expression": {
-                        "id": 1069,
+                        "id": 1078,
                         "name": "newSwap",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1015,
+                        "referencedDeclaration": 1024,
                         "src": "1583:7:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                          "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                           "typeString": "struct Swaps.Swap storage pointer"
                         }
                       },
-                      "id": 1071,
+                      "id": 1080,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -3378,7 +3422,7 @@
                       "memberLocation": "1591:18:7",
                       "memberName": "totalPremiumRounds",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 977,
+                      "referencedDeclaration": 986,
                       "src": "1583:26:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3388,11 +3432,11 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 1072,
+                      "id": 1081,
                       "name": "_totalPremiumRounds",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 997,
+                      "referencedDeclaration": 1006,
                       "src": "1612:19:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3405,13 +3449,13 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1074,
+                  "id": 1083,
                   "nodeType": "ExpressionStatement",
                   "src": "1583:48:7"
                 },
                 {
                   "expression": {
-                    "id": 1081,
+                    "id": 1090,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3419,18 +3463,18 @@
                     "leftHandSide": {
                       "expression": {
                         "expression": {
-                          "id": 1075,
+                          "id": 1084,
                           "name": "newSwap",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1015,
+                          "referencedDeclaration": 1024,
                           "src": "1638:7:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                            "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                             "typeString": "struct Swaps.Swap storage pointer"
                           }
                         },
-                        "id": 1078,
+                        "id": 1087,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -3438,14 +3482,14 @@
                         "memberLocation": "1646:6:7",
                         "memberName": "seller",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 965,
+                        "referencedDeclaration": 974,
                         "src": "1638:14:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Seller_$959_storage",
+                          "typeIdentifier": "t_struct$_Seller_$968_storage",
                           "typeString": "struct Swaps.Seller storage ref"
                         }
                       },
-                      "id": 1079,
+                      "id": 1088,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -3453,7 +3497,7 @@
                       "memberLocation": "1653:7:7",
                       "memberName": "deposit",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 956,
+                      "referencedDeclaration": 965,
                       "src": "1638:22:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3463,11 +3507,11 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 1080,
+                      "id": 1089,
                       "name": "_sellerDeposit",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 991,
+                      "referencedDeclaration": 1000,
                       "src": "1663:14:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3480,31 +3524,31 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1082,
+                  "id": 1091,
                   "nodeType": "ExpressionStatement",
                   "src": "1638:39:7"
                 },
                 {
                   "expression": {
-                    "id": 1083,
+                    "id": 1092,
                     "name": "newSwapId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1008,
+                    "referencedDeclaration": 1017,
                     "src": "1691:9:7",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 1001,
-                  "id": 1084,
+                  "functionReturnParameters": 1010,
+                  "id": 1093,
                   "nodeType": "Return",
                   "src": "1684:16:7"
                 }
               ]
             },
-            "id": 1086,
+            "id": 1095,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -3512,17 +3556,17 @@
             "nameLocation": "910:11:7",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 998,
+              "id": 1007,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 983,
+                  "id": 992,
                   "mutability": "mutable",
                   "name": "_addr",
                   "nameLocation": "935:5:7",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1086,
+                  "scope": 1095,
                   "src": "927:13:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3531,7 +3575,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 982,
+                    "id": 991,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "927:7:7",
@@ -3545,12 +3589,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 985,
+                  "id": 994,
                   "mutability": "mutable",
                   "name": "_initAssetPrice",
                   "nameLocation": "954:15:7",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1086,
+                  "scope": 1095,
                   "src": "946:23:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3559,7 +3603,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 984,
+                    "id": 993,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "946:7:7",
@@ -3572,12 +3616,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 987,
+                  "id": 996,
                   "mutability": "mutable",
                   "name": "_claimPrice",
                   "nameLocation": "983:11:7",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1086,
+                  "scope": 1095,
                   "src": "975:19:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3586,7 +3630,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 986,
+                    "id": 995,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "975:7:7",
@@ -3599,12 +3643,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 989,
+                  "id": 998,
                   "mutability": "mutable",
                   "name": "_liquidationPrice",
                   "nameLocation": "1008:17:7",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1086,
+                  "scope": 1095,
                   "src": "1000:25:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3613,7 +3657,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 988,
+                    "id": 997,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1000:7:7",
@@ -3626,12 +3670,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 991,
+                  "id": 1000,
                   "mutability": "mutable",
                   "name": "_sellerDeposit",
                   "nameLocation": "1039:14:7",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1086,
+                  "scope": 1095,
                   "src": "1031:22:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3640,7 +3684,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 990,
+                    "id": 999,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1031:7:7",
@@ -3653,12 +3697,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 993,
+                  "id": 1002,
                   "mutability": "mutable",
                   "name": "_premium",
                   "nameLocation": "1067:8:7",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1086,
+                  "scope": 1095,
                   "src": "1059:16:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3667,7 +3711,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 992,
+                    "id": 1001,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1059:7:7",
@@ -3680,12 +3724,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 995,
+                  "id": 1004,
                   "mutability": "mutable",
                   "name": "_premiumInterval",
                   "nameLocation": "1089:16:7",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1086,
+                  "scope": 1095,
                   "src": "1081:24:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3694,7 +3738,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 994,
+                    "id": 1003,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1081:7:7",
@@ -3707,12 +3751,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 997,
+                  "id": 1006,
                   "mutability": "mutable",
                   "name": "_totalPremiumRounds",
                   "nameLocation": "1119:19:7",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1086,
+                  "scope": 1095,
                   "src": "1111:27:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3721,7 +3765,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 996,
+                    "id": 1005,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1111:7:7",
@@ -3736,17 +3780,17 @@
               "src": "921:221:7"
             },
             "returnParameters": {
-              "id": 1001,
+              "id": 1010,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1000,
+                  "id": 1009,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1086,
+                  "scope": 1095,
                   "src": "1161:7:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3755,7 +3799,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 999,
+                    "id": 1008,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1161:7:7",
@@ -3769,7 +3813,7 @@
               ],
               "src": "1160:9:7"
             },
-            "scope": 1201,
+            "scope": 1210,
             "src": "901:804:7",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -3777,70 +3821,74 @@
           },
           {
             "body": {
-              "id": 1165,
+              "id": 1174,
               "nodeType": "Block",
               "src": "1838:429:7",
               "statements": [
                 {
-                  "assignments": [1099],
+                  "assignments": [
+                    1108
+                  ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 1099,
+                      "id": 1108,
                       "mutability": "mutable",
                       "name": "aSwap",
                       "nameLocation": "1857:5:7",
                       "nodeType": "VariableDeclaration",
-                      "scope": 1165,
+                      "scope": 1174,
                       "src": "1844:18:7",
                       "stateVariable": false,
                       "storageLocation": "storage",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                        "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                         "typeString": "struct Swaps.Swap"
                       },
                       "typeName": {
-                        "id": 1098,
+                        "id": 1107,
                         "nodeType": "UserDefinedTypeName",
                         "pathNode": {
-                          "id": 1097,
+                          "id": 1106,
                           "name": "Swap",
-                          "nameLocations": ["1844:4:7"],
+                          "nameLocations": [
+                            "1844:4:7"
+                          ],
                           "nodeType": "IdentifierPath",
-                          "referencedDeclaration": 981,
+                          "referencedDeclaration": 990,
                           "src": "1844:4:7"
                         },
-                        "referencedDeclaration": 981,
+                        "referencedDeclaration": 990,
                         "src": "1844:4:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                          "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                           "typeString": "struct Swaps.Swap"
                         }
                       },
                       "visibility": "internal"
                     }
                   ],
-                  "id": 1103,
+                  "id": 1112,
                   "initialValue": {
                     "baseExpression": {
-                      "id": 1100,
+                      "id": 1109,
                       "name": "_swaps",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 943,
+                      "referencedDeclaration": 952,
                       "src": "1865:6:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Swap_$981_storage_$",
+                        "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Swap_$990_storage_$",
                         "typeString": "mapping(uint256 => struct Swaps.Swap storage ref)"
                       }
                     },
-                    "id": 1102,
+                    "id": 1111,
                     "indexExpression": {
-                      "id": 1101,
+                      "id": 1110,
                       "name": "_acceptedSwapId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1092,
+                      "referencedDeclaration": 1101,
                       "src": "1872:15:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3854,7 +3902,7 @@
                     "nodeType": "IndexAccess",
                     "src": "1865:23:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Swap_$981_storage",
+                      "typeIdentifier": "t_struct$_Swap_$990_storage",
                       "typeString": "struct Swaps.Swap storage ref"
                     }
                   },
@@ -3866,28 +3914,28 @@
                     "arguments": [
                       {
                         "commonType": {
-                          "typeIdentifier": "t_enum$_Status_$938",
+                          "typeIdentifier": "t_enum$_Status_$947",
                           "typeString": "enum Swaps.Status"
                         },
-                        "id": 1109,
+                        "id": 1118,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "expression": {
-                            "id": 1105,
+                            "id": 1114,
                             "name": "aSwap",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1099,
+                            "referencedDeclaration": 1108,
                             "src": "1902:5:7",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                              "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                               "typeString": "struct Swaps.Swap storage pointer"
                             }
                           },
-                          "id": 1106,
+                          "id": 1115,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
@@ -3895,10 +3943,10 @@
                           "memberLocation": "1908:6:7",
                           "memberName": "status",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 980,
+                          "referencedDeclaration": 989,
                           "src": "1902:12:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_enum$_Status_$938",
+                            "typeIdentifier": "t_enum$_Status_$947",
                             "typeString": "enum Swaps.Status"
                           }
                         },
@@ -3906,18 +3954,18 @@
                         "operator": "==",
                         "rightExpression": {
                           "expression": {
-                            "id": 1107,
+                            "id": 1116,
                             "name": "Status",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 938,
+                            "referencedDeclaration": 947,
                             "src": "1918:6:7",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_type$_t_enum$_Status_$938_$",
+                              "typeIdentifier": "t_type$_t_enum$_Status_$947_$",
                               "typeString": "type(enum Swaps.Status)"
                             }
                           },
-                          "id": 1108,
+                          "id": 1117,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -3925,10 +3973,10 @@
                           "memberLocation": "1925:7:7",
                           "memberName": "pending",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 934,
+                          "referencedDeclaration": 943,
                           "src": "1918:14:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_enum$_Status_$938",
+                            "typeIdentifier": "t_enum$_Status_$947",
                             "typeString": "enum Swaps.Status"
                           }
                         },
@@ -3940,7 +3988,7 @@
                       },
                       {
                         "hexValue": "54686520434453206973206e6f742070656e64696e67207374617465",
-                        "id": 1110,
+                        "id": 1119,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -3966,10 +4014,13 @@
                           "typeString": "literal_string \"The CDS is not pending state\""
                         }
                       ],
-                      "id": 1104,
+                      "id": 1113,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [4294967278, 4294967278],
+                      "overloadedDeclarations": [
+                        4294967278,
+                        4294967278
+                      ],
                       "referencedDeclaration": 4294967278,
                       "src": "1894:7:7",
                       "typeDescriptions": {
@@ -3977,7 +4028,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 1111,
+                    "id": 1120,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3993,13 +4044,13 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1112,
+                  "id": 1121,
                   "nodeType": "ExpressionStatement",
                   "src": "1894:71:7"
                 },
                 {
                   "expression": {
-                    "id": 1119,
+                    "id": 1128,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4007,18 +4058,18 @@
                     "leftHandSide": {
                       "expression": {
                         "expression": {
-                          "id": 1113,
+                          "id": 1122,
                           "name": "aSwap",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1099,
+                          "referencedDeclaration": 1108,
                           "src": "1972:5:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                            "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                             "typeString": "struct Swaps.Swap storage pointer"
                           }
                         },
-                        "id": 1116,
+                        "id": 1125,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -4026,14 +4077,14 @@
                         "memberLocation": "1978:6:7",
                         "memberName": "seller",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 965,
+                        "referencedDeclaration": 974,
                         "src": "1972:12:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Seller_$959_storage",
+                          "typeIdentifier": "t_struct$_Seller_$968_storage",
                           "typeString": "struct Swaps.Seller storage ref"
                         }
                       },
-                      "id": 1117,
+                      "id": 1126,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -4041,7 +4092,7 @@
                       "memberLocation": "1985:4:7",
                       "memberName": "addr",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 954,
+                      "referencedDeclaration": 963,
                       "src": "1972:17:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -4051,11 +4102,11 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 1118,
+                      "id": 1127,
                       "name": "_addr",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1088,
+                      "referencedDeclaration": 1097,
                       "src": "1992:5:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -4068,31 +4119,31 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 1120,
+                  "id": 1129,
                   "nodeType": "ExpressionStatement",
                   "src": "1972:25:7"
                 },
                 {
                   "expression": {
-                    "id": 1125,
+                    "id": 1134,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "expression": {
-                        "id": 1121,
+                        "id": 1130,
                         "name": "aSwap",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1099,
+                        "referencedDeclaration": 1108,
                         "src": "2003:5:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                          "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                           "typeString": "struct Swaps.Swap storage pointer"
                         }
                       },
-                      "id": 1123,
+                      "id": 1132,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -4100,7 +4151,7 @@
                       "memberLocation": "2009:14:7",
                       "memberName": "initAssetPrice",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 967,
+                      "referencedDeclaration": 976,
                       "src": "2003:20:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -4110,11 +4161,11 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 1124,
+                      "id": 1133,
                       "name": "_initAssetPrice",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1090,
+                      "referencedDeclaration": 1099,
                       "src": "2026:15:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -4127,13 +4178,13 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1126,
+                  "id": 1135,
                   "nodeType": "ExpressionStatement",
                   "src": "2003:38:7"
                 },
                 {
                   "expression": {
-                    "id": 1133,
+                    "id": 1142,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4141,18 +4192,18 @@
                     "leftHandSide": {
                       "expression": {
                         "expression": {
-                          "id": 1127,
+                          "id": 1136,
                           "name": "aSwap",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1099,
+                          "referencedDeclaration": 1108,
                           "src": "2048:5:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                            "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                             "typeString": "struct Swaps.Swap storage pointer"
                           }
                         },
-                        "id": 1130,
+                        "id": 1139,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -4160,14 +4211,14 @@
                         "memberLocation": "2054:6:7",
                         "memberName": "seller",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 965,
+                        "referencedDeclaration": 974,
                         "src": "2048:12:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Seller_$959_storage",
+                          "typeIdentifier": "t_struct$_Seller_$968_storage",
                           "typeString": "struct Swaps.Seller storage ref"
                         }
                       },
-                      "id": 1131,
+                      "id": 1140,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -4175,7 +4226,7 @@
                       "memberLocation": "2061:11:7",
                       "memberName": "isDeposited",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 958,
+                      "referencedDeclaration": 967,
                       "src": "2048:24:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bool",
@@ -4186,7 +4237,7 @@
                     "operator": "=",
                     "rightHandSide": {
                       "hexValue": "74727565",
-                      "id": 1132,
+                      "id": 1141,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -4206,13 +4257,13 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 1134,
+                  "id": 1143,
                   "nodeType": "ExpressionStatement",
                   "src": "2048:31:7"
                 },
                 {
                   "expression": {
-                    "id": 1142,
+                    "id": 1151,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4220,18 +4271,18 @@
                     "leftHandSide": {
                       "expression": {
                         "expression": {
-                          "id": 1135,
+                          "id": 1144,
                           "name": "aSwap",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1099,
+                          "referencedDeclaration": 1108,
                           "src": "2086:5:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                            "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                             "typeString": "struct Swaps.Swap storage pointer"
                           }
                         },
-                        "id": 1138,
+                        "id": 1147,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -4239,14 +4290,14 @@
                         "memberLocation": "2092:5:7",
                         "memberName": "buyer",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 962,
+                        "referencedDeclaration": 971,
                         "src": "2086:11:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Buyer_$952_storage",
+                          "typeIdentifier": "t_struct$_Buyer_$961_storage",
                           "typeString": "struct Swaps.Buyer storage ref"
                         }
                       },
-                      "id": 1139,
+                      "id": 1148,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -4254,7 +4305,7 @@
                       "memberLocation": "2098:11:7",
                       "memberName": "lastPayDate",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 949,
+                      "referencedDeclaration": 958,
                       "src": "2086:23:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -4265,7 +4316,7 @@
                     "operator": "=",
                     "rightHandSide": {
                       "expression": {
-                        "id": 1140,
+                        "id": 1149,
                         "name": "block",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
@@ -4276,7 +4327,7 @@
                           "typeString": "block"
                         }
                       },
-                      "id": 1141,
+                      "id": 1150,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -4296,13 +4347,13 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1143,
+                  "id": 1152,
                   "nodeType": "ExpressionStatement",
                   "src": "2086:41:7"
                 },
                 {
                   "expression": {
-                    "id": 1154,
+                    "id": 1163,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4310,18 +4361,18 @@
                     "leftHandSide": {
                       "expression": {
                         "expression": {
-                          "id": 1144,
+                          "id": 1153,
                           "name": "aSwap",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1099,
+                          "referencedDeclaration": 1108,
                           "src": "2133:5:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                            "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                             "typeString": "struct Swaps.Swap storage pointer"
                           }
                         },
-                        "id": 1147,
+                        "id": 1156,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -4329,14 +4380,14 @@
                         "memberLocation": "2139:5:7",
                         "memberName": "buyer",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 962,
+                        "referencedDeclaration": 971,
                         "src": "2133:11:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Buyer_$952_storage",
+                          "typeIdentifier": "t_struct$_Buyer_$961_storage",
                           "typeString": "struct Swaps.Buyer storage ref"
                         }
                       },
-                      "id": 1148,
+                      "id": 1157,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -4344,7 +4395,7 @@
                       "memberLocation": "2145:11:7",
                       "memberName": "nextPayDate",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 951,
+                      "referencedDeclaration": 960,
                       "src": "2133:23:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -4358,14 +4409,14 @@
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       },
-                      "id": 1153,
+                      "id": 1162,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "leftExpression": {
                         "expression": {
-                          "id": 1149,
+                          "id": 1158,
                           "name": "block",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -4376,7 +4427,7 @@
                             "typeString": "block"
                           }
                         },
-                        "id": 1150,
+                        "id": 1159,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -4394,18 +4445,18 @@
                       "operator": "+",
                       "rightExpression": {
                         "expression": {
-                          "id": 1151,
+                          "id": 1160,
                           "name": "aSwap",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1099,
+                          "referencedDeclaration": 1108,
                           "src": "2177:5:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                            "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                             "typeString": "struct Swaps.Swap storage pointer"
                           }
                         },
-                        "id": 1152,
+                        "id": 1161,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -4413,7 +4464,7 @@
                         "memberLocation": "2183:15:7",
                         "memberName": "premiumInterval",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 975,
+                        "referencedDeclaration": 984,
                         "src": "2177:21:7",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -4432,31 +4483,31 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1155,
+                  "id": 1164,
                   "nodeType": "ExpressionStatement",
                   "src": "2133:65:7"
                 },
                 {
                   "expression": {
-                    "id": 1161,
+                    "id": 1170,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "expression": {
-                        "id": 1156,
+                        "id": 1165,
                         "name": "aSwap",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1099,
+                        "referencedDeclaration": 1108,
                         "src": "2205:5:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                          "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                           "typeString": "struct Swaps.Swap storage pointer"
                         }
                       },
-                      "id": 1158,
+                      "id": 1167,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -4464,10 +4515,10 @@
                       "memberLocation": "2211:6:7",
                       "memberName": "status",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 980,
+                      "referencedDeclaration": 989,
                       "src": "2205:12:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_enum$_Status_$938",
+                        "typeIdentifier": "t_enum$_Status_$947",
                         "typeString": "enum Swaps.Status"
                       }
                     },
@@ -4475,18 +4526,18 @@
                     "operator": "=",
                     "rightHandSide": {
                       "expression": {
-                        "id": 1159,
+                        "id": 1168,
                         "name": "Status",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 938,
+                        "referencedDeclaration": 947,
                         "src": "2220:6:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_enum$_Status_$938_$",
+                          "typeIdentifier": "t_type$_t_enum$_Status_$947_$",
                           "typeString": "type(enum Swaps.Status)"
                         }
                       },
-                      "id": 1160,
+                      "id": 1169,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -4494,44 +4545,44 @@
                       "memberLocation": "2227:6:7",
                       "memberName": "active",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 935,
+                      "referencedDeclaration": 944,
                       "src": "2220:13:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_enum$_Status_$938",
+                        "typeIdentifier": "t_enum$_Status_$947",
                         "typeString": "enum Swaps.Status"
                       }
                     },
                     "src": "2205:28:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_Status_$938",
+                      "typeIdentifier": "t_enum$_Status_$947",
                       "typeString": "enum Swaps.Status"
                     }
                   },
-                  "id": 1162,
+                  "id": 1171,
                   "nodeType": "ExpressionStatement",
                   "src": "2205:28:7"
                 },
                 {
                   "expression": {
-                    "id": 1163,
+                    "id": 1172,
                     "name": "_acceptedSwapId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1092,
+                    "referencedDeclaration": 1101,
                     "src": "2247:15:7",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 1096,
-                  "id": 1164,
+                  "functionReturnParameters": 1105,
+                  "id": 1173,
                   "nodeType": "Return",
                   "src": "2240:22:7"
                 }
               ]
             },
-            "id": 1166,
+            "id": 1175,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -4539,17 +4590,17 @@
             "nameLocation": "1718:11:7",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1093,
+              "id": 1102,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1088,
+                  "id": 1097,
                   "mutability": "mutable",
                   "name": "_addr",
                   "nameLocation": "1743:5:7",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1166,
+                  "scope": 1175,
                   "src": "1735:13:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4558,7 +4609,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1087,
+                    "id": 1096,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1735:7:7",
@@ -4572,12 +4623,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 1090,
+                  "id": 1099,
                   "mutability": "mutable",
                   "name": "_initAssetPrice",
                   "nameLocation": "1762:15:7",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1166,
+                  "scope": 1175,
                   "src": "1754:23:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4586,7 +4637,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1089,
+                    "id": 1098,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1754:7:7",
@@ -4599,12 +4650,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 1092,
+                  "id": 1101,
                   "mutability": "mutable",
                   "name": "_acceptedSwapId",
                   "nameLocation": "1791:15:7",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1166,
+                  "scope": 1175,
                   "src": "1783:23:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4613,7 +4664,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1091,
+                    "id": 1100,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1783:7:7",
@@ -4628,17 +4679,17 @@
               "src": "1729:81:7"
             },
             "returnParameters": {
-              "id": 1096,
+              "id": 1105,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1095,
+                  "id": 1104,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1166,
+                  "scope": 1175,
                   "src": "1829:7:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4647,7 +4698,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1094,
+                    "id": 1103,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1829:7:7",
@@ -4661,7 +4712,7 @@
               ],
               "src": "1828:9:7"
             },
-            "scope": 1201,
+            "scope": 1210,
             "src": "1709:558:7",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -4669,70 +4720,74 @@
           },
           {
             "body": {
-              "id": 1199,
+              "id": 1208,
               "nodeType": "Block",
               "src": "2339:188:7",
               "statements": [
                 {
-                  "assignments": [1175],
+                  "assignments": [
+                    1184
+                  ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 1175,
+                      "id": 1184,
                       "mutability": "mutable",
                       "name": "cSwap",
                       "nameLocation": "2358:5:7",
                       "nodeType": "VariableDeclaration",
-                      "scope": 1199,
+                      "scope": 1208,
                       "src": "2345:18:7",
                       "stateVariable": false,
                       "storageLocation": "storage",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                        "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                         "typeString": "struct Swaps.Swap"
                       },
                       "typeName": {
-                        "id": 1174,
+                        "id": 1183,
                         "nodeType": "UserDefinedTypeName",
                         "pathNode": {
-                          "id": 1173,
+                          "id": 1182,
                           "name": "Swap",
-                          "nameLocations": ["2345:4:7"],
+                          "nameLocations": [
+                            "2345:4:7"
+                          ],
                           "nodeType": "IdentifierPath",
-                          "referencedDeclaration": 981,
+                          "referencedDeclaration": 990,
                           "src": "2345:4:7"
                         },
-                        "referencedDeclaration": 981,
+                        "referencedDeclaration": 990,
                         "src": "2345:4:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                          "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                           "typeString": "struct Swaps.Swap"
                         }
                       },
                       "visibility": "internal"
                     }
                   ],
-                  "id": 1179,
+                  "id": 1188,
                   "initialValue": {
                     "baseExpression": {
-                      "id": 1176,
+                      "id": 1185,
                       "name": "_swaps",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 943,
+                      "referencedDeclaration": 952,
                       "src": "2366:6:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Swap_$981_storage_$",
+                        "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Swap_$990_storage_$",
                         "typeString": "mapping(uint256 => struct Swaps.Swap storage ref)"
                       }
                     },
-                    "id": 1178,
+                    "id": 1187,
                     "indexExpression": {
-                      "id": 1177,
+                      "id": 1186,
                       "name": "_targetSwapId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1168,
+                      "referencedDeclaration": 1177,
                       "src": "2373:13:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -4746,7 +4801,7 @@
                     "nodeType": "IndexAccess",
                     "src": "2366:21:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Swap_$981_storage",
+                      "typeIdentifier": "t_struct$_Swap_$990_storage",
                       "typeString": "struct Swaps.Swap storage ref"
                     }
                   },
@@ -4761,14 +4816,14 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 1186,
+                        "id": 1195,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "expression": {
-                            "id": 1181,
+                            "id": 1190,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -4779,7 +4834,7 @@
                               "typeString": "msg"
                             }
                           },
-                          "id": 1182,
+                          "id": 1191,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -4798,18 +4853,18 @@
                         "rightExpression": {
                           "expression": {
                             "expression": {
-                              "id": 1183,
+                              "id": 1192,
                               "name": "cSwap",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1175,
+                              "referencedDeclaration": 1184,
                               "src": "2415:5:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                                "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                                 "typeString": "struct Swaps.Swap storage pointer"
                               }
                             },
-                            "id": 1184,
+                            "id": 1193,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
@@ -4817,14 +4872,14 @@
                             "memberLocation": "2421:5:7",
                             "memberName": "buyer",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 962,
+                            "referencedDeclaration": 971,
                             "src": "2415:11:7",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Buyer_$952_storage",
+                              "typeIdentifier": "t_struct$_Buyer_$961_storage",
                               "typeString": "struct Swaps.Buyer storage ref"
                             }
                           },
-                          "id": 1185,
+                          "id": 1194,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
@@ -4832,7 +4887,7 @@
                           "memberLocation": "2427:4:7",
                           "memberName": "addr",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 945,
+                          "referencedDeclaration": 954,
                           "src": "2415:16:7",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -4847,7 +4902,7 @@
                       },
                       {
                         "hexValue": "4f6e6c79206275796572206f6620746865204344532063616e2063616e63656c",
-                        "id": 1187,
+                        "id": 1196,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -4873,10 +4928,13 @@
                           "typeString": "literal_string \"Only buyer of the CDS can cancel\""
                         }
                       ],
-                      "id": 1180,
+                      "id": 1189,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [4294967278, 4294967278],
+                      "overloadedDeclarations": [
+                        4294967278,
+                        4294967278
+                      ],
                       "referencedDeclaration": 4294967278,
                       "src": "2393:7:7",
                       "typeDescriptions": {
@@ -4884,7 +4942,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 1188,
+                    "id": 1197,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4900,31 +4958,31 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1189,
+                  "id": 1198,
                   "nodeType": "ExpressionStatement",
                   "src": "2393:75:7"
                 },
                 {
                   "expression": {
-                    "id": 1195,
+                    "id": 1204,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "expression": {
-                        "id": 1190,
+                        "id": 1199,
                         "name": "cSwap",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1175,
+                        "referencedDeclaration": 1184,
                         "src": "2475:5:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Swap_$981_storage_ptr",
+                          "typeIdentifier": "t_struct$_Swap_$990_storage_ptr",
                           "typeString": "struct Swaps.Swap storage pointer"
                         }
                       },
-                      "id": 1192,
+                      "id": 1201,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -4932,10 +4990,10 @@
                       "memberLocation": "2481:6:7",
                       "memberName": "status",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 980,
+                      "referencedDeclaration": 989,
                       "src": "2475:12:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_enum$_Status_$938",
+                        "typeIdentifier": "t_enum$_Status_$947",
                         "typeString": "enum Swaps.Status"
                       }
                     },
@@ -4943,18 +5001,18 @@
                     "operator": "=",
                     "rightHandSide": {
                       "expression": {
-                        "id": 1193,
+                        "id": 1202,
                         "name": "Status",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 938,
+                        "referencedDeclaration": 947,
                         "src": "2490:6:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_enum$_Status_$938_$",
+                          "typeIdentifier": "t_type$_t_enum$_Status_$947_$",
                           "typeString": "type(enum Swaps.Status)"
                         }
                       },
-                      "id": 1194,
+                      "id": 1203,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -4962,27 +5020,27 @@
                       "memberLocation": "2497:8:7",
                       "memberName": "inactive",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 936,
+                      "referencedDeclaration": 945,
                       "src": "2490:15:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_enum$_Status_$938",
+                        "typeIdentifier": "t_enum$_Status_$947",
                         "typeString": "enum Swaps.Status"
                       }
                     },
                     "src": "2475:30:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_Status_$938",
+                      "typeIdentifier": "t_enum$_Status_$947",
                       "typeString": "enum Swaps.Status"
                     }
                   },
-                  "id": 1196,
+                  "id": 1205,
                   "nodeType": "ExpressionStatement",
                   "src": "2475:30:7"
                 },
                 {
                   "expression": {
                     "hexValue": "74727565",
-                    "id": 1197,
+                    "id": 1206,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
@@ -4996,14 +5054,14 @@
                     },
                     "value": "true"
                   },
-                  "functionReturnParameters": 1172,
-                  "id": 1198,
+                  "functionReturnParameters": 1181,
+                  "id": 1207,
                   "nodeType": "Return",
                   "src": "2511:11:7"
                 }
               ]
             },
-            "id": 1200,
+            "id": 1209,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -5011,17 +5069,17 @@
             "nameLocation": "2280:11:7",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1169,
+              "id": 1178,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1168,
+                  "id": 1177,
                   "mutability": "mutable",
                   "name": "_targetSwapId",
                   "nameLocation": "2300:13:7",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1200,
+                  "scope": 1209,
                   "src": "2292:21:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5030,7 +5088,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1167,
+                    "id": 1176,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2292:7:7",
@@ -5045,17 +5103,17 @@
               "src": "2291:23:7"
             },
             "returnParameters": {
-              "id": 1172,
+              "id": 1181,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1171,
+                  "id": 1180,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1200,
+                  "scope": 1209,
                   "src": "2333:4:7",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5064,7 +5122,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 1170,
+                    "id": 1179,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "2333:4:7",
@@ -5078,14 +5136,14 @@
               ],
               "src": "2332:6:7"
             },
-            "scope": 1201,
+            "scope": 1210,
             "src": "2271:256:7",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 1202,
+        "scope": 1211,
         "src": "207:2322:7",
         "usedErrors": []
       }
@@ -5097,8 +5155,8 @@
     "version": "0.8.16+commit.07a7930e.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.4.11",
-  "updatedAt": "2023-01-25T11:44:54.308Z",
+  "schemaVersion": "3.4.9",
+  "updatedAt": "2023-01-26T04:20:30.789Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
