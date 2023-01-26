@@ -2,23 +2,21 @@
 pragma solidity ^0.8.7;
 
 import '../Oracle/PriceConsumer.sol';
-import '../libs/LibSwapCalc.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
+import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 contract Swaps is PriceConsumer {
   using Counters for Counters.Counter;
-  using LibSwapCalc for uint256;
+  using SafeMath for uint256;
   Counters.Counter internal _swapId;
 
   enum Status {
     pending,
     active,
-    claimable,
-    overdue,
-    expired,
-    liquidated,
-    inactive
+    inactive,
+    claimed
   }
+
   mapping(uint256 => Swap) internal _swaps;
 
   struct Buyer {
@@ -61,6 +59,7 @@ contract Swaps is PriceConsumer {
     Swap storage newSwap = _swaps[newSwapId];
 
     newSwap.buyer.addr = _addr;
+    newSwap.buyer.deposit = _premium.mul(3);
 
     newSwap.initAssetPrice = _initAssetPrice;
     newSwap.claimPrice = _claimPrice;
@@ -85,13 +84,8 @@ contract Swaps is PriceConsumer {
     aSwap.seller.addr = _addr;
     aSwap.initAssetPrice = _initAssetPrice;
 
-    // seller deposit 이후
     aSwap.seller.isDeposited = true;
 
-    // buyer deposit 이후
-    uint256 buyerDeposit = aSwap.premium.calcBuyerDepo();
-    aSwap.buyer.deposit = buyerDeposit;
-    // buyer premium 납부 이후
     aSwap.buyer.lastPayDate = block.timestamp;
     aSwap.buyer.nextPayDate = block.timestamp + aSwap.premiumInterval;
 
@@ -100,12 +94,22 @@ contract Swaps is PriceConsumer {
     return _acceptedSwapId;
   }
 
-  function _cancleSwap(uint256 _targetSwapId) internal returns (address) {
-    Swap storage cSwap = _swaps[_targetSwapId];
-    address buyerAddr = cSwap.buyer.addr;
-    require(msg.sender == buyerAddr, 'Only buyer of the CDS can cancle');
+  function _cancelSwap(uint256 _targetSwapId) internal {
+    Swap storage targetSwap = _swaps[_targetSwapId];
+    targetSwap.buyer.deposit = 0;
+    targetSwap.status = Status.inactive;
+  }
 
-    cSwap.status = Status.inactive;
-    return buyerAddr;
+  function _claimSwap(uint256 _targetSwapId) internal {
+    Swap storage targetSwap = _swaps[_targetSwapId];
+    // buyer
+    targetSwap.buyer.deposit = 0;
+    targetSwap.buyer.nextPayDate = 0;
+
+    // seller
+    targetSwap.seller.deposit = 0;
+    targetSwap.seller.isDeposited = false;
+
+    targetSwap.status = Status.claimed;
   }
 }

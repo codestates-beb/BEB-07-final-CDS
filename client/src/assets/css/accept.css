@@ -12,6 +12,7 @@
     }
 
     .container.container-accept {
+        @apply p-20;
         margin: auto;
         width: 1440px;
     }
@@ -22,7 +23,6 @@
 
     /* accept-banner */
     .accept-banner{
-      @apply mb-32;
       height: 465px;
       background-color: var(--white-color);
     }

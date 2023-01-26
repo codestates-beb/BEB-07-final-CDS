@@ -163,3 +163,5 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+CDS_CA.txt
