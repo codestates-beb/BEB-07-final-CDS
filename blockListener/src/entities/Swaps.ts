@@ -21,8 +21,20 @@ export class Swaps {
   @Column('int', { name: 'initialAssetPrice' })
   initialAssetPrice: number;
 
+  @Column('int', { name: 'amountOfAssets' })
+  amountOfAssets: number;
+
+  @Column('int', { name: 'totalAssets' })
+  totalAssets: number;
+
   @Column('int', { name: 'premium' })
   premium: number;
+
+  @Column('int', { name: 'premiumRate' })
+  premiumRate: number;
+
+  @Column('int', { name: 'dropRate' })
+  dropRate: number;
 
   @Column('int', { name: 'premiumInterval' })
   premiumInterval: number;

@@ -24,6 +24,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
+      totalAssets: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
       premium: {
         type: Sequelize.INTEGER,
         allowNull: false,
