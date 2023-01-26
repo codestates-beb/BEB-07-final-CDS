@@ -25,30 +25,34 @@ import config from '../config/config';
 // css
 import '../assets/css/create.css';
 
+// components
+import ScrollButton from '../components/ScrollButton.js';
+import Footer from '../components/Footer.js';
+
 function Create() {
   const metamask = useMetamask();
   const CDS = useCDS();
 
   // CDS Content State Variable
   const [contractAddress, setContractAddress] = useState('');
-  const buyerAddress = useSelector(state=>state.auth.user_addr);
+  const buyerAddress = useSelector((state) => state.auth.user_addr);
 
-      // Assets State Var
+  // Assets State Var
   const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('');
   const [amountOfAssets, setAmountOfAssets] = useState('');
   const [totalAssets, setTotalAssets] = useState();
 
-      // Claim State Var
+  // Claim State Var
   const [claimPrice, setClaimPrice] = useState('');
   const [dropRate, setDropRate] = useState('');
 
-      // Premium State Var
+  // Premium State Var
   const [premiumRate, setPremiumRate] = useState(2);
   const [premiumPrice, setPremiumPrice] = useState('');
-  const [premiumInterval, setPremiumInterval] = useState("12");
+  const [premiumInterval, setPremiumInterval] = useState('12');
   const [premiumRounds, setPremiumRounds] = useState('');
 
-      // Liqudation State Var
+  // Liqudation State Var
   const [sellerDeposit, setSellerDeposit] = useState('');
   const [liquidationPrice, setLiquidationPrice] = useState('');
 
@@ -93,16 +97,16 @@ function Create() {
 
   return (
     <>
-      <div className='create-banner'>
-        <img/>
+      <div className="create-banner">
+        <img />
       </div>
-      <div className='container container-create'>
-        <div className='create-head'>
-          <h1 className='create-head-title'>Propose Crypto Default Swap</h1>
-          <p className='create-head-notice text-2xl font-semibold py-2'>
+      <div className="container container-create">
+        <div className="create-head">
+          <h1 className="create-head-title">Propose Crypto Default Swap</h1>
+          <p className="create-head-notice text-2xl font-semibold py-2">
             Welcome! Enter Your Details And Start Creating Crypto Default Swap!
           </p>
-          <hr className='line w-[150px] color-[var(--primary-color)]'/>
+          <hr className="line w-[150px] color-[var(--primary-color)]" />
         </div>
         <div className='create-form'>
           <div className='form-section'>
@@ -228,8 +232,14 @@ function Create() {
           </div>
         </div>
       </div>
+      <div className="fixed bottom-11 right-11">
+        <ScrollButton />
+      </div>
+      <div>
+        <Footer />
+      </div>
     </>
-  )
+  );
 }
 
-export default Create ;
+export default Create;

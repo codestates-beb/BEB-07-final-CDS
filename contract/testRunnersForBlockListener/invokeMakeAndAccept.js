@@ -10,7 +10,7 @@ const OracleABI = require('../build/contracts/PriceOracleMock.json');
 const CDSABI = require('../build/contracts/CDS.json');
 
 const OracleCA = '0x62f98AFF6349DfF21a184e10CAbB9C3AcA10fa74';
-const CDSCA = '0x6E62eFEAb443bd1B233C4DF795Da4794511a8907';
+const CDSCA = '0x4758213ffaD552EE16435f003e409b2e9dF65D57';
 
 const kimAccount = web3.eth.accounts.privateKeyToAccount(
   '0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c',
@@ -78,5 +78,27 @@ const accept = async () => {
     });
 };
 
+const cancel = async () => {
+  console.log('before cancel ----------');
+  console.log(await web3.eth.getBalance(kimAccount.address));
+  console.log(await web3.eth.getBalance(seolAccount.address));
+  console.log('before cancel ----------');
+  const [currentSwapId] = await cds.methods.getSwapId().call();
+  await cds.methods.cancelSwap(currentSwapId).send({
+    from: kimAccount.address,
+    gasPrice: '20000000000',
+    gas: '6721975',
+  });
+  console.log('after cancel ----------');
+  console.log(await web3.eth.getBalance(kimAccount.address));
+  console.log(await web3.eth.getBalance(seolAccount.address));
+  console.log('after cancel ----------');
+};
+
+// 99766267459999559000
+// 99764979279999568000
+// create();
+// setTimeout(accept, 2000);
+
 create();
-setTimeout(accept, 2000);
+setTimeout(cancel, 5000);
