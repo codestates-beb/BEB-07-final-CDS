@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 
 // hooks
 import useMetamask from '../utils/hooks/useMetamask';
+import useCDS from '../utils/hooks/useCDS';
 
 // utils
 import {
@@ -13,6 +14,9 @@ import {
   calculateLiquidationPrice,
   calculatePremiumPrice,
 } from '../utils/calculator';
+import {
+  onlyNumber
+} from '../utils/validation';
 import createContract from '../utils/CDS';
 
 // config
@@ -23,7 +27,7 @@ import '../assets/css/create.css';
 
 function Create() {
   const metamask = useMetamask();
-  const CDS = createContract(config.contractAddr);
+  const CDS = useCDS();
 
   // CDS Content State Variable
   const [contractAddress, setContractAddress] = useState('');
@@ -32,7 +36,7 @@ function Create() {
       // Assets State Var
   const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('');
   const [amountOfAssets, setAmountOfAssets] = useState('');
-  const [totalAssets, setTotalAssets] = useState('');
+  const [totalAssets, setTotalAssets] = useState();
 
       // Claim State Var
   const [claimPrice, setClaimPrice] = useState('');
@@ -47,6 +51,45 @@ function Create() {
       // Liqudation State Var
   const [sellerDeposit, setSellerDeposit] = useState('');
   const [liquidationPrice, setLiquidationPrice] = useState('');
+
+  const createButtonHandler = async () =>{
+    const data = {
+      buyerAddress,
+      initialPriceOfAssets,
+      claimPrice,
+      liquidationPrice,
+      sellerDeposit,
+      premiumPrice,
+      premiumInterval,
+      premiumRounds,
+    };
+
+    console.log(data);
+    const result = await CDS.createSwap(data);
+    console.log(result);
+  }
+
+  useEffect(()=>{
+    setTotalAssets( calculateTotalAssets(initialPriceOfAssets, amountOfAssets) );
+  }, [initialPriceOfAssets, amountOfAssets])
+
+  useEffect(()=>{
+    const dropRateCalculated = calculateDropRate(initialPriceOfAssets, claimPrice);
+    setDropRate( dropRateCalculated );
+
+    const premiumPriceCalculated = calculatePremiumPrice(
+      initialPriceOfAssets, 
+      amountOfAssets, 
+      dropRateCalculated, 
+      premiumRate
+    );
+    setPremiumPrice( premiumPriceCalculated );
+
+  }, [initialPriceOfAssets, claimPrice])
+
+  useEffect(()=>{
+    setLiquidationPrice( calculateLiquidationPrice(initialPriceOfAssets, amountOfAssets, sellerDeposit) )
+  }, [totalAssets, sellerDeposit])
 
   return (
     <>
@@ -66,7 +109,11 @@ function Create() {
             <h2 className='section-title'>Address</h2>
             <div className='input-group'>
               <div className='input-button'>
-                <input placeholder='Buyer Address'/>
+                <input 
+                  placeholder='Buyer Address'
+                  value={buyerAddress}
+                  disabled
+                />
                 <button>Connect Metamask</button>
               </div>
             </div>
@@ -74,45 +121,109 @@ function Create() {
           <div className='form-section'>
             <h2 className='section-title'>Assets</h2>
             <div className='input-group'>
-              <input placeholder='Initial Price of Assets'/>
-              <input placeholder='The Amount of Assets'/>
-              <input placeholder='Total Assets'/>
+              <input 
+                placeholder='Initial Price of Assets'
+                value= { initialPriceOfAssets }
+                onChange={e=>{
+                  const currentValue = onlyNumber(e.target.value);
+                  setInitialPriceOfAssets(currentValue);
+                }}
+              />
+              <input 
+                placeholder='The Amount of Assets'
+                value={amountOfAssets}
+                onChange={e=>{
+                  const currentValue = onlyNumber(e.target.value);
+                  setAmountOfAssets(currentValue);
+                }}
+              />
+              <input 
+                placeholder='Total Assets'
+                value={`Total Assets: ${totalAssets}`}
+                readOnly
+                disabled
+              />
             </div>
           </div>
           <div className='form-section'>
             <h2 className='section-title'>Claim</h2>
             <div className='input-group'>
-              <input placeholder='Claim Price'/>
-              <input placeholder='Drop Rate'/>
+              <input 
+                placeholder='Claim Price'
+                value={claimPrice}
+                onChange={e=>{
+                  const currentValue = onlyNumber(e.target.value);
+                  setClaimPrice(currentValue);
+                }}
+              />
+              <input 
+                placeholder='Drop Rate'
+                value={`Drop Rate: ${dropRate} %`}
+                disabled
+              />
             </div>
           </div>
           <div className='form-section'>
             <h2 className='section-title'>Premium</h2>
             <div className='input-group'>
-              <input placeholder='Premium Rate'/>
-              <input placeholder='Premium Price'/>
+              <input placeholder='Premium Rate' value='Premium Rate: 2 %' disabled/>
+              <input 
+                placeholder='Premium Price'
+                value={`Premium Price: ${premiumPrice}`}
+                disabled
+              />
               <div className='input-select'>
-                <input placeholder='Premium Interval'></input>
-                <select placeholder='Premium Interval'>
-                  <option>12 months</option>
-                  <option>6 months</option>
-                  <option>3 months</option>
+                <input 
+                  placeholder='Premium Interval'
+                  value={`Premium Interval: ${premiumInterval}`}
+                  disabled
+                />
+                <select 
+                  placeholder='Premium Interval'
+                  defaultValue='12'
+                  onChange={e=>setPremiumInterval(e.target.value)}
+                >
+                  <option value='12'>12 months</option>
+                  <option value='6'>6 months</option>
+                  <option value='3'>3 months</option>
                 </select>
               </div>
-              <input placeholder='Premium Rounds'/>
+              <input 
+                placeholder='Premium Rounds'
+                value={premiumRounds}
+                onChange={e=>{
+                  const currentValue = onlyNumber(e.target.value);
+                  setPremiumRounds(currentValue);
+                }}
+              />
             </div>
           </div>
           <div className='form-section'>
             <h2 className='section-title'>Liquiditaion</h2>
             <div className='input-group'>
-              <input placeholder='Seller Deposit'/>
-              <input placeholder='Liquidated Price'/>
+              <input 
+                placeholder='Seller Deposit'
+                value={sellerDeposit}
+                onChange={e=>{
+                  const currentValue = onlyNumber(e.target.value);
+                  setSellerDeposit(currentValue);
+                }}
+              />
+              <input 
+                placeholder='Liquidated Price'
+                value={liquidationPrice}
+                disabled
+              />
               <input placeholder='Buyer Deposit'/>
             </div>
           </div>
           <div className='form-section'>
             <div className='button-group'>
-              <button className='create-button'>Create And Propose CDS</button>
+              <button 
+                className='create-button'
+                onClick={createButtonHandler}
+              >
+                Create And Propose CDS</button>
             </div>
           </div>
         </div>
