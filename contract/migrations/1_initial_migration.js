@@ -37,4 +37,9 @@ module.exports = async function (deployer, network, accounts) {
   await deployer.deploy(PriceOracleMock, 20000);
   await deployer.deploy(CDS);
   await syncArtifacts();
+  const currentTime = new Date();
+  fs.writeFileSync(
+    './CDS_CA.txt',
+    `${currentTime}\n \nThe Newest ADDRESS of CDS deployed on REMOTE network\n \n${CDS.address}`,
+  );
 };
