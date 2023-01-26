@@ -21,7 +21,8 @@ function useCDS() {
         createSwap: async (data)=>{
           const {
             buyerAddress, 
-            initialPriceOfAssets, 
+            initialPriceOfAssets,
+            amountOfAssets, 
             claimPrice, 
             liquidationPrice,
             sellerDeposit,
@@ -33,6 +34,7 @@ function useCDS() {
           if (
             !buyerAddress
             || !initialPriceOfAssets
+            || !amountOfAssets
             || !claimPrice
             || !liquidationPrice
             || !sellerDeposit
@@ -43,7 +45,8 @@ function useCDS() {
 
           contract.methods.createSwap(
             buyerAddress, 
-            initialPriceOfAssets, 
+            initialPriceOfAssets,
+            amountOfAssets,
             claimPrice, 
             liquidationPrice,
             sellerDeposit,
@@ -56,9 +59,13 @@ function useCDS() {
           })
         },
 
-        acceptSwap: ()=>{},
+        acceptSwap: ()=>{
 
-        cancelSwap: ()=>{},
+        },
+
+        cancelSwap: ()=>{
+
+        },
       }
 
       setCDS(CDSToSet);
