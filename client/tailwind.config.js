@@ -11,6 +11,7 @@ module.exports = {
       darkGrayColor: '#858584',
       ligthGrayColor: '#EFF0F4',
       black: '#000000',
+      mint: '#00FFF6',
     },
   },
   plugins: [],

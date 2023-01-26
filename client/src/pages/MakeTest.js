@@ -17,6 +17,9 @@ import {
     calculateLiquidationPrice,
 } from '../utils/calculator';
 
+// apis
+import { createSwap } from '../apis/contract';
+
 // css
 import '../assets/css/create.css'
 import createContract from '../utils/CDS';
