@@ -21,6 +21,10 @@ import config from '../config/config';
 // css
 import '../assets/css/create.css';
 
+// components
+import ScrollButton from '../components/ScrollButton.js';
+import Footer from '../components/Footer.js';
+
 function Create() {
   const metamask = useMetamask();
   const CDS = createContract(config.contractAddr);
@@ -116,6 +120,12 @@ function Create() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="fixed bottom-11 right-11">
+        <ScrollButton />
+      </div>
+      <div>
+        <Footer />
       </div>
     </>
   );
