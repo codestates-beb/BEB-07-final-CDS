@@ -48,3 +48,12 @@ jobs:
 
       - name: Test with Truffle test
         run: truffle test --network local
+      
+      - name: Deploy Contract to Remote Server
+        run: truffle migrate --network remote
+      
+      - name: Trigger discord webhook with CDS CA
+        uses: tsickert/discord-webhook@v5.3.0
+        with:
+          webhook-url: ${{ secrets.CONTRACT_DISCORD_WEBHOOK_URL }}
+          filename: CDS_CA.txt

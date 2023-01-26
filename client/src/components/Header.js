@@ -12,6 +12,9 @@ import useMetamask from '../utils/hooks/useMetamask';
 // css
 import '../assets/css/header.css';
 
+//image
+import MainLogo from '../img/CDS_Symbol_bright_removebg.png';
+
 function Header() {
   const metamask = useMetamask();
   const dispatch = useDispatch();
@@ -26,40 +29,39 @@ function Header() {
   };
 
   return (
-    <div className="header py-2 px-4 flex justify-center">
-      <div className="container container-header flex justify-between">
-        <div className="header-logo-wrapper">
-          <Link to="/" className="logo-link">
-            <img 
-              className="service-logo w-10 h-10" 
-              src={process.env.PUBLIC_URL + "/img/CDS_Symbol_bright_removebg.png"} 
-            />
-            <div className="service-name">
-              <p>Crypto</p>
-              <p>Default Swap</p>
-            </div>
+    <div className="header py-2 px-16 flex justify-between">
+      <div className="header-logo-wrapper">
+        <Link to="/" className="logo-link flex">
+          <img
+            className="service-logo  w-[3rem] h-[3rem]"
+            alt="service-logo"
+            src={process.env.PUBLIC_URL + '/img/CDS_Symbol_bright_removebg.png'}
+          />
+          <div className="service-name">
+            <p>Crypto</p>
+            <p>Default Swap</p>
+          </div>
+        </Link>
+      </div>
+      <div className="navbar flex items-center">
+        <ul className="navbar-wrapper mr-[2rem] flex">
+          <Link>
+            <li className="navbar-item mx-[1rem]">MyPage</li>
           </Link>
-        </div>
-        <div className="navbar flex items-center">
-          <ul className="navbar-wrapper flex">
-            <Link>
-              <li className="navbar-item">MyPage</li>
-            </Link>
-            <Link>
-              <li className="navbar-item">About</li>
-            </Link>
-            <Link to="/createTest">
-              <li className="navbar-item">Create CDS</li>
-            </Link>
-          </ul>
-          {isLogin ? (
-            <></>
-          ) : (
-            <button className="navbar-button" onClick={connectButtonHandler}>
-              Connect Wallet
-            </button>
-          )}
-        </div>
+          <Link>
+            <li className="navbar-item mx-[1rem]">About</li>
+          </Link>
+          <Link to="/createTest">
+            <li className="navbar-item mx-[1rem]">Create CDS</li>
+          </Link>
+        </ul>
+        {isLogin ? (
+          <></>
+        ) : (
+          <button className="navbar-button" onClick={connectButtonHandler}>
+            Connect Wallet
+          </button>
+        )}
       </div>
     </div>
   );
