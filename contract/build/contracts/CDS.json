@@ -11291,30 +11291,14 @@
   "ast": {
     "absolutePath": "project:/contracts/CDS.sol",
     "exportedSymbols": {
-      "CDS": [
-        837
-      ],
-      "Context": [
-        134
-      ],
-      "Counters": [
-        208
-      ],
-      "Ownable": [
-        112
-      ],
-      "PriceConsumer": [
-        888
-      ],
-      "PriceOracleMock": [
-        925
-      ],
-      "SafeMath": [
-        520
-      ],
-      "Swaps": [
-        1210
-      ]
+      "CDS": [837],
+      "Context": [134],
+      "Counters": [208],
+      "Ownable": [112],
+      "PriceConsumer": [888],
+      "PriceOracleMock": [925],
+      "SafeMath": [520],
+      "Swaps": [1210]
     },
     "id": 838,
     "license": "MIT",
@@ -11322,12 +11306,7 @@
     "nodes": [
       {
         "id": 522,
-        "literals": [
-          "solidity",
-          "^",
-          "0.8",
-          ".7"
-        ],
+        "literals": ["solidity", "^", "0.8", ".7"],
         "nodeType": "PragmaDirective",
         "src": "32:23:4"
       },
@@ -11374,9 +11353,7 @@
             "baseName": {
               "id": 526,
               "name": "Swaps",
-              "nameLocations": [
-                "213:5:4"
-              ],
+              "nameLocations": ["213:5:4"],
               "nodeType": "IdentifierPath",
               "referencedDeclaration": 1210,
               "src": "213:5:4"
@@ -11389,9 +11366,7 @@
             "baseName": {
               "id": 528,
               "name": "Ownable",
-              "nameLocations": [
-                "220:7:4"
-              ],
+              "nameLocations": ["220:7:4"],
               "nodeType": "IdentifierPath",
               "referencedDeclaration": 112,
               "src": "220:7:4"
@@ -11406,13 +11381,7 @@
         "contractKind": "contract",
         "fullyImplemented": true,
         "id": 837,
-        "linearizedBaseContracts": [
-          837,
-          112,
-          134,
-          1210,
-          888
-        ],
+        "linearizedBaseContracts": [837, 112, 134, 1210, 888],
         "name": "CDS",
         "nameLocation": "206:3:4",
         "nodeType": "ContractDefinition",
@@ -11423,9 +11392,7 @@
             "libraryName": {
               "id": 530,
               "name": "SafeMath",
-              "nameLocations": [
-                "238:8:4"
-              ],
+              "nameLocations": ["238:8:4"],
               "nodeType": "IdentifierPath",
               "referencedDeclaration": 520,
               "src": "238:8:4"
@@ -11623,10 +11590,7 @@
                       "id": 542,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        4294967278,
-                        4294967278
-                      ],
+                      "overloadedDeclarations": [4294967278, 4294967278],
                       "referencedDeclaration": 4294967278,
                       "src": "352:7:4",
                       "typeDescriptions": {
@@ -12125,9 +12089,7 @@
               "src": "1120:599:4",
               "statements": [
                 {
-                  "assignments": [
-                    611
-                  ],
+                  "assignments": [611],
                   "declarations": [
                     {
                       "constant": false,
@@ -12356,10 +12318,7 @@
                       "id": 619,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        4294967278,
-                        4294967278
-                      ],
+                      "overloadedDeclarations": [4294967278, 4294967278],
                       "referencedDeclaration": 4294967278,
                       "src": "1177:7:4",
                       "typeDescriptions": {
@@ -12563,9 +12522,7 @@
                   "src": "1239:42:4"
                 },
                 {
-                  "assignments": [
-                    640
-                  ],
+                  "assignments": [640],
                   "declarations": [
                     {
                       "constant": false,
@@ -12973,9 +12930,7 @@
                 "modifierName": {
                   "id": 605,
                   "name": "isNotOwner",
-                  "nameLocations": [
-                    "1091:10:4"
-                  ],
+                  "nameLocations": ["1091:10:4"],
                   "nodeType": "IdentifierPath",
                   "referencedDeclaration": 553,
                   "src": "1091:10:4"
@@ -13119,7 +13074,7 @@
                     "id": 596,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "968:7:4",
+                    "src": "975:7:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -13258,9 +13213,7 @@
               "src": "1857:333:4",
               "statements": [
                 {
-                  "assignments": [
-                    681
-                  ],
+                  "assignments": [681],
                   "declarations": [
                     {
                       "constant": false,
@@ -13489,10 +13442,7 @@
                       "id": 690,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        4294967278,
-                        4294967278
-                      ],
+                      "overloadedDeclarations": [4294967278, 4294967278],
                       "referencedDeclaration": 4294967278,
                       "src": "1930:7:4",
                       "typeDescriptions": {
@@ -13696,9 +13646,7 @@
                   "src": "1993:42:4"
                 },
                 {
-                  "assignments": [
-                    711
-                  ],
+                  "assignments": [711],
                   "declarations": [
                     {
                       "constant": false,
@@ -13930,9 +13878,7 @@
                 "modifierName": {
                   "id": 675,
                   "name": "isNotOwner",
-                  "nameLocations": [
-                    "1828:10:4"
-                  ],
+                  "nameLocations": ["1828:10:4"],
                   "nodeType": "IdentifierPath",
                   "referencedDeclaration": 553,
                   "src": "1828:10:4"
@@ -14019,7 +13965,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 672,
+                    "id": 675,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1794:7:4",
@@ -14134,9 +14080,7 @@
                   "src": "2269:19:4"
                 },
                 {
-                  "assignments": [
-                    742
-                  ],
+                  "assignments": [742],
                   "declarations": [
                     {
                       "constant": false,
@@ -14159,9 +14103,7 @@
                         "pathNode": {
                           "id": 740,
                           "name": "Swap",
-                          "nameLocations": [
-                            "2294:4:4"
-                          ],
+                          "nameLocations": ["2294:4:4"],
                           "nodeType": "IdentifierPath",
                           "referencedDeclaration": 990,
                           "src": "2294:4:4"
@@ -14218,10 +14160,7 @@
                   "src": "2294:39:4"
                 },
                 {
-                  "assignments": [
-                    748,
-                    null
-                  ],
+                  "assignments": [748, null],
                   "declarations": [
                     {
                       "constant": false,
@@ -14332,9 +14271,7 @@
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
-                      "names": [
-                        "value"
-                      ],
+                      "names": ["value"],
                       "nodeType": "FunctionCallOptions",
                       "options": [
                         {
@@ -14453,10 +14390,7 @@
                       "id": 759,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        4294967278,
-                        4294967278
-                      ],
+                      "overloadedDeclarations": [4294967278, 4294967278],
                       "referencedDeclaration": 4294967278,
                       "src": "2413:7:4",
                       "typeDescriptions": {
@@ -14617,9 +14551,7 @@
                 "modifierName": {
                   "id": 731,
                   "name": "isNotOwner",
-                  "nameLocations": [
-                    "2237:10:4"
-                  ],
+                  "nameLocations": ["2237:10:4"],
                   "nodeType": "IdentifierPath",
                   "referencedDeclaration": 553,
                   "src": "2237:10:4"
@@ -14823,9 +14755,7 @@
                     "pathNode": {
                       "id": 778,
                       "name": "Swap",
-                      "nameLocations": [
-                        "2585:4:4"
-                      ],
+                      "nameLocations": ["2585:4:4"],
                       "nodeType": "IdentifierPath",
                       "referencedDeclaration": 990,
                       "src": "2585:4:4"
@@ -14982,9 +14912,7 @@
                     "pathNode": {
                       "id": 791,
                       "name": "Buyer",
-                      "nameLocations": [
-                        "2689:5:4"
-                      ],
+                      "nameLocations": ["2689:5:4"],
                       "nodeType": "IdentifierPath",
                       "referencedDeclaration": 961,
                       "src": "2689:5:4"
@@ -15117,12 +15045,12 @@
               "src": "2763:16:4"
             },
             "returnParameters": {
-              "id": 808,
+              "id": 811,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 807,
+                  "id": 810,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
@@ -15136,14 +15064,12 @@
                     "typeString": "struct Swaps.Seller"
                   },
                   "typeName": {
-                    "id": 806,
+                    "id": 809,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
                       "id": 805,
                       "name": "Seller",
-                      "nameLocations": [
-                        "2801:6:4"
-                      ],
+                      "nameLocations": ["2801:6:4"],
                       "nodeType": "IdentifierPath",
                       "referencedDeclaration": 968,
                       "src": "2801:6:4"
@@ -15168,7 +15094,7 @@
           },
           {
             "body": {
-              "id": 823,
+              "id": 826,
               "nodeType": "Block",
               "src": "2926:25:4",
               "statements": [
@@ -15231,10 +15157,7 @@
                     "pathNode": {
                       "id": 817,
                       "name": "Counters.Counter",
-                      "nameLocations": [
-                        "2901:8:4",
-                        "2910:7:4"
-                      ],
+                      "nameLocations": ["2901:8:4", "2910:7:4"],
                       "nodeType": "IdentifierPath",
                       "referencedDeclaration": 140,
                       "src": "2901:16:4"

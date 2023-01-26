@@ -1872,21 +1872,11 @@
   "ast": {
     "absolutePath": "project:/contracts/Swaps/Swaps.sol",
     "exportedSymbols": {
-      "Counters": [
-        208
-      ],
-      "PriceConsumer": [
-        879
-      ],
-      "PriceOracleMock": [
-        916
-      ],
-      "SafeMath": [
-        520
-      ],
-      "Swaps": [
-        1201
-      ]
+      "Counters": [208],
+      "PriceConsumer": [879],
+      "PriceOracleMock": [916],
+      "SafeMath": [520],
+      "Swaps": [1201]
     },
     "id": 1202,
     "license": "MIT",
@@ -1894,12 +1884,7 @@
     "nodes": [
       {
         "id": 918,
-        "literals": [
-          "solidity",
-          "^",
-          "0.8",
-          ".7"
-        ],
+        "literals": ["solidity", "^", "0.8", ".7"],
         "nodeType": "PragmaDirective",
         "src": "32:23:7"
       },
@@ -1946,9 +1931,7 @@
             "baseName": {
               "id": 922,
               "name": "PriceConsumer",
-              "nameLocations": [
-                "225:13:7"
-              ],
+              "nameLocations": ["225:13:7"],
               "nodeType": "IdentifierPath",
               "referencedDeclaration": 879,
               "src": "225:13:7"
@@ -1963,10 +1946,7 @@
         "contractKind": "contract",
         "fullyImplemented": true,
         "id": 1201,
-        "linearizedBaseContracts": [
-          1201,
-          879
-        ],
+        "linearizedBaseContracts": [1201, 879],
         "name": "Swaps",
         "nameLocation": "216:5:7",
         "nodeType": "ContractDefinition",
@@ -1977,9 +1957,7 @@
             "libraryName": {
               "id": 924,
               "name": "Counters",
-              "nameLocations": [
-                "249:8:7"
-              ],
+              "nameLocations": ["249:8:7"],
               "nodeType": "IdentifierPath",
               "referencedDeclaration": 208,
               "src": "249:8:7"
@@ -1992,10 +1970,7 @@
               "pathNode": {
                 "id": 925,
                 "name": "Counters.Counter",
-                "nameLocations": [
-                  "262:8:7",
-                  "271:7:7"
-                ],
+                "nameLocations": ["262:8:7", "271:7:7"],
                 "nodeType": "IdentifierPath",
                 "referencedDeclaration": 140,
                 "src": "262:16:7"
@@ -2014,9 +1989,7 @@
             "libraryName": {
               "id": 928,
               "name": "SafeMath",
-              "nameLocations": [
-                "288:8:7"
-              ],
+              "nameLocations": ["288:8:7"],
               "nodeType": "IdentifierPath",
               "referencedDeclaration": 520,
               "src": "288:8:7"
@@ -2055,10 +2028,7 @@
               "pathNode": {
                 "id": 931,
                 "name": "Counters.Counter",
-                "nameLocations": [
-                  "312:8:7",
-                  "321:7:7"
-                ],
+                "nameLocations": ["312:8:7", "321:7:7"],
                 "nodeType": "IdentifierPath",
                 "referencedDeclaration": 140,
                 "src": "312:16:7"
@@ -2149,9 +2119,7 @@
                 "pathNode": {
                   "id": 940,
                   "name": "Swap",
-                  "nameLocations": [
-                    "440:4:7"
-                  ],
+                  "nameLocations": ["440:4:7"],
                   "nodeType": "IdentifierPath",
                   "referencedDeclaration": 981,
                   "src": "440:4:7"
@@ -2406,9 +2374,7 @@
                   "pathNode": {
                     "id": 960,
                     "name": "Buyer",
-                    "nameLocations": [
-                      "679:5:7"
-                    ],
+                    "nameLocations": ["679:5:7"],
                     "nodeType": "IdentifierPath",
                     "referencedDeclaration": 952,
                     "src": "679:5:7"
@@ -2443,9 +2409,7 @@
                   "pathNode": {
                     "id": 963,
                     "name": "Seller",
-                    "nameLocations": [
-                      "696:6:7"
-                    ],
+                    "nameLocations": ["696:6:7"],
                     "nodeType": "IdentifierPath",
                     "referencedDeclaration": 959,
                     "src": "696:6:7"
@@ -2642,9 +2606,7 @@
                   "pathNode": {
                     "id": 978,
                     "name": "Status",
-                    "nameLocations": [
-                      "879:6:7"
-                    ],
+                    "nameLocations": ["879:6:7"],
                     "nodeType": "IdentifierPath",
                     "referencedDeclaration": 938,
                     "src": "879:6:7"
@@ -2725,9 +2687,7 @@
                   "src": "1176:19:7"
                 },
                 {
-                  "assignments": [
-                    1008
-                  ],
+                  "assignments": [1008],
                   "declarations": [
                     {
                       "constant": false,
@@ -2809,9 +2769,7 @@
                   "src": "1201:37:7"
                 },
                 {
-                  "assignments": [
-                    1015
-                  ],
+                  "assignments": [1015],
                   "declarations": [
                     {
                       "constant": false,
@@ -2834,9 +2792,7 @@
                         "pathNode": {
                           "id": 1013,
                           "name": "Swap",
-                          "nameLocations": [
-                            "1244:4:7"
-                          ],
+                          "nameLocations": ["1244:4:7"],
                           "nodeType": "IdentifierPath",
                           "referencedDeclaration": 981,
                           "src": "1244:4:7"
@@ -3826,9 +3782,7 @@
               "src": "1838:429:7",
               "statements": [
                 {
-                  "assignments": [
-                    1099
-                  ],
+                  "assignments": [1099],
                   "declarations": [
                     {
                       "constant": false,
@@ -3851,9 +3805,7 @@
                         "pathNode": {
                           "id": 1097,
                           "name": "Swap",
-                          "nameLocations": [
-                            "1844:4:7"
-                          ],
+                          "nameLocations": ["1844:4:7"],
                           "nodeType": "IdentifierPath",
                           "referencedDeclaration": 981,
                           "src": "1844:4:7"
@@ -4017,10 +3969,7 @@
                       "id": 1104,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        4294967278,
-                        4294967278
-                      ],
+                      "overloadedDeclarations": [4294967278, 4294967278],
                       "referencedDeclaration": 4294967278,
                       "src": "1894:7:7",
                       "typeDescriptions": {
@@ -4725,9 +4674,7 @@
               "src": "2339:188:7",
               "statements": [
                 {
-                  "assignments": [
-                    1175
-                  ],
+                  "assignments": [1175],
                   "declarations": [
                     {
                       "constant": false,
@@ -4750,9 +4697,7 @@
                         "pathNode": {
                           "id": 1173,
                           "name": "Swap",
-                          "nameLocations": [
-                            "2345:4:7"
-                          ],
+                          "nameLocations": ["2345:4:7"],
                           "nodeType": "IdentifierPath",
                           "referencedDeclaration": 981,
                           "src": "2345:4:7"
@@ -4931,10 +4876,7 @@
                       "id": 1180,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        4294967278,
-                        4294967278
-                      ],
+                      "overloadedDeclarations": [4294967278, 4294967278],
                       "referencedDeclaration": 4294967278,
                       "src": "2393:7:7",
                       "typeDescriptions": {
