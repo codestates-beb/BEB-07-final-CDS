@@ -2,7 +2,7 @@
 import { useParams } from 'react-router-dom';
 
 // components
-import Card from '../components/Card';
+import Card from '../components/ProposedCard';
 import MarketPrice from '../components/MarketPrice';
 
 // css
