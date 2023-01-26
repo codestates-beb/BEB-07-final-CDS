@@ -1,6 +1,9 @@
 // modules
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
+// actions
+import { setAuth } from '../features/authSlice';
 
 // hooks
 import useMetamask from '../utils/hooks/useMetamask';
@@ -17,10 +20,6 @@ import {
 import {
   onlyNumber
 } from '../utils/validation';
-import createContract from '../utils/CDS';
-
-// config
-import config from '../config/config';
 
 // css
 import '../assets/css/create.css';
@@ -32,6 +31,7 @@ import Footer from '../components/Footer.js';
 function Create() {
   const metamask = useMetamask();
   const CDS = useCDS();
+  const dispatch = useDispatch();
   const isLogin = useSelector((state) => state.auth.isLogin);
 
   // CDS Content State Variable
@@ -57,10 +57,12 @@ function Create() {
   const [sellerDeposit, setSellerDeposit] = useState('');
   const [liquidationPrice, setLiquidationPrice] = useState('');
 
+  // Create CDS Handler
   const createButtonHandler = async () =>{
     const data = {
       buyerAddress,
       initialPriceOfAssets,
+      amountOfAssets,
       claimPrice,
       liquidationPrice,
       sellerDeposit,
@@ -74,6 +76,14 @@ function Create() {
     console.log(result);
   }
 
+  // Connect Wallet Handler
+  const connectButtonHandler = async () => {
+    const result = await metamask.request({ method: 'eth_requestAccounts' });
+    console.log(result);
+    if (result && result.length > 0) dispatch(setAuth(result[0]));
+  };
+
+  // Calculate Variable
   useEffect(()=>{
     setTotalAssets( calculateTotalAssets(initialPriceOfAssets, amountOfAssets) );
   }, [initialPriceOfAssets, amountOfAssets])
@@ -122,7 +132,11 @@ function Create() {
                 {isLogin?
                   <></>
                   :
-                  <button>Connect Metamask</button>
+                  <button
+                    onClick={connectButtonHandler}
+                  >
+                    Connect Metamask
+                  </button>
                 }
               </div>
             </div>
@@ -132,7 +146,7 @@ function Create() {
             <div className='input-group'>
               <input 
                 placeholder='Initial Price of Assets'
-                value= { initialPriceOfAssets }
+                value= { `Initial Price of Assets: ${initialPriceOfAssets}` }
                 onChange={e=>{
                   const currentValue = onlyNumber(e.target.value);
                   setInitialPriceOfAssets(currentValue);
@@ -140,7 +154,7 @@ function Create() {
               />
               <input 
                 placeholder='The Amount of Assets'
-                value={amountOfAssets}
+                value={`The Amount of Assets: ${amountOfAssets}` }
                 onChange={e=>{
                   const currentValue = onlyNumber(e.target.value);
                   setAmountOfAssets(currentValue);
@@ -159,7 +173,7 @@ function Create() {
             <div className='input-group'>
               <input 
                 placeholder='Claim Price'
-                value={claimPrice}
+                value={`Claim Price: ${claimPrice}`}
                 onChange={e=>{
                   const currentValue = onlyNumber(e.target.value);
                   setClaimPrice(currentValue);
@@ -199,7 +213,7 @@ function Create() {
               </div>
               <input 
                 placeholder='Premium Rounds'
-                value={premiumRounds}
+                value={`Premium Rounds: ${premiumRounds}`}
                 onChange={e=>{
                   const currentValue = onlyNumber(e.target.value);
                   setPremiumRounds(currentValue);
@@ -212,7 +226,7 @@ function Create() {
             <div className='input-group'>
               <input 
                 placeholder='Seller Deposit'
-                value={sellerDeposit}
+                value={`Seller Deposit: ${sellerDeposit}`}
                 onChange={e=>{
                   const currentValue = onlyNumber(e.target.value);
                   setSellerDeposit(currentValue);
@@ -220,10 +234,14 @@ function Create() {
               />
               <input 
                 placeholder='Liquidated Price'
-                value={liquidationPrice}
+                value={`Liquidated Price: ${liquidationPrice}`}
                 disabled
               />
-              <input placeholder='Buyer Deposit'/>
+              <input 
+                placeholder='Buyer Deposit'
+                value={`Buyer Deposit: ${premiumPrice * 3}`}
+                disabled
+              />
             </div>
           </div>
           <div className='form-section'>
