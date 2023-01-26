@@ -20,9 +20,27 @@ AppDataSource.initialize()
       .createQueryBuilder()
       .delete()
       .from(Users)
-      .where('address=*');
+      .where('true=true')
+      .execute()
+      .then((data) => console.log('user table cleared : ', data));
+    await transactionRepository
+      .createQueryBuilder()
+      .delete()
+      .from(Transactions)
+      .where('true=true')
+      .execute()
+      .then((data) => console.log('transaction table cleared : ', data));
+    await swapRepository
+      .createQueryBuilder()
+      .delete()
+      .from(Swaps)
+      .where('true=true')
+      .execute()
+      .then((data) => console.log('swap table cleared : ', data));
+
     cds.setContract(abi, getEnv('CDS_CA'));
-    cds.subEvents();
     await cds.getPastEvents();
+
+    cds.subEvents();
   })
   .catch((error) => console.log(error));

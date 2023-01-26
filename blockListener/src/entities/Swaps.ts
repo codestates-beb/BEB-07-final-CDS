@@ -33,7 +33,7 @@ export class Swaps {
   @Column('int', { name: 'premiumRate' })
   premiumRate: number;
 
-  @Column('int', { name: 'dropRate' })
+  @Column('decimal', { precision: 10, scale: 4, name: 'dropRate' })
   dropRate: number;
 
   @Column('int', { name: 'premiumInterval' })
@@ -54,47 +54,11 @@ export class Swaps {
   @Column('int', { name: 'liquidationPrice' })
   liquidationPrice: number;
 
-  @Column('enum', {
-    name: 'status',
-    enum: [
-      'pending',
-      'active',
-      'claimable',
-      'expired',
-      'overdue',
-      'liquidated',
-      'inactive',
-    ],
-  })
-  status:
-    | 'pending'
-    | 'active'
-    | 'claimable'
-    | 'expired'
-    | 'overdue'
-    | 'liquidated'
-    | 'inactive';
+  @Column('varchar', { name: 'status', nullable: true, length: 20 })
+  status: string | null;
 
-  @Column('enum', {
-    name: 'updatableStatus',
-    enum: [
-      'pending',
-      'active',
-      'claimable',
-      'expired',
-      'overdue',
-      'liquidated',
-      'inactive',
-    ],
-  })
-  updatableStatus:
-    | 'pending'
-    | 'active'
-    | 'claimable'
-    | 'expired'
-    | 'overdue'
-    | 'liquidated'
-    | 'inactive';
+  @Column('varchar', { name: 'updatableStatus', nullable: true, length: 20 })
+  updatableStatus: string | null;
 
   @CreateDateColumn()
   createdAt: Date;
