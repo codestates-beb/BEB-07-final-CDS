@@ -1,17 +1,18 @@
 :root {
-  --primary-color : #21E6C1 ;
-  --background-color : #3b3b3b;
-  --black-color : #464646 ;
-  --white-color : #ffffff ;
-  --dark-gray-color : #858584 ;
-  --ligth-gray-color : #EFF0F4 ;
+  --primary-color: #21e6c1;
+  --background-color: #2b2b2b;
+  --black-color: #4f4f4f;
+  --white-color: #ffffff;
+  --dark-gray-color: #858584;
+  --ligth-gray-color: #eff0f4;
 }
 
 body {
-    background-color : var(--background-color);
-    color: var(--white-color);
+  background-color: var(--background-color);
+  color: var(--white-color);
 }
 
-body input, body select {
-    color: #000000;
+body input,
+body select {
+  color: #000000;
 }

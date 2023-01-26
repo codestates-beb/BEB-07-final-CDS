@@ -26,7 +26,7 @@ const ScrollButton = () => {
   return (
     <div>
       <button
-        className="h-16 w-16 rounded-full bg-mint text-center text-white drop-shadow-md transition-all hover:scale-110"
+        className="h-16 w-16 rounded-full bg-primaryColor text-center text-white drop-shadow-md transition-all hover:scale-110"
         onClick={scrollToTop}
         style={{ display: visible ? 'inline' : 'none' }}
       >
