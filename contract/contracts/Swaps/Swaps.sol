@@ -14,7 +14,7 @@ contract Swaps is PriceConsumer {
     pending,
     active,
     inactive,
-    closed
+    claimed
   }
 
   mapping(uint256 => Swap) internal _swaps;
@@ -94,11 +94,22 @@ contract Swaps is PriceConsumer {
     return _acceptedSwapId;
   }
 
-  function _cancelSwap(uint256 _targetSwapId) internal returns (bool) {
-    Swap storage cSwap = _swaps[_targetSwapId];
-    require(msg.sender == cSwap.buyer.addr, 'Only buyer of the CDS can cancel');
+  function _cancelSwap(uint256 _targetSwapId) internal {
+    Swap storage targetSwap = _swaps[_targetSwapId];
+    targetSwap.buyer.deposit = 0;
+    targetSwap.status = Status.inactive;
+  }
 
-    cSwap.status = Status.inactive;
-    return true;
+  function _claimSwap(uint256 _targetSwapId) internal {
+    Swap storage targetSwap = _swaps[_targetSwapId];
+    // buyer
+    targetSwap.buyer.deposit = 0;
+    targetSwap.buyer.nextPayDate = 0;
+
+    // seller
+    targetSwap.seller.deposit = 0;
+    targetSwap.seller.isDeposited = false;
+
+    targetSwap.status = Status.claimed;
   }
 }
