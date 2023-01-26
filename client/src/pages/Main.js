@@ -6,19 +6,21 @@ import MainLogo from '../img/CDS_Symbol_bright_removebg.png';
 
 // components
 import MarketPrice from '../components/MarketPrice.js';
-import Card from '../components/Card.js';
+import ProposedCard from '../components/ProposedCard.js';
+import ConfirmedCard from '../components/ConfirmedCard.js';
+import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
 function Main() {
   return (
     <div className="">
       <div className="MainTextBox flex w-screen mx-auto mt-24 justify-center">
-        <div className="mr-80 w-[33.5rem] h-[29rem]">
-          <div className="text-7xl">
+        <div className="mr-48 w-[33.5rem] h-[29rem]">
+          <div className="text-6xl font-semibold">
             <h1 className="mb-[1.5rem]">Crypto</h1>
             <h1 className="mb-[1.5rem]">Default Swap</h1>
           </div>
-          <div className="text-xl">
+          <div className="text-lg">
             <h1>
               Crypto Default Swap(CDS) project provides a peer-to-peer DeFi
               service that allows users to hedge risks in crypto financial
@@ -30,15 +32,15 @@ function Main() {
             </h1>
           </div>
           <div>
-            <Link to="/createTest">
-              <button className="mt-10 rounded-2xl w-80 h-12 text-lg font-semibold bg-primaryColor hover:scale-105 transition-all">
+            <Link to="/create">
+              <button className="mt-10 rounded-2xl w-64 h-10 text-sm font-semibold bg-primaryColor hover:scale-105 transition-all">
                 Create Crypto Default Swap (CDS)
               </button>
             </Link>
           </div>
         </div>
         <img
-          className="logoImg w-[28.5rem] h-[28.5rem] hover:scale-110 transition-all"
+          className="logoImg w-[22rem] h-[22rem] hover:scale-110 transition-all"
           alt="MainLogo"
           src={MainLogo}
         />
@@ -55,7 +57,7 @@ function Main() {
         <div className="w-[18.5rem] h-[3px] bg-primaryColor mt-[2.5rem]"></div>
       </div>
       <div className="flex justify-center w-screen mx-auto">
-        <div className="mt-[2.5rem] w-[50rem] h-[10rem] text-center font-medium text-xl">
+        <div className="mt-[2.5rem] w-[50rem] h-[10rem] text-center font-medium text-base">
           Crypto Default Swap(CDS) project provides a peer-to-peer DeFi service
           that allows users to hedge risks in crypto financial markets. Users
           can purchase CDS to escape downside risks, event risks. Buyer pays
@@ -66,19 +68,36 @@ function Main() {
         </div>
       </div>
       <div className="flex-col">
-        <div className="mt-64 font-bold text-4xl mb-[2rem] mr-[60rem] text-center">
+        <div className="mt-64 font-bold text-3xl mb-[2rem] mr-[45rem] text-center">
           Proposed CDSs
         </div>
-        <div className="grid grid-rows-2 grid-flow-col gap-y-8 gap-x-[6.25rem] justify-center">
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
+        <div className="grid grid-rows-2 grid-flow-col gap-y-7 gap-x-[4rem] justify-center">
+          <ProposedCard />
+          <ProposedCard />
+          <ProposedCard />
+          <ProposedCard />
+          <ProposedCard />
+          <ProposedCard />
+          <ProposedCard />
+          <ProposedCard />
         </div>
+      </div>
+      <div className="flex-col">
+        <div className="mt-64 font-bold text-3xl mb-[2rem] mr-[45rem] text-center">
+          Confirmed CDSs
+        </div>
+        <div className="grid grid-rows-2 grid-flow-col gap-y-7 gap-x-[4rem] justify-center">
+          <ConfirmedCard />
+          <ConfirmedCard />
+          <ConfirmedCard />
+          <ConfirmedCard />
+          <ConfirmedCard />
+          <ConfirmedCard />
+          <ConfirmedCard />
+        </div>
+      </div>
+      <div className="fixed bottom-11 right-11">
+        <ScrollButton />
       </div>
       <div>
         <Footer />
