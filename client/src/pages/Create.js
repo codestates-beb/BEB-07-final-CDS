@@ -32,6 +32,7 @@ import Footer from '../components/Footer.js';
 function Create() {
   const metamask = useMetamask();
   const CDS = useCDS();
+  const isLogin = useSelector((state) => state.auth.isLogin);
 
   // CDS Content State Variable
   const [contractAddress, setContractAddress] = useState('');
@@ -118,7 +119,11 @@ function Create() {
                   value={buyerAddress}
                   disabled
                 />
-                <button>Connect Metamask</button>
+                {isLogin?
+                  <></>
+                  :
+                  <button>Connect Metamask</button>
+                }
               </div>
             </div>
           </div>
