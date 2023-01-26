@@ -1,5 +1,5 @@
 // components
-import Card from './Card';
+import Card from './ProposedCard';
 
 function CardList() {
   const data = new Array(4);

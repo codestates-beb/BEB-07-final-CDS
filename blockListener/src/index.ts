@@ -15,5 +15,6 @@ AppDataSource.initialize()
     // let cds = CDS.getInstance('ws://localhost:8545');
     cds.setContract(abi, getEnv('CDS_CA'));
     cds.subEvents();
+    await cds.getPastEvents();
   })
   .catch((error) => console.log(error));

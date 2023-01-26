@@ -10,7 +10,7 @@
   "sourceMap": "116:1153:8:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
   "deployedSourceMap": "116:1153:8:-:0;;;;;;;;",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.7;\n\nimport '@openzeppelin/contracts/utils/math/SafeMath.sol';\n\nlibrary LibSwapCalc {\n  using SafeMath for uint256;\n\n  uint256 internal constant PERCENTAGE_BASE = 100;\n  uint256 internal constant PREMIUM_RATE = 2;\n  uint256 internal constant DEPOSIT_RATE = 3;\n\n  function calcPrice(\n    uint256 _price,\n    uint256 _rate\n  ) internal pure returns (uint256) {\n    return _price.mul(PERCENTAGE_BASE.sub(_rate)).div(PERCENTAGE_BASE);\n  }\n\n  // function calcTotalClaimPrice(uint256 numBlocks, uint256 price, uint256 claimRate) internal pure returns (uint256) {\n  //     uint256 totalAsset = numBlocks.mul(price);\n  //     return totalAsset.mul(claimRate).div(PERCENTAGE_BASE);\n  // }\n\n  function calcTotalLiquidationPrice(\n    uint256 _numBlocks,\n    uint256 _price,\n    uint256 _liquidationRate\n  ) internal pure returns (uint256) {\n    uint256 totalAsset = _numBlocks.mul(_price);\n    return totalAsset.mul(_liquidationRate).div(PERCENTAGE_BASE);\n  }\n\n  function calcPremium(uint256 _claimPrice) internal pure returns (uint256) {\n    return _claimPrice.mul(PREMIUM_RATE).div(PERCENTAGE_BASE);\n  }\n\n  function calcBuyerDepo(uint256 _premium) internal pure returns (uint256) {\n    return _premium.mul(DEPOSIT_RATE);\n  }\n}\n",
-  "sourcePath": "/Users/yoonsoo/codestates/BEB-07-final-CDS/contract/contracts/libs/LibSwapCalc.sol",
+  "sourcePath": "/Users/sdh/Study/BEB_07/projects/CDS/contract/contracts/libs/LibSwapCalc.sol",
   "ast": {
     "absolutePath": "project:/contracts/libs/LibSwapCalc.sol",
     "exportedSymbols": {
@@ -1266,8 +1266,8 @@
     "version": "0.8.16+commit.07a7930e.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.4.11",
-  "updatedAt": "2023-01-25T09:07:21.695Z",
+  "schemaVersion": "3.4.9",
+  "updatedAt": "2023-01-25T10:28:15.224Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
