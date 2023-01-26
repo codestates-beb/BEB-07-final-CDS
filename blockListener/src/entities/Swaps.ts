@@ -51,6 +51,7 @@ export class Swaps {
       'expired',
       'overdue',
       'liquidated',
+      'inactive',
     ],
   })
   status:
@@ -59,7 +60,8 @@ export class Swaps {
     | 'claimable'
     | 'expired'
     | 'overdue'
-    | 'liquidated';
+    | 'liquidated'
+    | 'inactive';
 
   @Column('enum', {
     name: 'updatableStatus',
@@ -70,6 +72,7 @@ export class Swaps {
       'expired',
       'overdue',
       'liquidated',
+      'inactive',
     ],
   })
   updatableStatus:
@@ -78,7 +81,8 @@ export class Swaps {
     | 'claimable'
     | 'expired'
     | 'overdue'
-    | 'liquidated';
+    | 'liquidated'
+    | 'inactive';
 
   @CreateDateColumn()
   createdAt: Date;
