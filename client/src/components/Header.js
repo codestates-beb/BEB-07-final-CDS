@@ -45,7 +45,7 @@ function Header() {
       </div>
       <div className="navbar flex items-center">
         <ul className="navbar-wrapper mr-[2rem] flex">
-          <Link>
+          <Link to="/mypage">
             <li className="navbar-item mx-[1rem]">MyPage</li>
           </Link>
           <Link>

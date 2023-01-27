@@ -13,6 +13,7 @@ module.exports = {
       black: '#000000',
       mint: '#00FFF6',
       darkBlue: '#071E3D',
+      lightGray: '#B4B4B4',
     },
   },
   plugins: [],

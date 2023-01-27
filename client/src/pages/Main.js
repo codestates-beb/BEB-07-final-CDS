@@ -15,7 +15,7 @@ function Main() {
   return (
     <div className="">
       <div className="MainTextBox flex w-screen mx-auto mt-24 justify-center">
-        <div className="mr-48 w-[33.5rem] h-[29rem]">
+        <div className="mr-[10%] w-[33.5rem] h-[29rem]">
           <div className="text-6xl font-semibold">
             <h1 className="mb-[1.5rem]">Crypto</h1>
             <h1 className="mb-[1.5rem]">Default Swap</h1>
@@ -84,7 +84,7 @@ function Main() {
       </div>
       <div className="flex-col">
         <div className="mt-64 font-bold text-3xl mb-[2rem] mr-[45rem] text-center">
-          Confirmed CDSs
+          Accepted CDSs
         </div>
         <div className="grid grid-rows-2 grid-flow-col gap-y-7 gap-x-[4rem] justify-center">
           <ConfirmedCard />
