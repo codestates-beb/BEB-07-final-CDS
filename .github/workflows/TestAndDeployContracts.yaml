@@ -49,7 +49,7 @@ jobs:
         
       - name: Stringify file content
         run: |
-          MESSAGE=$(cat contract/CDS_CA.txt)
+          MESSAGE=$(cat CDS_CA.txt)
           echo "MESSAGE=${MESSAGE}" >> $GITHUB_ENV
 
       - name: Trigger discord webhook with CDS CA
