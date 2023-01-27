@@ -10,13 +10,9 @@ module.exports = async function (deployer, network, accounts) {
   fs.writeFileSync(
     './CDS_CA.txt',
     `${currentTime}
-The Latest ADDRESS of CDS deployed on REMOTE network
-
+The Latest ADDRESS of CDS and Oracle deployed on REMOTE network
     CDS ADDRESS:  ${CDS.address}
-    TX HASH:  ${CDSreceipt.transactionHash}
-
-The Latest ADDRESS of PriceOracle deployed on REMOTE network
-
+    CDS deploy TX HASH:  ${CDSreceipt.transactionHash}
     Oracle ADDRESS:  ${PriceOracleMock.address}`,
     // TX HASH:  ${oracleReceipt.transactionHash}`,
   );
