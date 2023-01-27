@@ -58,4 +58,17 @@
   .detail-content .content-box .content-item .item-figures{
     @apply py-4 font-normal text-2xl;
   }
+
+  /* detail tail */
+  .detail-tail .button-group{
+    @apply w-[68rem] flex justify-end mt-10;
+  }
+
+  .detail-tail .button{
+    @apply py-4 w-[8rem] font-bold bg-secondaryColor rounded-xl mr-5;
+  }
+
+  .detail-tail .button:last-child{
+    @apply mr-0;
+  }
 }
