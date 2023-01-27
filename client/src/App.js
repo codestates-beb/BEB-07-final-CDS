@@ -10,6 +10,7 @@ import Main from './pages/Main';
 import Create from './pages/Create';
 import Accept from './pages/Accept';
 import Detail from './pages/Detail';
+import Mypage from './pages/Mypage';
 import MakeTest from './pages/MakeTest';
 import AcceptTest from './pages/AcceptTest';
 
@@ -24,7 +25,8 @@ function App() {
         <Route path="/" element={<Main />} />
         <Route path="/create" element={<Create />} />
         <Route path="/accept/:swapId" element={<Accept />} />
-        <Route path='/detail' element={<Detail/>}/>
+        <Route path="/detail" element={<Detail />} />
+        <Route path="/mypage" element={<Mypage />} />
         <Route path="/createTest" element={<MakeTest />} />
         <Route path="/acceptTest/:swapId" element={<AcceptTest />} />
       </Routes>

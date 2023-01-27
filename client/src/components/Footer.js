@@ -3,8 +3,8 @@ import Logo from '../img/CDS_Symbol-removebg.png';
 
 function Footer() {
   return (
-    <div className="w-screen bg-ligthGrayColor h-[26rem] mt-[10rem]">
-      <div className="px-[10rem] pt-[3rem]">
+    <div className="w-screen bg-ligthGrayColor h-[22rem] mt-[10rem]">
+      <div className="px-[10rem] pt-[2rem]">
         <div to="/" className="logo-link flex">
           <img
             className="service-logo  w-[4rem] h-[4rem]"
