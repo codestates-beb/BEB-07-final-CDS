@@ -90,9 +90,16 @@
 
     .accept-form .form-section .button-group{
         @apply flex justify-end;
+        gap: 1rem;
     }
 
-    .accept-form .form-section .accept-button {
+    .accept-form .form-section .accept-button, 
+    .accept-form .form-section .cancel-button 
+    {
         @apply p-4 font-bold
+    }
+
+    .accept-form .form-section .cancel-button {
+        @apply bg-secondaryColor
     }
 }

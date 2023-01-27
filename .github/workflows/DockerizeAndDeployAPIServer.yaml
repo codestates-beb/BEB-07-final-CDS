@@ -1,4 +1,4 @@
-name: deployApiServer
+name: Dockerize and Deploy API Server
 
 on:
   workflow_dispatch:

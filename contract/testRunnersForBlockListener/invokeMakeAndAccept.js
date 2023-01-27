@@ -2,15 +2,18 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-undef */
 // eslint-disable-next-line import/no-extraneous-dependencies
+require('dotenv').config();
 const Web3 = require('web3');
 
-const web3 = new Web3('http://20.214.105.181:8545');
+const { REMOTE_HOST, REMOTE_PORT } = process.env;
+
+const web3 = new Web3(`http://${REMOTE_HOST}:${REMOTE_PORT}`);
 
 const OracleABI = require('../build/contracts/PriceOracleMock.json');
 const CDSABI = require('../build/contracts/CDS.json');
 
-const OracleCA = '0x62f98AFF6349DfF21a184e10CAbB9C3AcA10fa74';
-const CDSCA = '0x4758213ffaD552EE16435f003e409b2e9dF65D57';
+const OracleCA = '0x4bf749ec68270027C5910220CEAB30Cc284c7BA2';
+const CDSCA = '0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D';
 
 const kimAccount = web3.eth.accounts.privateKeyToAccount(
   '0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c',
@@ -21,6 +24,7 @@ const seolAccount = web3.eth.accounts.privateKeyToAccount(
 
 const initialPrice = 20000;
 const defaultClaimPrice = 15000;
+const defaultAmountOfAssets = 10;
 const defaultLiquidationPrice = 10000;
 const defaultSellerDeposit = 100000;
 const defaultPremium = 3000;
@@ -46,6 +50,7 @@ const create = async () => {
       .createSwap(
         kimAccount.address,
         initialPrice,
+        defaultAmountOfAssets,
         defaultClaimPrice,
         defaultLiquidationPrice,
         defaultSellerDeposit,
@@ -97,8 +102,8 @@ const cancel = async () => {
 
 // 99766267459999559000
 // 99764979279999568000
-// create();
-// setTimeout(accept, 2000);
-
 create();
-setTimeout(cancel, 5000);
+setTimeout(accept, 2000);
+
+// create();
+// setTimeout(cancel, 5000);

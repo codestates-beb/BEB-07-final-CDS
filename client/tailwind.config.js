@@ -5,6 +5,7 @@ module.exports = {
     extend: {},
     colors: {
       primaryColor: '#21E6C1',
+      secondaryColor: '#278EA5',
       backgroundColor: '#3b3b3b',
       blackColor: '#4F4F4F',
       whiteColor: '#ffffff',
@@ -13,6 +14,7 @@ module.exports = {
       black: '#000000',
       mint: '#00FFF6',
       darkBlue: '#071E3D',
+      lightGray: '#B4B4B4',
     },
   },
   plugins: [],

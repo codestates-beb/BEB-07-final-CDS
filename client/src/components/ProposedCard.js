@@ -1,6 +1,6 @@
 import BTHLogo from '../img/BTC_Logo.png';
 
-function Card() {
+function ProposedCard() {
   return (
     <div className="card bg-darkGrayColor w-[13rem] h-[17rem] rounded-3xl hover:scale-110 transition-all">
       <div className="mx-[1.5rem] py-[1.5rem]">
@@ -39,4 +39,4 @@ function Card() {
   );
 }
 
-export default Card;
+export default ProposedCard;

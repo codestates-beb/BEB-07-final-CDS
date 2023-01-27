@@ -1,6 +1,10 @@
 // modules
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
+// actions
+import { setAuth } from '../features/authSlice';
 
 // hooks
 import useMetamask from '../utils/hooks/useMetamask';
@@ -17,10 +21,9 @@ import {
 import {
   onlyNumber
 } from '../utils/validation';
-import createContract from '../utils/CDS';
-
-// config
-import config from '../config/config';
+import {
+  weeksToUnixTime
+} from '../utils/calendar';
 
 // css
 import '../assets/css/create.css';
@@ -32,6 +35,7 @@ import Footer from '../components/Footer.js';
 function Create() {
   const metamask = useMetamask();
   const CDS = useCDS();
+  const dispatch = useDispatch();
   const isLogin = useSelector((state) => state.auth.isLogin);
 
   // CDS Content State Variable
@@ -57,23 +61,35 @@ function Create() {
   const [sellerDeposit, setSellerDeposit] = useState('');
   const [liquidationPrice, setLiquidationPrice] = useState('');
 
+  // Create CDS Handler
   const createButtonHandler = async () =>{
     const data = {
       buyerAddress,
       initialPriceOfAssets,
+      amountOfAssets,
       claimPrice,
       liquidationPrice,
       sellerDeposit,
       premiumPrice,
-      premiumInterval,
+      premiumInterval: weeksToUnixTime(premiumInterval),
       premiumRounds,
     };
 
     console.log(data);
     const result = await CDS.createSwap(data);
     console.log(result);
+    const swapId = result.events.CreateSwap.returnValues.swapId;
+    console.log(swapId);
   }
 
+  // Connect Wallet Handler
+  const connectButtonHandler = async () => {
+    const result = await metamask.request({ method: 'eth_requestAccounts' });
+    console.log(result);
+    if (result && result.length > 0) dispatch(setAuth(result[0]));
+  };
+
+  // Calculate Variable
   useEffect(()=>{
     setTotalAssets( calculateTotalAssets(initialPriceOfAssets, amountOfAssets) );
   }, [initialPriceOfAssets, amountOfAssets])
@@ -122,7 +138,11 @@ function Create() {
                 {isLogin?
                   <></>
                   :
-                  <button>Connect Metamask</button>
+                  <button
+                    onClick={connectButtonHandler}
+                  >
+                    Connect Metamask
+                  </button>
                 }
               </div>
             </div>
@@ -132,7 +152,7 @@ function Create() {
             <div className='input-group'>
               <input 
                 placeholder='Initial Price of Assets'
-                value= { initialPriceOfAssets }
+                value= { `Initial Price of Assets: ${initialPriceOfAssets}` }
                 onChange={e=>{
                   const currentValue = onlyNumber(e.target.value);
                   setInitialPriceOfAssets(currentValue);
@@ -140,7 +160,7 @@ function Create() {
               />
               <input 
                 placeholder='The Amount of Assets'
-                value={amountOfAssets}
+                value={`The Amount of Assets: ${amountOfAssets}` }
                 onChange={e=>{
                   const currentValue = onlyNumber(e.target.value);
                   setAmountOfAssets(currentValue);
@@ -159,7 +179,7 @@ function Create() {
             <div className='input-group'>
               <input 
                 placeholder='Claim Price'
-                value={claimPrice}
+                value={`Claim Price: ${claimPrice}`}
                 onChange={e=>{
                   const currentValue = onlyNumber(e.target.value);
                   setClaimPrice(currentValue);
@@ -184,7 +204,7 @@ function Create() {
               <div className='input-select'>
                 <input 
                   placeholder='Premium Interval'
-                  value={`Premium Interval: ${premiumInterval}`}
+                  value={`Premium Interval: ${premiumInterval} weeks`}
                   disabled
                 />
                 <select 
@@ -192,14 +212,14 @@ function Create() {
                   defaultValue='12'
                   onChange={e=>setPremiumInterval(e.target.value)}
                 >
-                  <option value='12'>12 months</option>
-                  <option value='6'>6 months</option>
-                  <option value='3'>3 months</option>
+                  <option value='12'>12 weeks</option>
+                  <option value='6'>6 weeks</option>
+                  <option value='3'>3 weeks</option>
                 </select>
               </div>
               <input 
                 placeholder='Premium Rounds'
-                value={premiumRounds}
+                value={`Premium Rounds: ${premiumRounds}`}
                 onChange={e=>{
                   const currentValue = onlyNumber(e.target.value);
                   setPremiumRounds(currentValue);
@@ -208,11 +228,11 @@ function Create() {
             </div>
           </div>
           <div className='form-section'>
-            <h2 className='section-title'>Liquiditaion</h2>
+            <h2 className='section-title'>Liquidation</h2>
             <div className='input-group'>
               <input 
                 placeholder='Seller Deposit'
-                value={sellerDeposit}
+                value={`Seller Deposit: ${sellerDeposit}`}
                 onChange={e=>{
                   const currentValue = onlyNumber(e.target.value);
                   setSellerDeposit(currentValue);
@@ -220,10 +240,14 @@ function Create() {
               />
               <input 
                 placeholder='Liquidated Price'
-                value={liquidationPrice}
+                value={`Liquidated Price: ${liquidationPrice}`}
                 disabled
               />
-              <input placeholder='Buyer Deposit'/>
+              <input 
+                placeholder='Buyer Deposit'
+                value={`Buyer Deposit: ${premiumPrice * 3}`}
+                disabled
+              />
             </div>
           </div>
           <div className='form-section'>

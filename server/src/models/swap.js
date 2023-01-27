@@ -28,7 +28,7 @@ module.exports = class Swap extends Sequelize.Model {
           allowNull: false,
         },
         premiumRate: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.DECIMAL(10, 4),
           allowNull: false,
         },
         dropRate: {
@@ -68,28 +68,12 @@ module.exports = class Swap extends Sequelize.Model {
           allowNull: false,
         },
         status: {
-          type: Sequelize.ENUM(
-            'pending',
-            'active',
-            'claimable',
-            'expired',
-            'overdue',
-            'liquidated',
-            'inactive',
-          ),
-          allowNull: false,
+          type: Sequelize.STRING(20),
+          allowNull: true,
         },
         updatableStatus: {
-          type: Sequelize.ENUM(
-            'pending',
-            'active',
-            'expired',
-            'overdue',
-            'liquidated',
-            'inactive',
-          ),
+          type: Sequelize.STRING(20),
           allowNull: true,
-          defaultValue: null,
         },
       },
       {
