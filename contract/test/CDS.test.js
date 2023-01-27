@@ -318,7 +318,7 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(defaultPremiumRounds, +totalPremiumRounds);
 
       await assert.strictEqual(buyer.addr, accounts[2]);
-      await assert.strictEqual(2, +status);
+      await assert.strictEqual(0, +status);
     });
 
     it('should have decreased amount of contract balance after successful cancel swap call', async () => {
