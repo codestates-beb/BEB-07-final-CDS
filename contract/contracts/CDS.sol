@@ -93,6 +93,10 @@ contract CDS is Swaps, Ownable {
     uint256 initAssetPrice,
     uint256 swapId
   ) external payable isNotOwner isPending(swapId) returns (uint256) {
+    require(
+      msg.sender != getBuyer(swapId).addr,
+      'The buyer can not call the method'
+    );
     uint256 sellerDeposit = getSeller(swapId).deposit * 1 wei;
     require(sellerDeposit == msg.value, 'Invalid eth amount');
     payable(address(this)).transfer(msg.value);
@@ -133,7 +137,7 @@ contract CDS is Swaps, Ownable {
     uint256 swapId
   ) external payable isBuyer(swapId) isActive(swapId) returns (bool) {
     // date check
-    require(_checkDate(swapId), 'Invalid date');
+    // require(_checkDate(swapId), 'Invalid date');
 
     require(msg.value == getSwap(swapId).premium, 'Invalid premium');
     (bool sent, ) = getSeller(swapId).addr.call{value: msg.value}('');
