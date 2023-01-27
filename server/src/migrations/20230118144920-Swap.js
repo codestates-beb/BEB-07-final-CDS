@@ -37,7 +37,7 @@ module.exports = {
         allowNull: false,
       },
       dropRate: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DECIMAL(10, 4),
         allowNull: false,
       },
       premiumInterval: {
@@ -65,28 +65,12 @@ module.exports = {
         allowNull: false,
       },
       status: {
-        type: Sequelize.ENUM(
-          'pending',
-          'active',
-          'claimable',
-          'expired',
-          'overdue',
-          'liquidated',
-          'inactive',
-        ),
-        allowNull: false,
+        type: Sequelize.STRING(20),
+        allowNull: true,
       },
       updatableStatus: {
-        type: Sequelize.ENUM(
-          'pending',
-          'active',
-          'claimable',
-          'expired',
-          'overdue',
-          'liquidated',
-          'inactive',
-        ),
-        allowNull: false,
+        type: Sequelize.STRING(20),
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,

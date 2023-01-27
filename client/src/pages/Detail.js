@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 // components
-import Card from '../components/ProposedCard';
+import ProposedCard from '../components/ProposedCard';
 import MarketPrice from '../components/MarketPrice';
 
 // css
@@ -42,7 +42,7 @@ function Detail() {
             </div>
           </div>
           <div className="detail-head-section">
-            <Card />
+            <ProposedCard />
           </div>
         </div>
         {/* head */}

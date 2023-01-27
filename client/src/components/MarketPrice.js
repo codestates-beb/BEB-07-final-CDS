@@ -8,7 +8,7 @@ function MarketPrice() {
     <div className="">
       <div className="px-3 py-6 font-bold text-3xl">Market Price</div>
       <div className="w-[68rem] bg-blackColor rounded-3xl">
-        <div className="py-7 px-24">
+        <div className="py-[2%] px-[7%]">
           <div className="flex font-semibold text-2xl">
             <div className="w-44">Name</div>
             <div className="w-44 ml-60">Price</div>
