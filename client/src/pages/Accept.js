@@ -1,7 +1,7 @@
 // modules
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 
 // components
 import Footer from '../components/Footer';
@@ -23,29 +23,7 @@ function Accept() {
   const userAddress = useSelector(state=>state.auth.user_addr);
   const CDS = useCDS();
 
-  // CDS Content State Variable
-  const [contractAddress, setContractAddress] = useState('');
-  const [buyerAddress, setBuyerAddress] = useState('');
-
-  // Assets State Var
-  const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('');
-  const [amountOfAssets, setAmountOfAssets] = useState('');
-  const [totalAssets, setTotalAssets] = useState();
-
-  // Claim State Var
-  const [claimPrice, setClaimPrice] = useState('');
-  const [dropRate, setDropRate] = useState('');
-
-  // Premium State Var
-  const [premiumRate, setPremiumRate] = useState(2);
-  const [premiumPrice, setPremiumPrice] = useState('');
-  const [premiumInterval, setPremiumInterval] = useState('');
-  const [premiumRounds, setPremiumRounds] = useState('');
-
-  // Liqudation State Var
-  const [sellerDeposit, setSellerDeposit] = useState('');
-  const [liquidationPrice, setLiquidationPrice] = useState('');
-
+  // Accept CDS Handler
   const acceptButtonHandler = async()=>{
     console.log(
       userAddress,
@@ -60,6 +38,18 @@ function Accept() {
       swapId,
       swapOnChain.seller.deposit
     );
+    console.log(result);
+  }
+
+  // Cancel CDS Handler
+  const cancelButtonHandler = async()=>{
+    console.log(swapId);
+
+    const result = await CDS.cancelSwap(
+      swapId,
+      userAddress,
+    );
+
     console.log(result);
   }
 
@@ -199,7 +189,7 @@ function Accept() {
               { swapOnDB && userAddress === swapOnDB.buyer.toLowerCase() ?
                 <button
                   className='cancel-button'
-                  onClick={acceptButtonHandler}
+                  onClick={cancelButtonHandler}
                 >
                   Cancel CDS
                 </button>

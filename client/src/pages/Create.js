@@ -1,6 +1,7 @@
 // modules
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 // actions
 import { setAuth } from '../features/authSlice';
@@ -77,6 +78,8 @@ function Create() {
     console.log(data);
     const result = await CDS.createSwap(data);
     console.log(result);
+    const swapId = result.events.CreateSwap.returnValues.swapId;
+    console.log(swapId);
   }
 
   // Connect Wallet Handler
@@ -201,7 +204,7 @@ function Create() {
               <div className='input-select'>
                 <input 
                   placeholder='Premium Interval'
-                  value={`Premium Interval: ${premiumInterval}`}
+                  value={`Premium Interval: ${premiumInterval} weeks`}
                   disabled
                 />
                 <select 
