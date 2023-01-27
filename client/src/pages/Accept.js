@@ -14,7 +14,8 @@ import '../assets/css/accept.css';
 
 function Accept() {
   const {swapId} = useParams();
-  const [swap, setSwap] = useState(null);
+  const [swapOnChain, setSwapOnChain] = useState(null);
+  const [swapOnDB, setSwapOnDB] = useState(null);
   const userAddress = useSelector(state=>state.auth.user_addr);
   const CDS = useCDS();
 
@@ -44,25 +45,32 @@ function Accept() {
   const acceptButtonHandler = async()=>{
     console.log(
       userAddress,
-      swap.initAssetPrice,
+      swapOnChain.initAssetPrice,
       swapId,
-      swap.seller.deposit
+      swapOnChain.seller.deposit
     )
 
     const result = await CDS.acceptSwap(
       userAddress, 
-      swap.initAssetPrice, 
+      swapOnChain.initAssetPrice, 
       swapId,
-      swap.seller.deposit
+      swapOnChain.seller.deposit
     );
     console.log(result);
   }
 
   useEffect(()=>{
+    getSwapById(swapId)
+    .then(result=>{
+      setSwapOnDB(result);
+    })
+  },[])
+
+  useEffect(()=>{
     if(CDS) {
       CDS.getSwap(swapId)
       .then(result=> {
-        setSwap(result);
+        setSwapOnChain(result);
       });
     };
   }, [CDS]);
@@ -85,7 +93,7 @@ function Accept() {
               <div className='input-button'>
                 <input 
                   placeholder='Buyer Address'
-                  value={`Buyer Address: `}
+                  value={swapOnDB? `Buyer Address: ${swapOnDB.buyer}` : null}
                   disabled
                 />
               </div>
@@ -96,17 +104,17 @@ function Accept() {
             <div className='input-group'>
               <input 
                 placeholder='Initial Price of Assets' 
-                value={`Initial Price of Assets: `}
+                value={swapOnDB? `Initial Price of Assets: ${swapOnDB.initialAssetPrice}`: null}
                 disabled
               />
               <input 
                 placeholder='The Amount of Assets' 
-                value={`The Amount of Assets: `}
+                value={swapOnDB? `The Amount of Assets: ${swapOnDB.amountOfAssets}` : null}
                 disabled
               />
               <input 
                 placeholder='Total Assets' 
-                value={`Total Assets: `}
+                value={swapOnDB? `Total Assets: ${swapOnDB.totalAssets}` : null}
                 disabled
               />
             </div>
@@ -116,12 +124,12 @@ function Accept() {
             <div className='input-group'>
               <input 
                 placeholder='Claim Price' 
-                value={`Claim Price: `}
+                value={swapOnDB? `Claim Price: ${swapOnDB.claimPrice}`: null}
                 disabled
               />
               <input 
                 placeholder='Drop Rate' 
-                value={`Drop Rate: `}
+                value={swapOnDB? `Drop Rate: ${swapOnDB.dropRate}`: null}
                 disabled
               />
             </div>
@@ -131,24 +139,24 @@ function Accept() {
             <div className='input-group'>
               <input 
                 placeholder='Premium Rate' 
-                value={`Premium Rate: `}
+                value={swapOnDB? `Premium Rate: ${swapOnDB.premiumRate}`: null}
                 disabled
               />
               <input 
                 placeholder='Premium Price' 
-                value={`Premium Price: `}
+                value={swapOnDB? `Premium Price: ${swapOnDB.premium}`: null}
                 disabled
               />
               <div className='input-select'>
                 <input 
                   placeholder='Premium Interval' 
-                  value={`Premium Interval: `}
+                  value={swapOnDB? `Premium Interval: ${swapOnDB.premiumInterval}`: null}
                   disabled
                 />
               </div>
               <input 
                 placeholder='Premium Rounds' 
-                value={`Premium Rounds: `}
+                value={swapOnDB? `Premium Rounds: ${swapOnDB.totalPremiumRounds}`: null}
                 disabled
               />
             </div>
@@ -158,24 +166,24 @@ function Accept() {
             <div className='input-group'>
               <input 
                 placeholder='Seller Deposit' 
-                value={`Seller Deposit: `}
+                value={swapOnDB? `Seller Deposit: ${swapOnDB.sellerDeposit}`: null}
                 disabled
               />
               <input 
                 placeholder='Liquidated Price' 
-                value={`Liquidated Price: `}
+                value={swapOnDB? `Liquidated Price: ${swapOnDB.liquidationPrice}`: null}
                 disabled
               />
               <input 
                 placeholder='Buyer Deposit'
-                value={`Buyer Deposit: `} 
+                value={swapOnDB? `Buyer Deposit: ${swapOnDB.buyerDeposit}`: null} 
                 disabled
               />
             </div>
           </div>
           <div className='form-section'>
             <div className='button-group'>
-              <button 
+              <button
                 className='accept-button' 
                 onClick={acceptButtonHandler}
               >
