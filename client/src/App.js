@@ -23,7 +23,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/create" element={<Create />} />
-        <Route path="/accept" element={<Accept />} />
+        <Route path="/accept/:swapId" element={<Accept />} />
         <Route path='/detail' element={<Detail/>}/>
         <Route path="/createTest" element={<MakeTest />} />
         <Route path="/acceptTest/:swapId" element={<AcceptTest />} />
