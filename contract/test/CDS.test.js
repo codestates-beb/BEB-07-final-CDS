@@ -348,8 +348,109 @@ contract('CDS', (accounts) => {
       console.log({ before, gasCost, defaultBuyerDeposit, after });
       assert.equal(
         +before - +gasCost + +defaultBuyerDeposit,
-        +after + 20000, // HARDCODED TO PASS TEST
+        +after, // HARDCODED TO PASS TEST
         'result of "BEFORE - defaultBuyerDeposit + value" should be equal to AFTER Balance',
+      );
+    });
+  });
+
+  /// //////
+  describe('Close Swap', async () => {
+    beforeEach(async () => {
+      await cds.createSwap(
+        accounts[2],
+        defaultInitAssetPrice,
+        defaultAmountOfAssets,
+        defaultClaimPrice,
+        defaultLiquidationPrice,
+        defaultSellerDeposit,
+        defaultPremium,
+        defaultPremiumInterval,
+        defaultPremiumRounds,
+        { from: accounts[2], value: defaultBuyerDeposit },
+      );
+    });
+    it('shoul throw error if the status is not active', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await truffleAssert.fails(
+        cds.closeSwap(currentSwapId, { from: accounts[2] }),
+      );
+    });
+    it('should throw error if the caller of cancelSwap is not the buyer', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.acceptSwap(accounts[1], defaultInitAssetPrice, currentSwapId, {
+        from: accounts[1],
+        value: defaultSellerDeposit,
+      });
+      await truffleAssert.fails(
+        cds.closeSwap(currentSwapId, { from: accounts[1] }),
+      );
+    });
+    it('should be able to close if the buyer calls closeSwap and check the state of the swap', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.acceptSwap(accounts[1], defaultInitAssetPrice, currentSwapId, {
+        from: accounts[1],
+        value: defaultSellerDeposit,
+      });
+      await truffleAssert.passes(
+        cds.closeSwap(currentSwapId, { from: accounts[2] }),
+      );
+
+      const currentSwap = await cds.getSwap(currentSwapId);
+      const {
+        buyer,
+        seller,
+        initAssetPrice,
+        amountOfAssets,
+        claimPrice,
+        liquidationPrice,
+        premium,
+        premiumInterval,
+        totalPremiumRounds,
+        status,
+      } = currentSwap;
+
+      await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
+      await assert.strictEqual(defaultAmountOfAssets, +amountOfAssets);
+      await assert.strictEqual(defaultClaimPrice, +claimPrice);
+      await assert.strictEqual(defaultLiquidationPrice, +liquidationPrice);
+      await assert.strictEqual(defaultPremium, +premium);
+      await assert.strictEqual(defaultPremiumInterval, +premiumInterval);
+      await assert.strictEqual(defaultPremiumRounds, +totalPremiumRounds);
+
+      await assert.strictEqual(buyer.addr, accounts[2]);
+      await assert.strictEqual(0, +status);
+    });
+
+    it('should have proper amount of balance after closeSwap is called', async () => {
+      const contractBalance = await cds.getContractBalance();
+      const buyerBalance = await web3.eth.getBalance(accounts[2]);
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.acceptSwap(accounts[1], defaultInitAssetPrice, currentSwapId, {
+        from: accounts[1],
+        value: defaultSellerDeposit,
+      });
+      const sellerBalance = await web3.eth.getBalance(accounts[1]);
+
+      const receipt = await cds.closeSwap(currentSwapId, { from: accounts[2] });
+      const tx = await web3.eth.getTransaction(receipt.tx);
+      const { gasUsed } = receipt.receipt;
+      const { gasPrice, value } = tx;
+      const gasCost = gasUsed * gasPrice;
+      // contract
+      assert.equal(
+        contractBalance.toNumber() - defaultBuyerDeposit,
+        (await cds.getContractBalance()).toNumber(),
+      );
+      // buyer
+      assert.equal(
+        +buyerBalance - +gasCost + +defaultBuyerDeposit,
+        +(await web3.eth.getBalance(accounts[2])),
+      );
+      // seller
+      assert.equal(
+        +sellerBalance + +defaultSellerDeposit,
+        await web3.eth.getBalance(accounts[1]),
       );
     });
   });

@@ -156,7 +156,7 @@ contract Swaps is PriceConsumer {
     targetSwap.buyer.nextPayDate = block.timestamp + targetSwap.premiumInterval;
   }
 
-  function _checkDate(uint256 _targetSwapId) internal returns (bool) {
-    return true;
-  }
+  // function _checkDate(uint256 _targetSwapId) internal returns (bool) {
+  //   return true;
+  // }
 }
