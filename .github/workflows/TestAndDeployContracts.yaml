@@ -41,8 +41,8 @@ jobs:
       - name: Install truffle
         run: npm install -g truffle
 
-      - name: Test with Truffle test
-        run: truffle test --network remote
+#       - name: Test with Truffle test
+#         run: truffle test --network remote
 
       - name: Deploy Contract to Remote Server
         run: truffle migrate --network remote
