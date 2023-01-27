@@ -13,7 +13,7 @@ import useMetamask from '../utils/hooks/useMetamask';
 import '../assets/css/header.css';
 
 //image
-import MainLogo from '../img/CDS_Symbol_bright_removebg.png';
+import MainLogo from '../assets/img/CDS_Symbol_bright_removebg.png';
 
 function Header() {
   const metamask = useMetamask();

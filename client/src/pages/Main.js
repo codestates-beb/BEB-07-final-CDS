@@ -1,10 +1,9 @@
 // modules
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 
 //image
-import MainLogo from '../img/CDS_Symbol_bright_removebg.png';
+import MainLogo from '../assets/img/CDS_Symbol_bright_removebg.png';
 
 // components
 import MarketPrice from '../components/MarketPrice.js';
@@ -13,24 +12,25 @@ import ConfirmedCard from '../components/ConfirmedCard.js';
 import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
+//APIs
+import { getSwaps } from '../apis/request.js';
+
 function Main() {
   const [confirmedSwaps, setConfirmedSwaps] = useState([]);
   const [proposedSwaps, setProposedSwaps] = useState([]);
 
   useEffect(() => {
-    fetch(
-      'https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com/dev/swaps',
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        const confirmed = data.filter((swap) => swap.status === 'active');
-        const proposed = data.filter((swap) => swap.status === 'inactive');
+    const swaps = getSwaps();
+    const getData = () => {
+      swaps.then((response) => {
+        const confirmed = response.filter((swap) => swap.status === 'active');
+        const proposed = response.filter((swap) => swap.status === 'pending');
         setConfirmedSwaps(confirmed);
         setProposedSwaps(proposed);
       });
+    };
+    getData();
   }, []);
-
-  console.log(proposedSwaps);
 
   return (
     <div className="">
