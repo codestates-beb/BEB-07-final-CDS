@@ -131,11 +131,15 @@ contract CDS is Swaps, Ownable {
 
   function payPremium(
     uint256 swapId
-  ) external isBuyer(swapId) isActive(swapId) returns (bool) {
-    // buyer, active check
+  ) external payable isBuyer(swapId) isActive(swapId) returns (bool) {
     // date check
-    // transfer to sellerAddr
+    require(_checkDate(swapId), 'Invalid date');
+
+    require(msg.value == getSwap(swapId).premium, 'Invalid premium');
+    (bool sent, ) = getSeller(swapId).addr.call{value: msg.value}('');
+    require(sent, 'Sending premium failed');
     // status update
+    _payPremium(swapId);
     return true;
   }
 

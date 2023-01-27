@@ -132,6 +132,7 @@ contract Swaps is PriceConsumer {
   function _cancelSwap(uint256 _targetSwapId) internal {
     Swap storage targetSwap = _swaps[_targetSwapId];
     targetSwap.buyer.deposit = 0;
+    targetSwap.seller.deposit = 0;
     targetSwap.status = Status.inactive;
   }
 
@@ -146,5 +147,16 @@ contract Swaps is PriceConsumer {
     targetSwap.seller.isDeposited = false;
 
     targetSwap.status = Status.claimed;
+  }
+
+  function _payPremium(uint256 _targetSwapId) internal {
+    Swap storage targetSwap = _swaps[_targetSwapId];
+    // date 갱신
+    targetSwap.buyer.lastPayDate = block.timestamp;
+    targetSwap.buyer.nextPayDate = block.timestamp + targetSwap.premiumInterval;
+  }
+
+  function _checkDate(uint256 _targetSwapId) internal returns (bool) {
+    return true;
   }
 }
