@@ -43,6 +43,7 @@ contract CDS is Swaps, Ownable {
     address seller,
     uint256 claimReward
   );
+  event CloseSwap(uint256 swapId, address buyer, address seller);
 
   function createSwap(
     address addr,
@@ -92,24 +93,50 @@ contract CDS is Swaps, Ownable {
     uint256 initAssetPrice,
     uint256 swapId
   ) external payable isNotOwner isPending(swapId) returns (uint256) {
-    uint256 sellerDeposit = _swaps[swapId].seller.deposit * 1 wei;
+    uint256 sellerDeposit = getSeller(swapId).deposit * 1 wei;
     require(sellerDeposit == msg.value, 'Invalid eth amount');
     payable(address(this)).transfer(msg.value);
 
     uint256 acceptedSwapId = _acceptSwap(addr, initAssetPrice, swapId);
-    emit AcceptSwap(addr, swapId, sellerDeposit);
+    emit AcceptSwap(addr, acceptedSwapId, sellerDeposit);
     return acceptedSwapId;
   }
 
   function cancelSwap(
     uint256 swapId
   ) external isNotOwner isBuyer(swapId) isPending(swapId) returns (bool) {
-    Swap memory targetSwap = _swaps[swapId];
-    (bool sent, ) = msg.sender.call{value: targetSwap.buyer.deposit}('');
+    (bool sent, ) = msg.sender.call{value: getBuyer(swapId).deposit}('');
     require(sent, 'Sending failed');
     _cancelSwap(swapId);
-    emit CancelSwap(swapId, targetSwap.buyer.addr);
+    emit CancelSwap(swapId, getBuyer(swapId).addr);
     return sent;
+  }
+
+  function closeSwap(
+    uint256 swapId
+  ) external isBuyer(swapId) isActive(swapId) returns (bool) {
+    bool sentBuyer = true;
+    if (getBuyer(swapId).deposit != 0) {
+      (sentBuyer, ) = msg.sender.call{value: getBuyer(swapId).deposit}('');
+    }
+    (bool sentSeller, ) = getSeller(swapId).addr.call{
+      value: getSeller(swapId).deposit
+    }('');
+    require(sentBuyer && sentSeller, 'Sending deposit failed');
+    // set status to closed or inactive
+    _cancelSwap(swapId);
+    emit CloseSwap(swapId, getBuyer(swapId).addr, getSeller(swapId).addr);
+    return true;
+  }
+
+  function payPremium(
+    uint256 swapId
+  ) external isBuyer(swapId) isActive(swapId) returns (bool) {
+    // buyer, active check
+    // date check
+    // transfer to sellerAddr
+    // status update
+    return true;
   }
 
   function claimSwap(
@@ -120,19 +147,18 @@ contract CDS is Swaps, Ownable {
       claimReward != 0,
       'Claim price in CDS should be higher than current price of asset'
     );
-    Swap memory targetSwap = _swaps[swapId];
     (bool sentBuyer, ) = msg.sender.call{
-      value: (claimReward + targetSwap.buyer.deposit)
+      value: (claimReward + getBuyer(swapId).deposit)
     }('');
     (bool sentSeller, ) = msg.sender.call{
-      value: (targetSwap.seller.deposit - claimReward)
+      value: (getSeller(swapId).deposit - claimReward)
     }('');
     require(sentBuyer && sentSeller, 'Sending reward failed');
     _claimSwap(swapId);
     emit ClaimSwap(
       swapId,
-      targetSwap.buyer.addr,
-      targetSwap.seller.addr,
+      getBuyer(swapId).addr,
+      getSeller(swapId).addr,
       claimReward
     );
     return true;
@@ -140,7 +166,7 @@ contract CDS is Swaps, Ownable {
 
   function getClaimReward(uint256 swapId) public view returns (uint256) {
     uint256 currPrice = getPriceFromOracle();
-    Swap memory targetSwap = _swaps[swapId];
+    Swap memory targetSwap = getSwap(swapId);
     if (targetSwap.claimPrice < currPrice) {
       return 0;
     }
@@ -159,11 +185,11 @@ contract CDS is Swaps, Ownable {
   }
 
   function getBuyer(uint256 swapId) public view returns (Buyer memory) {
-    return _swaps[swapId].buyer;
+    return getSwap(swapId).buyer;
   }
 
   function getSeller(uint256 swapId) public view returns (Seller memory) {
-    return _swaps[swapId].seller;
+    return getSwap(swapId).seller;
   }
 
   function getSwapId() public view returns (Counters.Counter memory) {
