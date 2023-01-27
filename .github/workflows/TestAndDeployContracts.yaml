@@ -29,6 +29,12 @@ jobs:
             ${{ runner.OS }}-build-
             ${{ runner.OS }}-
 
+      - name: create .env file
+        uses: iamsauravsharma/create-dotenv@v1.2.2
+        env: # env available for only this steps
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
+
       - name: Install node packages
         run: npm install --production
 
@@ -41,8 +47,8 @@ jobs:
       - name: Install truffle
         run: npm install -g truffle
 
-#       - name: Test with Truffle test
-#         run: truffle test --network remote
+      #       - name: Test with Truffle test
+      #         run: truffle test --network remote
 
       - name: Deploy Contract to Remote Server
         run: truffle migrate --network remote
