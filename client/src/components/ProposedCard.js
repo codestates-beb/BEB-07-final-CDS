@@ -1,6 +1,6 @@
 import BTHLogo from '../img/BTC_Logo.png';
 
-function ProposedCard() {
+function ProposedCard(props) {
   return (
     <div className="card bg-darkGrayColor w-[13rem] h-[17rem] rounded-3xl hover:scale-110 transition-all">
       <div className="mx-[1.5rem] py-[1.5rem]">
@@ -19,19 +19,22 @@ function ProposedCard() {
         <div className="card-body">
           <div className="body-content mb-[5px]">
             <h3 className="content-name text-base font-medium">Premium</h3>
-            <p className="content text-sm font-light">2 ETH (per 4 weeks)</p>
+            <p className="content text-sm font-light overflow-hidden">
+              {props.premium} (per{' '}
+              {Math.floor((props.premiumInterval / 604800) * 100) / 100} weeks)
+            </p>
           </div>
           <div className="body-content mb-[5px]">
             <h3 className="content-name text-base font-medium">
               Required Deposit
             </h3>
-            <p className="content text-sm font-light">100 ETH</p>
+            <p className="content text-sm font-light">
+              {props.requiredDeposit}
+            </p>
           </div>
           <div className="body-content">
-            <h3 className="content-name text-base font-medium">Premium</h3>
-            <p className="content text-sm font-light">
-              16 weeks later from sign
-            </p>
+            <h3 className="content-name text-base font-medium">Expire Date</h3>
+            <p className="content text-sm font-light">{props.premiumRounds}</p>
           </div>
         </div>
       </div>
