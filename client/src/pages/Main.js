@@ -1,5 +1,7 @@
 // modules
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 //image
 import MainLogo from '../img/CDS_Symbol_bright_removebg.png';
@@ -12,6 +14,24 @@ import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
 function Main() {
+  const [confirmedSwaps, setConfirmedSwaps] = useState([]);
+  const [proposedSwaps, setProposedSwaps] = useState([]);
+
+  useEffect(() => {
+    fetch(
+      'https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com/dev/swaps',
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        const confirmed = data.filter((swap) => swap.status === 'active');
+        const proposed = data.filter((swap) => swap.status === 'inactive');
+        setConfirmedSwaps(confirmed);
+        setProposedSwaps(proposed);
+      });
+  }, []);
+
+  console.log(proposedSwaps);
+
   return (
     <div className="">
       <div className="MainTextBox flex w-screen mx-auto mt-24 justify-center">
@@ -68,32 +88,41 @@ function Main() {
         </div>
       </div>
       <div className="flex-col">
-        <div className="mt-64 font-bold text-3xl mb-[2rem] mr-[45rem] text-center">
+        <div className="mt-64 font-bold text-3xl mb-[2rem] mr-[43rem] text-center">
           Proposed CDSs
         </div>
         <div className="grid grid-rows-2 grid-flow-col gap-y-7 gap-x-[4rem] justify-center">
-          <ProposedCard />
-          <ProposedCard />
-          <ProposedCard />
-          <ProposedCard />
-          <ProposedCard />
-          <ProposedCard />
-          <ProposedCard />
-          <ProposedCard />
+          {proposedSwaps.map((swap) => {
+            return (
+              <div key={swap.swapId}>
+                <ProposedCard
+                  premium={swap.premium}
+                  premiumInterval={swap.premiumInterval}
+                  requiredDeposit={swap.sellerDeposit}
+                  premiumRounds={swap.totalPremiumRounds}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
       <div className="flex-col">
-        <div className="mt-64 font-bold text-3xl mb-[2rem] mr-[45rem] text-center">
+        <div className="mt-64 font-bold text-3xl mb-[2rem] mr-[43rem] text-center">
           Accepted CDSs
         </div>
         <div className="grid grid-rows-2 grid-flow-col gap-y-7 gap-x-[4rem] justify-center">
-          <ConfirmedCard />
-          <ConfirmedCard />
-          <ConfirmedCard />
-          <ConfirmedCard />
-          <ConfirmedCard />
-          <ConfirmedCard />
-          <ConfirmedCard />
+          {confirmedSwaps.map((swap) => {
+            return (
+              <div key={swap.swapId}>
+                <ConfirmedCard
+                  InitialPrice={swap.initialAssetPrice}
+                  ClaimPrice={swap.claimPrice}
+                  Liquidation
+                  Price={swap.liquidationPrice}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
       <div className="fixed bottom-11 right-11">
