@@ -56,6 +56,7 @@ export default class CDS {
   private contract: Contract = null;
   private web3: Web3 = null;
   private manager: EntityManager = null;
+  private fromBlock: number = 0;
 
   private constructor(webSocketURI: string, manager: EntityManager) {
     this.web3 = new Web3(webSocketURI);
@@ -95,6 +96,16 @@ export default class CDS {
     this.contract = null;
   }
 
+  public async setFromBlock(txHash: string) {
+    if (txHash === '0') {
+      this.fromBlock = 0;
+      return;
+    }
+    const transaction = await this.web3.eth.getTransaction(txHash);
+    this.fromBlock = transaction.blockNumber;
+    return;
+  }
+
   private async isTxProcessed(transactionHash: string): Promise<Transactions> {
     return this.manager.findOneBy(Transactions, {
       txHash: transactionHash,
@@ -102,9 +113,8 @@ export default class CDS {
   }
 
   public async getPastEvents() {
-    // TODO: improvise more efficient logic, NOT brute force like this
     const createSwapEvents = await this.contract.getPastEvents('CreateSwap', {
-      fromBlock: 0,
+      fromBlock: this.fromBlock,
       toBlock: 'latest',
     });
 
@@ -116,7 +126,7 @@ export default class CDS {
     }
 
     const acceptSwapEvents = await this.contract.getPastEvents('AcceptSwap', {
-      fromBlock: 0,
+      fromBlock: this.fromBlock,
       toBlock: 'latest',
     });
 
@@ -128,7 +138,7 @@ export default class CDS {
     }
 
     const cancelSwapEvents = await this.contract.getPastEvents('CancelSwap', {
-      fromBlock: 0,
+      fromBlock: this.fromBlock,
       toBlock: 'latest',
     });
 
@@ -140,7 +150,7 @@ export default class CDS {
     }
 
     const claimSwapEvents = await this.contract.getPastEvents('ClaimSwap', {
-      fromBlock: 0,
+      fromBlock: this.fromBlock,
       toBlock: 'latest',
     });
 
