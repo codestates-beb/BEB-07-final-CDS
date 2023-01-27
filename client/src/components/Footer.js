@@ -1,5 +1,5 @@
 //image
-import Logo from '../img/CDS_Symbol-removebg.png';
+import Logo from '../assets/img/CDS_Symbol-removebg.png';
 
 function Footer() {
   return (

@@ -1,6 +1,11 @@
-import ETHLogo from '../img/ETH_Logo.png';
-
 function Card(props) {
+  function getSymbol(symbol) {
+    const symbolURL = `https://assets.coincap.io/assets/icons/${symbol}@2x.png`;
+    return symbolURL;
+  }
+
+  const ethSymbol = getSymbol('eth');
+
   return (
     <div className="card bg-darkGrayColor w-[13rem] h-[17rem] rounded-3xl hover:scale-110 transition-all">
       <div className="mx-[1.5rem] py-[1.5rem]">
@@ -8,8 +13,8 @@ function Card(props) {
           <div className="cds-image">
             <img
               className="w-10 h-10 bg-white"
-              alt="BitcoinLogo"
-              src={ETHLogo}
+              alt="EtherLogo"
+              src={ethSymbol}
             />
           </div>
           <div className="cds-type my-[0.4rem] font-semibold text-2xl">

@@ -7,8 +7,8 @@ import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
 //image
-import MyPage_bg from '../img/MyPage_bg.jpg';
-import Profile from '../img/profile.jpg';
+import MyPage_bg from '../assets/img/MyPage_bg.jpg';
+import Profile from '../assets/img/profile.jpg';
 
 function Mypage() {
   return (
