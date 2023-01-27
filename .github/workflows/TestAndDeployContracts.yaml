@@ -31,6 +31,8 @@ jobs:
 
       - name: create .env file
         uses: iamsauravsharma/create-dotenv@v1.2.2
+        with:
+          directory: 'contract/' # Optional (default: '.')
         env: # env available for only this steps
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
