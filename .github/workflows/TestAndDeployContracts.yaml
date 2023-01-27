@@ -46,9 +46,14 @@ jobs:
 
       - name: Deploy Contract to Remote Server
         run: truffle migrate --network remote
+        
+      - name: Stringify file content
+        run: |
+          MESSAGE=$(cat contract/CDS_CA.txt)
+          echo "MESSAGE=${MESSAGE}" >> $GITHUB_ENV
 
       - name: Trigger discord webhook with CDS CA
         uses: tsickert/discord-webhook@v5.3.0
         with:
           webhook-url: ${{ secrets.CONTRACT_DISCORD_WEBHOOK_URL }}
-          filename: contract/CDS_CA.txt
+          content: ${{ env.MESSAGE }}
