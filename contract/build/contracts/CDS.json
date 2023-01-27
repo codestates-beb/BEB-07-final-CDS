@@ -4,7 +4,8 @@
     {
       "inputs": [],
       "stateMutability": "payable",
-      "type": "constructor"
+      "type": "constructor",
+      "payable": true
     },
     {
       "anonymous": false,
@@ -178,7 +179,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -191,7 +193,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -234,7 +237,8 @@
     },
     {
       "stateMutability": "payable",
-      "type": "receive"
+      "type": "receive",
+      "payable": true
     },
     {
       "inputs": [
@@ -293,7 +297,8 @@
         }
       ],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -322,7 +327,8 @@
         }
       ],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -379,7 +385,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -494,7 +501,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -535,7 +543,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -571,7 +580,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -591,7 +601,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -604,7 +615,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.16+commit.07a7930e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"payable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"seller\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"sellerDeposit\",\"type\":\"uint256\"}],\"name\":\"AcceptSwap\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"}],\"name\":\"CancelSwap\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"seller\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"claimReward\",\"type\":\"uint256\"}],\"name\":\"ClaimSwap\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"initAssetPrice\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amountOfAssets\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"claimPrice\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"liquidationPrice\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"premium\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"premiumInterval\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"totalPremiumRounds\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"buyerDeposit\",\"type\":\"uint256\"}],\"name\":\"CreateSwap\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"initAssetPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"acceptSwap\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"cancelSwap\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"claimSwap\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"initAssetPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountOfAssets\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"liquidationPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"sellerDeposit\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"premium\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"premiumInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalPremiumRounds\",\"type\":\"uint256\"}],\"name\":\"createSwap\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getBuyer\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deposit\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lastPayDate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nextPayDate\",\"type\":\"uint256\"}],\"internalType\":\"struct Swaps.Buyer\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getClaimReward\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getContractBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getPriceFromOracle\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getSeller\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deposit\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isDeposited\",\"type\":\"bool\"}],\"internalType\":\"struct Swaps.Seller\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getSwap\",\"outputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deposit\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lastPayDate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nextPayDate\",\"type\":\"uint256\"}],\"internalType\":\"struct Swaps.Buyer\",\"name\":\"buyer\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deposit\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isDeposited\",\"type\":\"bool\"}],\"internalType\":\"struct Swaps.Seller\",\"name\":\"seller\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"initAssetPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountOfAssets\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"liquidationPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"premium\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"premiumRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"premiumInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalPremiumRounds\",\"type\":\"uint256\"},{\"internalType\":\"enum Swaps.Status\",\"name\":\"status\",\"type\":\"uint8\"}],\"internalType\":\"struct Swaps.Swap\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getSwapId\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"}],\"internalType\":\"struct Counters.Counter\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_priceOracleAddress\",\"type\":\"address\"}],\"name\":\"setOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/CDS.sol\":\"CDS\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0xa94b34880e3c1b0b931662cb1c09e5dfa6662f31cba80e07c5ee71cd135c9673\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://40fb1b5102468f783961d0af743f91b9980cf66b50d1d12009f6bb1869cea4d2\",\"dweb:/ipfs/QmYqEbJML4jB1GHbzD4cUZDtJg5wVwNm3vDJq1GbyDus8y\"]},\"@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]},\"@openzeppelin/contracts/utils/Counters.sol\":{\"keccak256\":\"0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee\",\"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu\"]},\"@openzeppelin/contracts/utils/math/SafeMath.sol\":{\"keccak256\":\"0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://864a40efcffdf408044c332a5aa38ec5618ed7b4eecb8f65faf45671bd6cdc65\",\"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN\"]},\"project:/contracts/CDS.sol\":{\"keccak256\":\"0xd31e6f3e06700bb64af7bfb026c68505119e3ace42d0d6a7e50ae1114aa841ed\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://726cd8a2083a77083237bd7242497515d888ee65e0b241fa596c917127b7cda7\",\"dweb:/ipfs/QmcghgJjgDvXQfUMv45kKMMgHTCH6bfK8Rrfuw3oaXDc6g\"]},\"project:/contracts/Oracle/PriceConsumer.sol\":{\"keccak256\":\"0xe91bd79174b252c953e491125462f1ae2767bf8b13bedba3afc70d48f9e00121\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1f05fbdbb3b6343dc1331ba5e99e50f9c095b7f20f1daa36d7b7e2a81bff4334\",\"dweb:/ipfs/QmZk8y35BJ78LmXaPfXWtvNNYLKJeXovf1QpNFn3baShsP\"]},\"project:/contracts/Oracle/PriceOracleMock.sol\":{\"keccak256\":\"0x85e656a1d0a17c7aa3653e953fbc7f1b3966fd8db584f46cdd2e73ca71935f8f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://82bca1e94280ede850a87e7731659c1bf57d303bb2da8ee077b0e5e9a6ed82c3\",\"dweb:/ipfs/QmcL8Sw6nTa9Si4jsZFWPDLRL5y9LhcFXjRvR1KQyWLoNW\"]},\"project:/contracts/Swaps/Swaps.sol\":{\"keccak256\":\"0x9e82378c686e558d48ee825a231ca127088e4f63613fc22f018ff9cefa73d882\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c4ef5b45d35211bc3fa8475eb2a9c04059a52b8609a5646e0c37dd21e43a85b9\",\"dweb:/ipfs/QmQc63Kj14gEY37hasgMWtnBmY5UuB4x1PfVnwFhBN3nwh\"]},\"project:/contracts/libs/LibClaim.sol\":{\"keccak256\":\"0x4a5a62afd566c11685444866a842d5c27b003469f08d1b6a182b517c4de7af1e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://12fa9ab77c2c5e449fdd270918d45b70956f3f0f0de43f12c22d80a4a824391f\",\"dweb:/ipfs/QmZunASsjSfLXkc8cE4wdY9STWepzZCiePxrYocDo6vTkM\"]}},\"version\":1}",
@@ -19483,11 +19495,109 @@
           ],
           "name": "CancelSwap",
           "type": "event"
+        },
+        "0xb1d5f6c80b2138d4bb2dbda1c180eba2090137bfd92c5091db8e9d35b5aa14e2": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "swapId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "buyer",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "seller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "claimReward",
+              "type": "uint256"
+            }
+          ],
+          "name": "ClaimSwap",
+          "type": "event"
+        },
+        "0xee5875d6387d348fa5a6839c8c8b4c3cc785221b4fe58bd317508e1368840162": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "buyer",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "swapId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "initAssetPrice",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amountOfAssets",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "claimPrice",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "liquidationPrice",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "premium",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "premiumInterval",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "totalPremiumRounds",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "buyerDeposit",
+              "type": "uint256"
+            }
+          ],
+          "name": "CreateSwap",
+          "type": "event"
         }
       },
       "links": {},
-      "address": "0x24eB97E328d7D513a9eb4AA91206d0cF2Ab78Ee0",
-      "transactionHash": "0xdacbe68f2991faa1ddacec498aec02135619a58f083f42a68d8a20f2a146fc35"
+      "address": "0x184344F2dE1c2028041144B8ecd8D23f06924Fdc",
+      "transactionHash": "0x5b21a7a667b9d61887a0ff85d1ec233e2a4b24c52029d8ce4258b119cd62c64c"
     },
     "1674132869145": {
       "events": {
@@ -19616,7 +19726,8 @@
     }
   },
   "schemaVersion": "3.4.9",
-  "updatedAt": "2023-01-26T12:51:12.863Z",
+  "updatedAt": "2023-01-27T00:35:45.074Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {
