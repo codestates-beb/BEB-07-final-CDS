@@ -20,6 +20,9 @@ import {
 import {
   onlyNumber
 } from '../utils/validation';
+import {
+  weeksToUnixTime
+} from '../utils/calendar';
 
 // css
 import '../assets/css/create.css';
@@ -67,7 +70,7 @@ function Create() {
       liquidationPrice,
       sellerDeposit,
       premiumPrice,
-      premiumInterval,
+      premiumInterval: weeksToUnixTime(premiumInterval),
       premiumRounds,
     };
 
@@ -206,9 +209,9 @@ function Create() {
                   defaultValue='12'
                   onChange={e=>setPremiumInterval(e.target.value)}
                 >
-                  <option value='12'>12 months</option>
-                  <option value='6'>6 months</option>
-                  <option value='3'>3 months</option>
+                  <option value='12'>12 weeks</option>
+                  <option value='6'>6 weeks</option>
+                  <option value='3'>3 weeks</option>
                 </select>
               </div>
               <input 

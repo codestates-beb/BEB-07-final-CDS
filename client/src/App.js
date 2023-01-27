@@ -13,6 +13,7 @@ import Detail from './pages/Detail';
 import Mypage from './pages/Mypage';
 import MakeTest from './pages/MakeTest';
 import AcceptTest from './pages/AcceptTest';
+import OracleTest from './pages/OracleTest';
 
 // css
 import './App.css';
@@ -29,6 +30,7 @@ function App() {
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/createTest" element={<MakeTest />} />
         <Route path="/acceptTest/:swapId" element={<AcceptTest />} />
+        <Route path='/oracleTest' element={<OracleTest />} />
       </Routes>
     </div>
   );
