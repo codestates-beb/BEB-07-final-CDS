@@ -2,15 +2,18 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-undef */
 // eslint-disable-next-line import/no-extraneous-dependencies
+require('dotenv').config();
 const Web3 = require('web3');
 
-const web3 = new Web3('http://20.214.105.181:48545');
+const { REMOTE_HOST, REMOTE_PORT } = process.env;
+
+const web3 = new Web3(`http://${REMOTE_HOST}:${REMOTE_PORT}`);
 
 const OracleABI = require('../build/contracts/PriceOracleMock.json');
 const CDSABI = require('../build/contracts/CDS.json');
 
-const OracleCA = '0x62f98AFF6349DfF21a184e10CAbB9C3AcA10fa74';
-const CDSCA = '0x3f9ABE987E3DFc4b637DAc55636ABB48d1e76656';
+const OracleCA = '0x4bf749ec68270027C5910220CEAB30Cc284c7BA2';
+const CDSCA = '0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D';
 
 const kimAccount = web3.eth.accounts.privateKeyToAccount(
   '0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c',
