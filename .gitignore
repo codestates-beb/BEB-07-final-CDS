@@ -30,8 +30,7 @@ client/yarn-error.log*
 #################################################################################
 
 # ganache-daemon
-ganache-daemone/database
-ganache-daemon
+ganache-daemon/database
 
 # Logs
 logs
