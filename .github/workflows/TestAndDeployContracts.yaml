@@ -41,19 +41,19 @@ jobs:
       - name: Install truffle
         run: npm install -g truffle
 
-      # - name: Test with Truffle test
-      #   run: truffle test --network remote
+      - name: Test with Truffle test
+        run: truffle test --network remote
 
       - name: Deploy Contract to Remote Server
         run: truffle migrate --network remote
         
-      - name: Stringify file content
-        run: |
-          MESSAGE=$(cat CDS_CA.txt)
-          echo "MESSAGE=${MESSAGE}" >> $GITHUB_ENV
+#       - name: Stringify file content
+#         run: |
+#           MESSAGE=$(cat CDS_CA.txt)
+#           echo "MESSAGE=${MESSAGE}" >> $GITHUB_ENV
 
       - name: Trigger discord webhook with CDS CA
         uses: tsickert/discord-webhook@v5.3.0
         with:
           webhook-url: ${{ secrets.CONTRACT_DISCORD_WEBHOOK_URL }}
-          content: ${{ env.MESSAGE }}
+          content: $(cat contract/CDS_CA.txt)
