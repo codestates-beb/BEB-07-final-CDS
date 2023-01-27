@@ -4,7 +4,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const Web3 = require('web3');
 
-const web3 = new Web3('http://20.214.105.181:8545');
+const web3 = new Web3('http://20.214.105.181:48545');
 
 const OracleABI = require('../build/contracts/PriceOracleMock.json');
 const CDSABI = require('../build/contracts/CDS.json');

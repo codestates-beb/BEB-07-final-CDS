@@ -5,7 +5,10 @@ import { Users } from './entities/Users';
 import { abi } from './contractArtifacts/CDS.json';
 import CDS from './CDS';
 import getEnv from './utils/getEnv';
-const REMOTE_WEBSOCKET = getEnv('REMOTE_WEBSOCKET', 'ws://20.214.105.181:8545');
+const REMOTE_WEBSOCKET = getEnv(
+  'REMOTE_WEBSOCKET',
+  'ws://20.214.105.181:48545',
+);
 
 AppDataSource.initialize()
   .then(async () => {
