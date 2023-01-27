@@ -175,7 +175,7 @@ function Accept() {
             </div>
           </div>
           <div className='form-section'>
-            <h2 className='section-title'>Liquidaion</h2>
+            <h2 className='section-title'>Liquidation</h2>
             <div className='input-group'>
               <input 
                 placeholder='Seller Deposit' 
