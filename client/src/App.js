@@ -24,14 +24,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/create" element={<Create />} />
-<<<<<<< HEAD
         <Route path="/accept/:swapId" element={<Accept />} />
-        <Route path='/detail' element={<Detail/>}/>
-=======
-        <Route path="/accept" element={<Accept />} />
         <Route path="/detail" element={<Detail />} />
         <Route path="/mypage" element={<Mypage />} />
->>>>>>> details
         <Route path="/createTest" element={<MakeTest />} />
         <Route path="/acceptTest/:swapId" element={<AcceptTest />} />
       </Routes>
