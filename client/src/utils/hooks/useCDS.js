@@ -72,8 +72,11 @@ function useCDS() {
           return receipt;
         },
 
-        cancelSwap: ()=>{
+        cancelSwap: async (swapId, address)=>{
+          const receipt = await contract.methods.cancelSwap(swapId)
+          .send({from:address});
 
+          return receipt;
         },
 
         getSwap: async (swapId, address)=>{

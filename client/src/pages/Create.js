@@ -1,6 +1,7 @@
 // modules
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 // actions
 import { setAuth } from '../features/authSlice';
@@ -20,6 +21,9 @@ import {
 import {
   onlyNumber
 } from '../utils/validation';
+import {
+  weeksToUnixTime
+} from '../utils/calendar';
 
 // css
 import '../assets/css/create.css';
@@ -67,13 +71,15 @@ function Create() {
       liquidationPrice,
       sellerDeposit,
       premiumPrice,
-      premiumInterval,
+      premiumInterval: weeksToUnixTime(premiumInterval),
       premiumRounds,
     };
 
     console.log(data);
     const result = await CDS.createSwap(data);
     console.log(result);
+    const swapId = result.events.CreateSwap.returnValues.swapId;
+    console.log(swapId);
   }
 
   // Connect Wallet Handler
@@ -198,7 +204,7 @@ function Create() {
               <div className='input-select'>
                 <input 
                   placeholder='Premium Interval'
-                  value={`Premium Interval: ${premiumInterval}`}
+                  value={`Premium Interval: ${premiumInterval} weeks`}
                   disabled
                 />
                 <select 
@@ -206,9 +212,9 @@ function Create() {
                   defaultValue='12'
                   onChange={e=>setPremiumInterval(e.target.value)}
                 >
-                  <option value='12'>12 months</option>
-                  <option value='6'>6 months</option>
-                  <option value='3'>3 months</option>
+                  <option value='12'>12 weeks</option>
+                  <option value='6'>6 weeks</option>
+                  <option value='3'>3 weeks</option>
                 </select>
               </div>
               <input 
