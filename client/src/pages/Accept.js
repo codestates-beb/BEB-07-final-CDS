@@ -3,6 +3,10 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom'
 
+// components
+import Footer from '../components/Footer';
+import ScrollButton from '../components/ScrollButton';
+
 // hooks
 import useCDS from '../utils/hooks/useCDS';
 
@@ -67,13 +71,22 @@ function Accept() {
   },[])
 
   useEffect(()=>{
-    if(CDS) {
+    if( CDS ) {
       CDS.getSwap(swapId)
       .then(result=> {
         setSwapOnChain(result);
       });
     };
   }, [CDS]);
+
+  useEffect(()=>{
+    if(swapOnDB){
+      console.log(userAddress);
+      console.log(swapOnDB.buyer.toLowerCase());
+      console.log(userAddress === swapOnDB.buyer.toLowerCase());
+
+    }
+  }, [swapOnDB, userAddress])
 
   return (
     <>
@@ -83,7 +96,7 @@ function Accept() {
       <div className='container container-accept'>
         <div className='accept-head'>
           <h1 className='accept-head-title'>Check Crypto Default Swap</h1>
-          <p className='accept-head-notice text-2xl font-semibold py-2'>Cehck Your Crypto Default Swap Contract in detail and sign it!</p>
+          <p className='accept-head-notice text-2xl font-semibold py-2'>Check Your Crypto Default Swap Contract in detail and sign it!</p>
           <hr className='line w-[150px] color-[var(--primary-color)]'/>
         </div>
         <div className='accept-form'>
@@ -162,7 +175,7 @@ function Accept() {
             </div>
           </div>
           <div className='form-section'>
-            <h2 className='section-title'>Liquiditaion</h2>
+            <h2 className='section-title'>Liquidaion</h2>
             <div className='input-group'>
               <input 
                 placeholder='Seller Deposit' 
@@ -183,6 +196,16 @@ function Accept() {
           </div>
           <div className='form-section'>
             <div className='button-group'>
+              { swapOnDB && userAddress === swapOnDB.buyer.toLowerCase() ?
+                <button
+                  className='cancel-button'
+                  onClick={acceptButtonHandler}
+                >
+                  Cancel CDS
+                </button>
+                :
+                <></>
+              }
               <button
                 className='accept-button' 
                 onClick={acceptButtonHandler}
@@ -192,6 +215,12 @@ function Accept() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="fixed bottom-11 right-11">
+        <ScrollButton />
+      </div>
+      <div>
+        <Footer />
       </div>
     </>
   )
