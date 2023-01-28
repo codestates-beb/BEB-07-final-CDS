@@ -1,5 +1,5 @@
 // modules
-import { Pagination } from 'swiper';
+import { FreeMode, Pagination } from 'swiper';
 
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -9,38 +9,37 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 
 //components
-import ProposedCard_type2 from '../ProposedCard_type2';
+import ProposedCardType2 from '../ProposedCardType2';
 
 function ProposedCardScroll(props) {
   const proposed = props.response.filter((swap) => swap.status === 'pending');
-
-  console.log(proposed);
 
   return (
     <>
       <Swiper
         slidesPerView={6}
         spaceBetween={15}
+        freeMode={true}
+        keyboard={true}
         centeredSlides={true}
         pagination={{
           clickable: true,
         }}
-        modules={[Pagination]}
+        modules={[FreeMode, Pagination]}
         className="mySwiper"
       >
         <div>
           {proposed.map((swap) => {
             return (
-              <div key={swap.swapId}>
-                <SwiperSlide>
-                  <ProposedCard_type2
-                    premium={swap.premium}
-                    premiumInterval={swap.premiumInterval}
-                    requiredDeposit={swap.sellerDeposit}
-                    premiumRounds={swap.totalPremiumRounds}
-                  />
-                </SwiperSlide>
-              </div>
+              <SwiperSlide>
+                <ProposedCardType2
+                  key={swap.swapId}
+                  premium={swap.premium}
+                  premiumInterval={swap.premiumInterval}
+                  requiredDeposit={swap.sellerDeposit}
+                  premiumRounds={swap.totalPremiumRounds}
+                />
+              </SwiperSlide>
             );
           })}
         </div>

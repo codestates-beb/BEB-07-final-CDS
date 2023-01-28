@@ -1,6 +1,7 @@
 export default {
-    devURL: "https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com/dev",
+  devURL:
+    'https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com/dev',
 
-    contractAddr: "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D",
-    oracleAddr: '0x4bf749ec68270027C5910220CEAB30Cc284c7BA2'
-}
+  contractAddr: '0xFF5181e2210AB92a5c9db93729Bc47332555B9E9',
+  oracleAddr: '0xb4fFe5983B0B748124577Af4d16953bd096b6897',
+};

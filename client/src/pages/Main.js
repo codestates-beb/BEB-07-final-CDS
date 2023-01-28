@@ -23,6 +23,7 @@ function Main() {
     const getData = () => {
       APIdata.then((response) => {
         setResponse(response);
+        console.log(response);
       });
     };
     getData();
@@ -84,16 +85,26 @@ function Main() {
         </div>
       </div>
       <div className="flex-col">
-        <div className="mt-32 font-bold text-3xl mb-[2rem] mr-[43rem] text-center">
+        <div className="mt-32 font-bold text-2xl text-center">
           Proposed CDSs
+        </div>
+        <div className="mt-4 font-regular text-base text-center text-lightGray">
+          Check the proposed CDSs and protect your crypto assets !
         </div>
         <div className="">
           <ProposedCardScroll response={response} />
         </div>
       </div>
       <div className="flex-col">
-        <div className="mt-32 font-bold text-3xl mb-[2rem] mr-[43rem] text-center">
+        <div className="mt-32 font-bold text-2xl text-center">
           Accepted CDSs
+        </div>
+        <div className="mt-4 font-regular text-base text-center text-lightGray">
+          <p>Please check the contract we issued below.</p>
+          <p>
+            Many customers are already protecting their assets through our
+            products.
+          </p>
         </div>
         <div className="">
           <AcceptedCardScroll response={response} />
