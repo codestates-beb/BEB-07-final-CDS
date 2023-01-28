@@ -1878,18 +1878,18 @@
     "absolutePath": "project:/contracts/Oracle/PriceConsumer.sol",
     "exportedSymbols": {
       "PriceConsumer": [
-        876
+        1195
       ],
       "PriceOracleMock": [
-        913
+        1232
       ]
     },
-    "id": 877,
+    "id": 1196,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 827,
+        "id": 1146,
         "literals": [
           "solidity",
           "^",
@@ -1902,11 +1902,11 @@
       {
         "absolutePath": "project:/contracts/Oracle/PriceOracleMock.sol",
         "file": "./PriceOracleMock.sol",
-        "id": 828,
+        "id": 1147,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 877,
-        "sourceUnit": 914,
+        "scope": 1196,
+        "sourceUnit": 1233,
         "src": "57:31:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1918,9 +1918,9 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 876,
+        "id": 1195,
         "linearizedBaseContracts": [
-          876
+          1195
         ],
         "name": "PriceConsumer",
         "nameLocation": "99:13:5",
@@ -1928,36 +1928,36 @@
         "nodes": [
           {
             "constant": false,
-            "id": 831,
+            "id": 1150,
             "mutability": "mutable",
             "name": "priceOracle",
             "nameLocation": "141:11:5",
             "nodeType": "VariableDeclaration",
-            "scope": 876,
+            "scope": 1195,
             "src": "117:35:5",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_PriceOracleMock_$913",
+              "typeIdentifier": "t_contract$_PriceOracleMock_$1232",
               "typeString": "contract PriceOracleMock"
             },
             "typeName": {
-              "id": 830,
+              "id": 1149,
               "nodeType": "UserDefinedTypeName",
               "pathNode": {
-                "id": 829,
+                "id": 1148,
                 "name": "PriceOracleMock",
                 "nameLocations": [
                   "117:15:5"
                 ],
                 "nodeType": "IdentifierPath",
-                "referencedDeclaration": 913,
+                "referencedDeclaration": 1232,
                 "src": "117:15:5"
               },
-              "referencedDeclaration": 913,
+              "referencedDeclaration": 1232,
               "src": "117:15:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_PriceOracleMock_$913",
+                "typeIdentifier": "t_contract$_PriceOracleMock_$1232",
                 "typeString": "contract PriceOracleMock"
               }
             },
@@ -1965,12 +1965,12 @@
           },
           {
             "body": {
-              "id": 834,
+              "id": 1153,
               "nodeType": "Block",
               "src": "171:2:5",
               "statements": []
             },
-            "id": 835,
+            "id": 1154,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -1978,18 +1978,18 @@
             "nameLocation": "-1:-1:-1",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 832,
+              "id": 1151,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "168:2:5"
             },
             "returnParameters": {
-              "id": 833,
+              "id": 1152,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "171:0:5"
             },
-            "scope": 876,
+            "scope": 1195,
             "src": "157:16:5",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1997,23 +1997,23 @@
           },
           {
             "body": {
-              "id": 848,
+              "id": 1167,
               "nodeType": "Block",
               "src": "237:69:5",
               "statements": [
                 {
                   "assignments": [
-                    841
+                    1160
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 841,
+                      "id": 1160,
                       "mutability": "mutable",
                       "name": "result",
                       "nameLocation": "251:6:5",
                       "nodeType": "VariableDeclaration",
-                      "scope": 848,
+                      "scope": 1167,
                       "src": "243:14:5",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -2022,7 +2022,7 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 840,
+                        "id": 1159,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
                         "src": "243:7:5",
@@ -2034,24 +2034,24 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 845,
+                  "id": 1164,
                   "initialValue": {
                     "arguments": [],
                     "expression": {
                       "argumentTypes": [],
                       "expression": {
-                        "id": 842,
+                        "id": 1161,
                         "name": "priceOracle",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 831,
+                        "referencedDeclaration": 1150,
                         "src": "260:11:5",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_PriceOracleMock_$913",
+                          "typeIdentifier": "t_contract$_PriceOracleMock_$1232",
                           "typeString": "contract PriceOracleMock"
                         }
                       },
-                      "id": 843,
+                      "id": 1162,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2059,14 +2059,14 @@
                       "memberLocation": "272:8:5",
                       "memberName": "getPrice",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 898,
+                      "referencedDeclaration": 1217,
                       "src": "260:20:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_view$__$returns$_t_uint256_$",
                         "typeString": "function () view external returns (uint256)"
                       }
                     },
-                    "id": 844,
+                    "id": 1163,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2087,26 +2087,26 @@
                 },
                 {
                   "expression": {
-                    "id": 846,
+                    "id": 1165,
                     "name": "result",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 841,
+                    "referencedDeclaration": 1160,
                     "src": "295:6:5",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 839,
-                  "id": 847,
+                  "functionReturnParameters": 1158,
+                  "id": 1166,
                   "nodeType": "Return",
                   "src": "288:13:5"
                 }
               ]
             },
             "functionSelector": "38f5a491",
-            "id": 849,
+            "id": 1168,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -2114,23 +2114,23 @@
             "nameLocation": "186:18:5",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 836,
+              "id": 1155,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "204:2:5"
             },
             "returnParameters": {
-              "id": 839,
+              "id": 1158,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 838,
+                  "id": 1157,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 849,
+                  "scope": 1168,
                   "src": "228:7:5",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2139,7 +2139,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 837,
+                    "id": 1156,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "228:7:5",
@@ -2153,7 +2153,7 @@
               ],
               "src": "227:9:5"
             },
-            "scope": 876,
+            "scope": 1195,
             "src": "177:129:5",
             "stateMutability": "view",
             "virtual": false,
@@ -2161,7 +2161,7 @@
           },
           {
             "body": {
-              "id": 874,
+              "id": 1193,
               "nodeType": "Block",
               "src": "380:147:5",
               "statements": [
@@ -2173,17 +2173,17 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 862,
+                        "id": 1181,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 857,
+                          "id": 1176,
                           "name": "_priceOracleAddress",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 851,
+                          "referencedDeclaration": 1170,
                           "src": "394:19:5",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -2196,7 +2196,7 @@
                           "arguments": [
                             {
                               "hexValue": "307830",
-                              "id": 860,
+                              "id": 1179,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -2218,7 +2218,7 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 859,
+                            "id": 1178,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -2230,14 +2230,14 @@
                               "typeString": "type(address)"
                             },
                             "typeName": {
-                              "id": 858,
+                              "id": 1177,
                               "name": "address",
                               "nodeType": "ElementaryTypeName",
                               "src": "417:7:5",
                               "typeDescriptions": {}
                             }
                           },
-                          "id": 861,
+                          "id": 1180,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -2261,7 +2261,7 @@
                       },
                       {
                         "hexValue": "496e76616c69642061646472657373",
-                        "id": 863,
+                        "id": 1182,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -2287,7 +2287,7 @@
                           "typeString": "literal_string \"Invalid address\""
                         }
                       ],
-                      "id": 856,
+                      "id": 1175,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -2301,7 +2301,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 864,
+                    "id": 1183,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2317,26 +2317,26 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 865,
+                  "id": 1184,
                   "nodeType": "ExpressionStatement",
                   "src": "386:63:5"
                 },
                 {
                   "expression": {
-                    "id": 870,
+                    "id": 1189,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 866,
+                      "id": 1185,
                       "name": "priceOracle",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 831,
+                      "referencedDeclaration": 1150,
                       "src": "455:11:5",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_PriceOracleMock_$913",
+                        "typeIdentifier": "t_contract$_PriceOracleMock_$1232",
                         "typeString": "contract PriceOracleMock"
                       }
                     },
@@ -2345,11 +2345,11 @@
                     "rightHandSide": {
                       "arguments": [
                         {
-                          "id": 868,
+                          "id": 1187,
                           "name": "_priceOracleAddress",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 851,
+                          "referencedDeclaration": 1170,
                           "src": "485:19:5",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -2364,18 +2364,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 867,
+                        "id": 1186,
                         "name": "PriceOracleMock",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 913,
+                        "referencedDeclaration": 1232,
                         "src": "469:15:5",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_PriceOracleMock_$913_$",
+                          "typeIdentifier": "t_type$_t_contract$_PriceOracleMock_$1232_$",
                           "typeString": "type(contract PriceOracleMock)"
                         }
                       },
-                      "id": 869,
+                      "id": 1188,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2387,24 +2387,24 @@
                       "src": "469:36:5",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_PriceOracleMock_$913",
+                        "typeIdentifier": "t_contract$_PriceOracleMock_$1232",
                         "typeString": "contract PriceOracleMock"
                       }
                     },
                     "src": "455:50:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_PriceOracleMock_$913",
+                      "typeIdentifier": "t_contract$_PriceOracleMock_$1232",
                       "typeString": "contract PriceOracleMock"
                     }
                   },
-                  "id": 871,
+                  "id": 1190,
                   "nodeType": "ExpressionStatement",
                   "src": "455:50:5"
                 },
                 {
                   "expression": {
                     "hexValue": "74727565",
-                    "id": 872,
+                    "id": 1191,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
@@ -2418,15 +2418,15 @@
                     },
                     "value": "true"
                   },
-                  "functionReturnParameters": 855,
-                  "id": 873,
+                  "functionReturnParameters": 1174,
+                  "id": 1192,
                   "nodeType": "Return",
                   "src": "511:11:5"
                 }
               ]
             },
             "functionSelector": "7adbf973",
-            "id": 875,
+            "id": 1194,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -2434,17 +2434,17 @@
             "nameLocation": "319:9:5",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 852,
+              "id": 1171,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 851,
+                  "id": 1170,
                   "mutability": "mutable",
                   "name": "_priceOracleAddress",
                   "nameLocation": "337:19:5",
                   "nodeType": "VariableDeclaration",
-                  "scope": 875,
+                  "scope": 1194,
                   "src": "329:27:5",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2453,7 +2453,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 850,
+                    "id": 1169,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "329:7:5",
@@ -2469,17 +2469,17 @@
               "src": "328:29:5"
             },
             "returnParameters": {
-              "id": 855,
+              "id": 1174,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 854,
+                  "id": 1173,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 875,
+                  "scope": 1194,
                   "src": "374:4:5",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2488,7 +2488,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 853,
+                    "id": 1172,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "374:4:5",
@@ -2502,14 +2502,14 @@
               ],
               "src": "373:6:5"
             },
-            "scope": 876,
+            "scope": 1195,
             "src": "310:217:5",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 877,
+        "scope": 1196,
         "src": "90:439:5",
         "usedErrors": []
       }
@@ -2522,7 +2522,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.9",
-  "updatedAt": "2023-01-25T10:28:15.219Z",
+  "updatedAt": "2023-01-28T12:45:54.953Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
