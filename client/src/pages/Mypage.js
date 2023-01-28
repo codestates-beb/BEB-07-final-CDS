@@ -1,6 +1,6 @@
 // components
 import ProposedCard from '../components/ProposedCard';
-import ConfirmedCard from '../components/ConfirmedCard.js';
+import AcceptedCard from '../components/AcceptedCard.js';
 
 // components
 import ScrollButton from '../components/ScrollButton.js';
@@ -73,11 +73,11 @@ function Mypage() {
               Accepted CDSs
             </div>
             <div className="grid grid-rows-2 grid-flow-col gap-y-7 gap-x-[4rem] justify-start">
-              <ConfirmedCard />
-              <ConfirmedCard />
-              <ConfirmedCard />
-              <ConfirmedCard />
-              <ConfirmedCard />
+              <AcceptedCard />
+              <AcceptedCard />
+              <AcceptedCard />
+              <AcceptedCard />
+              <AcceptedCard />
             </div>
           </div>
         </div>
