@@ -1,0 +1,17 @@
+case1: account[2] create, account[1] accepts
+
+case2: account[2] create and cancel
+
+case3 : account[4] creates and nobody accepts
+
+case4: account[3] creates and account[1] accepts
+    after price dropped below claim price, account[3] claimes
+
+case5: account[2] creates and account[3] accepts
+    after price dropped below liquidation price, account[2] claimes
+
+case6: account[1] creates and account[3] accepts
+    account[1] closes swap
+
+case7: account[4] creates and account[2] accepts
+    account[4] pays single round premium

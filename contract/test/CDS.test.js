@@ -369,7 +369,7 @@ contract('CDS', (accounts) => {
         { from: accounts[2], value: defaultBuyerDeposit },
       );
     });
-    it('shoul throw error if the status is not active', async () => {
+    it('should throw error if the status is not active', async () => {
       const [currentSwapId] = await cds.getSwapId();
       await truffleAssert.fails(
         cds.closeSwap(currentSwapId, { from: accounts[2] }),
