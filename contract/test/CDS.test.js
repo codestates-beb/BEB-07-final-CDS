@@ -588,13 +588,125 @@ contract('CDS', (accounts) => {
       );
       // buyer
       assert.equal(
-        balanceBeforeClaim.buyer + +claimReward - +gasCost, // gas 10000
+        balanceBeforeClaim.buyer + +claimReward - gasCost, // gas 10000
         +(await web3.eth.getBalance(accounts[2])),
       );
       // seller
       assert.equal(
         balanceBeforeClaim.seller,
         await web3.eth.getBalance(accounts[1]),
+      );
+    });
+  });
+
+  describe('Pay Premium', async () => {
+    beforeEach(async () => {
+      await cds.createSwap(
+        accounts[2],
+        defaultInitAssetPrice,
+        defaultAmountOfAssets,
+        defaultClaimPrice,
+        defaultLiquidationPrice,
+        defaultSellerDeposit,
+        defaultPremium,
+        defaultPremiumInterval,
+        defaultPremiumRounds,
+        { from: accounts[2], value: defaultBuyerDeposit },
+      );
+    });
+
+    it('should throw error if the status of the swap is not active', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await truffleAssert.fails(
+        cds.payPremium(currentSwapId, {
+          from: accounts[2],
+          value: defaultPremium,
+        }),
+      );
+    });
+
+    it('should throw error if the method is not called by the buyer', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.acceptSwap(accounts[1], defaultInitAssetPrice, currentSwapId, {
+        from: accounts[1],
+        value: defaultSellerDeposit,
+      });
+      await truffleAssert.fails(
+        cds.payPremium(currentSwapId, {
+          from: accounts[1],
+          value: defaultPremium,
+        }),
+      );
+    });
+
+    it('should throw error if the buyer paid invalid amount of premium', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.acceptSwap(accounts[1], defaultInitAssetPrice, currentSwapId, {
+        from: accounts[1],
+        value: defaultSellerDeposit,
+      });
+      await truffleAssert.fails(
+        cds.payPremium(currentSwapId, {
+          from: accounts[2],
+          value: defaultPremium + 1,
+        }),
+      );
+    });
+
+    // after payPremium passes
+    it('should pass if proper premium paid, and check the balance of the participants', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.acceptSwap(accounts[1], defaultInitAssetPrice, currentSwapId, {
+        from: accounts[1],
+        value: defaultSellerDeposit,
+      });
+
+      const balanceBeforePremium = {
+        buyer: +(await web3.eth.getBalance(accounts[2])),
+        seller: +(await web3.eth.getBalance(accounts[1])),
+      };
+
+      const receipt = await cds.payPremium(currentSwapId, {
+        from: accounts[2],
+        value: defaultPremium,
+      });
+      const tx = await web3.eth.getTransaction(receipt.tx);
+      const { gasUsed } = receipt.receipt;
+      const { gasPrice, value } = tx;
+      const gasCost = gasUsed * gasPrice;
+
+      // buyer
+      assert.equal(
+        balanceBeforePremium.buyer - defaultPremium - gasCost,
+        +(await web3.eth.getBalance(accounts[2])),
+      );
+      // seller
+      assert.equal(
+        balanceBeforePremium.seller + defaultPremium,
+        await web3.eth.getBalance(accounts[1]),
+      );
+    });
+
+    // total round check
+    it('should pass if totalPremiumRounds changed properly', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.acceptSwap(accounts[1], defaultInitAssetPrice, currentSwapId, {
+        from: accounts[1],
+        value: defaultSellerDeposit,
+      });
+      const beforePayPremium = await cds.getSwap(currentSwapId);
+
+      await truffleAssert.passes(
+        cds.payPremium(currentSwapId, {
+          from: accounts[2],
+          value: defaultPremium,
+        }),
+      );
+
+      const afterPayPremium = await cds.getSwap(currentSwapId);
+      assert.equal(
+        beforePayPremium.totalPremiumRounds - 1,
+        afterPayPremium.totalPremiumRounds,
       );
     });
   });
