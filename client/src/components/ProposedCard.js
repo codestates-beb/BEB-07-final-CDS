@@ -7,7 +7,7 @@ function ProposedCard(props) {
   const btcSymbol = getSymbol('btc');
 
   return (
-    <div className="card bg-darkGrayColor w-[13rem] h-[17rem] rounded-3xl hover:scale-110 transition-all">
+    <div className="card bg-darkGrayColor w-[13rem] h-[17rem] rounded-3xl">
       <div className="mx-[1.5rem] py-[1.5rem]">
         <div className="card-head">
           <div className="cds-image">

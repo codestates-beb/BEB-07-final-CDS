@@ -1,4 +1,4 @@
-function Card(props) {
+function ConfirmedCard(props) {
   function getSymbol(symbol) {
     const symbolURL = `https://assets.coincap.io/assets/icons/${symbol}@2x.png`;
     return symbolURL;
@@ -44,4 +44,4 @@ function Card(props) {
   );
 }
 
-export default Card;
+export default ConfirmedCard;

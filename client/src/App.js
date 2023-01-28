@@ -30,7 +30,7 @@ function App() {
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/createTest" element={<MakeTest />} />
         <Route path="/acceptTest/:swapId" element={<AcceptTest />} />
-        <Route path='/oracleTest' element={<OracleTest />} />
+        <Route path="/oracleTest" element={<OracleTest />} />
       </Routes>
     </div>
   );
