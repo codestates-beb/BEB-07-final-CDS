@@ -1,5 +1,5 @@
 // modules
-import { Pagination } from 'swiper';
+import { FreeMode, Pagination } from 'swiper';
 
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -9,38 +9,36 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 
 //components
-import AcceptedCard_type2 from '../AcceptedCard_type2';
+import AcceptedCardType2 from '../AcceptedCardType2';
 
 function AcceptedCardScroll(props) {
   const accepted = props.response.filter((swap) => swap.status === 'active');
-
-  console.log(accepted);
 
   return (
     <>
       <Swiper
         slidesPerView={6}
         spaceBetween={15}
+        freeMode={true}
         centeredSlides={true}
         pagination={{
           clickable: true,
         }}
-        modules={[Pagination]}
+        modules={[FreeMode, Pagination]}
         className="mySwiper"
       >
         <div>
           {accepted.map((swap) => {
             return (
-              <div key={swap.swapId}>
-                <SwiperSlide>
-                  <AcceptedCard_type2
-                    InitialPrice={swap.initialAssetPrice}
-                    ClaimPrice={swap.claimPrice}
-                    Liquidation
-                    Price={swap.liquidationPrice}
-                  />
-                </SwiperSlide>
-              </div>
+              <SwiperSlide>
+                <AcceptedCardType2
+                  key={swap.swapId}
+                  InitialPrice={swap.initialAssetPrice}
+                  ClaimPrice={swap.claimPrice}
+                  Liquidation
+                  Price={swap.liquidationPrice}
+                />
+              </SwiperSlide>
             );
           })}
         </div>
