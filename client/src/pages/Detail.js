@@ -1,10 +1,17 @@
 // modules
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 // components
 import ProposedCard from '../components/ProposedCard';
 import MarketPrice from '../components/MarketPrice';
+
+// apis
+import { getSwapById } from '../apis/request';
+
+// hooks
+import useCDS from '../utils/hooks/useCDS';
 
 // css
 import '../assets/css/detail.css';
@@ -13,9 +20,56 @@ import '../assets/css/detail.css';
 import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
+
 function Detail() {
   const { swapId } = useParams();
+  const userAddress = useSelector(state=>state.auth.user_addr);
   const [swapOnDB, setSwapOnDB] = useState(null);
+  const CDS = useCDS();
+
+  // CDS Cancel Handler
+  const cancelButtonHandler = async()=>{
+    console.log(swapId);
+
+    const result = await CDS.cancelSwap(
+      swapId,
+      userAddress,
+    );
+
+    console.log(result);
+  }
+
+  // CDS Claim Handler
+  const claimButtonHandler = async()=>{
+    console.log(swapId);
+
+    const result = await CDS.claimSwap(
+      swapId,
+      userAddress,
+    );   
+
+    console.log(result);
+  }
+
+  // CDS Close Handler
+  const closeButtonHandler = async()=>{
+    console.log(swapId);
+
+    const result = await CDS.closeSwap(
+      swapId,
+      userAddress,
+    );
+
+    console.log(result);
+  }
+
+  useEffect(()=>{
+    getSwapById(swapId)
+    .then(result=> {
+      if(result) setSwapOnDB(result);
+      else console.log(result);
+    })
+  }, [])
 
   return (
     <>
@@ -30,19 +84,19 @@ function Detail() {
               <div className="party-item">
                 <p className="party-role">Buyer Address</p>
                 <p className="party-address">
-                  0x247b669CbDD58FCa982DBf337C5D94880852E3Fa
+                  {swapOnDB? swapOnDB.buyer : ''}
                 </p>
               </div>
               <div className="party-item">
                 <p className="party-role">Seller Address</p>
                 <p className="party-address">
-                  0x734c49630caC28EaaC33e9722268e64cA80AbcFd
+                  {swapOnDB? swapOnDB.seller : ''}
                 </p>
               </div>
             </div>
           </div>
           <div className="detail-head-section">
-            <ProposedCard />
+            <ProposedCard response={swapOnDB} />
           </div>
         </div>
         {/* head */}
@@ -52,15 +106,15 @@ function Detail() {
             <div className="content-box">
               <div className="content-item">
                 <p className="item-name">Initial Price of Assets</p>
-                <p className="item-figures">$ 20,964</p>
+                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.initialAssetPrice}` : ''}</p>
               </div>
               <div className="content-item">
                 <p className="item-name">The Amount of Assets</p>
-                <p className="item-figures">10</p>
+                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.amountOfAssets}` : ''}</p>
               </div>
               <div className="content-item">
                 <p className="item-name">Total Assets</p>
-                <p className="item-figures">$ 209,640</p>
+                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.totalAssets}` : ''}</p>
               </div>
             </div>
           </div>
@@ -69,11 +123,11 @@ function Detail() {
             <div className="content-box">
               <div className="content-item">
                 <p className="item-name">Claim Price</p>
-                <p className="item-figures">$ 150,000</p>
+                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.claimPrice}` : ''}</p>
               </div>
               <div className="content-item">
                 <p className="item-name">Drop Rate</p>
-                <p className="item-figures">28.4 %</p>
+                <p className="item-figures">{swapOnDB ? `${swapOnDB.dropRate * 100} %` : ''}</p>
               </div>
             </div>
           </div>
@@ -82,19 +136,19 @@ function Detail() {
             <div className="content-box">
               <div className="content-item">
                 <p className="item-name">Premium Rate</p>
-                <p className="item-figures">2 %</p>
+                <p className="item-figures">{swapOnDB ? `${swapOnDB.premiumRate} %` : ''}</p>
               </div>
               <div className="content-item">
                 <p className="item-name">Premium Price</p>
-                <p className="item-figures">$ 10,000</p>
+                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.premium}` : ''}</p>
               </div>
               <div className="content-item">
                 <p className="item-name">Premium Interval</p>
-                <p className="item-figures">6 months</p>
+                <p className="item-figures">{swapOnDB ? `${swapOnDB.premiumInterval} seconds` : ''}</p>
               </div>
               <div className="content-item">
                 <p className="item-name">Premium Rounds</p>
-                <p className="item-figures">4</p>
+                <p className="item-figures">{swapOnDB ? `${swapOnDB.totalPremiumRounds} rounds` : ''}</p>
               </div>
             </div>
           </div>
@@ -103,15 +157,15 @@ function Detail() {
             <div className="content-box">
               <div className="content-item">
                 <p className="item-name">Seller Deposit</p>
-                <p className="item-figures">$ 100,000</p>
+                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.sellerDeposit}` : ''}</p>
               </div>
               <div className="content-item">
                 <p className="item-name">Liquidation Price</p>
-                <p className="item-figures">$ 10,964</p>
+                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.liquidationPrice}` : ''}</p>
               </div>
               <div className="content-item">
                 <p className="item-name">Buyer Deposit</p>
-                <p className="item-figures">$ 3,579</p>
+                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.buyerDeposit}` : ''}</p>
               </div>
             </div>
           </div>
@@ -123,21 +177,34 @@ function Detail() {
         <div className="detail-tail flex flex-col items-center mb-24">
           <MarketPrice />
           <div className='button-group'>
-            <button 
-              className='button pay-button'
-            >
-              Pay Premium
-            </button>
-            <button 
-              className='button claim-button'
-            >
-              Claim
-            </button>
-            <button
-              className='button cancel-button'
-            >
-              Cancel
-            </button>
+            { swapOnDB && swapOnDB.buyer.toLowerCase() === userAddress ?
+              <>
+                <button
+                  className='button pay-button'
+                >
+                  Pay Premium
+                </button>
+                <button 
+                  className='button claim-button'
+                  onClick={claimButtonHandler}
+                >
+                Claim
+                </button>
+                <button
+                  className='button cancel-button'
+                  onClick={cancelButtonHandler}
+                >
+                  Cancel
+                </button>
+                <button
+                  className='button close-button'
+                  onClick={closeButtonHandler}
+                >
+                  Close
+                </button>
+              </>
+              : <></>
+            }
           </div>
         </div>
         <div className="fixed bottom-11 right-11">
