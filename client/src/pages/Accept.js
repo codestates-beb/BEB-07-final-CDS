@@ -17,6 +17,8 @@ import { getSwapById } from '../apis/request';
 import '../assets/css/accept.css';
 
 function Accept() {
+  const navigate = useNavigate();
+
   const {swapId} = useParams();
   const [swapOnChain, setSwapOnChain] = useState(null);
   const [swapOnDB, setSwapOnDB] = useState(null);
@@ -32,13 +34,20 @@ function Accept() {
       swapOnChain.seller.deposit
     )
 
-    const result = await CDS.acceptSwap(
-      userAddress, 
-      swapOnChain.initAssetPrice, 
-      swapId,
-      swapOnChain.seller.deposit
-    );
-    console.log(result);
+    try {
+      const result = await CDS.acceptSwap(
+        userAddress, 
+        swapOnChain.initAssetPrice, 
+        swapId,
+        swapOnChain.seller.deposit
+      );
+
+      console.log(result);
+
+      navigate('/');
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   // Cancel CDS Handler

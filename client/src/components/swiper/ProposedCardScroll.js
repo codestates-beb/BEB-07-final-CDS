@@ -31,9 +31,9 @@ function ProposedCardScroll(props) {
         <div>
           {proposed.map((swap) => {
             return (
-              <SwiperSlide>
+              <SwiperSlide key={swap.swapId}>
                 <ProposedCardType2
-                  key={swap.swapId}
+                  swapId={swap.swapId}
                   premium={swap.premium}
                   premiumInterval={swap.premiumInterval}
                   requiredDeposit={swap.sellerDeposit}

@@ -26,7 +26,7 @@ function App() {
         <Route path="/" element={<Main />} />
         <Route path="/create" element={<Create />} />
         <Route path="/accept/:swapId" element={<Accept />} />
-        <Route path="/detail" element={<Detail />} />
+        <Route path="/detail/:swapId" element={<Detail />} />
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/createTest" element={<MakeTest />} />
         <Route path="/acceptTest/:swapId" element={<AcceptTest />} />

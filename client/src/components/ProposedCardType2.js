@@ -1,3 +1,6 @@
+// modules
+import { Link } from 'react-router-dom';
+
 //image
 import BTCCard from '../assets/img/BTC_Card_bg.jpg';
 
@@ -37,7 +40,7 @@ function ProposedCard_type2(props) {
           </div>
         </div>
         <button className="w-[80%] h-[6%] my-[4%] mx-[10%] rounded-3xl bg-primaryColor content-center">
-          <div className="text-sm font-bold">More Details</div>
+          <Link to={`/accept/${props.swapId}`} className="text-sm font-bold">More Details</Link>
         </button>
       </div>
     </>

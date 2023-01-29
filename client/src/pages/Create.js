@@ -35,7 +35,10 @@ import Footer from '../components/Footer.js';
 function Create() {
   const metamask = useMetamask();
   const CDS = useCDS();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  
+  // Authoirization Var
   const isLogin = useSelector((state) => state.auth.isLogin);
 
   // CDS Content State Variable
@@ -74,12 +77,19 @@ function Create() {
       premiumInterval: weeksToUnixTime(premiumInterval),
       premiumRounds,
     };
-
     console.log(data);
-    const result = await CDS.createSwap(data);
-    console.log(result);
-    const swapId = result.events.CreateSwap.returnValues.swapId;
-    console.log(swapId);
+
+    try {
+      const result = await CDS.createSwap(data);
+      console.log(result);
+      const swapId = result.events.CreateSwap.returnValues.swapId;
+      console.log(swapId);
+
+      navigate('/');
+    } catch(err){
+      console.log(err);
+    }
+    
   }
 
   // Connect Wallet Handler
