@@ -7,8 +7,8 @@ import MainLogo from '../assets/img/CDS_Symbol_bright_removebg.png';
 
 // components
 import MarketPrice from '../components/MarketPrice.js';
-import ProposedCard from '../components/ProposedCard.js';
-import ConfirmedCard from '../components/ConfirmedCard.js';
+import ProposedCardScroll from '../components/swiper/ProposedCardScroll.js';
+import AcceptedCardScroll from '../components/swiper/AcceptedCardScroll.js';
 import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
@@ -16,17 +16,14 @@ import Footer from '../components/Footer.js';
 import { getSwaps } from '../apis/request.js';
 
 function Main() {
-  const [confirmedSwaps, setConfirmedSwaps] = useState([]);
-  const [proposedSwaps, setProposedSwaps] = useState([]);
+  const [response, setResponse] = useState([]);
 
   useEffect(() => {
-    const swaps = getSwaps();
+    const APIdata = getSwaps();
     const getData = () => {
-      swaps.then((response) => {
-        const confirmed = response.filter((swap) => swap.status === 'active');
-        const proposed = response.filter((swap) => swap.status === 'pending');
-        setConfirmedSwaps(confirmed);
-        setProposedSwaps(proposed);
+      APIdata.then((response) => {
+        setResponse(response);
+        console.log(response);
       });
     };
     getData();
@@ -88,41 +85,29 @@ function Main() {
         </div>
       </div>
       <div className="flex-col">
-        <div className="mt-64 font-bold text-3xl mb-[2rem] mr-[43rem] text-center">
+        <div className="mt-32 font-bold text-2xl text-center">
           Proposed CDSs
         </div>
-        <div className="grid grid-rows-2 grid-flow-col gap-y-7 gap-x-[4rem] justify-center">
-          {proposedSwaps.map((swap) => {
-            return (
-              <div key={swap.swapId}>
-                <ProposedCard
-                  premium={swap.premium}
-                  premiumInterval={swap.premiumInterval}
-                  requiredDeposit={swap.sellerDeposit}
-                  premiumRounds={swap.totalPremiumRounds}
-                />
-              </div>
-            );
-          })}
+        <div className="mt-4 font-regular text-base text-center text-lightGray">
+          Check the proposed CDSs and protect your crypto assets !
+        </div>
+        <div className="">
+          <ProposedCardScroll response={response} />
         </div>
       </div>
       <div className="flex-col">
-        <div className="mt-64 font-bold text-3xl mb-[2rem] mr-[43rem] text-center">
+        <div className="mt-32 font-bold text-2xl text-center">
           Accepted CDSs
         </div>
-        <div className="grid grid-rows-2 grid-flow-col gap-y-7 gap-x-[4rem] justify-center">
-          {confirmedSwaps.map((swap) => {
-            return (
-              <div key={swap.swapId}>
-                <ConfirmedCard
-                  InitialPrice={swap.initialAssetPrice}
-                  ClaimPrice={swap.claimPrice}
-                  Liquidation
-                  Price={swap.liquidationPrice}
-                />
-              </div>
-            );
-          })}
+        <div className="mt-4 font-regular text-base text-center text-lightGray">
+          <p>Please check the contract we issued below.</p>
+          <p>
+            Many customers are already protecting their assets through our
+            products.
+          </p>
+        </div>
+        <div className="">
+          <AcceptedCardScroll response={response} />
         </div>
       </div>
       <div className="fixed bottom-11 right-11">
