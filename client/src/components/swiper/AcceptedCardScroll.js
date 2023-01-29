@@ -30,9 +30,9 @@ function AcceptedCardScroll(props) {
         <div>
           {accepted.map((swap) => {
             return (
-              <SwiperSlide>
+              <SwiperSlide key={swap.swapId}>
                 <AcceptedCardType2
-                  key={swap.swapId}
+                  swapId={swap.swapId}
                   InitialPrice={swap.initialAssetPrice}
                   ClaimPrice={swap.claimPrice}
                   Liquidation
