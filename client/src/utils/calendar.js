@@ -7,3 +7,25 @@ export function unixTimeToWeeks(time) {
     // days / hours / mintues / seconds
     return time / 7 / 24 / 60 / 60;
 }
+
+// Calculate Time Remaining for paying premium
+export function calculateTimeRemaining(currentTime, payTime){
+    const diffSeconds = payTime - currentTime;
+    
+    if (diffSeconds <= 0) return `expired`;
+    else{
+        if (parseInt(diffSeconds / 60) === 0) return `${diffSeconds} seconds`;
+        const diffMinutes = parseInt( diffSeconds / 60 );
+
+        if (parseInt(diffMinutes / 60) === 0) return `${diffSeconds} minutes`;
+        const diffHours = parseInt( diffMinutes / 60 );
+
+        if (parseInt(diffHours / 24) === 0 ) return `${diffHours} hours`;
+        const diffDays = parseInt( diffHours / 24 );
+
+        if (parseInt(diffDays / 7) === 0) return `${diffDays} days`;
+        const diffWeeks = parseInt( diffDays / 7 );
+
+        return `${diffWeeks} weeks`;
+    }
+}

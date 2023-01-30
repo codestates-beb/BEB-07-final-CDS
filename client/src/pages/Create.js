@@ -269,13 +269,19 @@ function Create() {
                   className='value'
                   placeholder='Liquidated Price'
                   value={`Liquidated Price: ${liquidationPrice}`}
-                  disabled
+                  max={initialPriceOfAssets || 0}
+                  onChange={e=>{
+                    const currentValue = onlyNumber(e.target.value);
+                    if(currentValue > initialPriceOfAssets) 
+                      currentValue=initialPriceOfAssets;
+                    setLiquidationPrice(currentValue);
+                  }}
                 />
                 <input
                   className='range'
                   type='range'
                   value={liquidationPrice}
-                  max={initialPriceOfAssets}
+                  max={initialPriceOfAssets || 0}
                   min='0'
                   onChange={e=>setLiquidationPrice(e.target.value)}
                 />
