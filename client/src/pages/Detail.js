@@ -31,6 +31,15 @@ function Detail() {
   const [timeRemainingToPay, setTimeRemainingToPay] = useState(null);
   const CDS = useCDS();
 
+  // CDS pay premium Handler
+  const premiumButtonHandler = async()=>{
+    console.log(swapId);
+
+    const result = await CDS.payPremium(swapId, userAddress, swapOnChain.premium);
+    
+    console.log(result);
+  }
+
   // CDS Cancel Handler
   const cancelButtonHandler = async()=>{
     console.log(swapId);
@@ -204,6 +213,7 @@ function Detail() {
               <>
                 <button
                   className='button pay-button'
+                  onClick={premiumButtonHandler}
                 >
                   Pay Premium
                 </button>
