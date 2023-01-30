@@ -17,6 +17,8 @@ import { getSwapById } from '../apis/request';
 import '../assets/css/accept.css';
 
 function Accept() {
+  const navigate = useNavigate();
+
   const {swapId} = useParams();
   const [swapOnChain, setSwapOnChain] = useState(null);
   const [swapOnDB, setSwapOnDB] = useState(null);
@@ -32,13 +34,20 @@ function Accept() {
       swapOnChain.seller.deposit
     )
 
-    const result = await CDS.acceptSwap(
-      userAddress, 
-      swapOnChain.initAssetPrice, 
-      swapId,
-      swapOnChain.seller.deposit
-    );
-    console.log(result);
+    try {
+      const result = await CDS.acceptSwap(
+        userAddress, 
+        swapOnChain.initAssetPrice, 
+        swapId,
+        swapOnChain.seller.deposit
+      );
+
+      console.log(result);
+
+      navigate('/');
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   // Cancel CDS Handler
@@ -86,7 +95,7 @@ function Accept() {
       <div className='container container-accept'>
         <div className='accept-head'>
           <h1 className='accept-head-title'>Check Crypto Default Swap</h1>
-          <p className='accept-head-notice text-2xl font-semibold py-2'>Check Your Crypto Default Swap Contract in detail and sign it!</p>
+          <p className='accept-head-notice text-xl font-semibold py-2'>Check Your Crypto Default Swap Contract in detail and sign it!</p>
           <hr className='line w-[150px] color-[var(--primary-color)]'/>
         </div>
         <div className='accept-form'>

@@ -79,6 +79,20 @@ function useCDS() {
           return receipt;
         },
 
+        claimSwap: async (swapId, address)=>{
+          const receipt = await contract.methods.claimSwap(swapId)
+          .send({from:address});
+
+          return receipt;
+        },
+
+        closeSwap: async (swapId, address)=>{
+          const receipt = await contract.methods.closeSwap(swapId)
+          .send({from:address});
+
+          return receipt;
+        },
+
         getSwap: async (swapId, address)=>{
           const receipt = await contract.methods.getSwap(swapId).call();
           console.log(receipt);

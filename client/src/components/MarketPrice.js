@@ -1,9 +1,13 @@
-//image
-import BTHLogo from '../img/BTC_Logo.png';
-import ETHLogo from '../img/ETH_Logo.png';
-import DOGELogo from '../img/DOGE_Logo.png';
-
 function MarketPrice() {
+  function getSymbol(symbol) {
+    const symbolURL = `https://assets.coincap.io/assets/icons/${symbol}@2x.png`;
+    return symbolURL;
+  }
+
+  const btcSymbol = getSymbol('btc');
+  const ethSymbol = getSymbol('eth');
+  const dogeSymbol = getSymbol('doge');
+
   return (
     <div className="">
       <div className="px-3 py-6 font-bold text-3xl">Market Price</div>
@@ -19,7 +23,7 @@ function MarketPrice() {
               <img
                 className="w-8 h-8 bg-white"
                 alt="BitcoinLogo"
-                src={BTHLogo}
+                src={btcSymbol}
               />
               <div className="ml-2 font-medium text-xl text-center">BTC</div>
             </div>
@@ -28,7 +32,7 @@ function MarketPrice() {
           </div>
           <div className="flex pt-5">
             <div className="w-44 flex">
-              <img className="w-8 h-8" alt="BitcoinLogo" src={ETHLogo} />
+              <img className="w-8 h-8" alt="BitcoinLogo" src={ethSymbol} />
               <div className="ml-2 font-medium text-xl text-center">ETH</div>
             </div>
             <div className="w-44 ml-60">$ 20,964.20</div>
@@ -36,7 +40,7 @@ function MarketPrice() {
           </div>
           <div className="flex pt-5">
             <div className="w-44 flex">
-              <img className="w-8 h-8" alt="BitcoinLogo" src={DOGELogo} />
+              <img className="w-8 h-8" alt="BitcoinLogo" src={dogeSymbol} />
               <div className="ml-2 font-medium text-xl text-center">DOGE</div>
             </div>
             <div className="w-44 ml-60">$ 20,964.20</div>

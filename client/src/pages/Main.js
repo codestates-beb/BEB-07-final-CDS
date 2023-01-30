@@ -1,17 +1,34 @@
 // modules
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 //image
-import MainLogo from '../img/CDS_Symbol_bright_removebg.png';
+import MainLogo from '../assets/img/CDS_Symbol_bright_removebg.png';
 
 // components
 import MarketPrice from '../components/MarketPrice.js';
-import ProposedCard from '../components/ProposedCard.js';
-import ConfirmedCard from '../components/ConfirmedCard.js';
+import ProposedCardScroll from '../components/swiper/ProposedCardScroll.js';
+import AcceptedCardScroll from '../components/swiper/AcceptedCardScroll.js';
 import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
+//APIs
+import { getSwaps } from '../apis/request.js';
+
 function Main() {
+  const [response, setResponse] = useState([]);
+
+  useEffect(() => {
+    const APIdata = getSwaps();
+    const getData = () => {
+      APIdata.then((response) => {
+        setResponse(response);
+        console.log(response);
+      });
+    };
+    getData();
+  }, []);
+
   return (
     <div className="">
       <div className="MainTextBox flex w-screen mx-auto mt-24 justify-center">
@@ -68,32 +85,29 @@ function Main() {
         </div>
       </div>
       <div className="flex-col">
-        <div className="mt-64 font-bold text-3xl mb-[2rem] mr-[45rem] text-center">
+        <div className="mt-32 font-bold text-2xl text-center">
           Proposed CDSs
         </div>
-        <div className="grid grid-rows-2 grid-flow-col gap-y-7 gap-x-[4rem] justify-center">
-          <ProposedCard />
-          <ProposedCard />
-          <ProposedCard />
-          <ProposedCard />
-          <ProposedCard />
-          <ProposedCard />
-          <ProposedCard />
-          <ProposedCard />
+        <div className="mt-4 font-regular text-base text-center text-lightGray">
+          Check the proposed CDSs and protect your crypto assets !
+        </div>
+        <div className="">
+          <ProposedCardScroll response={response} />
         </div>
       </div>
       <div className="flex-col">
-        <div className="mt-64 font-bold text-3xl mb-[2rem] mr-[45rem] text-center">
+        <div className="mt-32 font-bold text-2xl text-center">
           Accepted CDSs
         </div>
-        <div className="grid grid-rows-2 grid-flow-col gap-y-7 gap-x-[4rem] justify-center">
-          <ConfirmedCard />
-          <ConfirmedCard />
-          <ConfirmedCard />
-          <ConfirmedCard />
-          <ConfirmedCard />
-          <ConfirmedCard />
-          <ConfirmedCard />
+        <div className="mt-4 font-regular text-base text-center text-lightGray">
+          <p>Please check the contract we issued below.</p>
+          <p>
+            Many customers are already protecting their assets through our
+            products.
+          </p>
+        </div>
+        <div className="">
+          <AcceptedCardScroll response={response} />
         </div>
       </div>
       <div className="fixed bottom-11 right-11">

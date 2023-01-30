@@ -15,6 +15,7 @@ import {
   calculateTotalAssets,
   calculateClaimPrice,
   calculateDropRate,
+  calculateSellerDeposit,
   calculateLiquidationPrice,
   calculatePremiumPrice,
 } from '../utils/calculator';
@@ -35,7 +36,10 @@ import Footer from '../components/Footer.js';
 function Create() {
   const metamask = useMetamask();
   const CDS = useCDS();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  
+  // Authoirization Var
   const isLogin = useSelector((state) => state.auth.isLogin);
 
   // CDS Content State Variable
@@ -49,12 +53,12 @@ function Create() {
 
   // Claim State Var
   const [claimPrice, setClaimPrice] = useState('');
-  const [dropRate, setDropRate] = useState('');
+  const [dropRate, setDropRate] = useState('0');
 
   // Premium State Var
   const [premiumRate, setPremiumRate] = useState(2);
   const [premiumPrice, setPremiumPrice] = useState('');
-  const [premiumInterval, setPremiumInterval] = useState('12');
+  const [premiumInterval, setPremiumInterval] = useState('4');
   const [premiumRounds, setPremiumRounds] = useState('');
 
   // Liqudation State Var
@@ -74,12 +78,19 @@ function Create() {
       premiumInterval: weeksToUnixTime(premiumInterval),
       premiumRounds,
     };
-
     console.log(data);
-    const result = await CDS.createSwap(data);
-    console.log(result);
-    const swapId = result.events.CreateSwap.returnValues.swapId;
-    console.log(swapId);
+
+    try {
+      const result = await CDS.createSwap(data);
+      console.log(result);
+      const swapId = result.events.CreateSwap.returnValues.swapId;
+      console.log(swapId);
+
+      navigate('/');
+    } catch(err){
+      console.log(err);
+    }
+    
   }
 
   // Connect Wallet Handler
@@ -91,26 +102,32 @@ function Create() {
 
   // Calculate Variable
   useEffect(()=>{
-    setTotalAssets( calculateTotalAssets(initialPriceOfAssets, amountOfAssets) );
+    const totalAssetsCalculated = calculateTotalAssets( initialPriceOfAssets, amountOfAssets )
+    setTotalAssets( totalAssetsCalculated );
+    setLiquidationPrice( initialPriceOfAssets );
   }, [initialPriceOfAssets, amountOfAssets])
 
   useEffect(()=>{
-    const dropRateCalculated = calculateDropRate(initialPriceOfAssets, claimPrice);
-    setDropRate( dropRateCalculated );
+    const calimPriceCalculated = calculateClaimPrice(initialPriceOfAssets, dropRate);
+    setClaimPrice( calimPriceCalculated );
 
     const premiumPriceCalculated = calculatePremiumPrice(
       initialPriceOfAssets, 
       amountOfAssets, 
-      dropRateCalculated, 
+      dropRate,
       premiumRate
     );
     setPremiumPrice( premiumPriceCalculated );
 
-  }, [initialPriceOfAssets, claimPrice])
+  }, [initialPriceOfAssets, dropRate])
 
   useEffect(()=>{
-    setLiquidationPrice( calculateLiquidationPrice(initialPriceOfAssets, amountOfAssets, sellerDeposit) )
-  }, [totalAssets, sellerDeposit])
+    setSellerDeposit( calculateSellerDeposit(
+      initialPriceOfAssets, 
+      amountOfAssets, 
+      liquidationPrice
+    ));
+  }, [totalAssets, liquidationPrice])
 
   return (
     <>
@@ -120,7 +137,7 @@ function Create() {
       <div className="container container-create">
         <div className="create-head">
           <h1 className="create-head-title">Propose Crypto Default Swap</h1>
-          <p className="create-head-notice text-2xl font-semibold py-2">
+          <p className="create-head-notice text-xl font-semibold py-2">
             Welcome! Enter Your Details And Start Creating Crypto Default Swap!
           </p>
           <hr className="line w-[150px] color-[var(--primary-color)]" />
@@ -184,12 +201,24 @@ function Create() {
                   const currentValue = onlyNumber(e.target.value);
                   setClaimPrice(currentValue);
                 }}
-              />
-              <input 
-                placeholder='Drop Rate'
-                value={`Drop Rate: ${dropRate} %`}
                 disabled
               />
+              <div className='input-range'>
+                <input
+                  className='value'
+                  value={`Drop Rate: ${dropRate} %`}
+                  disabled
+                />
+                <input 
+                  className='range'
+                  type='range'
+                  min='0'
+                  max='100'
+                  placeholder='Drop Rate'
+                  value={dropRate}
+                  onChange={e=>{setDropRate(e.target.value)}}
+                />
+              </div>
             </div>
           </div>
           <div className='form-section'>
@@ -209,12 +238,12 @@ function Create() {
                 />
                 <select 
                   placeholder='Premium Interval'
-                  defaultValue='12'
+                  defaultValue='4'
                   onChange={e=>setPremiumInterval(e.target.value)}
                 >
+                  <option value='4'>4 weeks</option>
+                  <option value='8'>8 weeks</option>
                   <option value='12'>12 weeks</option>
-                  <option value='6'>6 weeks</option>
-                  <option value='3'>3 weeks</option>
                 </select>
               </div>
               <input 
@@ -233,16 +262,24 @@ function Create() {
               <input 
                 placeholder='Seller Deposit'
                 value={`Seller Deposit: ${sellerDeposit}`}
-                onChange={e=>{
-                  const currentValue = onlyNumber(e.target.value);
-                  setSellerDeposit(currentValue);
-                }}
-              />
-              <input 
-                placeholder='Liquidated Price'
-                value={`Liquidated Price: ${liquidationPrice}`}
                 disabled
               />
+              <div className='input-range'>
+                <input 
+                  className='value'
+                  placeholder='Liquidated Price'
+                  value={`Liquidated Price: ${liquidationPrice}`}
+                  disabled
+                />
+                <input
+                  className='range'
+                  type='range'
+                  value={liquidationPrice}
+                  max={initialPriceOfAssets}
+                  min='0'
+                  onChange={e=>setLiquidationPrice(e.target.value)}
+                />
+              </div>
               <input 
                 placeholder='Buyer Deposit'
                 value={`Buyer Deposit: ${premiumPrice * 3}`}

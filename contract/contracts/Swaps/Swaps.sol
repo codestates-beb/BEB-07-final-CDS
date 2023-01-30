@@ -132,6 +132,7 @@ contract Swaps is PriceConsumer {
   function _cancelSwap(uint256 _targetSwapId) internal {
     Swap storage targetSwap = _swaps[_targetSwapId];
     targetSwap.buyer.deposit = 0;
+    targetSwap.seller.deposit = 0;
     targetSwap.status = Status.inactive;
   }
 
@@ -147,4 +148,20 @@ contract Swaps is PriceConsumer {
 
     targetSwap.status = Status.claimed;
   }
+
+  function _payPremium(uint256 _targetSwapId) internal {
+    Swap storage targetSwap = _swaps[_targetSwapId];
+    // date 갱신
+    targetSwap.buyer.lastPayDate = block.timestamp;
+    targetSwap.buyer.nextPayDate = block.timestamp + targetSwap.premiumInterval;
+
+    // 만기일이 없는 계약은 0. 있으면 +@. 다 끝나서 0된거면? 생각 좀 해봐야할듯...
+    if (targetSwap.totalPremiumRounds != 0) {
+      targetSwap.totalPremiumRounds -= 1;
+    }
+  }
+
+  // function _checkDate(uint256 _targetSwapId) internal returns (bool) {
+  //   return true;
+  // }
 }

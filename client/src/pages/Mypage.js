@@ -1,14 +1,14 @@
 // components
 import ProposedCard from '../components/ProposedCard';
-import ConfirmedCard from '../components/ConfirmedCard.js';
+import AcceptedCard from '../components/AcceptedCard.js';
 
 // components
 import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
 //image
-import MyPage_bg from '../img/MyPage_bg.jpg';
-import Profile from '../img/profile.jpg';
+import MyPage_bg from '../assets/img/MyPage_bg.jpg';
+import Profile from '../assets/img/profile.jpg';
 
 function Mypage() {
   return (
@@ -73,11 +73,11 @@ function Mypage() {
               Accepted CDSs
             </div>
             <div className="grid grid-rows-2 grid-flow-col gap-y-7 gap-x-[4rem] justify-start">
-              <ConfirmedCard />
-              <ConfirmedCard />
-              <ConfirmedCard />
-              <ConfirmedCard />
-              <ConfirmedCard />
+              <AcceptedCard />
+              <AcceptedCard />
+              <AcceptedCard />
+              <AcceptedCard />
+              <AcceptedCard />
             </div>
           </div>
         </div>
