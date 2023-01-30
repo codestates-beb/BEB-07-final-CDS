@@ -4,11 +4,9 @@ pragma solidity ^0.8.7;
 import './Swaps/Swaps.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
-import './libs/LibClaim.sol';
 
 contract CDS is Swaps, Ownable {
   using SafeMath for uint256;
-  using LibClaim for uint256;
 
   constructor() payable {}
 
@@ -102,20 +100,22 @@ contract CDS is Swaps, Ownable {
   }
 
   function acceptSwap(
-    address addr,
     uint256 initAssetPrice,
     uint256 swapId
   ) external payable isNotOwner isPending(swapId) returns (uint256) {
     require(
-      msg.sender != getBuyer(swapId).addr,
-      'The buyer can not call the method'
+      msg.sender != getBuyer(swapId).addr &&
+        msg.sender != getSeller(swapId).addr,
+      'The host can not call the method'
     );
-    uint256 sellerDeposit = getSeller(swapId).deposit * 1 wei;
-    require(sellerDeposit == msg.value, 'Invalid eth amount');
-    payable(address(this)).transfer(msg.value);
 
-    uint256 acceptedSwapId = _acceptSwap(addr, initAssetPrice, swapId);
-    emit AcceptSwap(addr, acceptedSwapId, sellerDeposit);
+    bool isBuyerHost = (getSeller(swapId).addr == address(0));
+    uint256 sellerDeposit = getSeller(swapId).deposit * 1 wei;
+    uint256 buyerDeposit = getSwap(swapId).premium.mul(3) * 1 wei;
+    isBuyerHost ? _sendDeposit(sellerDeposit) : _sendDeposit(buyerDeposit);
+
+    uint256 acceptedSwapId = _acceptSwap(isBuyerHost, initAssetPrice, swapId);
+    emit AcceptSwap(msg.sender, acceptedSwapId, sellerDeposit);
     return acceptedSwapId;
   }
 
@@ -146,6 +146,7 @@ contract CDS is Swaps, Ownable {
     return true;
   }
 
+  /////
   function payPremium(
     uint256 swapId
   ) external payable isBuyer(swapId) isActive(swapId) returns (bool) {
@@ -183,38 +184,6 @@ contract CDS is Swaps, Ownable {
       claimReward
     );
     return true;
-  }
-
-  function getClaimReward(uint256 swapId) public view returns (uint256) {
-    uint256 currPrice = getPriceFromOracle();
-    Swap memory targetSwap = getSwap(swapId);
-    if (targetSwap.claimPrice < currPrice) {
-      return 0;
-    }
-    uint256 sellerDeposit = targetSwap.seller.deposit;
-    uint256 claimReward = sellerDeposit.calcClaimReward(
-      targetSwap.liquidationPrice,
-      targetSwap.initAssetPrice,
-      targetSwap.amountOfAssets,
-      currPrice
-    );
-    return claimReward;
-  }
-
-  function getSwap(uint256 swapId) public view returns (Swap memory) {
-    return _swaps[swapId];
-  }
-
-  function getBuyer(uint256 swapId) public view returns (Buyer memory) {
-    return getSwap(swapId).buyer;
-  }
-
-  function getSeller(uint256 swapId) public view returns (Seller memory) {
-    return getSwap(swapId).seller;
-  }
-
-  function getSwapId() public view returns (Counters.Counter memory) {
-    return _swapId;
   }
 
   function getContractBalance() public view returns (uint256) {

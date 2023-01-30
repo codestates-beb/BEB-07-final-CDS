@@ -2,11 +2,13 @@
 pragma solidity ^0.8.7;
 
 import '../Oracle/PriceConsumer.sol';
+import '../libs/LibClaim.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 contract Swaps is PriceConsumer {
   using Counters for Counters.Counter;
+  using LibClaim for uint256;
   using SafeMath for uint256;
   Counters.Counter internal _swapId;
 
@@ -123,16 +125,14 @@ contract Swaps is PriceConsumer {
   }
 
   function _acceptSwap(
-    address _addr,
+    bool _isBuyerHost,
     uint256 _initAssetPrice,
     uint256 _acceptedSwapId
   ) internal returns (uint256) {
     Swap storage aSwap = _swaps[_acceptedSwapId];
-
-    aSwap.seller.addr = _addr; // seller or buyer 가 accept하느냐에 따라 달라짐
     aSwap.initAssetPrice = _initAssetPrice;
 
-    aSwap.seller.isDeposited = true; // seller or buyer 가 accept하느냐에 따라 달라짐
+    _isBuyerHost ? _createSwapBySeller(aSwap) : _createSwapByBuyer(aSwap);
 
     aSwap.buyer.lastPayDate = block.timestamp;
     aSwap.buyer.nextPayDate = block.timestamp + aSwap.premiumInterval;
@@ -171,5 +171,37 @@ contract Swaps is PriceConsumer {
     if (targetSwap.totalPremiumRounds != 0) {
       targetSwap.totalPremiumRounds -= 1;
     }
+  }
+
+  function getClaimReward(uint256 swapId) public view returns (uint256) {
+    uint256 currPrice = getPriceFromOracle();
+    Swap memory targetSwap = getSwap(swapId);
+    if (targetSwap.claimPrice < currPrice) {
+      return 0;
+    }
+    uint256 sellerDeposit = targetSwap.seller.deposit;
+    uint256 claimReward = sellerDeposit.calcClaimReward(
+      targetSwap.liquidationPrice,
+      targetSwap.initAssetPrice,
+      targetSwap.amountOfAssets,
+      currPrice
+    );
+    return claimReward;
+  }
+
+  function getSwap(uint256 swapId) public view returns (Swap memory) {
+    return _swaps[swapId];
+  }
+
+  function getBuyer(uint256 swapId) public view returns (Buyer memory) {
+    return getSwap(swapId).buyer;
+  }
+
+  function getSeller(uint256 swapId) public view returns (Seller memory) {
+    return getSwap(swapId).seller;
+  }
+
+  function getSwapId() public view returns (Counters.Counter memory) {
+    return _swapId;
   }
 }
