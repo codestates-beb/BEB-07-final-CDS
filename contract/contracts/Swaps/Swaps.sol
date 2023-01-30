@@ -104,9 +104,6 @@ contract Swaps is PriceConsumer {
     newSwap.totalPremiumRounds = _totalPremiumRounds;
     newSwap.status = Status.pending;
 
-    newSwap.buyer.addr = msg.sender;
-    newSwap.buyer.deposit = _premium.mul(3);
-
     _isBuyer ? _createSwapByBuyer(newSwap) : _createSwapBySeller(newSwap);
 
     newSwap.seller.deposit = _sellerDeposit;
