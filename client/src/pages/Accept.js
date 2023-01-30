@@ -95,7 +95,7 @@ function Accept() {
       <div className='container container-accept'>
         <div className='accept-head'>
           <h1 className='accept-head-title'>Check Crypto Default Swap</h1>
-          <p className='accept-head-notice text-2xl font-semibold py-2'>Check Your Crypto Default Swap Contract in detail and sign it!</p>
+          <p className='accept-head-notice text-xl font-semibold py-2'>Check Your Crypto Default Swap Contract in detail and sign it!</p>
           <hr className='line w-[150px] color-[var(--primary-color)]'/>
         </div>
         <div className='accept-form'>
