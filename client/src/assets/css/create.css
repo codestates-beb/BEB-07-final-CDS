@@ -70,20 +70,49 @@
     }
 
     .create-form .input-group .input-button,
-    .create-form .input-group .input-select
+    .create-form .input-group .input-select,
+    .create-form .input-group .input-range
     {
         @apply flex w-full mb-6;
         gap: 1rem;
     }
     
     .create-form .input-group .input-button input,
-    .create-form .input-group .input-select input
+    .create-form .input-group .input-select input,
+    .create-form .input-group .input-range input:last-child
     {
         @apply mb-0 w-[70%];
     }
 
+    .create-form .input-group .input-range input:first-child{
+        @apply mb-0;
+    }
+
+    .create-form .input-group .input-range .range{
+        @apply border-primaryColor px-0;
+    }
+
+    .create-form .input-group .input-range .range[type=range]::-webkit-slider-runnable-track{
+        /* @apply bg-primaryColor rounded-lg;
+        height: 8px;
+        -webkit-appearance: none;
+        border: none;
+        outline:none; */
+    }
+
+    .create-form .input-group .input-range .range[type=range]::-webkit-slider-thumb{
+        /* background-color: var(--primary-color);
+        -webkit-appearance: none;
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        margin-top: -4px;
+        border: none; */
+    }
+
     .create-form .input-group .input-button button,
-    .create-form .input-group .input-select select
+    .create-form .input-group .input-select select,
+    .create-form .input-group .input-range input:first-child
     {
         @apply w-[30%];
     }

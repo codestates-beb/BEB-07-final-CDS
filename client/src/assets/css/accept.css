@@ -12,7 +12,7 @@
     }
 
     .container.container-accept {
-        @apply p-16;
+        @apply p-12;
         margin: auto;
         width: 1440px;
     }

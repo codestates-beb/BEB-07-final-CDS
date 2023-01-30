@@ -12,7 +12,7 @@ export function calculateDropRate( initialPriceOfAsset, claimPrice ) {
 
 // Calculating Claim Price function(Ceiling) // 보상 요구가능 시점 가격 계산 함수(반올림)
 export function calculateClaimPrice( initialPriceOfAsset, dropRate ) {
-    return Math.ceil( initialPriceOfAsset * (dropRate / 100) );
+    return Math.ceil( initialPriceOfAsset * (1 - (dropRate / 100)) );
 }
 
 // Calculating Premium Price function(Ceiling) // 프리미엄 가격 계산 함수(반올림)
@@ -25,4 +25,10 @@ export function calculateLiquidationPrice( initialPriceOfAsset, amount, sellerDe
     if(!initialPriceOfAsset || !amount || !sellerDeposit) return Infinity;
 
     return Math.ceil( ( ( initialPriceOfAsset * amount ) - sellerDeposit ) / amount );
+}
+
+export function calculateSellerDeposit( initialPriceOfAsset, amount, liquidationPrice ) {
+    if(!initialPriceOfAsset || !amount || !liquidationPrice) return 0;
+
+    return (initialPriceOfAsset - liquidationPrice) * amount;
 }
