@@ -1,0 +1,15 @@
+.swiper-button-next {
+  color: aliceblue;
+}
+
+.swiper-button-prev {
+  color: aliceblue;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: aliceblue;
+}
+
+.mySwiperInfo {
+  box-shadow: 0px 0px 50px 1px var(--primary-color);
+}

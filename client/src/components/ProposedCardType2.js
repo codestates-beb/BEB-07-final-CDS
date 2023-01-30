@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import BTCCard from '../assets/img/BTC_Card_bg.jpg';
 
 // css
-import '../assets/css/proposed_advanced.css';
+import '../assets/css/proposed_type2.css';
 
 function ProposedCard_type2(props) {
   return (
@@ -40,7 +40,9 @@ function ProposedCard_type2(props) {
           </div>
         </div>
         <button className="w-[80%] h-[6%] my-[4%] mx-[10%] rounded-3xl bg-primaryColor content-center">
-          <Link to={`/accept/${props.swapId}`} className="text-sm font-bold">More Details</Link>
+          <Link to={`/accept/${props.swapId}`} className="text-sm font-bold">
+            More Details
+          </Link>
         </button>
       </div>
     </>

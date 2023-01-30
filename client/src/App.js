@@ -4,6 +4,7 @@ import { Link, Routes, Route } from 'react-router-dom';
 
 // components
 import Header from './components/Header';
+import InfoSlide from './components/swiper/infoSlide';
 
 // pages
 import Main from './pages/Main';
@@ -31,6 +32,7 @@ function App() {
         <Route path="/createTest" element={<MakeTest />} />
         <Route path="/acceptTest/:swapId" element={<AcceptTest />} />
         <Route path="/oracleTest" element={<OracleTest />} />
+        <Route path="/test" element={<InfoSlide />} />
       </Routes>
     </div>
   );
