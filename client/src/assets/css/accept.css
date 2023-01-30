@@ -12,7 +12,7 @@
     }
 
     .container.container-accept {
-        @apply p-20;
+        @apply p-16;
         margin: auto;
         width: 1440px;
     }
@@ -29,11 +29,11 @@
 
     /* accept-head */
     .container-accept .accept-head {
-        @apply mb-16;
+        @apply mb-14;
     }
 
     .accept-head .accept-head-title{
-        @apply py-4 text-5xl font-bold;
+        @apply py-4 text-4xl font-bold;
     }
 
     .accept-head .line{
@@ -49,11 +49,11 @@
     }
 
     .accept-form .form-section .section-title{
-        @apply py-4 text-3xl font-bold;
+        @apply py-4 text-2xl font-bold;
     }
 
     .accept-form .input-group input{
-        @apply py-2 px-3 rounded-xl mb-8
+        @apply py-2 px-3 rounded-xl mb-6
     }
 
     .accept-form button{
@@ -72,7 +72,7 @@
     .accept-form .input-group .input-button,
     .accept-form .input-group .input-select
     {
-        @apply flex w-full mb-8;
+        @apply flex w-full mb-6;
         gap: 1rem;
     }
     

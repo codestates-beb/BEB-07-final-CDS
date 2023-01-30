@@ -12,7 +12,7 @@
     }
 
     .container.container-create {
-        @apply p-20;
+        @apply p-12;
         margin: auto;
         width: 1440px;
     }
@@ -29,11 +29,11 @@
 
     /* create-head */
     .container-create .create-head {
-        @apply mb-16;
+        @apply mb-14;
     }
 
     .create-head .create-head-title{
-        @apply py-4 text-5xl font-bold;
+        @apply py-4 text-4xl font-bold;
     }
 
     .create-head .line{
@@ -49,11 +49,11 @@
     }
 
     .create-form .form-section .section-title{
-        @apply py-4 text-3xl font-bold;
+        @apply py-4 text-2xl font-bold;
     }
 
     .create-form .input-group input{
-        @apply py-2 px-3 rounded-xl mb-8
+        @apply py-2 px-3 rounded-xl mb-6
     }
 
     .create-form button{
@@ -72,7 +72,7 @@
     .create-form .input-group .input-button,
     .create-form .input-group .input-select
     {
-        @apply flex w-full mb-8;
+        @apply flex w-full mb-6;
         gap: 1rem;
     }
     
