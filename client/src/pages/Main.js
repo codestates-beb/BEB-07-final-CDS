@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import MainLogo from '../assets/img/CDS_Symbol_bright_removebg.png';
 
 // components
-import MarketPrice from '../components/MarketPrice.js';
+import InfoSlide from '../components/swiper/infoSlide.js';
 import ProposedCardScroll from '../components/swiper/ProposedCardScroll.js';
 import AcceptedCardScroll from '../components/swiper/AcceptedCardScroll.js';
 import ScrollButton from '../components/ScrollButton.js';
@@ -63,7 +63,7 @@ function Main() {
         />
       </div>
       <div className="w-screen mx-auto mt-52 flex justify-center">
-        <MarketPrice />
+        <InfoSlide />
       </div>
       <div className="flex justify-center w-screen mx-auto">
         <div className="mt-52 font-bold text-4xl">

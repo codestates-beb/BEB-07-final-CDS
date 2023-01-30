@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import ETHCard from '../assets/img/ETH_Card_bg.jpg';
 
 // css
-import '../assets/css/proposed_advanced.css';
+import '../assets/css/proposed_type2.css';
 
 function AcceptedCard_type2(props) {
   return (
@@ -32,7 +32,9 @@ function AcceptedCard_type2(props) {
           </div>
         </div>
         <button className="w-[80%] h-[6%] my-[4%] mx-[10%] rounded-3xl bg-primaryColor content-center">
-          <Link to={`/detail/${props.swapId}`} className="text-sm font-bold">More Details</Link>
+          <Link to={`/detail/${props.swapId}`} className="text-sm font-bold">
+            More Details
+          </Link>
         </button>
       </div>
     </>
