@@ -20,13 +20,15 @@ contract CDS is Swaps, Ownable {
   }
 
   event CreateSwap(
-    address indexed buyer,
+    address indexed hostAddr,
+    bool isBuyer,
     uint256 swapId,
     uint256 initAssetPrice,
     uint256 amountOfAssets,
     uint256 claimPrice,
     uint256 liquidationPrice,
     uint256 premium,
+    uint256 premiumRate,
     uint256 premiumInterval,
     uint256 totalPremiumRounds,
     uint256 buyerDeposit
@@ -46,46 +48,57 @@ contract CDS is Swaps, Ownable {
   event CloseSwap(uint256 swapId, address buyer, address seller);
 
   function createSwap(
-    address addr,
+    bool isBuyer,
     uint256 initAssetPrice,
     uint256 amountOfAssets,
     uint256 claimPrice,
     uint256 liquidationPrice,
     uint256 sellerDeposit,
     uint256 premium,
+    uint256 premiumRate,
     uint256 premiumInterval,
     uint256 totalPremiumRounds
   ) external payable isNotOwner returns (uint256) {
     uint256 buyerDeposit = premium.mul(3) * 1 wei;
-    require(buyerDeposit == msg.value, 'Invalid eth amount');
-    payable(address(this)).transfer(msg.value);
+    isBuyer ? _sendDeposit(buyerDeposit) : _sendDeposit(sellerDeposit);
 
     uint256 newSwapId = _createSwap(
-      addr,
+      isBuyer,
       initAssetPrice,
       amountOfAssets,
       claimPrice,
       liquidationPrice,
       sellerDeposit,
       premium,
+      premiumRate,
       premiumInterval,
       totalPremiumRounds
     );
 
     emit CreateSwap(
-      addr,
+      msg.sender,
+      isBuyer,
       newSwapId,
       initAssetPrice,
       amountOfAssets,
       claimPrice,
       liquidationPrice,
       premium,
+      premiumRate,
       premiumInterval,
       totalPremiumRounds,
       buyerDeposit
     );
 
     return newSwapId;
+  }
+
+  // token => internal로 바꿀 수 있다.
+  function _sendDeposit(uint256 deposit) public payable returns (bool) {
+    require(deposit == msg.value, 'Invalid eth amount');
+    (bool sent, ) = payable(address(this)).call{value: msg.value}('');
+    require(sent, 'Sending deposit failed');
+    return true;
   }
 
   function acceptSwap(

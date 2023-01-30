@@ -70,29 +70,27 @@ contract Swaps is PriceConsumer {
     _;
   }
 
-  uint256 private _premiumRate;
+  // uint256 private _premiumRate;
 
   constructor() {
-    _premiumRate = 2;
+    // _premiumRate = 2;
   }
 
   function _createSwap(
-    address _addr,
+    bool _isBuyer,
     uint256 _initAssetPrice,
     uint256 _amountOfAssets,
     uint256 _claimPrice,
     uint256 _liquidationPrice,
     uint256 _sellerDeposit,
     uint256 _premium,
+    uint256 _premiumRate,
     uint256 _premiumInterval,
     uint256 _totalPremiumRounds
   ) internal returns (uint256) {
     _swapId.increment();
     uint256 newSwapId = _swapId.current();
     Swap storage newSwap = _swaps[newSwapId];
-
-    newSwap.buyer.addr = _addr;
-    newSwap.buyer.deposit = _premium.mul(3);
 
     newSwap.initAssetPrice = _initAssetPrice;
     newSwap.amountOfAssets = _amountOfAssets;
@@ -104,9 +102,24 @@ contract Swaps is PriceConsumer {
     newSwap.totalPremiumRounds = _totalPremiumRounds;
     newSwap.status = Status.pending;
 
+    newSwap.buyer.addr = msg.sender;
+    newSwap.buyer.deposit = _premium.mul(3);
+
+    _isBuyer ? _createSwapByBuyer(newSwap) : _createSwapBySeller(newSwap);
+
     newSwap.seller.deposit = _sellerDeposit;
 
     return newSwapId;
+  }
+
+  function _createSwapByBuyer(Swap storage swap) private {
+    swap.buyer.addr = msg.sender;
+    swap.buyer.deposit = swap.premium.mul(3);
+  }
+
+  function _createSwapBySeller(Swap storage swap) private {
+    swap.seller.addr = msg.sender;
+    swap.seller.isDeposited = true;
   }
 
   function _acceptSwap(
@@ -116,10 +129,10 @@ contract Swaps is PriceConsumer {
   ) internal returns (uint256) {
     Swap storage aSwap = _swaps[_acceptedSwapId];
 
-    aSwap.seller.addr = _addr;
+    aSwap.seller.addr = _addr; // seller or buyer 가 accept하느냐에 따라 달라짐
     aSwap.initAssetPrice = _initAssetPrice;
 
-    aSwap.seller.isDeposited = true;
+    aSwap.seller.isDeposited = true; // seller or buyer 가 accept하느냐에 따라 달라짐
 
     aSwap.buyer.lastPayDate = block.timestamp;
     aSwap.buyer.nextPayDate = block.timestamp + aSwap.premiumInterval;
@@ -155,13 +168,8 @@ contract Swaps is PriceConsumer {
     targetSwap.buyer.lastPayDate = block.timestamp;
     targetSwap.buyer.nextPayDate = block.timestamp + targetSwap.premiumInterval;
 
-    // 만기일이 없는 계약은 0. 있으면 +@. 다 끝나서 0된거면? 생각 좀 해봐야할듯...
     if (targetSwap.totalPremiumRounds != 0) {
       targetSwap.totalPremiumRounds -= 1;
     }
   }
-
-  // function _checkDate(uint256 _targetSwapId) internal returns (bool) {
-  //   return true;
-  // }
 }
