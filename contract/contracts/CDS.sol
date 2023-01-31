@@ -4,11 +4,9 @@ pragma solidity ^0.8.7;
 import './Swaps/Swaps.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
-import './libs/LibClaim.sol';
 
 contract CDS is Swaps, Ownable {
   using SafeMath for uint256;
-  using LibClaim for uint256;
 
   constructor() payable {}
 
@@ -20,15 +18,14 @@ contract CDS is Swaps, Ownable {
   }
 
   event CreateSwap(
-    address indexed buyer,
+    address indexed hostAddr,
+    bool isBuyer,
     uint256 swapId,
     uint256 initAssetPrice,
-    uint256 amountOfAssets,
     uint256 claimPrice,
     uint256 liquidationPrice,
     uint256 premium,
     uint256 premiumInterval,
-    uint256 totalPremiumRounds,
     uint256 buyerDeposit
   );
   event AcceptSwap(
@@ -46,63 +43,67 @@ contract CDS is Swaps, Ownable {
   event CloseSwap(uint256 swapId, address buyer, address seller);
 
   function createSwap(
-    address addr,
+    bool isBuyer,
     uint256 initAssetPrice,
-    uint256 amountOfAssets,
     uint256 claimPrice,
     uint256 liquidationPrice,
     uint256 sellerDeposit,
     uint256 premium,
-    uint256 premiumInterval,
-    uint256 totalPremiumRounds
+    uint32 premiumInterval
   ) external payable isNotOwner returns (uint256) {
     uint256 buyerDeposit = premium.mul(3) * 1 wei;
-    require(buyerDeposit == msg.value, 'Invalid eth amount');
-    payable(address(this)).transfer(msg.value);
+    isBuyer ? _sendDeposit(buyerDeposit) : _sendDeposit(sellerDeposit);
 
     uint256 newSwapId = _createSwap(
-      addr,
+      isBuyer,
       initAssetPrice,
-      amountOfAssets,
       claimPrice,
       liquidationPrice,
       sellerDeposit,
       premium,
-      premiumInterval,
-      totalPremiumRounds
+      premiumInterval
     );
 
     emit CreateSwap(
-      addr,
+      msg.sender,
+      isBuyer,
       newSwapId,
       initAssetPrice,
-      amountOfAssets,
       claimPrice,
       liquidationPrice,
       premium,
       premiumInterval,
-      totalPremiumRounds,
       buyerDeposit
     );
 
     return newSwapId;
   }
 
+  // token => internal로 바꿀 수 있다.
+  function _sendDeposit(uint256 deposit) public payable returns (bool) {
+    require(deposit == msg.value, 'Invalid eth amount');
+    (bool sent, ) = payable(address(this)).call{value: msg.value}('');
+    require(sent, 'Sending deposit failed');
+    return true;
+  }
+
   function acceptSwap(
-    address addr,
     uint256 initAssetPrice,
     uint256 swapId
   ) external payable isNotOwner isPending(swapId) returns (uint256) {
     require(
-      msg.sender != getBuyer(swapId).addr,
-      'The buyer can not call the method'
+      msg.sender != getBuyer(swapId).addr &&
+        msg.sender != getSeller(swapId).addr,
+      'The host can not call the method'
     );
-    uint256 sellerDeposit = getSeller(swapId).deposit * 1 wei;
-    require(sellerDeposit == msg.value, 'Invalid eth amount');
-    payable(address(this)).transfer(msg.value);
 
-    uint256 acceptedSwapId = _acceptSwap(addr, initAssetPrice, swapId);
-    emit AcceptSwap(addr, acceptedSwapId, sellerDeposit);
+    bool isBuyerHost = (getSeller(swapId).addr == address(0));
+    uint256 sellerDeposit = getSeller(swapId).deposit * 1 wei;
+    uint256 buyerDeposit = getSwap(swapId).premium.mul(3) * 1 wei;
+    isBuyerHost ? _sendDeposit(sellerDeposit) : _sendDeposit(buyerDeposit);
+
+    uint256 acceptedSwapId = _acceptSwap(isBuyerHost, initAssetPrice, swapId);
+    emit AcceptSwap(msg.sender, acceptedSwapId, sellerDeposit);
     return acceptedSwapId;
   }
 
@@ -133,6 +134,7 @@ contract CDS is Swaps, Ownable {
     return true;
   }
 
+  /////
   function payPremium(
     uint256 swapId
   ) external payable isBuyer(swapId) isActive(swapId) returns (bool) {
@@ -170,38 +172,6 @@ contract CDS is Swaps, Ownable {
       claimReward
     );
     return true;
-  }
-
-  function getClaimReward(uint256 swapId) public view returns (uint256) {
-    uint256 currPrice = getPriceFromOracle();
-    Swap memory targetSwap = getSwap(swapId);
-    if (targetSwap.claimPrice < currPrice) {
-      return 0;
-    }
-    uint256 sellerDeposit = targetSwap.seller.deposit;
-    uint256 claimReward = sellerDeposit.calcClaimReward(
-      targetSwap.liquidationPrice,
-      targetSwap.initAssetPrice,
-      targetSwap.amountOfAssets,
-      currPrice
-    );
-    return claimReward;
-  }
-
-  function getSwap(uint256 swapId) public view returns (Swap memory) {
-    return _swaps[swapId];
-  }
-
-  function getBuyer(uint256 swapId) public view returns (Buyer memory) {
-    return getSwap(swapId).buyer;
-  }
-
-  function getSeller(uint256 swapId) public view returns (Seller memory) {
-    return getSwap(swapId).seller;
-  }
-
-  function getSwapId() public view returns (Counters.Counter memory) {
-    return _swapId;
   }
 
   function getContractBalance() public view returns (uint256) {

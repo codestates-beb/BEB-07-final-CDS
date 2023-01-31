@@ -2,22 +2,15 @@
 pragma solidity ^0.8.7;
 
 import '../Oracle/PriceConsumer.sol';
+import '../libs/LibClaim.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 contract Swaps is PriceConsumer {
   using Counters for Counters.Counter;
+  using LibClaim for uint256;
   using SafeMath for uint256;
   Counters.Counter internal _swapId;
-
-  enum Status {
-    inactive,
-    pending,
-    active,
-    claimed
-  }
-
-  mapping(uint256 => Swap) internal _swaps;
 
   struct Buyer {
     address addr;
@@ -36,15 +29,22 @@ contract Swaps is PriceConsumer {
     Buyer buyer;
     Seller seller;
     uint256 initAssetPrice;
-    uint256 amountOfAssets;
     uint256 claimPrice;
     uint256 liquidationPrice;
     uint256 premium;
-    uint256 premiumRate;
-    uint256 premiumInterval;
-    uint256 totalPremiumRounds;
-    Status status;
+    uint32 premiumInterval;
   }
+
+  enum swapStatus {
+    inactive,
+    pending,
+    active,
+    claimed
+  }
+
+  mapping(uint256 => Swap) internal _swaps;
+
+  mapping(uint256 => swapStatus) internal _swapsStatus;
 
   modifier isBuyer(uint256 swapId) {
     require(
@@ -56,7 +56,7 @@ contract Swaps is PriceConsumer {
 
   modifier isPending(uint256 swapId) {
     require(
-      _swaps[swapId].status == Status.pending,
+      _swapsStatus[swapId] == swapStatus.pending,
       'The status of the CDS should be pending'
     );
     _;
@@ -64,67 +64,65 @@ contract Swaps is PriceConsumer {
 
   modifier isActive(uint256 swapId) {
     require(
-      _swaps[swapId].status == Status.active,
+      _swapsStatus[swapId] == swapStatus.active,
       'The status of the CDS should be pending'
     );
     _;
   }
 
-  uint256 private _premiumRate;
-
-  constructor() {
-    _premiumRate = 2;
-  }
+  constructor() {}
 
   function _createSwap(
-    address _addr,
+    bool _isBuyer,
     uint256 _initAssetPrice,
-    uint256 _amountOfAssets,
     uint256 _claimPrice,
     uint256 _liquidationPrice,
     uint256 _sellerDeposit,
     uint256 _premium,
-    uint256 _premiumInterval,
-    uint256 _totalPremiumRounds
+    uint32 _premiumInterval
   ) internal returns (uint256) {
     _swapId.increment();
     uint256 newSwapId = _swapId.current();
     Swap storage newSwap = _swaps[newSwapId];
 
-    newSwap.buyer.addr = _addr;
-    newSwap.buyer.deposit = _premium.mul(3);
-
     newSwap.initAssetPrice = _initAssetPrice;
-    newSwap.amountOfAssets = _amountOfAssets;
     newSwap.claimPrice = _claimPrice;
     newSwap.liquidationPrice = _liquidationPrice;
     newSwap.premium = _premium;
-    newSwap.premiumRate = _premiumRate;
     newSwap.premiumInterval = _premiumInterval;
-    newSwap.totalPremiumRounds = _totalPremiumRounds;
-    newSwap.status = Status.pending;
+    _swapsStatus[newSwapId] = swapStatus.pending;
+
+    _isBuyer ? _createSwapByBuyer(newSwap) : _createSwapBySeller(newSwap);
 
     newSwap.seller.deposit = _sellerDeposit;
 
     return newSwapId;
   }
 
+  function _createSwapByBuyer(Swap storage swap) private {
+    swap.buyer.addr = msg.sender;
+    swap.buyer.deposit = swap.premium.mul(3);
+  }
+
+  function _createSwapBySeller(Swap storage swap) private {
+    swap.seller.addr = msg.sender;
+    swap.seller.isDeposited = true;
+  }
+
   function _acceptSwap(
-    address _addr,
+    bool _isBuyerHost,
     uint256 _initAssetPrice,
     uint256 _acceptedSwapId
   ) internal returns (uint256) {
     Swap storage aSwap = _swaps[_acceptedSwapId];
-
-    aSwap.seller.addr = _addr;
     aSwap.initAssetPrice = _initAssetPrice;
 
-    aSwap.seller.isDeposited = true;
+    _isBuyerHost ? _createSwapBySeller(aSwap) : _createSwapByBuyer(aSwap);
 
     aSwap.buyer.lastPayDate = block.timestamp;
     aSwap.buyer.nextPayDate = block.timestamp + aSwap.premiumInterval;
 
-    aSwap.status = Status.active;
+    _swapsStatus[_acceptedSwapId] = swapStatus.active;
 
     return _acceptedSwapId;
   }
@@ -133,7 +131,7 @@ contract Swaps is PriceConsumer {
     Swap storage targetSwap = _swaps[_targetSwapId];
     targetSwap.buyer.deposit = 0;
     targetSwap.seller.deposit = 0;
-    targetSwap.status = Status.inactive;
+    _swapsStatus[_targetSwapId] = swapStatus.inactive;
   }
 
   function _claimSwap(uint256 _targetSwapId) internal {
@@ -146,7 +144,7 @@ contract Swaps is PriceConsumer {
     targetSwap.seller.deposit = 0;
     targetSwap.seller.isDeposited = false;
 
-    targetSwap.status = Status.claimed;
+    _swapsStatus[_targetSwapId] = swapStatus.claimed;
   }
 
   function _payPremium(uint256 _targetSwapId) internal {
@@ -154,14 +152,40 @@ contract Swaps is PriceConsumer {
     // date 갱신
     targetSwap.buyer.lastPayDate = block.timestamp;
     targetSwap.buyer.nextPayDate = block.timestamp + targetSwap.premiumInterval;
-
-    // 만기일이 없는 계약은 0. 있으면 +@. 다 끝나서 0된거면? 생각 좀 해봐야할듯...
-    if (targetSwap.totalPremiumRounds != 0) {
-      targetSwap.totalPremiumRounds -= 1;
-    }
   }
 
-  // function _checkDate(uint256 _targetSwapId) internal returns (bool) {
-  //   return true;
-  // }
+  function getClaimReward(uint256 swapId) public view returns (uint256) {
+    uint256 currPrice = getPriceFromOracle();
+    Swap memory targetSwap = getSwap(swapId);
+    if (targetSwap.claimPrice < currPrice) {
+      return 0;
+    }
+    uint256 sellerDeposit = targetSwap.seller.deposit;
+    uint256 claimReward = sellerDeposit.calcClaimReward(
+      targetSwap.liquidationPrice,
+      targetSwap.initAssetPrice,
+      currPrice
+    );
+    return claimReward;
+  }
+
+  function getSwap(uint256 swapId) public view returns (Swap memory) {
+    return _swaps[swapId];
+  }
+
+  function getBuyer(uint256 swapId) public view returns (Buyer memory) {
+    return getSwap(swapId).buyer;
+  }
+
+  function getSeller(uint256 swapId) public view returns (Seller memory) {
+    return getSwap(swapId).seller;
+  }
+
+  function getSwapId() public view returns (Counters.Counter memory) {
+    return _swapId;
+  }
+
+  function getSwapStatus(uint256 swapId) public view returns (swapStatus) {
+    return _swapsStatus[swapId];
+  }
 }
