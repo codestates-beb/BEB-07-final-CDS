@@ -106,8 +106,10 @@ function Main() {
             products.
           </p>
         </div>
-        <div className="">
-          <AcceptedCardScroll response={response} />
+        <div className="flex justify-center">
+          <div className="w-screen">
+            <AcceptedCardScroll response={response} />
+          </div>
         </div>
       </div>
       <div className="fixed bottom-11 right-11">
