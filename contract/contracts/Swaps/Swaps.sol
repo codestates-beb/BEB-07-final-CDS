@@ -32,7 +32,7 @@ contract Swaps is PriceConsumer {
     uint256 claimPrice;
     uint256 liquidationPrice;
     uint256 premium;
-    uint256 premiumInterval;
+    uint32 premiumInterval;
   }
 
   enum swapStatus {
@@ -79,7 +79,7 @@ contract Swaps is PriceConsumer {
     uint256 _liquidationPrice,
     uint256 _sellerDeposit,
     uint256 _premium,
-    uint256 _premiumInterval
+    uint32 _premiumInterval
   ) internal returns (uint256) {
     _swapId.increment();
     uint256 newSwapId = _swapId.current();
@@ -183,5 +183,9 @@ contract Swaps is PriceConsumer {
 
   function getSwapId() public view returns (Counters.Counter memory) {
     return _swapId;
+  }
+
+  function getSwapStatus(uint256 swapId) public view returns (swapStatus) {
+    return _swapsStatus[swapId];
   }
 }

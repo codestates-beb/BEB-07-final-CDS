@@ -49,7 +49,7 @@ contract CDS is Swaps, Ownable {
     uint256 liquidationPrice,
     uint256 sellerDeposit,
     uint256 premium,
-    uint256 premiumInterval
+    uint32 premiumInterval
   ) external payable isNotOwner returns (uint256) {
     uint256 buyerDeposit = premium.mul(3) * 1 wei;
     isBuyer ? _sendDeposit(buyerDeposit) : _sendDeposit(sellerDeposit);

@@ -488,97 +488,86 @@ contract('CDS', (accounts) => {
       );
     });
   });
-});
 
-/*
-describe('Cancel Swap', async () => {
-  beforeEach(async () => {
-    await cds.createSwap(
-      accounts[2],
-      defaultInitAssetPrice,
-      defaultAmountOfAssets,
-      defaultClaimPrice,
-      defaultLiquidationPrice,
-      defaultSellerDeposit,
-      defaultPremium,
-      defaultPremiumInterval,
-      defaultPremiumRounds,
-      { from: accounts[2], value: defaultBuyerDeposit },
-    );
-  });
-
-  it('should throw error if the caller of cancelSwap is not the buyer', async () => {
-    const [currentSwapId] = await cds.getSwapId();
-    await truffleAssert.fails(
-      cds.cancelSwap(currentSwapId, { from: accounts[1] }),
-    );
-  });
-
-  it('should be able to cancel if the buyer calls cancelSwap and check the swap', async () => {
-    const [currentSwapId] = await cds.getSwapId();
-    await truffleAssert.passes(
-      cds.cancelSwap(currentSwapId, { from: accounts[2] }),
-    );
-    const currentSwap = await cds.getSwap(currentSwapId);
-
-    const {
-      buyer,
-      seller,
-      initAssetPrice,
-      amountOfAssets,
-      claimPrice,
-      liquidationPrice,
-      premium,
-      premiumInterval,
-      totalPremiumRounds,
-      status,
-    } = currentSwap;
-
-    await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
-    await assert.strictEqual(defaultAmountOfAssets, +amountOfAssets);
-    await assert.strictEqual(defaultClaimPrice, +claimPrice);
-    await assert.strictEqual(defaultLiquidationPrice, +liquidationPrice);
-    await assert.strictEqual(defaultPremium, +premium);
-    await assert.strictEqual(defaultPremiumInterval, +premiumInterval);
-    await assert.strictEqual(defaultPremiumRounds, +totalPremiumRounds);
-
-    await assert.strictEqual(buyer.addr, accounts[2]);
-    await assert.strictEqual(0, +status);
-  });
-
-  it('should have decreased amount of contract balance after successful cancel swap call', async () => {
-    const beforeContract = await cds.getContractBalance();
-    const [currentSwapId] = await cds.getSwapId();
-    const receipt = await cds.cancelSwap(currentSwapId, {
-      from: accounts[2],
+  describe('Cancel Swap', async () => {
+    beforeEach(async () => {
+      await cds.createSwap(
+        defaultHostSetting,
+        defaultInitAssetPrice,
+        defaultClaimPrice,
+        defaultLiquidationPrice,
+        defaultSellerDeposit,
+        defaultPremium,
+        defaultPremiumInterval,
+        { from: accounts[2], value: defaultBuyerDeposit },
+      );
     });
-    const afterContractBalance = await cds.getContractBalance();
-    assert.equal(
-      beforeContract.toNumber() - defaultBuyerDeposit,
-      afterContractBalance.toNumber(),
-    );
-  });
 
-  it('should return proper amount of ETH to buyer after successful cancel swap call', async () => {
-    const before = await web3.eth.getBalance(accounts[2]);
-    const [currentSwapId] = await cds.getSwapId();
-    const receipt = await cds.cancelSwap(currentSwapId, {
-      from: accounts[2],
+    it('should throw error if the caller of cancelSwap is not the buyer', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await truffleAssert.fails(
+        cds.cancelSwap(currentSwapId, { from: accounts[1] }),
+      );
     });
-    const tx = await web3.eth.getTransaction(receipt.tx);
-    const { gasUsed } = receipt.receipt;
-    const { gasPrice, value } = tx;
-    const gasCost = gasUsed * gasPrice;
-    const after = await web3.eth.getBalance(accounts[2]);
-    // console.log({ before, gasCost, defaultBuyerDeposit, after });
-    assert.equal(
-      +before - +gasCost + +defaultBuyerDeposit,
-      +after, // HARDCODED TO PASS TEST
-      'result of "BEFORE - defaultBuyerDeposit + value" should be equal to AFTER Balance',
-    );
+
+    it('should be able to cancel if the buyer calls cancelSwap and check the swap', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await truffleAssert.passes(
+        cds.cancelSwap(currentSwapId, { from: accounts[2] }),
+      );
+      const currentSwap = await cds.getSwap(currentSwapId);
+      const {
+        buyer,
+        initAssetPrice,
+        claimPrice,
+        liquidationPrice,
+        premium,
+        premiumInterval,
+      } = currentSwap;
+      const swapStatus = await cds.getSwapStatus(currentSwapId);
+
+      await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
+      await assert.strictEqual(defaultClaimPrice, +claimPrice);
+      await assert.strictEqual(defaultLiquidationPrice, +liquidationPrice);
+      await assert.strictEqual(defaultPremium, +premium);
+      await assert.strictEqual(defaultPremiumInterval, +premiumInterval);
+
+      await assert.strictEqual(buyer.addr, accounts[2]);
+      await assert.strictEqual(0, +swapStatus);
+    });
+
+    it('should have decreased amount of contract balance after successful cancel swap call', async () => {
+      const beforeContract = await cds.getContractBalance();
+      const [currentSwapId] = await cds.getSwapId();
+      const receipt = await cds.cancelSwap(currentSwapId, {
+        from: accounts[2],
+      });
+      const afterContractBalance = await cds.getContractBalance();
+      assert.equal(
+        beforeContract.toNumber() - defaultBuyerDeposit,
+        afterContractBalance.toNumber(),
+      );
+    });
+
+    it('should return proper amount of ETH to buyer after successful cancel swap call', async () => {
+      const before = await web3.eth.getBalance(accounts[2]);
+      const [currentSwapId] = await cds.getSwapId();
+      const receipt = await cds.cancelSwap(currentSwapId, {
+        from: accounts[2],
+      });
+      const tx = await web3.eth.getTransaction(receipt.tx);
+      const { gasUsed } = receipt.receipt;
+      const { gasPrice } = tx;
+      const gasCost = gasUsed * gasPrice;
+      const after = await web3.eth.getBalance(accounts[2]);
+      assert.equal(
+        +before - +gasCost + defaultBuyerDeposit,
+        +after,
+        'result of "BEFORE - defaultBuyerDeposit + value" should be equal to AFTER Balance',
+      );
+    });
   });
 });
-*/
 
 // describe('Close Swap', async () => {
 //   beforeEach(async () => {
