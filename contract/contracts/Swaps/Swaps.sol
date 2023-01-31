@@ -12,15 +12,6 @@ contract Swaps is PriceConsumer {
   using SafeMath for uint256;
   Counters.Counter internal _swapId;
 
-  enum Status {
-    inactive,
-    pending,
-    active,
-    claimed
-  }
-
-  mapping(uint256 => Swap) internal _swaps;
-
   struct Buyer {
     address addr;
     uint256 deposit;
@@ -42,8 +33,18 @@ contract Swaps is PriceConsumer {
     uint256 liquidationPrice;
     uint256 premium;
     uint256 premiumInterval;
-    Status status;
   }
+
+  enum swapStatus {
+    inactive,
+    pending,
+    active,
+    claimed
+  }
+
+  mapping(uint256 => Swap) internal _swaps;
+
+  mapping(uint256 => swapStatus) internal _swapsStatus;
 
   modifier isBuyer(uint256 swapId) {
     require(
@@ -55,7 +56,7 @@ contract Swaps is PriceConsumer {
 
   modifier isPending(uint256 swapId) {
     require(
-      _swaps[swapId].status == Status.pending,
+      _swapsStatus[swapId] == swapStatus.pending,
       'The status of the CDS should be pending'
     );
     _;
@@ -63,7 +64,7 @@ contract Swaps is PriceConsumer {
 
   modifier isActive(uint256 swapId) {
     require(
-      _swaps[swapId].status == Status.active,
+      _swapsStatus[swapId] == swapStatus.active,
       'The status of the CDS should be pending'
     );
     _;
@@ -89,7 +90,7 @@ contract Swaps is PriceConsumer {
     newSwap.liquidationPrice = _liquidationPrice;
     newSwap.premium = _premium;
     newSwap.premiumInterval = _premiumInterval;
-    newSwap.status = Status.pending;
+    _swapsStatus[newSwapId] = swapStatus.pending;
 
     _isBuyer ? _createSwapByBuyer(newSwap) : _createSwapBySeller(newSwap);
 
@@ -121,7 +122,7 @@ contract Swaps is PriceConsumer {
     aSwap.buyer.lastPayDate = block.timestamp;
     aSwap.buyer.nextPayDate = block.timestamp + aSwap.premiumInterval;
 
-    aSwap.status = Status.active;
+    _swapsStatus[_acceptedSwapId] = swapStatus.active;
 
     return _acceptedSwapId;
   }
@@ -130,7 +131,7 @@ contract Swaps is PriceConsumer {
     Swap storage targetSwap = _swaps[_targetSwapId];
     targetSwap.buyer.deposit = 0;
     targetSwap.seller.deposit = 0;
-    targetSwap.status = Status.inactive;
+    _swapsStatus[_targetSwapId] = swapStatus.inactive;
   }
 
   function _claimSwap(uint256 _targetSwapId) internal {
@@ -143,7 +144,7 @@ contract Swaps is PriceConsumer {
     targetSwap.seller.deposit = 0;
     targetSwap.seller.isDeposited = false;
 
-    targetSwap.status = Status.claimed;
+    _swapsStatus[_targetSwapId] = swapStatus.claimed;
   }
 
   function _payPremium(uint256 _targetSwapId) internal {
