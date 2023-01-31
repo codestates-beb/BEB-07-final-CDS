@@ -55,6 +55,7 @@ function ProposedCardScroll(props) {
                   premiumInterval={swap.premiumInterval}
                   requiredDeposit={swap.sellerDeposit}
                   premiumRounds={swap.totalPremiumRounds}
+                  buyerAddress={swap.buyer}
                 />
               </SwiperSlide>
             );

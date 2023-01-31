@@ -12,22 +12,30 @@ function AcceptedCard_type2(props) {
     <>
       <div className="card my-[4rem] w-[15rem] h-[25rem] rounded-2xl border-color-white">
         <img
-          className="cardImg w-[85%] h-[35%] m-[7.5%] object-cover opacity-100 rounded-2xl"
+          className="cardImg w-[85%] h-[35%] mx-[7%] mt-[7%] mb-[5%] object-cover opacity-100 rounded-2xl"
           alt="EtherLogo"
           src={ETHCard}
         />
         <div className="mx-[10%]">
-          <div className="mb-[4%] text-2xl font-extrabold">Ether CDS</div>
+          <div className="text-2xl font-extrabold">Ether CDS</div>
+          <div className="mb-[4%] flex font-semibold text-[9px]">
+            <p>Premium must be paid within</p>
+            <p className="text-mint text-[9px]">&nbsp;</p>
+            <p className="text-mint text-[10px]">7</p>
+            <p className="text-mint text-[9px]">&nbsp;</p>
+            <p>days</p>
+          </div>
+
           <div className="mb-[2%]">
-            <div className="font-medium text-base">Initial Price</div>
+            <div className="font-medium text-sm">Initial Price</div>
             <div className="font-light text-xs">{props.InitialPrice}</div>
           </div>
           <div className="mb-[2%]">
-            <div className="font-medium text-base">Claim Price</div>
+            <div className="font-medium text-sm">Claim Price</div>
             <div className="font-light text-xs">{props.ClaimPrice}</div>
           </div>
           <div className="mb-[2%]">
-            <div className="font-medium text-base">Liquidation Price</div>
+            <div className="font-medium text-sm">Liquidation Price</div>
             <div className="font-light text-xs">{props.Price}</div>
           </div>
         </div>
