@@ -28,8 +28,12 @@ function infoSlide() {
         modules={[Navigation, Mousewheel, Keyboard]}
         className="mySwiperInfo w-[68rem] h-[24rem] bg-blackColor rounded-2xl relative my-[10rem]"
       >
-        <SwiperSlide className="object-cover w-[68rem] h-[24rem]">
-          <img src={infoSlide1} alt="infoSlide1"></img>
+        <SwiperSlide className="w-[68rem] h-[24rem]">
+          <img
+            src={infoSlide1}
+            alt=" infoSlide1"
+            className="w-[100%] h-[100%] object-fill"
+          ></img>
           <div className="absolute top-[55%] left-[50%] translate-y-[-50%] translate-x-[-50%] ">
             <div className="flex-col w-[100%] text-center">
               <div className="text-4xl font-bold mb-[5%]">What is CDS ?</div>
@@ -55,7 +59,11 @@ function infoSlide() {
           </div>
         </SwiperSlide>
         <SwiperSlide className="object-cover w-[68rem] h-[24rem]">
-          <img src={infoSlide2} alt="infoSlide1" />
+          <img
+            src={infoSlide2}
+            alt="infoSlide1"
+            className="w-[100%] h-[100%] object-fill"
+          />
           <div className="absolute top-[55%] left-[50%] translate-y-[-50%] translate-x-[-50%] ">
             <div className="flex-col w-[100%] text-center">
               <div className="text-4xl font-bold mb-[5%]">Risks</div>
@@ -80,7 +88,11 @@ function infoSlide() {
           </div>
         </SwiperSlide>
         <SwiperSlide className="object-cover w-[68rem] h-[24rem]">
-          <img src={infoSlide3} alt="infoSlide1" />
+          <img
+            src={infoSlide3}
+            alt="infoSlide1"
+            className="w-[100%] h-[100%] object-fill"
+          />
           <div className="absolute top-[55%] left-[50%] translate-y-[-50%] translate-x-[-50%] ">
             <div className="flex-col w-[100%] text-center">
               <div className="text-4xl font-bold mb-[5%]">Teams</div>

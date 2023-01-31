@@ -10,7 +10,7 @@ import '../assets/css/proposed_type2.css';
 function AcceptedCard_type2(props) {
   return (
     <>
-      <div className="card m-[4rem] w-[15rem] h-[25rem] rounded-2xl border-color-white">
+      <div className="card my-[4rem] w-[15rem] h-[25rem] rounded-2xl border-color-white">
         <img
           className="cardImg w-[85%] h-[35%] m-[7.5%] object-cover opacity-100 rounded-2xl"
           alt="EtherLogo"
