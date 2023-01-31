@@ -38,13 +38,10 @@ contract Swaps is PriceConsumer {
     Buyer buyer;
     Seller seller;
     uint256 initAssetPrice;
-    uint256 amountOfAssets;
     uint256 claimPrice;
     uint256 liquidationPrice;
     uint256 premium;
-    uint256 premiumRate;
     uint256 premiumInterval;
-    uint256 totalPremiumRounds;
     Status status;
   }
 
@@ -72,36 +69,26 @@ contract Swaps is PriceConsumer {
     _;
   }
 
-  // uint256 private _premiumRate;
-
-  constructor() {
-    // _premiumRate = 2;
-  }
+  constructor() {}
 
   function _createSwap(
     bool _isBuyer,
     uint256 _initAssetPrice,
-    uint256 _amountOfAssets,
     uint256 _claimPrice,
     uint256 _liquidationPrice,
     uint256 _sellerDeposit,
     uint256 _premium,
-    uint256 _premiumRate,
-    uint256 _premiumInterval,
-    uint256 _totalPremiumRounds
+    uint256 _premiumInterval
   ) internal returns (uint256) {
     _swapId.increment();
     uint256 newSwapId = _swapId.current();
     Swap storage newSwap = _swaps[newSwapId];
 
     newSwap.initAssetPrice = _initAssetPrice;
-    newSwap.amountOfAssets = _amountOfAssets;
     newSwap.claimPrice = _claimPrice;
     newSwap.liquidationPrice = _liquidationPrice;
     newSwap.premium = _premium;
-    newSwap.premiumRate = _premiumRate;
     newSwap.premiumInterval = _premiumInterval;
-    newSwap.totalPremiumRounds = _totalPremiumRounds;
     newSwap.status = Status.pending;
 
     _isBuyer ? _createSwapByBuyer(newSwap) : _createSwapBySeller(newSwap);
@@ -164,10 +151,6 @@ contract Swaps is PriceConsumer {
     // date 갱신
     targetSwap.buyer.lastPayDate = block.timestamp;
     targetSwap.buyer.nextPayDate = block.timestamp + targetSwap.premiumInterval;
-
-    if (targetSwap.totalPremiumRounds != 0) {
-      targetSwap.totalPremiumRounds -= 1;
-    }
   }
 
   function getClaimReward(uint256 swapId) public view returns (uint256) {
@@ -180,7 +163,6 @@ contract Swaps is PriceConsumer {
     uint256 claimReward = sellerDeposit.calcClaimReward(
       targetSwap.liquidationPrice,
       targetSwap.initAssetPrice,
-      targetSwap.amountOfAssets,
       currPrice
     );
     return claimReward;

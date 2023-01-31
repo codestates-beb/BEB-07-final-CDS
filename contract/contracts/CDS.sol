@@ -22,13 +22,10 @@ contract CDS is Swaps, Ownable {
     bool isBuyer,
     uint256 swapId,
     uint256 initAssetPrice,
-    uint256 amountOfAssets,
     uint256 claimPrice,
     uint256 liquidationPrice,
     uint256 premium,
-    uint256 premiumRate,
     uint256 premiumInterval,
-    uint256 totalPremiumRounds,
     uint256 buyerDeposit
   );
   event AcceptSwap(
@@ -48,14 +45,11 @@ contract CDS is Swaps, Ownable {
   function createSwap(
     bool isBuyer,
     uint256 initAssetPrice,
-    uint256 amountOfAssets,
     uint256 claimPrice,
     uint256 liquidationPrice,
     uint256 sellerDeposit,
     uint256 premium,
-    uint256 premiumRate,
-    uint256 premiumInterval,
-    uint256 totalPremiumRounds
+    uint256 premiumInterval
   ) external payable isNotOwner returns (uint256) {
     uint256 buyerDeposit = premium.mul(3) * 1 wei;
     isBuyer ? _sendDeposit(buyerDeposit) : _sendDeposit(sellerDeposit);
@@ -63,14 +57,11 @@ contract CDS is Swaps, Ownable {
     uint256 newSwapId = _createSwap(
       isBuyer,
       initAssetPrice,
-      amountOfAssets,
       claimPrice,
       liquidationPrice,
       sellerDeposit,
       premium,
-      premiumRate,
-      premiumInterval,
-      totalPremiumRounds
+      premiumInterval
     );
 
     emit CreateSwap(
@@ -78,13 +69,10 @@ contract CDS is Swaps, Ownable {
       isBuyer,
       newSwapId,
       initAssetPrice,
-      amountOfAssets,
       claimPrice,
       liquidationPrice,
       premium,
-      premiumRate,
       premiumInterval,
-      totalPremiumRounds,
       buyerDeposit
     );
 
