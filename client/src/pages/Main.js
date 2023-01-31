@@ -89,7 +89,19 @@ function Main() {
           Proposed CDSs
         </div>
         <div className="mt-4 font-regular text-base text-center text-lightGray">
-          Check the proposed CDSs and protect your crypto assets !
+          <p>Check the proposed CDSs and protect your crypto assets !</p>
+          <div className="flex justify-center">
+            <p>The contract proposed by</p>
+            <p className="text-green"> &nbsp;Buyer&nbsp;</p>
+            <p>is displayed in</p>
+            <p className="text-green">&nbsp;green</p>
+            <p>,</p>
+            <p>&nbsp;and the contract proposed by</p>
+            <p className="text-red">&nbsp;Seller&nbsp;</p>
+            <p>is displayed in</p>
+            <p className="text-red">&nbsp;red</p>
+            <p>.</p>
+          </div>
         </div>
         <div className="">
           <ProposedCardScroll response={response} />
