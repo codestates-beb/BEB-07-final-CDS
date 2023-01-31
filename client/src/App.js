@@ -4,7 +4,7 @@ import { Link, Routes, Route } from 'react-router-dom';
 
 // components
 import Header from './components/Header';
-import AcceptedCardType2 from './components/AcceptedCardType2';
+import MarketPriceType2 from './components/MarketPriceType2';
 
 // pages
 import Main from './pages/Main';
@@ -32,6 +32,7 @@ function App() {
         <Route path="/createTest" element={<MakeTest />} />
         <Route path="/acceptTest/:swapId" element={<AcceptTest />} />
         <Route path="/oracleTest" element={<OracleTest />} />
+        <Route path="/test" element={<MarketPriceType2 />} />
       </Routes>
     </div>
   );

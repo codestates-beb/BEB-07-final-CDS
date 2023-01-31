@@ -6,7 +6,7 @@ import { useState } from 'react';
 import BTCCard from '../assets/img/BTC_Card_bg.jpg';
 
 // css
-import '../assets/css/proposed_type2.css';
+import '../assets/css/cdsCard.css';
 
 function ProposedCard_type2(props) {
   return (

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import ETHCard from '../assets/img/ETH_Card_bg.jpg';
 
 // css
-import '../assets/css/proposed_type2.css';
+import '../assets/css/cdsCard.css';
 
 function AcceptedCard_type2(props) {
   return (

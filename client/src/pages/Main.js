@@ -7,6 +7,7 @@ import MainLogo from '../assets/img/CDS_Symbol_bright_removebg.png';
 
 // components
 import InfoSlide from '../components/swiper/infoSlide.js';
+import MarketPriceType2 from '../components/MarketPriceType2.js';
 import ProposedCardScroll from '../components/swiper/ProposedCardScroll.js';
 import AcceptedCardScroll from '../components/swiper/AcceptedCardScroll.js';
 import ScrollButton from '../components/ScrollButton.js';
@@ -16,7 +17,8 @@ import Footer from '../components/Footer.js';
 import { getSwaps } from '../apis/request.js';
 
 function Main() {
-  const [response, setResponse] = useState([]);
+  // database에서 swap구조체에 대한 정보를 받아옵니다
+  const [swapResponse, setResponse] = useState([]);
 
   useEffect(() => {
     const APIdata = getSwaps();
@@ -84,6 +86,9 @@ function Main() {
           exposed to risk.
         </div>
       </div>
+      <div className="my-[10rem]">
+        <MarketPriceType2 />
+      </div>
       <div className="flex-col">
         <div className="mt-32 font-bold text-2xl text-center">
           Proposed CDSs
@@ -104,7 +109,7 @@ function Main() {
           </div>
         </div>
         <div className="">
-          <ProposedCardScroll response={response} />
+          <ProposedCardScroll response={swapResponse} />
         </div>
       </div>
       <div className="flex-col">
@@ -120,7 +125,7 @@ function Main() {
         </div>
         <div className="flex justify-center">
           <div className="w-screen">
-            <AcceptedCardScroll response={response} />
+            <AcceptedCardScroll response={swapResponse} />
           </div>
         </div>
       </div>
