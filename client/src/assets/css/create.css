@@ -61,6 +61,14 @@
         background-color: var(--primary-color);
     }
 
+    .create-form .input-group .input-radio input{
+        @apply mr-2;
+    }
+
+    .create-form .input-group .input-radio label {
+        @apply text-xl mr-4;
+    }
+
     .create-form .input-group .input-select select {
         @apply rounded-xl border-2 px-2;
         border-color: var(--primary-color);
