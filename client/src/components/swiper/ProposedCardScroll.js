@@ -1,5 +1,5 @@
 // modules
-import { Navigation, FreeMode, Pagination } from 'swiper';
+import { EffectCoverflow, FreeMode, Pagination } from 'swiper';
 import { useState } from 'react';
 
 // Import Swiper React components
@@ -7,8 +7,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
 import 'swiper/css';
-import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import 'swiper/css/effect-coverflow';
 
 //components
 import ProposedCardType2 from '../ProposedCardType2';
@@ -21,21 +21,28 @@ function ProposedCardScroll(props) {
   const randomSort = proposed.sort(() => Math.random() - 0.5);
 
   //처음 6개의 Card만 보여주도록 합니다
-  const [index, setIndex] = useState(6);
+  const [index, setIndex] = useState(7);
   const initialProposed = randomSort.slice(0, index);
 
   return (
     <>
       <Swiper
-        navigation={true}
-        slidesPerView={6}
+        slidesPerView={7}
         spaceBetween={15}
         freeMode={true}
         centeredSlides={true}
         pagination={{
           clickable: true,
         }}
-        modules={[Navigation, FreeMode, Pagination]}
+        effect={'coverflow'}
+        coverflowEffect={{
+          rotate: 0,
+          stretch: 0,
+          depth: 200,
+          modifier: 1,
+          slideShadows: false,
+        }}
+        modules={[EffectCoverflow, FreeMode, Pagination]}
         className="mySwiper"
       >
         <div>
