@@ -92,7 +92,7 @@ contract('CDS', (accounts) => {
       );
     });
 
-    it('should be able to create Swap when valid input provided by BUYER and check it from mapping', async () => {
+    it('should be able to create Swap as BUYER when valid input provided and check it from mapping', async () => {
       await truffleAssert.passes(
         cds.createSwap(
           defaultHostSetting,
@@ -132,7 +132,7 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(seller.isDeposited, false);
     });
 
-    it('should be able to create Swap when valid input provided by SELLER and check it from mapping', async () => {
+    it('should be able to create Swap as SELLER when valid input provided and check it from mapping', async () => {
       await truffleAssert.passes(
         cds.createSwap(
           !defaultHostSetting, // = false
@@ -186,7 +186,7 @@ contract('CDS', (accounts) => {
       );
     });
 
-    it('should have decreased ETH amount of buyer after creating swap by BUYER', async () => {
+    it('should have decreased ETH amount of buyer after creating swap as BUYER', async () => {
       const before = await web3.eth.getBalance(accounts[2]);
       const receipt = await cds.createSwap(
         defaultHostSetting,
@@ -216,7 +216,7 @@ contract('CDS', (accounts) => {
       );
     });
 
-    it('should have decreased ETH amount of buyer after creating swap by SELLER', async () => {
+    it('should have decreased ETH amount of buyer after creating swap as SELLER', async () => {
       const before = await web3.eth.getBalance(accounts[1]);
       const receipt = await cds.createSwap(
         !defaultHostSetting,
@@ -248,7 +248,7 @@ contract('CDS', (accounts) => {
   });
 
   describe('Accept Swap', () => {
-    it('should be able to accept Swap when valid deposit provided by SELLER and check it from mapping', async () => {
+    it('should be able to accept Swap as SELLER when valid deposit provided and check it from mapping', async () => {
       await cds.createSwap(
         defaultHostSetting,
         defaultInitAssetPrice,
@@ -291,7 +291,7 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(seller.isDeposited, true);
     });
 
-    it('should be able to accept Swap when valid deposit provided by BUYER and check it from mapping', async () => {
+    it('should be able to accept Swap as SELLER when valid deposit provided and check it from mapping', async () => {
       await cds.createSwap(
         !defaultHostSetting,
         defaultInitAssetPrice,
@@ -413,6 +413,78 @@ contract('CDS', (accounts) => {
           from: accounts[1],
           value: defaultBuyerDeposit,
         }),
+      );
+    });
+
+    it('should have right ETH amount of seller after accepting swap as SELLER', async () => {
+      await cds.createSwap(
+        defaultHostSetting,
+        defaultInitAssetPrice,
+        defaultClaimPrice,
+        defaultLiquidationPrice,
+        defaultSellerDeposit,
+        defaultPremium,
+        defaultPremiumInterval,
+        { from: accounts[2], value: defaultBuyerDeposit },
+      );
+      const [currentSwapId] = await cds.getSwapId();
+
+      const before = await web3.eth.getBalance(accounts[1]);
+      const receipt = await cds.acceptSwap(
+        defaultInitAssetPrice,
+        currentSwapId,
+        {
+          from: accounts[1],
+          value: defaultSellerDeposit,
+        },
+      );
+
+      const tx = await web3.eth.getTransaction(receipt.tx);
+      const { gasUsed } = receipt.receipt;
+      const { gasPrice } = tx;
+      const gasCost = gasUsed * gasPrice;
+      const after = await web3.eth.getBalance(accounts[1]);
+
+      assert.equal(
+        +before,
+        +after + +gasCost + defaultSellerDeposit,
+        'Sum of gas cost, msg.value, after balance should be equal to Before Balance',
+      );
+    });
+
+    it('should have right ETH amount of buyer after accepting swap as BUYER', async () => {
+      await cds.createSwap(
+        !defaultHostSetting,
+        defaultInitAssetPrice,
+        defaultClaimPrice,
+        defaultLiquidationPrice,
+        defaultSellerDeposit,
+        defaultPremium,
+        defaultPremiumInterval,
+        { from: accounts[1], value: defaultSellerDeposit },
+      );
+      const [currentSwapId] = await cds.getSwapId();
+
+      const before = await web3.eth.getBalance(accounts[2]);
+      const receipt = await cds.acceptSwap(
+        defaultInitAssetPrice,
+        currentSwapId,
+        {
+          from: accounts[2],
+          value: defaultBuyerDeposit,
+        },
+      );
+
+      const tx = await web3.eth.getTransaction(receipt.tx);
+      const { gasUsed } = receipt.receipt;
+      const { gasPrice } = tx;
+      const gasCost = gasUsed * gasPrice;
+      const after = await web3.eth.getBalance(accounts[2]);
+
+      assert.equal(
+        +before,
+        +after + +gasCost + defaultSellerDeposit,
+        'Sum of gas cost, msg.value, after balance should be equal to Before Balance',
       );
     });
   });
