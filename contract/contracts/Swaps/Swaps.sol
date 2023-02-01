@@ -198,6 +198,10 @@ contract Swaps is PriceConsumer {
     return _rounds[swapId];
   }
 
+  function getInterval(uint256 swapId) public view returns (uint256) {
+    return _intervals[swapId];
+  }
+
   function _createSwapByBuyer(uint256 swapId) private {
     _participants[swapId][0] = msg.sender;
     _deposits[swapId][0].deposit = getSwap(swapId).premium.mul(3);
