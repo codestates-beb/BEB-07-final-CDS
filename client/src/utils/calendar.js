@@ -11,8 +11,8 @@ export function unixTimeToWeeks(time) {
 // Calculate Time Remaining for paying premium
 export function calculateTimeRemaining(currentTime, payTime){
     const diffSeconds = payTime - currentTime;
-    
-    if (diffSeconds <= 0) return `expired`;
+
+    if (diffSeconds <= 0) return `overdue`;
     else{
         if (parseInt(diffSeconds / 60) === 0) return `${diffSeconds} seconds`;
         const diffMinutes = parseInt( diffSeconds / 60 );

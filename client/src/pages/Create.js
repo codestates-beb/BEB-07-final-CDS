@@ -42,9 +42,12 @@ function Create() {
   // Authoirization Var
   const isLogin = useSelector((state) => state.auth.isLogin);
 
+  // CDS Creator Role => 0: Buyer, 1: Seller
+  const [role, setRole] = useState(0);
+
   // CDS Content State Variable
   const [contractAddress, setContractAddress] = useState('');
-  const buyerAddress = useSelector((state) => state.auth.user_addr);
+  const userAddress = useSelector((state) => state.auth.user_addr);
 
   // Assets State Var
   const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('');
@@ -68,7 +71,7 @@ function Create() {
   // Create CDS Handler
   const createButtonHandler = async () =>{
     const data = {
-      buyerAddress,
+      userAddress,
       initialPriceOfAssets,
       amountOfAssets,
       claimPrice,
@@ -144,12 +147,16 @@ function Create() {
         </div>
         <div className='create-form'>
           <div className='form-section'>
-            <h2 className='section-title'>Address</h2>
+            <h2 className='section-title'>User</h2>
             <div className='input-group'>
+              <div className='input-radio'>
+                <label><input name='role' type='radio' onChange={e=>setRole(0)} defaultChecked/>Buyer</label>
+                <label><input name='role' type='radio' onChange={e=>setRole(1)}/>Seller</label>
+              </div>
               <div className='input-button'>
                 <input 
-                  placeholder='Buyer Address'
-                  value={buyerAddress}
+                  placeholder='User Address'
+                  value={userAddress}
                   disabled
                 />
                 {isLogin?
