@@ -28,6 +28,11 @@ function MarketPriceType2() {
   const [rateOfChangeETH, setETHChange] = useState('');
   const [rateOfChangeDOGE, setDOGEChange] = useState('');
 
+  // 크립토 자산의 변화율이 음수인지 판단합니다
+  const [negativeBTC, setNegativeBTC] = useState(false);
+  const [negativeETH, setNegativeETH] = useState(false);
+  const [negativeDOGE, setNegativeDOGE] = useState(false);
+
   useEffect(() => {
     const coinGeckoBTCData = getCoinGeckoAPI('bitcoin');
     const coinGeckoETHData = getCoinGeckoAPI('ethereum');
@@ -48,6 +53,13 @@ function MarketPriceType2() {
             ) / 100;
 
           setBTCChange(ChangeData);
+
+          return ChangeData;
+        })
+        .then((change) => {
+          if (change < 0) {
+            setNegativeBTC(true);
+          }
         });
     };
 
@@ -66,6 +78,13 @@ function MarketPriceType2() {
             ) / 100;
 
           setETHChange(ChangeData);
+
+          return ChangeData;
+        })
+        .then((change) => {
+          if (change < 0) {
+            setNegativeETH(true);
+          }
         });
     };
 
@@ -84,6 +103,13 @@ function MarketPriceType2() {
             ) / 100;
 
           setDOGEChange(ChangeData);
+
+          return ChangeData;
+        })
+        .then((change) => {
+          if (change < 0) {
+            setNegativeDOGE(true);
+          }
         });
     };
 
@@ -91,23 +117,6 @@ function MarketPriceType2() {
     getETHData();
     getDOGEData();
   }, []);
-
-  // 크립토 자산의 변화율이 음수인지 판단합니다
-  const [negativeBTC, setNegativeBTC] = useState(false);
-  const [negativeETH, setNegativeETH] = useState(false);
-  const [negativeDOGE, setNegativeDOGE] = useState(false);
-
-  if (rateOfChangeBTC < 0) {
-    setNegativeBTC(true);
-  }
-
-  if (rateOfChangeETH < 0) {
-    setNegativeETH(true);
-  }
-
-  if (rateOfChangeDOGE < 0) {
-    setNegativeDOGE(true);
-  }
 
   return (
     <>
@@ -163,7 +172,7 @@ function MarketPriceType2() {
                 <div className="flex-col m-auto p-auto">
                   <div className="font-semibold text-sm">$ {priceETH}</div>
                   <div>
-                    {negativeBTC === false ? (
+                    {negativeETH === false ? (
                       <div className="font-medium text-green text-sm">
                         +{rateOfChangeETH}%
                       </div>
@@ -192,7 +201,7 @@ function MarketPriceType2() {
                 <div className="flex-col m-auto p-auto">
                   <div className="font-semibold text-sm">$ {priceDOGE}</div>
                   <div>
-                    {negativeBTC === false ? (
+                    {negativeDOGE === false ? (
                       <div className="font-medium text-green text-sm">
                         +{rateOfChangeDOGE}%
                       </div>
