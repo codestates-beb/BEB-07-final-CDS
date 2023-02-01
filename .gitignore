@@ -125,5 +125,5 @@ dist
 CDS_CA.txt
 .DS_Store
 
-blockListener/src/contractArtifacts
+blockListener/src/contractArtifacts/
 blockListener/.vscode
