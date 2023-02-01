@@ -82,7 +82,7 @@ app.listen(app.get('port'), () => {
 async function updatePriceFeed() {
   try {
     const apiData = await axios.get(
-      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,dogecoin&vs_currencies=usd&include_24hr_change=true&include_last_updated_at=true',
+      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,dogecoin&vs_currencies=usd&include_24hr_change=true&include_last_updated_at=true&precision=2',
     );
     const priceData = apiData.data;
     priceData.bitcoin.usd_24h_change =
