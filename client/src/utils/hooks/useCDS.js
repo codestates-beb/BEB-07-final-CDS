@@ -18,11 +18,10 @@ function useCDS() {
 
       // CDS Contract Methods
       const CDSToSet = {
-        createSwap: async (data)=>{
+        createSwap: async (data, userAddress)=>{
           const {
-            buyerAddress, 
+            role, 
             initialPriceOfAssets,
-            amountOfAssets, 
             claimPrice, 
             liquidationPrice,
             sellerDeposit,
@@ -32,21 +31,19 @@ function useCDS() {
           } = data;
 
           if (
-            !buyerAddress
-            || !initialPriceOfAssets
-            || !amountOfAssets
+            !initialPriceOfAssets
             || !claimPrice
             || !liquidationPrice
             || !sellerDeposit
             || !premiumPrice
             || !premiumInterval
             || !premiumRounds
+            || !userAddress
           ) return new Error("Not valid inputs");
 
           const receipt = await contract.methods.createSwap(
-            buyerAddress, 
+            role,
             initialPriceOfAssets,
-            amountOfAssets,
             claimPrice, 
             liquidationPrice,
             sellerDeposit,
@@ -54,23 +51,22 @@ function useCDS() {
             premiumInterval,
             premiumRounds
           )
-          .send({from:buyerAddress, value: premiumPrice * 3}, (result)=>{
+          .send({from: userAddress, value: premiumPrice}, (result)=>{
             console.log(result);
           })
 
           return receipt;
         },
 
-        acceptSwap: async (sellerAddress, initialPriceOfAssets, swapId, sellerDeposit)=>{
-          if(!sellerAddress || !initialPriceOfAssets || !swapId || !sellerDeposit)
+        acceptSwap: async (initialPriceOfAssets, swapId, deposit, userAddress)=>{
+          if( !initialPriceOfAssets || !swapId || !deposit || !userAddress)
             return new Error("Invalid Arguments");
 
           const receipt = await contract.methods.acceptSwap(
-            sellerAddress, 
             initialPriceOfAssets, 
             swapId
           )
-          .send({from:sellerAddress, value: sellerDeposit});
+          .send({from:userAddress, value: deposit});
 
           return receipt;
         },
