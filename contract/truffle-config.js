@@ -77,6 +77,11 @@ module.exports = {
       port: 8545, // Standard Ethereum port (default: none)
       network_id: '*', // Any network (default: none)
     },
+    geth: {
+      host: 'snowdelver.iptime.org',
+      port: 8546,
+      network_id: '12345',
+    },
     //
     // An additional network, but with some advanced options…
     // advanced: {
