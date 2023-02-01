@@ -42,7 +42,7 @@ contract Swaps is PriceConsumer {
   mapping(uint256 => swapStatus) private _swapsStatus;
 
   // key-value entity that maps the ID of the swap to the rounds left.
-  mapping(uint256 => uint256) private _rounds;
+  mapping(uint256 => uint32) private _rounds;
 
   // key-value entity that maps the ID of the swap to next date to pay premium.
   mapping(uint256 => uint256) private _nextPayDate;
@@ -94,7 +94,8 @@ contract Swaps is PriceConsumer {
     uint256 _liquidationPrice,
     uint256 _sellerDeposit,
     uint256 _premium,
-    uint32 _premiumInterval
+    uint32 _premiumInterval,
+    uint32 _totalRounds
   ) internal returns (uint256) {
     _swapId.increment();
     uint256 newSwapId = _swapId.current();
@@ -106,6 +107,8 @@ contract Swaps is PriceConsumer {
     newSwap.premium = _premium;
     newSwap.sellerDeposit = _sellerDeposit;
     newSwap.premiumInterval = _premiumInterval;
+
+    _rounds[newSwapId] = _totalRounds;
 
     _swapsStatus[newSwapId] = swapStatus.pending;
 
@@ -184,6 +187,10 @@ contract Swaps is PriceConsumer {
 
   function getSwapStatus(uint256 swapId) public view returns (swapStatus) {
     return _swapsStatus[swapId];
+  }
+
+  function getRoundsLeft(uint256 swapId) public view returns (uint32) {
+    return _rounds[swapId];
   }
 
   function _createSwapByBuyer(uint256 swapId) private {

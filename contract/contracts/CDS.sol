@@ -35,7 +35,8 @@ contract CDS is Swaps, Ownable {
     uint256 liquidationPrice,
     uint256 sellerDeposit,
     uint256 premium,
-    uint32 premiumInterval
+    uint32 premiumInterval,
+    uint32 totalRounds
   ) external payable isNotOwner returns (uint256) {
     uint256 buyerDeposit = premium.mul(3) * 1 wei;
     isBuyer ? _sendDeposit(buyerDeposit) : _sendDeposit(sellerDeposit);
@@ -47,7 +48,8 @@ contract CDS is Swaps, Ownable {
       liquidationPrice,
       sellerDeposit,
       premium,
-      premiumInterval
+      premiumInterval,
+      totalRounds
     );
 
     emit CreateSwap(msg.sender, isBuyer, newSwapId);
