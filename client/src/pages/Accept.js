@@ -25,6 +25,7 @@ function Accept() {
   const {swapId} = useParams();
   const [swapOnChain, setSwapOnChain] = useState(null);
   const [swapOnDB, setSwapOnDB] = useState(null);
+  const [position, setPosition] = useState(null);
   const userAddress = useSelector(state=>state.auth.user_addr);
   const CDS = useCDS();
 
@@ -34,7 +35,8 @@ function Accept() {
       swapOnChain.initAssetPrice,
       swapId,
       swapOnChain.seller.deposit,
-      userAddress,
+      swapOnDB.buyer,
+      swapOnDB.seller,
     )
 
     try {
@@ -69,6 +71,7 @@ function Accept() {
     getSwapById(swapId)
     .then(result=>{
       setSwapOnDB(result);
+      setPosition(result.buyer ? 0 : 1);
     })
   },[])
 
@@ -106,10 +109,17 @@ function Accept() {
             <h2 className='section-title'>Address</h2>
             <div className='input-group'>
               <div className='input-button'>
-                <input 
-                  value={swapOnDB ? `Buyer Address: ${swapOnDB.buyer}` : null}
-                  disabled
-                />
+                { position === 0 ? 
+                  <input 
+                    value={swapOnDB ? `Buyer Address: ${swapOnDB.buyer}` : null}
+                    disabled
+                  />
+                :
+                  <input
+                    value={swapOnDB ? `Seller Address: ${swapOnDB.Seller}` : null}
+                    disabled
+                  />
+                }
               </div>
             </div>
           </div>
