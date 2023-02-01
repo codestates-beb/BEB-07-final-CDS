@@ -91,7 +91,7 @@ function MarketPriceType2() {
     const getDOGEData = () => {
       coinGeckoDogeData
         .then((response) => {
-          const priceData = Math.round(response.prices[1][1] * 100000) / 10000;
+          const priceData = Math.round(response.prices[1][1] * 10000) / 10000;
           setPriceDOGE(priceData);
 
           return response;
