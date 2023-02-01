@@ -35,7 +35,7 @@ module.exports = async function (deployer, network, accounts) {
       from: accounts[1],
       value: defaultSellerDeposit,
     });
-
+    console.log('case 1 created!');
     // case2: account[2] create and cancel
     await cds.createSwap(
       defaultHostSetting,
@@ -51,6 +51,7 @@ module.exports = async function (deployer, network, accounts) {
     [currentSwapId] = await cds.getSwapId();
     await cds.cancelSwap(currentSwapId, { from: accounts[2] });
 
+    console.log('case 2 created!');
     // case3 : account[4] creates and nobody accepts
     await cds.createSwap(
       defaultHostSetting,
@@ -64,6 +65,7 @@ module.exports = async function (deployer, network, accounts) {
       { from: accounts[4], value: defaultBuyerDeposit },
     );
 
+    console.log('case 3 created!');
     // case4: account[3] creates and account[1] accepts
     // after price dropped below claim price, account[3] claimes
     await cds.createSwap(
@@ -85,6 +87,7 @@ module.exports = async function (deployer, network, accounts) {
     await priceOracleMock.setPrice(70, { from: accounts[0] });
     await cds.claimSwap(currentSwapId, { from: accounts[3] });
 
+    console.log('case 4 created!');
     // case5: account[2] creates and account[3] accepts
     // after price dropped below liquidation price, account[2] claimes
     await cds.createSwap(
@@ -106,6 +109,7 @@ module.exports = async function (deployer, network, accounts) {
     await priceOracleMock.setPrice(70, { from: accounts[0] });
     await cds.claimSwap(currentSwapId, { from: accounts[3] });
 
+    console.log('case 5 created!');
     // case6: account[1] creates and account[3] accepts
     // account[1] closes swap
     await cds.createSwap(
@@ -126,6 +130,7 @@ module.exports = async function (deployer, network, accounts) {
     });
     await cds.closeSwap(currentSwapId, { from: accounts[1] });
 
+    console.log('case 6 created!');
     // case7: account[4] creates and account[2] accepts
     // account[4] pays single round premium
     await cds.createSwap(
@@ -148,6 +153,7 @@ module.exports = async function (deployer, network, accounts) {
       from: accounts[4],
       value: defaultPremium,
     });
+    console.log('case 7 created!');
   } catch (err) {
     console.error(err);
   }
