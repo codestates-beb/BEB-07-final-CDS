@@ -31,18 +31,18 @@ function Accept() {
   // Accept CDS Handler
   const acceptButtonHandler = async()=>{
     console.log(
-      userAddress,
       swapOnChain.initAssetPrice,
       swapId,
-      swapOnChain.seller.deposit
+      swapOnChain.seller.deposit,
+      userAddress,
     )
 
     try {
       const result = await CDS.acceptSwap(
-        userAddress, 
         swapOnChain.initAssetPrice, 
         swapId,
-        swapOnChain.seller.deposit
+        swapOnChain.seller.deposit,
+        userAddress
       );
 
       console.log(result);
