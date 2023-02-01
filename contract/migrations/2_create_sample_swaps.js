@@ -4,14 +4,12 @@ const PriceOracleMock = artifacts.require('PriceOracleMock');
 
 const defaultHostSetting = true;
 const defaultInitAssetPrice = 100;
-// const defaultAmountOfAssets = 10;
 const defaultClaimPrice = 80;
 const defaultLiquidationPrice = 60;
 const defaultSellerDeposit = 400;
 const defaultPremium = 4;
-// const defaultPremiumRate = 2;
 const defaultPremiumInterval = 60 * 10; // 10 minutes
-// const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
+const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
 const defaultBuyerDeposit = defaultPremium * 3;
 
 let currentSwapId;
@@ -29,6 +27,7 @@ module.exports = async function (deployer, network, accounts) {
       defaultSellerDeposit,
       defaultPremium,
       defaultPremiumInterval,
+      defaultPremiumRounds,
       { from: accounts[2], value: defaultBuyerDeposit },
     );
     [currentSwapId] = await cds.getSwapId();
@@ -46,6 +45,7 @@ module.exports = async function (deployer, network, accounts) {
       defaultSellerDeposit,
       defaultPremium,
       defaultPremiumInterval,
+      defaultPremiumRounds,
       { from: accounts[2], value: defaultBuyerDeposit },
     );
     [currentSwapId] = await cds.getSwapId();
@@ -60,6 +60,7 @@ module.exports = async function (deployer, network, accounts) {
       defaultSellerDeposit,
       defaultPremium,
       defaultPremiumInterval,
+      defaultPremiumRounds,
       { from: accounts[4], value: defaultBuyerDeposit },
     );
 
@@ -73,6 +74,7 @@ module.exports = async function (deployer, network, accounts) {
       defaultSellerDeposit,
       defaultPremium,
       defaultPremiumInterval,
+      defaultPremiumRounds,
       { from: accounts[3], value: defaultBuyerDeposit },
     );
     [currentSwapId] = await cds.getSwapId();
@@ -93,6 +95,7 @@ module.exports = async function (deployer, network, accounts) {
       defaultSellerDeposit,
       defaultPremium,
       defaultPremiumInterval,
+      defaultPremiumRounds,
       { from: accounts[3], value: defaultBuyerDeposit },
     );
     [currentSwapId] = await cds.getSwapId();
@@ -113,6 +116,7 @@ module.exports = async function (deployer, network, accounts) {
       defaultSellerDeposit,
       defaultPremium,
       defaultPremiumInterval,
+      defaultPremiumRounds,
       { from: accounts[1], value: defaultBuyerDeposit },
     );
     [currentSwapId] = await cds.getSwapId();
@@ -132,6 +136,7 @@ module.exports = async function (deployer, network, accounts) {
       defaultSellerDeposit,
       defaultPremium,
       defaultPremiumInterval,
+      defaultPremiumRounds,
       { from: accounts[4], value: defaultBuyerDeposit },
     );
     [currentSwapId] = await cds.getSwapId();
