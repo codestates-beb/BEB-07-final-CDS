@@ -6,10 +6,11 @@ import { abi } from './contractArtifacts/CDS.json';
 import CDS from './CDS';
 import getEnv from './utils/getEnv';
 const REMOTE_WEBSOCKET = getEnv('REMOTE_WEBSOCKET');
+const GETH_WEBSOCKET = getEnv('GETH_WEBSOCKET');
 
 AppDataSource.initialize()
   .then(async () => {
-    let cds = CDS.getInstance(REMOTE_WEBSOCKET, AppDataSource.manager);
+    let cds = CDS.getInstance(GETH_WEBSOCKET, AppDataSource.manager);
     // let cds = CDS.getInstance('ws://localhost:8545');
     const userRepository = AppDataSource.getRepository(Users);
     const transactionRepository = AppDataSource.getRepository(Transactions);
