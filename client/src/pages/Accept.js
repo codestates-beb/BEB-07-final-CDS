@@ -25,6 +25,7 @@ function Accept() {
   const {swapId} = useParams();
   const [swapOnChain, setSwapOnChain] = useState(null);
   const [swapOnDB, setSwapOnDB] = useState(null);
+  const [position, setPosition] = useState(null);
   const userAddress = useSelector(state=>state.auth.user_addr);
   const CDS = useCDS();
 
@@ -34,7 +35,8 @@ function Accept() {
       swapOnChain.initAssetPrice,
       swapId,
       swapOnChain.seller.deposit,
-      userAddress,
+      swapOnDB.buyer,
+      swapOnDB.seller,
     )
 
     try {
@@ -69,6 +71,7 @@ function Accept() {
     getSwapById(swapId)
     .then(result=>{
       setSwapOnDB(result);
+      setPosition(result.buyer ? 0 : 1);
     })
   },[])
 
@@ -106,11 +109,17 @@ function Accept() {
             <h2 className='section-title'>Address</h2>
             <div className='input-group'>
               <div className='input-button'>
-                <input 
-                  placeholder='Buyer Address'
-                  value={swapOnDB? `Buyer Address: ${swapOnDB.buyer}` : null}
-                  disabled
-                />
+                { position === 0 ? 
+                  <input 
+                    value={swapOnDB ? `Buyer Address: ${swapOnDB.buyer}` : null}
+                    disabled
+                  />
+                :
+                  <input
+                    value={swapOnDB ? `Seller Address: ${swapOnDB.Seller}` : null}
+                    disabled
+                  />
+                }
               </div>
             </div>
           </div>
@@ -142,11 +151,21 @@ function Accept() {
                 value={swapOnDB? `Claim Price: ${swapOnDB.claimPrice}`: null}
                 disabled
               />
-              <input 
-                placeholder='Drop Rate' 
-                value={swapOnDB? `Drop Rate: ${swapOnDB.dropRate}`: null}
-                disabled
-              />
+              <div className='input-range'>
+                <input 
+                  placeholder='Drop Rate' 
+                  value={swapOnDB? `Drop Rate: ${swapOnDB.dropRate * 100} %`: null}
+                  disabled
+                />
+                <input
+                  className='range'
+                  type='range'
+                  min='0'
+                  max='100'
+                  value={swapOnDB? swapOnDB.dropRate * 100: 0}
+                  disabled
+                />
+              </div>
             </div>
           </div>
           <div className='form-section'>
@@ -187,11 +206,21 @@ function Accept() {
                 value={swapOnDB? `Seller Deposit: ${swapOnDB.sellerDeposit}`: null}
                 disabled
               />
-              <input 
-                placeholder='Liquidated Price' 
-                value={swapOnDB? `Liquidated Price: ${swapOnDB.liquidationPrice}`: null}
-                disabled
-              />
+              <div className='input-range'>
+                <input 
+                  placeholder='Liquidated Price' 
+                  value={swapOnDB? `Liquidated Price: ${swapOnDB.liquidationPrice}`: null}
+                  disabled
+                />
+                <input
+                  className='range'
+                  type='range'
+                  value={swapOnDB? swapOnDB.liquidationPrice : 0}
+                  max={swapOnDB? swapOnDB.initialAssetPrice : 0}
+                  min={0}
+                  disabled
+                />
+              </div>
               <input 
                 placeholder='Buyer Deposit'
                 value={swapOnDB? `Buyer Deposit: ${swapOnDB.buyerDeposit}`: null} 
