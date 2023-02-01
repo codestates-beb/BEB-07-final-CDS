@@ -51,7 +51,7 @@
     .create-form .form-section .section-title{
         @apply py-4 text-2xl font-bold;
     }
-
+    
     .create-form .input-group input{
         @apply py-2 px-3 rounded-xl mb-6
     }
@@ -59,6 +59,47 @@
     .create-form button{
         @apply rounded-xl;
         background-color: var(--primary-color);
+    }
+
+    /* Form radio */
+    .create-form .input-group .input-radio{
+        @apply mb-4;
+    }
+
+    .create-form .input-group .input-radio label{
+        vertical-align: middle;
+    }
+
+    .create-form .input-group .input-radio label:hover,
+    .create-form .input-group .input-radio input[type='radio']:hover
+    {
+        @apply cursor-pointer;
+    }
+
+    .create-form .input-group .input-radio input{
+        @apply mr-2 mb-1 p-0 w-5 h-5;
+    }
+
+    .create-form .input-group .input-radio input[type='radio']{
+        @apply border border-ligthGrayColor;
+        vertical-align: middle;
+        appearance: none;
+    }
+
+    .create-form .input-group .input-radio input[type='radio']:checked{
+        @apply bg-primaryColor;
+    }
+
+    .create-form .input-group .input-radio input[type='radio']:focus{
+        @apply outline-4 outline-whiteColor;
+    }
+
+    .create-form .input-group .input-radio input[type='radio']:active{
+        @apply bg-secondaryColor;
+    }
+
+    .create-form .input-group .input-radio label {
+        @apply text-xl mr-4;
     }
 
     .create-form .input-group .input-select select {
@@ -76,6 +117,10 @@
         @apply flex w-full mb-6;
         gap: 1rem;
     }
+
+    .create-form .input-group .input-range{
+        @apply items-center;
+    }
     
     .create-form .input-group .input-button input,
     .create-form .input-group .input-select input,
@@ -89,25 +134,36 @@
     }
 
     .create-form .input-group .input-range .range{
-        @apply border-primaryColor px-0;
+        @apply appearance-none h-1 bg-transparent;
     }
 
     .create-form .input-group .input-range .range[type=range]::-webkit-slider-runnable-track{
-        /* @apply bg-primaryColor rounded-lg;
+        @apply appearance-none bg-whiteColor rounded-lg h-2 border-0 outline-0;
+    }
+
+    .create-form .input-group .input-range .range[type=range]::-ms-fill-lower,
+    .create-form .input-group .input-range .range[type=range]::-moz-range-progress
+    {
+        @apply bg-darkGrayColor ;
         height: 8px;
-        -webkit-appearance: none;
-        border: none;
-        outline:none; */
+        border-radius: 6px;
     }
 
     .create-form .input-group .input-range .range[type=range]::-webkit-slider-thumb{
-        /* background-color: var(--primary-color);
-        -webkit-appearance: none;
-        height: 16px;
-        width: 16px;
+        @apply appearance-none w-6 h-6 bg-primaryColor -mt-2 ;
         border-radius: 50%;
-        margin-top: -4px;
-        border: none; */
+        border: none;
+    }
+
+    .create-form .input-group .input-range .range[type=range]::-webkit-slider-runnable-track:active,
+    .create-form .input-group .input-range .range[type=range]::-webkit-slider-thumb:hover{
+        @apply cursor-pointer;
+    }
+
+    
+    .create-form .input-group .input-range .range[type=range]::-webkit-slider-thumb:active
+    {
+        @apply bg-secondaryColor;
     }
 
     .create-form .input-group .input-button button,
