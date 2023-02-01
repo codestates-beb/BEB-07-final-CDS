@@ -3,6 +3,8 @@ const express = require('express');
 const User = require('../models/user');
 const Swap = require('../models/swap');
 const Transaction = require('../models/transaction');
+const redisClient = require('../utils/redisClient');
+const axios = require('axios');
 
 const router = express.Router();
 router.get('/swaps', async (req, res, next) => {
@@ -61,6 +63,25 @@ router.get('/transactions/:txHash', async (req, res, next) => {
   } catch (err) {
     console.error(err);
     next(err);
+  }
+});
+router.get('/prices/', async (req, res, next) => {
+  try {
+    let cached = await redisClient.get('prices');
+    if (!cached) {
+      console.log('No Valid Price Feed exists');
+      const apiData = await axios.get(
+        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,dogecoin&vs_currencies=usd&include_24hr_change=true&include_last_updated_at=true&precision=2',
+      );
+      cached = apiData.data;
+      await redisClient.set('prices', cached, 'EX', 60 * 60);
+    }
+    return res.status(200).json(JSON.parse(cached));
+  } catch (err) {
+    return res.status(500).json({
+      message:
+        'Price feed outdated more than 1hr and not automatically updated contact admin',
+    });
   }
 });
 // router.get('/transactions/:swapId', nftController.getAllNfts);

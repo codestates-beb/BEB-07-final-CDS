@@ -20,12 +20,25 @@ import '../assets/css/detail.css';
 import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
+// utils
+import { calculateTimeRemaining } from '../utils/calendar';
 
 function Detail() {
   const { swapId } = useParams();
   const userAddress = useSelector(state=>state.auth.user_addr);
   const [swapOnDB, setSwapOnDB] = useState(null);
+  const [swapOnChain, setSwapOnChain] = useState(null);
+  const [timeRemainingToPay, setTimeRemainingToPay] = useState(null);
   const CDS = useCDS();
+
+  // CDS pay premium Handler
+  const premiumButtonHandler = async()=>{
+    console.log(swapId);
+
+    const result = await CDS.payPremium(swapId, userAddress, swapOnChain.premium);
+    
+    console.log(result);
+  }
 
   // CDS Cancel Handler
   const cancelButtonHandler = async()=>{
@@ -71,6 +84,24 @@ function Detail() {
     })
   }, [])
 
+  useEffect(()=>{
+    let intervalId;
+    if (CDS){
+      CDS.getSwap(swapId)
+      .then(result=>{
+        setSwapOnChain(result);
+        intervalId = setInterval(()=>{
+          const current = parseInt(new Date().getTime() / 1000);
+          setTimeRemainingToPay( calculateTimeRemaining( current, result.buyer.nextPayDate ));
+        }, 1000)
+      })
+    }
+
+    return ()=>{
+      clearInterval(intervalId);
+    }
+  }, [CDS])
+
   return (
     <>
       <div className="container container-detail">
@@ -79,6 +110,7 @@ function Detail() {
             <div className="detail-title-group">
               <h1 className="detail-title">Bitcoin Crypto Default Swap</h1>
               <p className="detail-issued">Issued on Jan 22, 2023</p>
+              <p className='detail-payday'>{swapOnChain ? timeRemainingToPay:''}</p>
             </div>
             <div className="detail-party">
               <div className="party-item">
@@ -181,6 +213,7 @@ function Detail() {
               <>
                 <button
                   className='button pay-button'
+                  onClick={premiumButtonHandler}
                 >
                   Pay Premium
                 </button>

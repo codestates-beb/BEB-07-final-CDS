@@ -15,6 +15,7 @@ import {
   calculateTotalAssets,
   calculateClaimPrice,
   calculateDropRate,
+  calculateSellerDeposit,
   calculateLiquidationPrice,
   calculatePremiumPrice,
 } from '../utils/calculator';
@@ -26,7 +27,7 @@ import {
 } from '../utils/calendar';
 
 // css
-import '../assets/css/create.css';
+import '../assets/css/negotiate.css';
 
 // components
 import ScrollButton from '../components/ScrollButton.js';
@@ -41,9 +42,12 @@ function Create() {
   // Authoirization Var
   const isLogin = useSelector((state) => state.auth.isLogin);
 
+  // CDS Creator Role => 0: Buyer, 1: Seller
+  const [role, setRole] = useState(0);
+
   // CDS Content State Variable
   const [contractAddress, setContractAddress] = useState('');
-  const buyerAddress = useSelector((state) => state.auth.user_addr);
+  const userAddress = useSelector((state) => state.auth.user_addr);
 
   // Assets State Var
   const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('');
@@ -52,12 +56,12 @@ function Create() {
 
   // Claim State Var
   const [claimPrice, setClaimPrice] = useState('');
-  const [dropRate, setDropRate] = useState('');
+  const [dropRate, setDropRate] = useState('0');
 
   // Premium State Var
   const [premiumRate, setPremiumRate] = useState(2);
   const [premiumPrice, setPremiumPrice] = useState('');
-  const [premiumInterval, setPremiumInterval] = useState('12');
+  const [premiumInterval, setPremiumInterval] = useState('4');
   const [premiumRounds, setPremiumRounds] = useState('');
 
   // Liqudation State Var
@@ -67,7 +71,7 @@ function Create() {
   // Create CDS Handler
   const createButtonHandler = async () =>{
     const data = {
-      buyerAddress,
+      userAddress,
       initialPriceOfAssets,
       amountOfAssets,
       claimPrice,
@@ -101,48 +105,58 @@ function Create() {
 
   // Calculate Variable
   useEffect(()=>{
-    setTotalAssets( calculateTotalAssets(initialPriceOfAssets, amountOfAssets) );
+    const totalAssetsCalculated = calculateTotalAssets( initialPriceOfAssets, amountOfAssets )
+    setTotalAssets( totalAssetsCalculated );
+    setLiquidationPrice( initialPriceOfAssets );
   }, [initialPriceOfAssets, amountOfAssets])
 
   useEffect(()=>{
-    const dropRateCalculated = calculateDropRate(initialPriceOfAssets, claimPrice);
-    setDropRate( dropRateCalculated );
+    const calimPriceCalculated = calculateClaimPrice(initialPriceOfAssets, dropRate);
+    setClaimPrice( calimPriceCalculated );
 
     const premiumPriceCalculated = calculatePremiumPrice(
       initialPriceOfAssets, 
       amountOfAssets, 
-      dropRateCalculated, 
+      dropRate,
       premiumRate
     );
     setPremiumPrice( premiumPriceCalculated );
 
-  }, [initialPriceOfAssets, claimPrice])
+  }, [initialPriceOfAssets, dropRate])
 
   useEffect(()=>{
-    setLiquidationPrice( calculateLiquidationPrice(initialPriceOfAssets, amountOfAssets, sellerDeposit) )
-  }, [totalAssets, sellerDeposit])
+    setSellerDeposit( calculateSellerDeposit(
+      initialPriceOfAssets, 
+      amountOfAssets, 
+      liquidationPrice
+    ));
+  }, [totalAssets, liquidationPrice])
 
   return (
     <>
-      <div className="create-banner">
+      <div className="negotiate-banner">
         <img />
       </div>
-      <div className="container container-create">
-        <div className="create-head">
-          <h1 className="create-head-title">Propose Crypto Default Swap</h1>
-          <p className="create-head-notice text-2xl font-semibold py-2">
+      <div className="container container-negotiate">
+        <div className="negotiate-head">
+          <h1 className="negotiate-head-title">Propose Crypto Default Swap</h1>
+          <p className="negotiate-head-notice text-xl font-semibold py-2">
             Welcome! Enter Your Details And Start Creating Crypto Default Swap!
           </p>
           <hr className="line w-[150px] color-[var(--primary-color)]" />
         </div>
-        <div className='create-form'>
+        <div className='negotiate-form'>
           <div className='form-section'>
-            <h2 className='section-title'>Address</h2>
+            <h2 className='section-title'>User</h2>
             <div className='input-group'>
+              <div className='input-radio'>
+                <label><input name='role' type='radio' onChange={e=>setRole(0)} defaultChecked/>Buyer</label>
+                <label><input name='role' type='radio' onChange={e=>setRole(1)}/>Seller</label>
+              </div>
               <div className='input-button'>
                 <input 
-                  placeholder='Buyer Address'
-                  value={buyerAddress}
+                  placeholder='User Address'
+                  value={userAddress}
                   disabled
                 />
                 {isLogin?
@@ -194,12 +208,24 @@ function Create() {
                   const currentValue = onlyNumber(e.target.value);
                   setClaimPrice(currentValue);
                 }}
-              />
-              <input 
-                placeholder='Drop Rate'
-                value={`Drop Rate: ${dropRate} %`}
                 disabled
               />
+              <div className='input-range'>
+                <input
+                  className='value'
+                  value={`Drop Rate: ${dropRate} %`}
+                  disabled
+                />
+                <input 
+                  className='range'
+                  type='range'
+                  min='0'
+                  max='100'
+                  placeholder='Drop Rate'
+                  value={dropRate}
+                  onChange={e=>{setDropRate(e.target.value)}}
+                />
+              </div>
             </div>
           </div>
           <div className='form-section'>
@@ -219,12 +245,12 @@ function Create() {
                 />
                 <select 
                   placeholder='Premium Interval'
-                  defaultValue='12'
+                  defaultValue='4'
                   onChange={e=>setPremiumInterval(e.target.value)}
                 >
+                  <option value='4'>4 weeks</option>
+                  <option value='8'>8 weeks</option>
                   <option value='12'>12 weeks</option>
-                  <option value='6'>6 weeks</option>
-                  <option value='3'>3 weeks</option>
                 </select>
               </div>
               <input 
@@ -243,16 +269,30 @@ function Create() {
               <input 
                 placeholder='Seller Deposit'
                 value={`Seller Deposit: ${sellerDeposit}`}
-                onChange={e=>{
-                  const currentValue = onlyNumber(e.target.value);
-                  setSellerDeposit(currentValue);
-                }}
-              />
-              <input 
-                placeholder='Liquidated Price'
-                value={`Liquidated Price: ${liquidationPrice}`}
                 disabled
               />
+              <div className='input-range'>
+                <input 
+                  className='value'
+                  placeholder='Liquidated Price'
+                  value={`Liquidated Price: ${liquidationPrice}`}
+                  max={initialPriceOfAssets || 0}
+                  onChange={e=>{
+                    const currentValue = onlyNumber(e.target.value);
+                    if(currentValue > initialPriceOfAssets) 
+                      currentValue=initialPriceOfAssets;
+                    setLiquidationPrice(currentValue);
+                  }}
+                />
+                <input
+                  className='range'
+                  type='range'
+                  value={liquidationPrice}
+                  max={initialPriceOfAssets || 0}
+                  min='0'
+                  onChange={e=>setLiquidationPrice(e.target.value)}
+                />
+              </div>
               <input 
                 placeholder='Buyer Deposit'
                 value={`Buyer Deposit: ${premiumPrice * 3}`}
@@ -263,7 +303,7 @@ function Create() {
           <div className='form-section'>
             <div className='button-group'>
               <button 
-                className='create-button'
+                className='negotiate-button'
                 onClick={createButtonHandler}
               >
                 Create And Propose CDS</button>
