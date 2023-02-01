@@ -24,7 +24,7 @@ import {
 import createContract from '../utils/CDS';
 
 // css
-import '../assets/css/create.css'
+import '../assets/css/negotiate.css';
 
 function AcceptTest() {
     const metamask = useMetamask();
