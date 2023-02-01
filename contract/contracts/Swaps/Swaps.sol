@@ -92,8 +92,8 @@ contract Swaps is PriceConsumer {
     uint256 _initAssetPrice,
     uint256 _claimPrice,
     uint256 _liquidationPrice,
-    uint256 _premium,
     uint256 _sellerDeposit,
+    uint256 _premium,
     uint32 _premiumInterval
   ) internal returns (uint256) {
     _swapId.increment();
@@ -176,6 +176,10 @@ contract Swaps is PriceConsumer {
 
   function getSwapId() public view returns (Counters.Counter memory) {
     return _swapId;
+  }
+
+  function getDeposits(uint256 swapId) public view returns (Deposit[2] memory) {
+    return _deposits[swapId];
   }
 
   function getSwapStatus(uint256 swapId) public view returns (swapStatus) {
