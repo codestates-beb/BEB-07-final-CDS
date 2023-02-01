@@ -18,7 +18,6 @@ contract Swaps is PriceConsumer {
     uint256 liquidationPrice;
     uint256 premium;
     uint256 sellerDeposit;
-    uint32 premiumInterval;
   }
 
   struct Deposit {
@@ -52,10 +51,13 @@ contract Swaps is PriceConsumer {
   // _particpants[swapId][1] => seller's address
   mapping(uint256 => address[2]) private _participants;
 
-  // key-value entity that maps id of the swap to the detail of buyer/seller's deposits.
+  // key-value entity that maps the ID of the swap to the detail of buyer/seller's deposits.
   // _particpants[swapId][0] => buyer's deposit
   // _particpants[swapId][1] => seller's deposit
   mapping(uint256 => Deposit[2]) private _deposits;
+
+  // key-value entity that maps the ID of the swap to premium interval.
+  mapping(uint256 => uint256) private _intervals;
 
   // modifiers
 
@@ -106,7 +108,8 @@ contract Swaps is PriceConsumer {
     newSwap.liquidationPrice = _liquidationPrice;
     newSwap.premium = _premium;
     newSwap.sellerDeposit = _sellerDeposit;
-    newSwap.premiumInterval = _premiumInterval;
+
+    _intervals[newSwapId] = _premiumInterval;
 
     _rounds[newSwapId] = _totalRounds;
 
@@ -128,7 +131,10 @@ contract Swaps is PriceConsumer {
       ? _createSwapBySeller(_acceptedSwapId)
       : _createSwapByBuyer(_acceptedSwapId);
 
-    _nextPayDate[_acceptedSwapId] = block.timestamp + aSwap.premiumInterval;
+    // check
+    _nextPayDate[_acceptedSwapId] =
+      block.timestamp +
+      _intervals[_acceptedSwapId];
 
     _swapsStatus[_acceptedSwapId] = swapStatus.active;
 
@@ -146,8 +152,7 @@ contract Swaps is PriceConsumer {
   }
 
   function _payPremium(uint256 _targetSwapId) internal {
-    Swap memory targetSwap = _swaps[_targetSwapId];
-    _nextPayDate[_targetSwapId] = block.timestamp + targetSwap.premiumInterval;
+    _nextPayDate[_targetSwapId] = block.timestamp + _intervals[_targetSwapId];
     _rounds[_targetSwapId] -= 1;
   }
 
