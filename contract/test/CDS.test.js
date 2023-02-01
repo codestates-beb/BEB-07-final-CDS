@@ -119,7 +119,6 @@ contract('CDS', (accounts) => {
         liquidationPrice,
         premium,
         sellerDeposit,
-        premiumInterval,
       } = currentSwap;
       const [buyerDepositDetail, sellerDepositDetail] = deposits;
 
@@ -128,7 +127,6 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(defaultLiquidationPrice, +liquidationPrice);
       await assert.strictEqual(defaultSellerDeposit, +sellerDeposit);
       await assert.strictEqual(defaultPremium, +premium);
-      await assert.strictEqual(defaultPremiumInterval, +premiumInterval);
 
       await assert.strictEqual(buyer, accounts[2]);
       await assert.strictEqual(
@@ -174,7 +172,6 @@ contract('CDS', (accounts) => {
         liquidationPrice,
         premium,
         sellerDeposit,
-        premiumInterval,
       } = currentSwap;
       const [buyerDepositDetail, sellerDepositDetail] = deposits;
 
@@ -183,7 +180,6 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(defaultLiquidationPrice, +liquidationPrice);
       await assert.strictEqual(defaultSellerDeposit, +sellerDeposit);
       await assert.strictEqual(defaultPremium, +premium);
-      await assert.strictEqual(defaultPremiumInterval, +premiumInterval);
 
       await assert.strictEqual(seller, accounts[1]);
       await assert.strictEqual(
@@ -329,7 +325,6 @@ contract('CDS', (accounts) => {
         liquidationPrice,
         premium,
         sellerDeposit,
-        premiumInterval,
       } = currentSwap;
       const [buyerDepositDetail, sellerDepositDetail] = deposits;
 
@@ -337,7 +332,6 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(defaultClaimPrice, +claimPrice);
       await assert.strictEqual(defaultLiquidationPrice, +liquidationPrice);
       await assert.strictEqual(defaultPremium, +premium);
-      await assert.strictEqual(defaultPremiumInterval, +premiumInterval);
       await assert.strictEqual(defaultSellerDeposit, +sellerDeposit);
 
       await assert.strictEqual(buyer, accounts[2]);
@@ -391,7 +385,6 @@ contract('CDS', (accounts) => {
         liquidationPrice,
         premium,
         sellerDeposit,
-        premiumInterval,
       } = currentSwap;
       const [buyerDepositDetail, sellerDepositDetail] = deposits;
 
@@ -399,7 +392,6 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(defaultClaimPrice, +claimPrice);
       await assert.strictEqual(defaultLiquidationPrice, +liquidationPrice);
       await assert.strictEqual(defaultPremium, +premium);
-      await assert.strictEqual(defaultPremiumInterval, +premiumInterval);
       await assert.strictEqual(defaultSellerDeposit, +sellerDeposit);
 
       await assert.strictEqual(buyer, accounts[2]);
@@ -591,6 +583,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumInterval,
+        defaultPremiumRounds,
         { from: accounts[2], value: defaultBuyerDeposit },
       );
     });
@@ -607,24 +600,16 @@ contract('CDS', (accounts) => {
       await truffleAssert.passes(
         cds.cancelSwap(currentSwapId, { from: accounts[2] }),
       );
-      const currentSwap = await cds.getSwap(currentSwapId);
-      const {
-        buyer,
-        initAssetPrice,
-        claimPrice,
-        liquidationPrice,
-        premium,
-        premiumInterval,
-      } = currentSwap;
+      const depositDetail = await cds.getDeposits(currentSwapId);
+      const [buyerDepositDetail, sellerDepositDetail] = depositDetail;
       const swapStatus = await cds.getSwapStatus(currentSwapId);
 
-      await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
-      await assert.strictEqual(defaultClaimPrice, +claimPrice);
-      await assert.strictEqual(defaultLiquidationPrice, +liquidationPrice);
-      await assert.strictEqual(defaultPremium, +premium);
-      await assert.strictEqual(defaultPremiumInterval, +premiumInterval);
+      await assert.strictEqual(+buyerDepositDetail.deposit, 0);
+      await assert.strictEqual(buyerDepositDetail.isPaid, false);
 
-      await assert.strictEqual(buyer.addr, accounts[2]);
+      await assert.strictEqual(+sellerDepositDetail.deposit, 0);
+      await assert.strictEqual(sellerDepositDetail.isPaid, false);
+
       await assert.strictEqual(0, +swapStatus);
     });
 
