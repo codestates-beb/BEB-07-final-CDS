@@ -12,27 +12,18 @@ contract Swaps is PriceConsumer {
   using SafeMath for uint256;
   Counters.Counter internal _swapId;
 
-  struct Buyer {
-    address addr;
-    uint256 deposit;
-    uint256 lastPayDate;
-    uint256 nextPayDate;
-  }
-
-  struct Seller {
-    address addr;
-    uint256 deposit;
-    bool isDeposited;
-  }
-
   struct Swap {
-    Buyer buyer;
-    Seller seller;
     uint256 initAssetPrice;
     uint256 claimPrice;
     uint256 liquidationPrice;
     uint256 premium;
+    uint256 sellerDeposit;
     uint32 premiumInterval;
+  }
+
+  struct Deposit {
+    uint256 deposit;
+    bool isPaid;
   }
 
   enum swapStatus {
@@ -42,13 +33,35 @@ contract Swaps is PriceConsumer {
     claimed
   }
 
-  mapping(uint256 => Swap) internal _swaps;
+  // mappings
 
-  mapping(uint256 => swapStatus) internal _swapsStatus;
+  // key-value entity that maps the ID of the swap to detail infos about price.
+  mapping(uint256 => Swap) private _swaps;
+
+  // key-value entity that maps the ID of the swap to the status of the swap.
+  mapping(uint256 => swapStatus) private _swapsStatus;
+
+  // key-value entity that maps the ID of the swap to the rounds left.
+  mapping(uint256 => uint256) private _rounds;
+
+  // key-value entity that maps the ID of the swap to next date to pay premium.
+  mapping(uint256 => uint256) private _nextPayDate;
+
+  // key-value entity that maps the ID of the swap to buyer/seller.
+  // _particpants[swapId][0] => buyer's address
+  // _particpants[swapId][1] => seller's address
+  mapping(uint256 => address[2]) private _participants;
+
+  // key-value entity that maps id of the swap to the detail of buyer/seller's deposits.
+  // _particpants[swapId][0] => buyer's deposit
+  // _particpants[swapId][1] => seller's deposit
+  mapping(uint256 => Deposit[2]) private _deposits;
+
+  // modifiers
 
   modifier isBuyer(uint256 swapId) {
     require(
-      msg.sender == _swaps[swapId].buyer.addr,
+      msg.sender == _participants[swapId][0],
       'Only buyer of the CDS can call'
     );
     _;
@@ -72,13 +85,15 @@ contract Swaps is PriceConsumer {
 
   constructor() {}
 
+  // transactions
+
   function _createSwap(
     bool _isBuyer,
     uint256 _initAssetPrice,
     uint256 _claimPrice,
     uint256 _liquidationPrice,
-    uint256 _sellerDeposit,
     uint256 _premium,
+    uint256 _sellerDeposit,
     uint32 _premiumInterval
   ) internal returns (uint256) {
     _swapId.increment();
@@ -89,24 +104,13 @@ contract Swaps is PriceConsumer {
     newSwap.claimPrice = _claimPrice;
     newSwap.liquidationPrice = _liquidationPrice;
     newSwap.premium = _premium;
+    newSwap.sellerDeposit = _sellerDeposit;
     newSwap.premiumInterval = _premiumInterval;
+
     _swapsStatus[newSwapId] = swapStatus.pending;
 
-    _isBuyer ? _createSwapByBuyer(newSwap) : _createSwapBySeller(newSwap);
-
-    newSwap.seller.deposit = _sellerDeposit;
-
+    _isBuyer ? _createSwapByBuyer(newSwapId) : _createSwapBySeller(newSwapId);
     return newSwapId;
-  }
-
-  function _createSwapByBuyer(Swap storage swap) private {
-    swap.buyer.addr = msg.sender;
-    swap.buyer.deposit = swap.premium.mul(3);
-  }
-
-  function _createSwapBySeller(Swap storage swap) private {
-    swap.seller.addr = msg.sender;
-    swap.seller.isDeposited = true;
   }
 
   function _acceptSwap(
@@ -117,10 +121,11 @@ contract Swaps is PriceConsumer {
     Swap storage aSwap = _swaps[_acceptedSwapId];
     aSwap.initAssetPrice = _initAssetPrice;
 
-    _isBuyerHost ? _createSwapBySeller(aSwap) : _createSwapByBuyer(aSwap);
+    _isBuyerHost
+      ? _createSwapBySeller(_acceptedSwapId)
+      : _createSwapByBuyer(_acceptedSwapId);
 
-    aSwap.buyer.lastPayDate = block.timestamp;
-    aSwap.buyer.nextPayDate = block.timestamp + aSwap.premiumInterval;
+    _nextPayDate[_acceptedSwapId] = block.timestamp + aSwap.premiumInterval;
 
     _swapsStatus[_acceptedSwapId] = swapStatus.active;
 
@@ -128,30 +133,19 @@ contract Swaps is PriceConsumer {
   }
 
   function _cancelSwap(uint256 _targetSwapId) internal {
-    Swap storage targetSwap = _swaps[_targetSwapId];
-    targetSwap.buyer.deposit = 0;
-    targetSwap.seller.deposit = 0;
+    _clearDeposit(_targetSwapId);
     _swapsStatus[_targetSwapId] = swapStatus.inactive;
   }
 
   function _claimSwap(uint256 _targetSwapId) internal {
-    Swap storage targetSwap = _swaps[_targetSwapId];
-    // buyer
-    targetSwap.buyer.deposit = 0;
-    targetSwap.buyer.nextPayDate = 0;
-
-    // seller
-    targetSwap.seller.deposit = 0;
-    targetSwap.seller.isDeposited = false;
-
+    _clearDeposit(_targetSwapId);
     _swapsStatus[_targetSwapId] = swapStatus.claimed;
   }
 
   function _payPremium(uint256 _targetSwapId) internal {
-    Swap storage targetSwap = _swaps[_targetSwapId];
-    // date 갱신
-    targetSwap.buyer.lastPayDate = block.timestamp;
-    targetSwap.buyer.nextPayDate = block.timestamp + targetSwap.premiumInterval;
+    Swap memory targetSwap = _swaps[_targetSwapId];
+    _nextPayDate[_targetSwapId] = block.timestamp + targetSwap.premiumInterval;
+    _rounds[_targetSwapId] -= 1;
   }
 
   function getClaimReward(uint256 swapId) public view returns (uint256) {
@@ -160,8 +154,7 @@ contract Swaps is PriceConsumer {
     if (targetSwap.claimPrice < currPrice) {
       return 0;
     }
-    uint256 sellerDeposit = targetSwap.seller.deposit;
-    uint256 claimReward = sellerDeposit.calcClaimReward(
+    uint256 claimReward = targetSwap.sellerDeposit.calcClaimReward(
       targetSwap.liquidationPrice,
       targetSwap.initAssetPrice,
       currPrice
@@ -173,12 +166,12 @@ contract Swaps is PriceConsumer {
     return _swaps[swapId];
   }
 
-  function getBuyer(uint256 swapId) public view returns (Buyer memory) {
-    return getSwap(swapId).buyer;
+  function getBuyer(uint256 swapId) public view returns (address) {
+    return _participants[swapId][0];
   }
 
-  function getSeller(uint256 swapId) public view returns (Seller memory) {
-    return getSwap(swapId).seller;
+  function getSeller(uint256 swapId) public view returns (address) {
+    return _participants[swapId][1];
   }
 
   function getSwapId() public view returns (Counters.Counter memory) {
@@ -187,5 +180,24 @@ contract Swaps is PriceConsumer {
 
   function getSwapStatus(uint256 swapId) public view returns (swapStatus) {
     return _swapsStatus[swapId];
+  }
+
+  function _createSwapByBuyer(uint256 swapId) private {
+    _participants[swapId][0] = msg.sender;
+    _deposits[swapId][0].deposit = getSwap(swapId).premium.mul(3);
+    _deposits[swapId][0].isPaid = true;
+  }
+
+  function _createSwapBySeller(uint256 swapId) private {
+    _participants[swapId][1] = msg.sender;
+    _deposits[swapId][1].deposit = getSwap(swapId).sellerDeposit;
+    _deposits[swapId][1].isPaid = true;
+  }
+
+  function _clearDeposit(uint256 swapId) private {
+    for (uint i = 0; i <= 1; i++) {
+      _deposits[swapId][i].deposit = 0;
+      _deposits[swapId][i].isPaid = false;
+    }
   }
 }
