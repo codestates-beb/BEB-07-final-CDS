@@ -107,8 +107,7 @@ function Accept() {
             <div className='input-group'>
               <div className='input-button'>
                 <input 
-                  placeholder='Buyer Address'
-                  value={swapOnDB? `Buyer Address: ${swapOnDB.buyer}` : null}
+                  value={swapOnDB ? `Buyer Address: ${swapOnDB.buyer}` : null}
                   disabled
                 />
               </div>
@@ -142,11 +141,21 @@ function Accept() {
                 value={swapOnDB? `Claim Price: ${swapOnDB.claimPrice}`: null}
                 disabled
               />
-              <input 
-                placeholder='Drop Rate' 
-                value={swapOnDB? `Drop Rate: ${swapOnDB.dropRate}`: null}
-                disabled
-              />
+              <div className='input-range'>
+                <input 
+                  placeholder='Drop Rate' 
+                  value={swapOnDB? `Drop Rate: ${swapOnDB.dropRate * 100} %`: null}
+                  disabled
+                />
+                <input
+                  className='range'
+                  type='range'
+                  min='0'
+                  max='100'
+                  value={swapOnDB? swapOnDB.dropRate * 100: 0}
+                  disabled
+                />
+              </div>
             </div>
           </div>
           <div className='form-section'>
@@ -187,11 +196,21 @@ function Accept() {
                 value={swapOnDB? `Seller Deposit: ${swapOnDB.sellerDeposit}`: null}
                 disabled
               />
-              <input 
-                placeholder='Liquidated Price' 
-                value={swapOnDB? `Liquidated Price: ${swapOnDB.liquidationPrice}`: null}
-                disabled
-              />
+              <div className='input-range'>
+                <input 
+                  placeholder='Liquidated Price' 
+                  value={swapOnDB? `Liquidated Price: ${swapOnDB.liquidationPrice}`: null}
+                  disabled
+                />
+                <input
+                  className='range'
+                  type='range'
+                  value={swapOnDB? swapOnDB.liquidationPrice : 0}
+                  max={swapOnDB? swapOnDB.initialAssetPrice : 0}
+                  min={0}
+                  disabled
+                />
+              </div>
               <input 
                 placeholder='Buyer Deposit'
                 value={swapOnDB? `Buyer Deposit: ${swapOnDB.buyerDeposit}`: null} 

@@ -141,6 +141,10 @@
         @apply appearance-none bg-whiteColor rounded-lg h-2 border-0 outline-0;
     }
 
+    .negotiate-form .input-group .input-range .range[type=range]:disabled::-webkit-slider-runnable-track{
+        @apply bg-darkGrayColor ; 
+    }
+
     .negotiate-form .input-group .input-range .range[type=range]::-ms-fill-lower,
     .negotiate-form .input-group .input-range .range[type=range]::-moz-range-progress
     {
