@@ -1,5 +1,6 @@
 // modules
-import { FreeMode, Pagination } from 'swiper';
+import { EffectCoverflow, FreeMode, Pagination } from 'swiper';
+import { useState } from 'react';
 
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -7,28 +8,45 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
+import 'swiper/css/effect-coverflow';
 
 //components
 import AcceptedCardType2 from '../AcceptedCardType2';
 
+// css
+import '../../assets/css/cardScroll.css';
+
 function AcceptedCardScroll(props) {
   const accepted = props.response.filter((swap) => swap.status === 'active');
+  const randomSort = accepted.sort(() => Math.random() - 0.5);
+
+  //처음 6개의 Card만 보여주도록 합니다
+  const [index, setIndex] = useState(7);
+  const initialAccepted = randomSort.slice(0, index);
 
   return (
     <>
       <Swiper
-        slidesPerView={6}
+        slidesPerView={7}
         spaceBetween={15}
         freeMode={true}
         centeredSlides={true}
         pagination={{
           clickable: true,
         }}
-        modules={[FreeMode, Pagination]}
+        effect={'coverflow'}
+        coverflowEffect={{
+          rotate: 0,
+          stretch: 0,
+          depth: 200,
+          modifier: 1,
+          slideShadows: false,
+        }}
+        modules={[EffectCoverflow, FreeMode, Pagination]}
         className="mySwiper"
       >
         <div>
-          {accepted.map((swap) => {
+          {initialAccepted.map((swap) => {
             return (
               <SwiperSlide key={swap.swapId}>
                 <AcceptedCardType2

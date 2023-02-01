@@ -4,4 +4,8 @@ export default {
 
   contractAddr: '0xFF5181e2210AB92a5c9db93729Bc47332555B9E9',
   oracleAddr: '0xb4fFe5983B0B748124577Af4d16953bd096b6897',
+
+  // market price API
+  coinGeckoURL: 'https://api.coingecko.com/api/v3/coins',
+  chainLinkURL: 'https://min-api.cryptocompare.com/data',
 };

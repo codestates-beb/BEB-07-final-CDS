@@ -6,7 +6,8 @@ import { Link } from 'react-router-dom';
 import MainLogo from '../assets/img/CDS_Symbol_bright_removebg.png';
 
 // components
-import MarketPrice from '../components/MarketPrice.js';
+import InfoSlide from '../components/swiper/infoSlide.js';
+import MarketPriceType2 from '../components/MarketPriceType2.js';
 import ProposedCardScroll from '../components/swiper/ProposedCardScroll.js';
 import AcceptedCardScroll from '../components/swiper/AcceptedCardScroll.js';
 import ScrollButton from '../components/ScrollButton.js';
@@ -16,7 +17,8 @@ import Footer from '../components/Footer.js';
 import { getSwaps } from '../apis/request.js';
 
 function Main() {
-  const [response, setResponse] = useState([]);
+  // database에서 swap구조체에 대한 정보를 받아옵니다
+  const [swapResponse, setResponse] = useState([]);
 
   useEffect(() => {
     const APIdata = getSwaps();
@@ -63,7 +65,7 @@ function Main() {
         />
       </div>
       <div className="w-screen mx-auto mt-52 flex justify-center">
-        <MarketPrice />
+        <InfoSlide />
       </div>
       <div className="flex justify-center w-screen mx-auto">
         <div className="mt-52 font-bold text-4xl">
@@ -84,15 +86,30 @@ function Main() {
           exposed to risk.
         </div>
       </div>
+      <div className="my-[10rem]">
+        <MarketPriceType2 />
+      </div>
       <div className="flex-col">
         <div className="mt-32 font-bold text-2xl text-center">
           Proposed CDSs
         </div>
         <div className="mt-4 font-regular text-base text-center text-lightGray">
-          Check the proposed CDSs and protect your crypto assets !
+          <p>Check the proposed CDSs and protect your crypto assets !</p>
+          <div className="flex justify-center">
+            <p>The contract proposed by</p>
+            <p className="text-green"> &nbsp;Buyer&nbsp;</p>
+            <p>is displayed in</p>
+            <p className="text-green">&nbsp;green</p>
+            <p>,</p>
+            <p>&nbsp;and the contract proposed by</p>
+            <p className="text-red">&nbsp;Seller&nbsp;</p>
+            <p>is displayed in</p>
+            <p className="text-red">&nbsp;red</p>
+            <p>.</p>
+          </div>
         </div>
         <div className="">
-          <ProposedCardScroll response={response} />
+          <ProposedCardScroll response={swapResponse} />
         </div>
       </div>
       <div className="flex-col">
@@ -106,8 +123,10 @@ function Main() {
             products.
           </p>
         </div>
-        <div className="">
-          <AcceptedCardScroll response={response} />
+        <div className="flex justify-center">
+          <div className="w-screen">
+            <AcceptedCardScroll response={swapResponse} />
+          </div>
         </div>
       </div>
       <div className="fixed bottom-11 right-11">

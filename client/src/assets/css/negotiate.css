@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .negotiate-container .input-group input{
+        @apply border text-right;
+    }
+
+    .negotiate-container .input-group {
+        @apply flex justify-between py-2 items-center;
+    }
+
+    .container.container-negotiate {
+        @apply p-12;
+        margin: auto;
+        width: 1440px;
+    }
+
+    .container-negotiate .negotiate-form {
+        width: 720px;
+    }
+
+    /* negotiate-banner */
+    .negotiate-banner{
+        height: 465px;
+        background-color: var(--white-color);
+    }
+
+    /* negotiate-head */
+    .container-negotiate .negotiate-head {
+        @apply mb-14;
+    }
+
+    .negotiate-head .negotiate-head-title{
+        @apply py-4 text-4xl font-bold;
+    }
+
+    .negotiate-head .line{
+        @apply my-4;
+        background-color: var(--primary-color);
+        border-bottom-width: 1px;
+        border-color: var(--primary-color);
+    }
+
+    /* Create Form */
+    .negotiate-form .input-group{
+        @apply flex flex-col;
+    }
+
+    .negotiate-form .form-section .section-title{
+        @apply py-4 text-2xl font-bold;
+    }
+    
+    .negotiate-form .input-group input{
+        @apply py-2 px-3 rounded-xl mb-6
+    }
+
+    .negotiate-form button{
+        @apply rounded-xl;
+        background-color: var(--primary-color);
+    }
+
+    /* Form radio */
+    .negotiate-form .input-group .input-radio{
+        @apply mb-4;
+    }
+
+    .negotiate-form .input-group .input-radio label{
+        vertical-align: middle;
+    }
+
+    .negotiate-form .input-group .input-radio label:hover,
+    .negotiate-form .input-group .input-radio input[type='radio']:hover
+    {
+        @apply cursor-pointer;
+    }
+
+    .negotiate-form .input-group .input-radio input{
+        @apply mr-2 mb-1 p-0 w-5 h-5;
+    }
+
+    .negotiate-form .input-group .input-radio input[type='radio']{
+        @apply border border-ligthGrayColor;
+        vertical-align: middle;
+        appearance: none;
+    }
+
+    .negotiate-form .input-group .input-radio input[type='radio']:checked{
+        @apply bg-primaryColor;
+    }
+
+    .negotiate-form .input-group .input-radio input[type='radio']:focus{
+        @apply outline-4 outline-whiteColor;
+    }
+
+    .negotiate-form .input-group .input-radio input[type='radio']:active{
+        @apply bg-secondaryColor;
+    }
+
+    .negotiate-form .input-group .input-radio label {
+        @apply text-xl mr-4;
+    }
+
+    .negotiate-form .input-group .input-select select {
+        @apply rounded-xl border-2 px-2;
+        border-color: var(--primary-color);
+        color: var(--white-color);
+        background-color: var(--black-color);
+        outline: none;
+    }
+
+    .negotiate-form .input-group .input-button,
+    .negotiate-form .input-group .input-select,
+    .negotiate-form .input-group .input-range
+    {
+        @apply flex w-full mb-6;
+        gap: 1rem;
+    }
+
+    .negotiate-form .input-group .input-range{
+        @apply items-center;
+    }
+    
+    .negotiate-form .input-group .input-button input,
+    .negotiate-form .input-group .input-select input,
+    .negotiate-form .input-group .input-range input:last-child
+    {
+        @apply mb-0 w-[70%];
+    }
+
+    .negotiate-form .input-group .input-range input:first-child{
+        @apply mb-0;
+    }
+
+    .negotiate-form .input-group .input-range .range{
+        @apply appearance-none h-1 bg-transparent;
+    }
+
+    .negotiate-form .input-group .input-range .range[type=range]::-webkit-slider-runnable-track{
+        @apply appearance-none bg-whiteColor rounded-lg h-2 border-0 outline-0;
+    }
+
+    .negotiate-form .input-group .input-range .range[type=range]::-ms-fill-lower,
+    .negotiate-form .input-group .input-range .range[type=range]::-moz-range-progress
+    {
+        @apply bg-darkGrayColor ;
+        height: 8px;
+        border-radius: 6px;
+    }
+
+    .negotiate-form .input-group .input-range .range[type=range]::-webkit-slider-thumb{
+        @apply appearance-none w-6 h-6 bg-primaryColor -mt-2 ;
+        border-radius: 50%;
+        border: none;
+    }
+
+    .negotiate-form .input-group .input-range .range[type=range]::-webkit-slider-runnable-track:active,
+    .negotiate-form .input-group .input-range .range[type=range]::-webkit-slider-thumb:hover{
+        @apply cursor-pointer;
+    }
+
+    .negotiate-form .input-group .input-range .range[type=range]::-webkit-slider-thumb:active
+    {
+        @apply bg-secondaryColor;
+    }
+
+    .negotiate-form .input-group .input-button button,
+    .negotiate-form .input-group .input-select select,
+    .negotiate-form .input-group .input-range input:first-child
+    {
+        @apply w-[30%];
+    }
+
+    .negotiate-form .form-section .button-group{
+        @apply flex justify-end;
+    }
+
+    .negotiate-form .form-section .negotiate-button {
+        @apply p-4 font-bold
+    }
+}

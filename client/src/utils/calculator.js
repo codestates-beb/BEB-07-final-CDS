@@ -27,6 +27,7 @@ export function calculateLiquidationPrice( initialPriceOfAsset, amount, sellerDe
     return Math.ceil( ( ( initialPriceOfAsset * amount ) - sellerDeposit ) / amount );
 }
 
+// Calculating Seller Depost fuction // 구매자 보증금 계산 함수
 export function calculateSellerDeposit( initialPriceOfAsset, amount, liquidationPrice ) {
     if(!initialPriceOfAsset || !amount || !liquidationPrice) return 0;
 

@@ -2,53 +2,68 @@
 pragma solidity ^0.8.7;
 
 import '../Oracle/PriceConsumer.sol';
+import '../libs/LibClaim.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 contract Swaps is PriceConsumer {
   using Counters for Counters.Counter;
+  using LibClaim for uint256;
   using SafeMath for uint256;
   Counters.Counter internal _swapId;
 
-  enum Status {
+  struct Swap {
+    uint256 initAssetPrice;
+    uint256 claimPrice;
+    uint256 liquidationPrice;
+    uint256 premium;
+    uint256 sellerDeposit;
+  }
+
+  struct Deposit {
+    uint256 deposit;
+    bool isPaid;
+  }
+
+  enum swapStatus {
     inactive,
     pending,
     active,
     claimed
   }
 
-  mapping(uint256 => Swap) internal _swaps;
+  // mappings
 
-  struct Buyer {
-    address addr;
-    uint256 deposit;
-    uint256 lastPayDate;
-    uint256 nextPayDate;
-  }
+  // key-value entity that maps the ID of the swap to detail infos about price.
+  mapping(uint256 => Swap) private _swaps;
 
-  struct Seller {
-    address addr;
-    uint256 deposit;
-    bool isDeposited;
-  }
+  // key-value entity that maps the ID of the swap to the status of the swap.
+  mapping(uint256 => swapStatus) private _swapsStatus;
 
-  struct Swap {
-    Buyer buyer;
-    Seller seller;
-    uint256 initAssetPrice;
-    uint256 amountOfAssets;
-    uint256 claimPrice;
-    uint256 liquidationPrice;
-    uint256 premium;
-    uint256 premiumRate;
-    uint256 premiumInterval;
-    uint256 totalPremiumRounds;
-    Status status;
-  }
+  // key-value entity that maps the ID of the swap to the rounds left.
+  mapping(uint256 => uint32) private _rounds;
+
+  // key-value entity that maps the ID of the swap to next date to pay premium.
+  mapping(uint256 => uint256) private _nextPayDate;
+
+  // key-value entity that maps the ID of the swap to buyer/seller.
+  // _particpants[swapId][0] => buyer's address
+  // _particpants[swapId][1] => seller's address
+  mapping(uint256 => address[2]) private _participants;
+
+  // key-value entity that maps the ID of the swap to the detail of buyer/seller's deposits.
+  // _particpants[swapId][0] => buyer's deposit
+  // _particpants[swapId][1] => seller's deposit
+  mapping(uint256 => Deposit[2]) private _deposits;
+
+  // key-value entity that maps the ID of the swap to premium interval.
+  mapping(uint256 => uint256) private _intervals;
+
+  // modifiers
 
   modifier isBuyer(uint256 swapId) {
     require(
-      msg.sender == _swaps[swapId].buyer.addr,
+      msg.sender == _participants[swapId][0],
       'Only buyer of the CDS can call'
     );
     _;
@@ -56,7 +71,7 @@ contract Swaps is PriceConsumer {
 
   modifier isPending(uint256 swapId) {
     require(
-      _swaps[swapId].status == Status.pending,
+      _swapsStatus[swapId] == swapStatus.pending,
       'The status of the CDS should be pending'
     );
     _;
@@ -64,104 +79,145 @@ contract Swaps is PriceConsumer {
 
   modifier isActive(uint256 swapId) {
     require(
-      _swaps[swapId].status == Status.active,
+      _swapsStatus[swapId] == swapStatus.active,
       'The status of the CDS should be pending'
     );
     _;
   }
 
-  uint256 private _premiumRate;
+  constructor() {}
 
-  constructor() {
-    _premiumRate = 2;
-  }
+  // transactions
 
   function _createSwap(
-    address _addr,
+    bool _isBuyer,
     uint256 _initAssetPrice,
-    uint256 _amountOfAssets,
     uint256 _claimPrice,
     uint256 _liquidationPrice,
     uint256 _sellerDeposit,
     uint256 _premium,
-    uint256 _premiumInterval,
-    uint256 _totalPremiumRounds
+    uint32 _premiumInterval,
+    uint32 _totalRounds
   ) internal returns (uint256) {
     _swapId.increment();
     uint256 newSwapId = _swapId.current();
     Swap storage newSwap = _swaps[newSwapId];
 
-    newSwap.buyer.addr = _addr;
-    newSwap.buyer.deposit = _premium.mul(3);
-
     newSwap.initAssetPrice = _initAssetPrice;
-    newSwap.amountOfAssets = _amountOfAssets;
     newSwap.claimPrice = _claimPrice;
     newSwap.liquidationPrice = _liquidationPrice;
     newSwap.premium = _premium;
-    newSwap.premiumRate = _premiumRate;
-    newSwap.premiumInterval = _premiumInterval;
-    newSwap.totalPremiumRounds = _totalPremiumRounds;
-    newSwap.status = Status.pending;
+    newSwap.sellerDeposit = _sellerDeposit;
 
-    newSwap.seller.deposit = _sellerDeposit;
+    _intervals[newSwapId] = _premiumInterval;
 
+    _rounds[newSwapId] = _totalRounds;
+
+    _swapsStatus[newSwapId] = swapStatus.pending;
+
+    _isBuyer ? _createSwapByBuyer(newSwapId) : _createSwapBySeller(newSwapId);
     return newSwapId;
   }
 
   function _acceptSwap(
-    address _addr,
+    bool _isBuyerHost,
     uint256 _initAssetPrice,
     uint256 _acceptedSwapId
   ) internal returns (uint256) {
     Swap storage aSwap = _swaps[_acceptedSwapId];
-
-    aSwap.seller.addr = _addr;
     aSwap.initAssetPrice = _initAssetPrice;
 
-    aSwap.seller.isDeposited = true;
+    _isBuyerHost
+      ? _createSwapBySeller(_acceptedSwapId)
+      : _createSwapByBuyer(_acceptedSwapId);
 
-    aSwap.buyer.lastPayDate = block.timestamp;
-    aSwap.buyer.nextPayDate = block.timestamp + aSwap.premiumInterval;
+    // check
+    _nextPayDate[_acceptedSwapId] =
+      block.timestamp +
+      _intervals[_acceptedSwapId];
 
-    aSwap.status = Status.active;
+    _swapsStatus[_acceptedSwapId] = swapStatus.active;
 
     return _acceptedSwapId;
   }
 
   function _cancelSwap(uint256 _targetSwapId) internal {
-    Swap storage targetSwap = _swaps[_targetSwapId];
-    targetSwap.buyer.deposit = 0;
-    targetSwap.seller.deposit = 0;
-    targetSwap.status = Status.inactive;
+    _clearDeposit(_targetSwapId);
+    _swapsStatus[_targetSwapId] = swapStatus.inactive;
   }
 
   function _claimSwap(uint256 _targetSwapId) internal {
-    Swap storage targetSwap = _swaps[_targetSwapId];
-    // buyer
-    targetSwap.buyer.deposit = 0;
-    targetSwap.buyer.nextPayDate = 0;
-
-    // seller
-    targetSwap.seller.deposit = 0;
-    targetSwap.seller.isDeposited = false;
-
-    targetSwap.status = Status.claimed;
+    _clearDeposit(_targetSwapId);
+    _swapsStatus[_targetSwapId] = swapStatus.claimed;
   }
 
   function _payPremium(uint256 _targetSwapId) internal {
-    Swap storage targetSwap = _swaps[_targetSwapId];
-    // date 갱신
-    targetSwap.buyer.lastPayDate = block.timestamp;
-    targetSwap.buyer.nextPayDate = block.timestamp + targetSwap.premiumInterval;
-
-    // 만기일이 없는 계약은 0. 있으면 +@. 다 끝나서 0된거면? 생각 좀 해봐야할듯...
-    if (targetSwap.totalPremiumRounds != 0) {
-      targetSwap.totalPremiumRounds -= 1;
-    }
+    _nextPayDate[_targetSwapId] = block.timestamp + _intervals[_targetSwapId];
+    _rounds[_targetSwapId] -= 1;
   }
 
-  // function _checkDate(uint256 _targetSwapId) internal returns (bool) {
-  //   return true;
-  // }
+  function getClaimReward(uint256 swapId) public view returns (uint256) {
+    uint256 currPrice = getPriceFromOracle();
+    Swap memory targetSwap = getSwap(swapId);
+    if (targetSwap.claimPrice < currPrice) {
+      return 0;
+    }
+    uint256 claimReward = targetSwap.sellerDeposit.calcClaimReward(
+      targetSwap.liquidationPrice,
+      targetSwap.initAssetPrice,
+      currPrice
+    );
+    return claimReward;
+  }
+
+  function getSwap(uint256 swapId) public view returns (Swap memory) {
+    return _swaps[swapId];
+  }
+
+  function getBuyer(uint256 swapId) public view returns (address) {
+    return _participants[swapId][0];
+  }
+
+  function getSeller(uint256 swapId) public view returns (address) {
+    return _participants[swapId][1];
+  }
+
+  function getSwapId() public view returns (Counters.Counter memory) {
+    return _swapId;
+  }
+
+  function getDeposits(uint256 swapId) public view returns (Deposit[2] memory) {
+    return _deposits[swapId];
+  }
+
+  function getSwapStatus(uint256 swapId) public view returns (swapStatus) {
+    return _swapsStatus[swapId];
+  }
+
+  function getRoundsLeft(uint256 swapId) public view returns (uint32) {
+    return _rounds[swapId];
+  }
+
+  function getInterval(uint256 swapId) public view returns (uint256) {
+    return _intervals[swapId];
+  }
+
+  function _createSwapByBuyer(uint256 swapId) private {
+    _participants[swapId][0] = msg.sender;
+    _deposits[swapId][0].deposit = getSwap(swapId).premium.mul(3);
+    _deposits[swapId][0].isPaid = true;
+  }
+
+  function _createSwapBySeller(uint256 swapId) private {
+    _participants[swapId][1] = msg.sender;
+    _deposits[swapId][1].deposit = getSwap(swapId).sellerDeposit;
+    _deposits[swapId][1].isPaid = true;
+  }
+
+  function _clearDeposit(uint256 swapId) private {
+    for (uint i = 0; i <= 1; i++) {
+      _deposits[swapId][i].deposit = 0;
+      _deposits[swapId][i].isPaid = false;
+    }
+  }
 }

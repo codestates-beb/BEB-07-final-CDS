@@ -27,7 +27,7 @@ import {
 } from '../utils/calendar';
 
 // css
-import '../assets/css/create.css';
+import '../assets/css/negotiate.css';
 
 // components
 import ScrollButton from '../components/ScrollButton.js';
@@ -42,9 +42,12 @@ function Create() {
   // Authoirization Var
   const isLogin = useSelector((state) => state.auth.isLogin);
 
+  // CDS Creator Role => 0: Buyer, 1: Seller
+  const [role, setRole] = useState(0);
+
   // CDS Content State Variable
   const [contractAddress, setContractAddress] = useState('');
-  const buyerAddress = useSelector((state) => state.auth.user_addr);
+  const userAddress = useSelector((state) => state.auth.user_addr);
 
   // Assets State Var
   const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('');
@@ -68,7 +71,7 @@ function Create() {
   // Create CDS Handler
   const createButtonHandler = async () =>{
     const data = {
-      buyerAddress,
+      userAddress,
       initialPriceOfAssets,
       amountOfAssets,
       claimPrice,
@@ -131,25 +134,29 @@ function Create() {
 
   return (
     <>
-      <div className="create-banner">
+      <div className="negotiate-banner">
         <img />
       </div>
-      <div className="container container-create">
-        <div className="create-head">
-          <h1 className="create-head-title">Propose Crypto Default Swap</h1>
-          <p className="create-head-notice text-xl font-semibold py-2">
+      <div className="container container-negotiate">
+        <div className="negotiate-head">
+          <h1 className="negotiate-head-title">Propose Crypto Default Swap</h1>
+          <p className="negotiate-head-notice text-xl font-semibold py-2">
             Welcome! Enter Your Details And Start Creating Crypto Default Swap!
           </p>
           <hr className="line w-[150px] color-[var(--primary-color)]" />
         </div>
-        <div className='create-form'>
+        <div className='negotiate-form'>
           <div className='form-section'>
-            <h2 className='section-title'>Address</h2>
+            <h2 className='section-title'>User</h2>
             <div className='input-group'>
+              <div className='input-radio'>
+                <label><input name='role' type='radio' onChange={e=>setRole(0)} defaultChecked/>Buyer</label>
+                <label><input name='role' type='radio' onChange={e=>setRole(1)}/>Seller</label>
+              </div>
               <div className='input-button'>
                 <input 
-                  placeholder='Buyer Address'
-                  value={buyerAddress}
+                  placeholder='User Address'
+                  value={userAddress}
                   disabled
                 />
                 {isLogin?
@@ -269,13 +276,19 @@ function Create() {
                   className='value'
                   placeholder='Liquidated Price'
                   value={`Liquidated Price: ${liquidationPrice}`}
-                  disabled
+                  max={initialPriceOfAssets || 0}
+                  onChange={e=>{
+                    const currentValue = onlyNumber(e.target.value);
+                    if(currentValue > initialPriceOfAssets) 
+                      currentValue=initialPriceOfAssets;
+                    setLiquidationPrice(currentValue);
+                  }}
                 />
                 <input
                   className='range'
                   type='range'
                   value={liquidationPrice}
-                  max={initialPriceOfAssets}
+                  max={initialPriceOfAssets || 0}
                   min='0'
                   onChange={e=>setLiquidationPrice(e.target.value)}
                 />
@@ -290,7 +303,7 @@ function Create() {
           <div className='form-section'>
             <div className='button-group'>
               <button 
-                className='create-button'
+                className='negotiate-button'
                 onClick={createButtonHandler}
               >
                 Create And Propose CDS</button>
