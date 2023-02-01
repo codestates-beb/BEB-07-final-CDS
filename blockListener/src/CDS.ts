@@ -51,6 +51,14 @@ interface AcceptSwapEvent extends EventData {
   raw: any;
 }
 
+interface SwapInfo {
+  initAssetPrice: string;
+  claimPrice: string;
+  liquidationPrice: string;
+  premium: string;
+  sellerDeposit: string;
+}
+
 export default class CDS {
   private static instance: CDS;
   private contract: Contract = null;
@@ -220,39 +228,73 @@ export default class CDS {
       });
   }
 
+  private async getSwap(swapId: number): Promise<SwapInfo> {
+    const swapInfo: SwapInfo = await this.contract.methods
+      .getSwap(swapId)
+      .call();
+    return swapInfo;
+  }
+
+  private async getBuyer(swapId: number): Promise<string> {
+    const buyerInfo: string = await this.contract.methods
+      .getBuyer(swapId)
+      .call();
+    return buyerInfo;
+  }
+  private async getSeller(swapId: number): Promise<string> {
+    const sellerInfo: string = await this.contract.methods
+      .getSeller(swapId)
+      .call();
+    return sellerInfo;
+  }
+
+  private async getInterval(swapId: number): Promise<string> {
+    const intervalInfo = await this.contract.methods.getInterval(swapId).call();
+    return intervalInfo;
+  }
+
+  private async getRoundsLeft(swapId: number): Promise<string> {
+    const roundsInfo = await this.contract.methods.getRoundsLeft(swapId).call();
+    return roundsInfo;
+  }
+
   private async createSwapHandler(event: EventData) {
+    const { hostAddr, isBuyer, swapId } = event.returnValues;
     const {
-      buyer,
-      swapId,
       initAssetPrice,
-      amountOfAssets,
       claimPrice,
       liquidationPrice,
       premium,
-      premiumInterval,
-      totalPremiumRounds,
-      buyerDeposit,
-    } = event.returnValues;
+      sellerDeposit,
+    } = await this.getSwap(swapId);
+
+    const amountOfAssets =
+      +sellerDeposit / (+initAssetPrice - +liquidationPrice);
     const currentTime: Date = new Date();
+    const buyerDeposit = 3 * +premium;
+    const premiumInterval = await this.getInterval(swapId);
+    const totalPremiumRounds = await this.getRoundsLeft(swapId);
+
     try {
       let user = await this.manager.findOneBy(Users, {
-        address: buyer,
+        address: hostAddr,
       });
       if (!user) {
-        console.log('** no such user');
+        console.log('** no such user **');
         user = new Users();
-        user.address = buyer;
+        user.address = hostAddr;
         user.nickname = null;
         user.soldCount = 0;
         user.boughtCount = 0;
-        user.lastBought = currentTime;
-        user.lastSold = null;
+        user.lastBought = isBuyer ? currentTime : null;
+        user.lastSold = isBuyer ? null : currentTime;
         user.createdAt = currentTime;
         user.updatedAt = currentTime;
         await this.manager.save(user);
       } else {
         console.log('** user found! **');
-        user.lastBought = currentTime;
+        user.lastBought = isBuyer ? currentTime : null;
+        user.lastSold = isBuyer ? null : currentTime;
         user.updatedAt = currentTime;
         await this.manager.save(user);
       }
@@ -260,20 +302,24 @@ export default class CDS {
       let swap = await this.manager.findOneBy(Swaps, {
         swapId: +swapId,
       });
-
       if (!swap) {
+        // emitted variables
         swap = new Swaps();
         swap.swapId = +swapId;
+        swap.initialAssetPrice = +initAssetPrice;
         swap.claimPrice = +claimPrice;
         swap.liquidationPrice = +liquidationPrice;
         swap.premium = +premium;
+        swap.sellerDeposit = +sellerDeposit;
+
+        // derived variables
+        swap.amountOfAssets = +amountOfAssets;
+        swap.buyerDeposit = +buyerDeposit;
         swap.premiumRate = 2; // TODO: make variable
         swap.premiumInterval = +premiumInterval;
         swap.totalPremiumRounds = +totalPremiumRounds;
-        swap.buyerDeposit = +buyerDeposit;
-        swap.buyer = buyer;
-        swap.initialAssetPrice = +initAssetPrice;
-        swap.amountOfAssets = +amountOfAssets;
+        swap.buyer = isBuyer ? hostAddr : null;
+        swap.seller = isBuyer ? null : hostAddr;
         swap.totalAssets = +initAssetPrice * +amountOfAssets;
         swap.dropRate = (+initAssetPrice - +claimPrice) / +initAssetPrice;
         swap.status = 'pending';
@@ -299,8 +345,14 @@ export default class CDS {
   }
 
   private async acceptSwapHandler(event: EventData) {
-    const { seller, swapId, sellerDeposit } = event.returnValues;
+    console.log(event.returnValues);
+    const { guestAddr, swapId } = event.returnValues;
+    const swapInfo = await this.getSwap(swapId);
+    const buyerAddr = await this.getBuyer(swapId);
+    const sellerAddr = await this.getSeller(swapId);
+    console.log({ swapInfo, buyerAddr, sellerAddr });
     const currentTime: Date = new Date();
+
     try {
       let transaction = await this.manager.findOneBy(Transactions, {
         txHash: event.transactionHash,
@@ -312,50 +364,23 @@ export default class CDS {
       });
       if (!swap) throw new Error(`swapId ${swapId} is not on database`);
 
-      let user = await this.manager.findOneBy(Users, {
-        address: seller,
-      });
-      if (!user) {
-        console.log('** no such user, creating**');
-        user = new Users();
-        user.address = seller;
-        user.nickname = null;
-        user.soldCount = 1;
-        user.boughtCount = 0;
-        user.lastBought = null;
-        user.lastSold = currentTime;
-        user.createdAt = currentTime;
-        user.updatedAt = currentTime;
-        this.manager.save(user);
-      } else {
-        console.log('** user found! **');
-        user.soldCount++;
-        user.lastSold = currentTime;
-        user.updatedAt = currentTime;
-        await this.manager.save(user);
-      }
+      await this.handleSeller(sellerAddr);
+      await this.handleBuyer(buyerAddr);
 
       swap.status = 'active';
-      swap.seller = seller;
-      swap.sellerDeposit = sellerDeposit;
+      swap.seller = sellerAddr;
+      swap.buyer = buyerAddr;
       await this.manager.save(swap);
 
-      if (!transaction) {
-        console.log('** New Transaction **');
-        transaction = new Transactions();
-        transaction.txHash = event.transactionHash;
-        transaction.blockNum = event.blockNumber;
-        transaction.swapId = +swapId;
-        transaction.createdAt = currentTime;
-        transaction.updatedAt = currentTime;
-        await this.manager.save(transaction);
-      }
+      console.log('** New Transaction **');
+      transaction = new Transactions();
+      transaction.txHash = event.transactionHash;
+      transaction.blockNum = event.blockNumber;
+      transaction.swapId = +swapId;
+      transaction.createdAt = currentTime;
+      transaction.updatedAt = currentTime;
 
-      let buyer = await this.manager.findOneBy(Users, {
-        address: swap.buyer,
-      });
-      buyer.boughtCount++;
-      await this.manager.save(buyer);
+      await this.manager.save(transaction);
     } catch (error) {
       console.error(error);
     }
@@ -393,7 +418,7 @@ export default class CDS {
   }
 
   private async claimSwapHandler(event: EventData) {
-    const { swapId, buyer, seller, claimReward } = event.returnValues;
+    const { swapId, claimReward } = event.returnValues;
     const currentTime = new Date();
     try {
       let transaction = await this.manager.findOneBy(Transactions, {
@@ -424,7 +449,7 @@ export default class CDS {
   }
 
   private async closeSwapHandler(event: EventData) {
-    const { swapId, buyer, seller } = event.returnValues;
+    const { swapId } = event.returnValues;
     const currentTime = new Date();
     try {
       let transaction = await this.manager.findOneBy(Transactions, {
@@ -451,6 +476,58 @@ export default class CDS {
       await this.manager.save(transaction);
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  private async handleSeller(sellerAddr: string) {
+    const currentTime: Date = new Date();
+    let seller = await this.manager.findOneBy(Users, {
+      address: sellerAddr,
+    });
+    if (!seller) {
+      console.log('** no such user, creating**');
+      seller = new Users();
+      seller.address = sellerAddr;
+      seller.nickname = null;
+      seller.soldCount = 1;
+      seller.boughtCount = 0;
+      seller.lastBought = null;
+      seller.lastSold = currentTime;
+      seller.createdAt = currentTime;
+      seller.updatedAt = currentTime;
+      this.manager.save(seller);
+    } else {
+      console.log('** user found! **');
+      seller.soldCount++;
+      seller.lastSold = currentTime;
+      seller.updatedAt = currentTime;
+      await this.manager.save(seller);
+    }
+  }
+
+  private async handleBuyer(buyerAddr: string) {
+    const currentTime: Date = new Date();
+    let buyer = await this.manager.findOneBy(Users, {
+      address: buyerAddr,
+    });
+    if (!buyer) {
+      console.log('** no such user, creating**');
+      buyer = new Users();
+      buyer.address = buyerAddr;
+      buyer.nickname = null;
+      buyer.soldCount = 0;
+      buyer.boughtCount = 1;
+      buyer.lastBought = currentTime;
+      buyer.lastSold = null;
+      buyer.createdAt = currentTime;
+      buyer.updatedAt = currentTime;
+      this.manager.save(buyer);
+    } else {
+      console.log('** user found! **');
+      buyer.boughtCount++;
+      buyer.lastBought = currentTime;
+      buyer.updatedAt = currentTime;
+      await this.manager.save(buyer);
     }
   }
   private createOrUpdateTransaction(): any {}

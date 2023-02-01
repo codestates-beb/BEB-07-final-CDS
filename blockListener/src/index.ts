@@ -6,6 +6,7 @@ import { abi } from './contractArtifacts/CDS.json';
 import CDS from './CDS';
 import getEnv from './utils/getEnv';
 const REMOTE_WEBSOCKET = getEnv('REMOTE_WEBSOCKET');
+const GETH_WEBSOCKET = getEnv('GETH_WEBSOCKET');
 
 AppDataSource.initialize()
   .then(async () => {
