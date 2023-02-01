@@ -71,7 +71,7 @@ router.get('/prices/', async (req, res, next) => {
     if (!cached) {
       console.log('No Valid Price Feed exists');
       const apiData = await axios.get(
-        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,dogecoin&vs_currencies=usd&include_24hr_change=true&include_last_updated_at=true',
+        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,dogecoin&vs_currencies=usd&include_24hr_change=true&include_last_updated_at=true&precision=2',
       );
       cached = apiData.data;
       await redisClient.set('prices', cached, 'EX', 60 * 60);
