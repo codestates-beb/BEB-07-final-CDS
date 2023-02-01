@@ -21,7 +21,7 @@ import {
 import { createSwap } from '../apis/contract';
 
 // css
-import '../assets/css/create.css'
+import '../assets/css/negotiate.css'
 import createContract from '../utils/CDS';
 
 function MakeTest() {
