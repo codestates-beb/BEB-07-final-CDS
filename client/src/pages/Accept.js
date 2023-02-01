@@ -13,8 +13,11 @@ import useCDS from '../utils/hooks/useCDS';
 // apis
 import { getSwapById } from '../apis/request';
 
+// utils
+import { calculateTimeRemaining } from '../utils/calendar';
+
 // css
-import '../assets/css/accept.css';
+import '../assets/css/negotiate.css';
 
 function Accept() {
   const navigate = useNavigate();
@@ -89,16 +92,16 @@ function Accept() {
 
   return (
     <>
-      <div className='accept-banner'>
+      <div className='negotiate-banner'>
         <img/>
       </div>
-      <div className='container container-accept'>
-        <div className='accept-head'>
-          <h1 className='accept-head-title'>Check Crypto Default Swap</h1>
-          <p className='accept-head-notice text-xl font-semibold py-2'>Check Your Crypto Default Swap Contract in detail and sign it!</p>
+      <div className='container container-negotiate'>
+        <div className='negotiate-head'>
+          <h1 className='negotiate-head-title'>Check Crypto Default Swap</h1>
+          <p className='negotiate-head-notice text-xl font-semibold py-2'>Check Your Crypto Default Swap Contract in detail and sign it!</p>
           <hr className='line w-[150px] color-[var(--primary-color)]'/>
         </div>
-        <div className='accept-form'>
+        <div className='negotiate-form'>
           <div className='form-section'>
             <h2 className='section-title'>Address</h2>
             <div className='input-group'>
@@ -162,7 +165,10 @@ function Accept() {
               <div className='input-select'>
                 <input 
                   placeholder='Premium Interval' 
-                  value={swapOnDB? `Premium Interval: ${swapOnDB.premiumInterval}`: null}
+                  value={
+                    swapOnDB ? 
+                    `Premium Interval: ${calculateTimeRemaining (0, swapOnDB.premiumInterval) }` : null
+                  }
                   disabled
                 />
               </div>
@@ -206,7 +212,7 @@ function Accept() {
                 <></>
               }
               <button
-                className='accept-button' 
+                className='negotiate-button' 
                 onClick={acceptButtonHandler}
               >
                 Sign CDS

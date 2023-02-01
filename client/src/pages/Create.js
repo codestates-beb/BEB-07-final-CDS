@@ -27,7 +27,7 @@ import {
 } from '../utils/calendar';
 
 // css
-import '../assets/css/create.css';
+import '../assets/css/negotiate.css';
 
 // components
 import ScrollButton from '../components/ScrollButton.js';
@@ -134,18 +134,18 @@ function Create() {
 
   return (
     <>
-      <div className="create-banner">
+      <div className="negotiate-banner">
         <img />
       </div>
-      <div className="container container-create">
-        <div className="create-head">
-          <h1 className="create-head-title">Propose Crypto Default Swap</h1>
-          <p className="create-head-notice text-xl font-semibold py-2">
+      <div className="container container-negotiate">
+        <div className="negotiate-head">
+          <h1 className="negotiate-head-title">Propose Crypto Default Swap</h1>
+          <p className="negotiate-head-notice text-xl font-semibold py-2">
             Welcome! Enter Your Details And Start Creating Crypto Default Swap!
           </p>
           <hr className="line w-[150px] color-[var(--primary-color)]" />
         </div>
-        <div className='create-form'>
+        <div className='negotiate-form'>
           <div className='form-section'>
             <h2 className='section-title'>User</h2>
             <div className='input-group'>
@@ -303,7 +303,7 @@ function Create() {
           <div className='form-section'>
             <div className='button-group'>
               <button 
-                className='create-button'
+                className='negotiate-button'
                 onClick={createButtonHandler}
               >
                 Create And Propose CDS</button>
