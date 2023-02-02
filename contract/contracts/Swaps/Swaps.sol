@@ -69,6 +69,15 @@ contract Swaps is PriceConsumer {
     _;
   }
 
+  modifier isParticipants(uint256 swapId) {
+    require(
+      msg.sender == _participants[swapId][0] ||
+        msg.sender == _participants[swapId][1],
+      'Only buyer/seller of the CDS can call'
+    );
+    _;
+  }
+
   modifier isPending(uint256 swapId) {
     require(
       _swapsStatus[swapId] == swapStatus.pending,

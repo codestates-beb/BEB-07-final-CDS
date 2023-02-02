@@ -53,7 +53,6 @@ contract CDS is Swaps, Ownable {
     );
 
     emit CreateSwap(msg.sender, isBuyer, newSwapId);
-
     return newSwapId;
   }
 
@@ -87,8 +86,18 @@ contract CDS is Swaps, Ownable {
 
   function cancelSwap(
     uint256 swapId
-  ) external isNotOwner isBuyer(swapId) isPending(swapId) returns (bool) {
-    (bool sent, ) = msg.sender.call{value: getDeposits(swapId)[0].deposit}('');
+  )
+    external
+    isNotOwner
+    isParticipants(swapId)
+    isPending(swapId)
+    returns (bool)
+  {
+    uint256 deposit;
+    (msg.sender == getBuyer(swapId))
+      ? deposit = getDeposits(swapId)[0].deposit
+      : deposit = getDeposits(swapId)[1].deposit;
+    (bool sent, ) = msg.sender.call{value: deposit}('');
     require(sent, 'Sending failed');
     _cancelSwap(swapId);
     emit CancelSwap(swapId);
@@ -98,6 +107,7 @@ contract CDS is Swaps, Ownable {
   function closeSwap(
     uint256 swapId
   ) external isBuyer(swapId) isActive(swapId) returns (bool) {
+    // 어짜피 sent관련은 토큰 적용시 없어짐.
     bool sentBuyer = true;
     if (getDeposits(swapId)[0].deposit != 0) {
       (sentBuyer, ) = msg.sender.call{value: getDeposits(swapId)[0].deposit}(
