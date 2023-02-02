@@ -99,30 +99,28 @@ contract SwapHandler is PriceConsumer {
     return _swaps[swapId];
   }
 
-  function getPriceDetail(
-    uint256 swapId
-  ) public view returns (uint256[5] memory) {
+  function getPrices(uint256 swapId) public view returns (uint256[5] memory) {
     return _swaps[swapId].getDetail();
   }
 
   function getPremium(uint256 swapId) public view returns (uint256) {
-    return getPriceDetail(swapId)[3];
+    return _swaps[swapId].premium();
   }
 
   function getSellerDeposit(uint256 swapId) public view returns (uint256) {
-    return getPriceDetail(swapId)[4];
+    return _swaps[swapId].sellerDeposit();
   }
 
   function getSwapStatus(uint256 swapId) public view returns (Swap.Status) {
-    return _swaps[swapId].getStatus();
+    return _swaps[swapId].status();
   }
 
   function getRoundsLeft(uint256 swapId) public view returns (uint32) {
-    return _swaps[swapId].getRounds();
+    return _swaps[swapId].rounds();
   }
 
   function getInterval(uint256 swapId) public view returns (uint256) {
-    return _swaps[swapId].getInterval();
+    return _swaps[swapId].interval();
   }
 
   function getBuyer(uint256 swapId) public view returns (address) {

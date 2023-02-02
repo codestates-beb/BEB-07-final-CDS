@@ -15,19 +15,19 @@ contract Swap is PriceConsumer, Ownable {
     claimed,
     expired
   }
-  Status status;
+  Status public status;
 
-  address buyer;
-  address seller;
+  address private buyer;
+  address private seller;
 
-  uint256 initAssetPrice;
-  uint256 claimPrice;
-  uint256 liquidationPrice;
-  uint256 premium;
-  uint256 sellerDeposit;
+  uint256 public initAssetPrice;
+  uint256 public claimPrice;
+  uint256 public liquidationPrice;
+  uint256 public premium;
+  uint256 public sellerDeposit;
 
-  uint256 interval;
-  uint32 rounds;
+  uint256 public interval;
+  uint32 public rounds;
 
   constructor(
     uint256 _initAssetPrice,
@@ -61,24 +61,12 @@ contract Swap is PriceConsumer, Ownable {
     ];
   }
 
-  function getStatus() public view returns (Status) {
-    return status;
-  }
-
   function getBuyer() public view returns (address) {
     return buyer;
   }
 
   function getSeller() public view returns (address) {
     return seller;
-  }
-
-  function getInterval() public view returns (uint256) {
-    return interval;
-  }
-
-  function getRounds() public view returns (uint32) {
-    return rounds;
   }
 
   function setInitAssetPrice(uint256 _initAssetPrice) public returns (uint256) {
