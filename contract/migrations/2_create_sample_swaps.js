@@ -14,6 +14,7 @@ const defaultBuyerDeposit = defaultPremium * 3;
 
 let currentSwapId;
 module.exports = async function (deployer, network, accounts) {
+  console.log(`Triggering Initial TXs ON : ** ${network.toUpperCase()} **`);
   try {
     const priceOracleMock = await PriceOracleMock.deployed();
     // case1: account[2] create, account[1] accepts

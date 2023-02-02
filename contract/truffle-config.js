@@ -79,7 +79,7 @@ module.exports = {
     },
     geth: {
       host: 'snowdelver.iptime.org',
-      port: 8546,
+      port: 48546,
       network_id: '12345',
       gas: 8500000, // Gas sent with each transaction (default: ~6700000)
       gasPrice: 20000000000, // 20 gwei (in wei) (default: 100 gwei)

@@ -105,12 +105,10 @@ export default class CDS {
   }
 
   public async setFromBlock(txHash: string) {
-    if (txHash === '0') {
-      this.fromBlock = 0;
-      return;
-    }
     const transaction = await this.web3.eth.getTransaction(txHash);
-    this.fromBlock = transaction.blockNumber;
+    if (transaction) {
+      this.fromBlock = transaction.blockNumber;
+    }
     return;
   }
 
