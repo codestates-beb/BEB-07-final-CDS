@@ -71,20 +71,20 @@ function Create() {
   // Create CDS Handler
   const createButtonHandler = async () =>{
     const data = {
-      userAddress,
+      role,
       initialPriceOfAssets,
-      amountOfAssets,
       claimPrice,
       liquidationPrice,
       sellerDeposit,
       premiumPrice,
       premiumInterval: weeksToUnixTime(premiumInterval),
       premiumRounds,
+      userAddress,
     };
     console.log(data);
 
     try {
-      const result = await CDS.createSwap(data);
+      const result = await CDS.createSwap(data, userAddress);
       console.log(result);
       const swapId = result.events.CreateSwap.returnValues.swapId;
       console.log(swapId);
