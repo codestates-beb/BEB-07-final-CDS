@@ -111,15 +111,15 @@ async function updateChainLinkFeed() {
   try {
     const priceData = await getPricesFromChainLink();
     const bitcoin = {
-      usd: +(+priceData.BTC / 10e8).toFixed(2),
+      usd: +(+priceData.BTC / 1e8).toFixed(2),
       last_updated_at: new Date().getTime(),
     };
     const ethereum = {
-      usd: +(+priceData.ETH / 10e8).toFixed(2),
+      usd: +(+priceData.ETH / 1e8).toFixed(2),
       last_updated_at: new Date().getTime(),
     };
     const chainlink = {
-      usd: +(+priceData.LINK / 10e8).toFixed(2),
+      usd: +(+priceData.LINK / 1e8).toFixed(2),
       last_updated_at: new Date().getTime(),
     };
     const prices = { bitcoin, ethereum, chainlink };
