@@ -72,7 +72,6 @@ function MarketPriceType2() {
           let geckoTimestamp = response.bitcoin.last_updated_at;
           let geckoTime = new Date(geckoTimestamp * 1000);
           let geckoTimeToString = geckoTime.toString();
-          console.log(geckoTimeToString);
           setTimeGecko(geckoTimeToString);
 
           const changes = [btcChange, ethChange, linkChange];
@@ -335,7 +334,7 @@ function MarketPriceType2() {
                         +{rateOfDifferentLINK}%
                       </div>
                     ) : (
-                      <div className="font-medium text-redlight text-sm text-right">
+                      <div className="font-medium text-redLight text-sm text-right">
                         {rateOfDifferentLINK}%
                       </div>
                     )}
