@@ -86,15 +86,15 @@ app.listen(app.get('port'), () => {
 async function updateGeckoFeed() {
   try {
     const apiData = await axios.get(
-      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,dogecoin&vs_currencies=usd&include_24hr_change=true&include_last_updated_at=true&precision=2',
+      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,chainlink&vs_currencies=usd&include_24hr_change=true&include_last_updated_at=true&precision=2',
     );
     const priceData = apiData.data;
     priceData.bitcoin.usd_24h_change =
       +priceData.bitcoin.usd_24h_change.toFixed(3);
     priceData.ethereum.usd_24h_change =
       +priceData.ethereum.usd_24h_change.toFixed(3);
-    priceData.dogecoin.usd_24h_change =
-      +priceData.dogecoin.usd_24h_change.toFixed(3);
+    priceData.chainlink.usd_24h_change =
+      +priceData.chainlink.usd_24h_change.toFixed(3);
     await redisClient.set(
       'geckoPrices',
       JSON.stringify(priceData),
@@ -118,11 +118,11 @@ async function updateChainLinkFeed() {
       usd: +(+priceData.ETH / 10e8).toFixed(2),
       last_updated_at: new Date().getTime(),
     };
-    const link = {
+    const chainlink = {
       usd: +(+priceData.LINK / 10e8).toFixed(2),
       last_updated_at: new Date().getTime(),
     };
-    const prices = { bitcoin, ethereum, link };
+    const prices = { bitcoin, ethereum, chainlink };
     await redisClient.set('linkPrices', JSON.stringify(prices), 'EX', 60 * 60);
     console.log('Chain Link Price Feed updated');
   } catch (err) {
