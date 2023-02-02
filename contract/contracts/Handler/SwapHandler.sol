@@ -86,6 +86,11 @@ contract SwapHandler is PriceConsumer {
     _swaps[_targetSwapId].setStatus(Swap.Status.inactive);
   }
 
+  function _payPremium(uint256 _targetSwapId) internal {
+    _nextPayDate[_targetSwapId] = block.timestamp + getInterval(_targetSwapId);
+    getSwap(_targetSwapId).setRounds(getRoundsLeft(_targetSwapId) - 1);
+  }
+
   function getSwapId() public view returns (Counters.Counter memory) {
     return _swapId;
   }
@@ -98,6 +103,14 @@ contract SwapHandler is PriceConsumer {
     uint256 swapId
   ) public view returns (uint256[5] memory) {
     return _swaps[swapId].getDetail();
+  }
+
+  function getPremium(uint256 swapId) public view returns (uint256) {
+    return getPriceDetail(swapId)[3];
+  }
+
+  function getSellerDeposit(uint256 swapId) public view returns (uint256) {
+    return getPriceDetail(swapId)[4];
   }
 
   function getSwapStatus(uint256 swapId) public view returns (Swap.Status) {
@@ -126,13 +139,13 @@ contract SwapHandler is PriceConsumer {
 
   function _createSwapByBuyer(uint256 swapId) private {
     _swaps[swapId].setBuyer(msg.sender);
-    _deposits[swapId][0].deposit = getPriceDetail(swapId)[3].mul(3);
+    _deposits[swapId][0].deposit = getPremium(swapId).mul(3);
     _deposits[swapId][0].isPaid = true;
   }
 
   function _createSwapBySeller(uint256 swapId) private {
     _swaps[swapId].setSeller(msg.sender);
-    _deposits[swapId][1].deposit = getPriceDetail(swapId)[4];
+    _deposits[swapId][1].deposit = getSellerDeposit(swapId);
     _deposits[swapId][1].isPaid = true;
   }
 

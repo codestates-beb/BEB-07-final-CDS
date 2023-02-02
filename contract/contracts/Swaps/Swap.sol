@@ -100,4 +100,9 @@ contract Swap is PriceConsumer, Ownable {
     seller = _seller;
     return seller;
   }
+
+  function setRounds(uint32 _rounds) public onlyOwner returns (uint32) {
+    rounds = _rounds;
+    return rounds;
+  }
 }

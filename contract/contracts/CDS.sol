@@ -69,8 +69,8 @@ contract CDS is Ownable, SwapHandler {
     bool isBuyerHost = (getSeller(swapId) == address(0));
 
     isBuyerHost
-      ? _sendDeposit(getPriceDetail(swapId)[4])
-      : _sendDeposit(getPriceDetail(swapId)[3].mul(3));
+      ? _sendDeposit(getSellerDeposit(swapId))
+      : _sendDeposit(getPremium(swapId).mul(3));
 
     uint256 acceptedSwapId = _acceptSwap(isBuyerHost, initAssetPrice, swapId);
     emit AcceptSwap(msg.sender, acceptedSwapId);
@@ -95,6 +95,39 @@ contract CDS is Ownable, SwapHandler {
     _cancelSwap(swapId);
     emit CancelSwap(swapId);
     return sent;
+  }
+
+  function closeSwap(
+    uint256 swapId
+  ) external isBuyer(swapId) isActive(swapId) returns (bool) {
+    // 어짜피 sent관련은 토큰 적용시 없어짐.
+    bool sentBuyer = true;
+    if (getDeposits(swapId)[0].deposit != 0) {
+      (sentBuyer, ) = msg.sender.call{value: getDeposits(swapId)[0].deposit}(
+        ''
+      );
+    }
+    (bool sentSeller, ) = getSeller(swapId).call{
+      value: getDeposits(swapId)[1].deposit
+    }('');
+    require(sentBuyer && sentSeller, 'Sending deposit failed');
+    _cancelSwap(swapId);
+    emit CloseSwap(swapId);
+    return true;
+  }
+
+  function payPremium(
+    uint256 swapId
+  ) external payable isBuyer(swapId) isActive(swapId) returns (bool) {
+    // date check
+    // require(_checkDate(swapId), 'Invalid date');
+
+    require(msg.value == getPremium(swapId), 'Invalid premium');
+    (bool sent, ) = getSeller(swapId).call{value: msg.value}('');
+    require(sent, 'Sending premium failed');
+    // status update
+    _payPremium(swapId);
+    return true;
   }
 
   function _sendDeposit(uint256 deposit) public payable returns (bool) {
