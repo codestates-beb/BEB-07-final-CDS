@@ -5,7 +5,7 @@ import './Handler/SwapHandler.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
-contract Core is Ownable, SwapHandler {
+contract CDS is Ownable, SwapHandler {
   using SafeMath for uint256;
 
   constructor() payable {}
@@ -13,7 +13,12 @@ contract Core is Ownable, SwapHandler {
   receive() external payable {}
 
   // events
-  event CreateSwap(address indexed hostAddr, bool isBuyer, uint256 swapId);
+  event CreateSwap(
+    address indexed hostAddr,
+    bool isBuyer,
+    uint256 swapId,
+    address swap
+  );
   event AcceptSwap(address indexed guestAddr, uint256 swapId);
   event CancelSwap(uint256 swapId);
   event ClaimSwap(uint256 swapId, uint256 claimReward);
@@ -43,7 +48,12 @@ contract Core is Ownable, SwapHandler {
       premiumInterval,
       totalRounds
     );
-    emit CreateSwap(msg.sender, isBuyer, newSwapId);
+    emit CreateSwap(
+      msg.sender,
+      isBuyer,
+      newSwapId,
+      address(getSwap(newSwapId))
+    );
     return newSwapId;
   }
 
@@ -59,8 +69,8 @@ contract Core is Ownable, SwapHandler {
     bool isBuyerHost = (getSeller(swapId) == address(0));
 
     isBuyerHost
-      ? _sendDeposit(getPriceDetail(swapId)[3].mul(3))
-      : _sendDeposit(getPriceDetail(swapId)[4]);
+      ? _sendDeposit(getPriceDetail(swapId)[4])
+      : _sendDeposit(getPriceDetail(swapId)[3].mul(3));
 
     uint256 acceptedSwapId = _acceptSwap(isBuyerHost, initAssetPrice, swapId);
     emit AcceptSwap(msg.sender, acceptedSwapId);
@@ -92,6 +102,10 @@ contract Core is Ownable, SwapHandler {
     (bool sent, ) = payable(address(this)).call{value: msg.value}('');
     require(sent, 'Sending deposit failed');
     return true;
+  }
+
+  function getContractBalance() public view returns (uint256) {
+    return address(this).balance;
   }
 
   // modifiers

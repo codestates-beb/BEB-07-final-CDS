@@ -3,10 +3,11 @@ pragma solidity ^0.8.7;
 
 import '../Swaps/Swap.sol';
 import '../libs/LibClaim.sol';
+import '../Oracle/PriceConsumer.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
-contract SwapHandler {
+contract SwapHandler is PriceConsumer {
   using Counters for Counters.Counter;
   using SafeMath for uint256;
   using LibClaim for uint256;
