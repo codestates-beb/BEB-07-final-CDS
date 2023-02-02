@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import './Swaps/Swap.sol';
-import './libs/LibClaim.sol';
+import '../Swaps/Swap.sol';
+import '../libs/LibClaim.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
@@ -51,11 +51,38 @@ contract SwapHandler {
     );
     _swaps[newSwapId] = newSwap;
 
-    // newSwap.setStatusPending();
+    // newSwap.setStatus(Swap.Status.pending);
 
     _isBuyer ? _createSwapByBuyer(newSwapId) : _createSwapBySeller(newSwapId);
 
     return newSwapId;
+  }
+
+  function _acceptSwap(
+    bool _isBuyerHost,
+    uint256 _initAssetPrice,
+    uint256 _acceptedSwapId
+  ) internal returns (uint256) {
+    Swap targetSwap = _swaps[_acceptedSwapId];
+    targetSwap.setInitAssetPrice(_initAssetPrice);
+
+    _isBuyerHost
+      ? _createSwapBySeller(_acceptedSwapId)
+      : _createSwapByBuyer(_acceptedSwapId);
+
+    // check => 토큰으로 처리시 바로 보내고 이거도 되야함.
+    _nextPayDate[_acceptedSwapId] =
+      block.timestamp +
+      getInterval(_acceptedSwapId);
+
+    targetSwap.setStatus(Swap.Status.active);
+
+    return _acceptedSwapId;
+  }
+
+  function _cancelSwap(uint256 _targetSwapId) internal {
+    _clearDeposit(_targetSwapId);
+    _swaps[_targetSwapId].setStatus(Swap.Status.inactive);
   }
 
   function getSwapId() public view returns (Counters.Counter memory) {
@@ -92,6 +119,10 @@ contract SwapHandler {
     return _swaps[swapId].getSeller();
   }
 
+  function getDeposits(uint256 swapId) public view returns (Deposit[2] memory) {
+    return _deposits[swapId];
+  }
+
   function _createSwapByBuyer(uint256 swapId) private {
     _swaps[swapId].setBuyer(msg.sender);
     _deposits[swapId][0].deposit = getPriceDetail(swapId)[3].mul(3);
@@ -109,5 +140,35 @@ contract SwapHandler {
       _deposits[swapId][i].deposit = 0;
       _deposits[swapId][i].isPaid = false;
     }
+  }
+
+  // modifiers
+  modifier isBuyer(uint256 swapId) {
+    require(msg.sender == getBuyer(swapId), 'Only buyer of the CDS can call');
+    _;
+  }
+
+  modifier isParticipants(uint256 swapId) {
+    require(
+      msg.sender == getBuyer(swapId) || msg.sender == getSeller(swapId),
+      'Only buyer/seller of the CDS can call'
+    );
+    _;
+  }
+
+  modifier isPending(uint256 swapId) {
+    require(
+      getSwapStatus(swapId) == Swap.Status.pending,
+      'The status of the CDS should be pending'
+    );
+    _;
+  }
+
+  modifier isActive(uint256 swapId) {
+    require(
+      getSwapStatus(swapId) == Swap.Status.active,
+      'The status of the CDS should be active'
+    );
+    _;
   }
 }

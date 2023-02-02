@@ -81,28 +81,13 @@ contract Swap is PriceConsumer, Ownable {
     return rounds;
   }
 
-  function setStatusInactive() public onlyOwner returns (Status) {
-    status = Status.inactive;
-    return status;
+  function setInitAssetPrice(uint256 _initAssetPrice) public returns (uint256) {
+    initAssetPrice = _initAssetPrice;
+    return initAssetPrice;
   }
 
-  function setStatusPending() public onlyOwner returns (Status) {
-    status = Status.pending;
-    return status;
-  }
-
-  function setStatusActive() public onlyOwner returns (Status) {
-    status = Status.active;
-    return status;
-  }
-
-  function setStatusClaimed() public onlyOwner returns (Status) {
-    status = Status.claimed;
-    return status;
-  }
-
-  function setStatusExpired() public onlyOwner returns (Status) {
-    status = Status.expired;
+  function setStatus(Status _status) public onlyOwner returns (Status) {
+    status = _status;
     return status;
   }
 
