@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
       - dev
     paths:
       - contract/contracts/**
@@ -52,8 +51,11 @@ jobs:
       #       - name: Test with Truffle test
       #         run: truffle test --network remote
 
-      - name: Deploy Contract to Remote Server
-        run: truffle migrate --network remote
+      # - name: Deploy Contract to Remote Server
+      #   run: truffle migrate --network remote
+
+      - name: Deploy Contract to GETH Server
+        run: truffle migrate --network geth
 
       - name: Trigger discord webhook with CDS CA
         uses: tsickert/discord-webhook@v5.3.0
