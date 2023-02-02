@@ -65,17 +65,20 @@ router.get('/transactions/:txHash', async (req, res, next) => {
     next(err);
   }
 });
-router.get('/prices/', async (req, res, next) => {
+router.get('/prices/coingecko', async (req, res, next) => {
   try {
-    let cached = await redisClient.get('prices');
-    if (!cached) {
-      console.log('No Valid Price Feed exists');
-      const apiData = await axios.get(
-        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,dogecoin&vs_currencies=usd&include_24hr_change=true&include_last_updated_at=true&precision=2',
-      );
-      cached = apiData.data;
-      await redisClient.set('prices', cached, 'EX', 60 * 60);
-    }
+    let cached = await redisClient.get('geckoPrices');
+    return res.status(200).json(JSON.parse(cached));
+  } catch (err) {
+    return res.status(500).json({
+      message:
+        'Price feed outdated more than 1hr and not automatically updated contact admin',
+    });
+  }
+});
+router.get('/prices/chainlink', async (req, res, next) => {
+  try {
+    let cached = await redisClient.get('linkPrices');
     return res.status(200).json(JSON.parse(cached));
   } catch (err) {
     return res.status(500).json({

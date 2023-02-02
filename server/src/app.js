@@ -10,11 +10,13 @@ const morgan = require('morgan');
 const ejs = require('ejs');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+
 // import custom modules
 const { sequelize } = require('./models');
 const getEnv = require('./utils/getEnv');
 const devRouter = require('./routes/devRouter');
 const redisClient = require('./utils/redisClient');
+const { getPricesFromChainLink } = require('./web3Utils/index');
 
 // import env variables
 const env = getEnv('NODE_ENV', 'development');
@@ -72,14 +74,16 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(app.get('port'), () => {
-  updatePriceFeed();
+  updateGeckoFeed();
+  updateChainLinkFeed();
   setInterval(() => {
-    updatePriceFeed();
+    updateGeckoFeed();
+    updateChainLinkFeed();
   }, 20 * 1000);
   console.log(app.get('port'), 'is up and listening');
 });
 
-async function updatePriceFeed() {
+async function updateGeckoFeed() {
   try {
     const apiData = await axios.get(
       'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,dogecoin&vs_currencies=usd&include_24hr_change=true&include_last_updated_at=true&precision=2',
@@ -91,10 +95,38 @@ async function updatePriceFeed() {
       +priceData.ethereum.usd_24h_change.toFixed(3);
     priceData.dogecoin.usd_24h_change =
       +priceData.dogecoin.usd_24h_change.toFixed(3);
-    await redisClient.set('prices', JSON.stringify(priceData), 'EX', 60 * 60);
-    console.log('Price Feed updated');
+    await redisClient.set(
+      'geckoPrices',
+      JSON.stringify(priceData),
+      'EX',
+      60 * 60,
+    );
+    console.log('Gecko Price Feed updated');
   } catch (err) {
-    console.log('Error while updating price feed');
+    console.log('Error while updating Gecko price feed');
+    console.error(err);
+  }
+}
+async function updateChainLinkFeed() {
+  try {
+    const priceData = await getPricesFromChainLink();
+    const bitcoin = {
+      usd: +(+priceData.BTC / 10e8).toFixed(2),
+      last_updated_at: new Date().getTime(),
+    };
+    const ethereum = {
+      usd: +(+priceData.ETH / 10e8).toFixed(2),
+      last_updated_at: new Date().getTime(),
+    };
+    const link = {
+      usd: +(+priceData.LINK / 10e8).toFixed(2),
+      last_updated_at: new Date().getTime(),
+    };
+    const prices = { bitcoin, ethereum, link };
+    await redisClient.set('linkPrices', JSON.stringify(prices), 'EX', 60 * 60);
+    console.log('Chain Link Price Feed updated');
+  } catch (err) {
+    console.log('Error while updating Chain Link price feed');
     console.error(err);
   }
 }

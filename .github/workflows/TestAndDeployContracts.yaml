@@ -9,7 +9,7 @@ on:
       - contract/contracts/**
 
 jobs:
-  contractTester:
+  contractJobs:
     runs-on: ubuntu-20.04
     defaults:
       run:
