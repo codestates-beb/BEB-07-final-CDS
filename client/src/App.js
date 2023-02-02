@@ -4,7 +4,6 @@ import { Link, Routes, Route } from 'react-router-dom';
 
 // components
 import Header from './components/Header';
-import MarketPriceType2 from './components/MarketPriceType2';
 
 // pages
 import Main from './pages/Main';
@@ -13,6 +12,7 @@ import Accept from './pages/Accept';
 import Detail from './pages/Detail';
 import Mypage from './pages/Mypage';
 import MakeTest from './pages/MakeTest';
+import CardDisplayProposed from './pages/CardDisplayProposed';
 import AcceptTest from './pages/AcceptTest';
 import OracleTest from './pages/OracleTest';
 
@@ -32,7 +32,7 @@ function App() {
         <Route path="/createTest" element={<MakeTest />} />
         <Route path="/acceptTest/:swapId" element={<AcceptTest />} />
         <Route path="/oracleTest" element={<OracleTest />} />
-        <Route path="/test" element={<MarketPriceType2 />} />
+        <Route path="/cardProposed" element={<CardDisplayProposed />} />
       </Routes>
     </div>
   );
