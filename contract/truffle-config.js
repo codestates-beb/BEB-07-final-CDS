@@ -44,7 +44,15 @@
 require('dotenv').config();
 const PrivateKeyProvider = require('truffle-privatekey-provider');
 
-const { REMOTE_HOST, REMOTE_PORT, GOERLI_HTTP, GOERLI_PK } = process.env;
+const {
+  REMOTE_HOST,
+  REMOTE_PORT,
+  GOERLI_HTTP,
+  GOERLI_PK,
+  GETH_HOST,
+  GETH_PORT,
+  GETH_NETWORK_ID,
+} = process.env;
 // const { MNEMONIC, PROJECT_ID } = process.env;
 
 // const HDWalletProvider = require('@truffle/hdwallet-provider');
@@ -78,9 +86,9 @@ module.exports = {
       network_id: '*', // Any network (default: none)
     },
     geth: {
-      host: 'snowdelver.iptime.org',
-      port: 48546,
-      network_id: '12345',
+      host: GETH_HOST,
+      port: GETH_PORT,
+      network_id: GETH_NETWORK_ID,
       gas: 8500000, // Gas sent with each transaction (default: ~6700000)
       gasPrice: 20000000000, // 20 gwei (in wei) (default: 100 gwei)
     },
