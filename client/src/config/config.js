@@ -2,10 +2,12 @@ export default {
   devURL:
     'https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com/dev',
 
-  contractAddr: '0xFF5181e2210AB92a5c9db93729Bc47332555B9E9',
-  oracleAddr: '0xb4fFe5983B0B748124577Af4d16953bd096b6897',
+  contractAddr: '0x9f30a2763b6Ba8d4a31474240FCe170e7B746E45',
+  oracleAddr: '0x2aC585EE9D26c614F8EB56007cecdbCC57B3Fbc2',
 
   // market price API
-  coinGeckoURL: 'https://api.coingecko.com/api/v3/coins',
-  chainLinkURL: 'https://min-api.cryptocompare.com/data',
+  coinGeckoAPI:
+    'https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com/dev/prices/coingecko',
+  chainLinkAPI:
+    'https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com/dev/prices/chainlink',
 };

@@ -30,7 +30,7 @@ export async function getSwapById(swapId) {
 
 export async function getCoinGeckoAPI(coinName) {
   try {
-    const requestURL = `${config.coinGeckoURL}/${coinName}/market_chart?vs_currency=usd&days=1&interval=daily`;
+    const requestURL = `${config.coinGeckoAPI}`;
 
     const marketPriceData = await axios.get(requestURL);
     return marketPriceData.data;
@@ -40,10 +40,9 @@ export async function getCoinGeckoAPI(coinName) {
   }
 }
 
-export async function getCoinCompareAPI(coinSymbol) {
+export async function getChainLinkAPI(coinSymbol) {
   try {
-    const requestURL = `${config.chainLinkURL}/pricemultifull?fsyms=${coinSymbol}&tsyms=USD`;
-    // const requestURL = `${config.chainLinkURL}/pricemultifull?fsyms=${coinSymbol}&tsyms=USD`;
+    const requestURL = `${config.chainLinkAPI}`;
 
     const marketPriceData = await axios.get(requestURL);
     return marketPriceData.data;
