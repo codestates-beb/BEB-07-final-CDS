@@ -23,6 +23,7 @@ contract CDS is Ownable, SwapHandler {
   event CancelSwap(uint256 swapId);
   event ClaimSwap(uint256 swapId, uint256 claimReward);
   event CloseSwap(uint256 swapId);
+  event PayPremium(uint256 swapId);
 
   // transactions
   function createSwap(
@@ -127,6 +128,7 @@ contract CDS is Ownable, SwapHandler {
     require(sent, 'Sending premium failed');
     // status update
     _payPremium(swapId);
+    emit PayPremium(swapId);
     return true;
   }
 

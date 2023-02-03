@@ -52,7 +52,7 @@ contract SwapHandler {
 
     // newSwap.setStatus(Swap.Status.pending);
 
-    _isBuyer ? _createSwapByBuyer(newSwapId) : _createSwapBySeller(newSwapId);
+    _isBuyer ? setSwapForBuyer(newSwapId) : setSwapForSeller(newSwapId);
 
     return newSwapId;
   }
@@ -66,8 +66,8 @@ contract SwapHandler {
     targetSwap.setInitAssetPrice(_initAssetPrice);
 
     _isBuyerHost
-      ? _createSwapBySeller(_acceptedSwapId)
-      : _createSwapByBuyer(_acceptedSwapId);
+      ? setSwapForSeller(_acceptedSwapId)
+      : setSwapForBuyer(_acceptedSwapId);
 
     // check => 토큰으로 처리시 바로 보내고 이거도 되야함.
     _nextPayDate[_acceptedSwapId] =
@@ -80,7 +80,7 @@ contract SwapHandler {
   }
 
   function _cancelSwap(uint256 _targetSwapId) internal {
-    _clearDeposit(_targetSwapId);
+    clearDeposit(_targetSwapId);
     _swaps[_targetSwapId].setStatus(Swap.Status.inactive);
   }
 
@@ -90,7 +90,7 @@ contract SwapHandler {
   }
 
   function _claimSwap(uint256 _targetSwapId) internal {
-    _clearDeposit(_targetSwapId);
+    clearDeposit(_targetSwapId);
     _swaps[_targetSwapId].setStatus(Swap.Status.claimed);
   }
 
@@ -142,19 +142,19 @@ contract SwapHandler {
     return _deposits[swapId];
   }
 
-  function _createSwapByBuyer(uint256 swapId) private {
+  function setSwapForBuyer(uint256 swapId) private {
     _swaps[swapId].setBuyer(msg.sender);
     _deposits[swapId][0].deposit = getPremium(swapId).mul(3);
     _deposits[swapId][0].isPaid = true;
   }
 
-  function _createSwapBySeller(uint256 swapId) private {
+  function setSwapForSeller(uint256 swapId) private {
     _swaps[swapId].setSeller(msg.sender);
     _deposits[swapId][1].deposit = getSellerDeposit(swapId);
     _deposits[swapId][1].isPaid = true;
   }
 
-  function _clearDeposit(uint256 swapId) private {
+  function clearDeposit(uint256 swapId) private {
     for (uint i = 0; i <= 1; i++) {
       _deposits[swapId][i].deposit = 0;
       _deposits[swapId][i].isPaid = false;
