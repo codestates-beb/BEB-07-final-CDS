@@ -115,13 +115,13 @@ contract SwapHandler is PriceConsumer {
 
   function getClaimReward(uint256 swapId) public view returns (uint256) {
     uint256 currPrice = getPriceFromOracle();
-    if (getSwap(swapId).claimPrice() < currPrice) {
+    if (_swaps[swapId].claimPrice() < currPrice) {
       return 0;
     }
     return
       getSellerDeposit(swapId).calcClaimReward(
-        getSwap(swapId).liquidationPrice(),
-        getSwap(swapId).initAssetPrice(),
+        _swaps[swapId].liquidationPrice(),
+        _swaps[swapId].initAssetPrice(),
         currPrice
       );
   }
