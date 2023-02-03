@@ -11,7 +11,11 @@ const web3 = new Web3(new Web3.providers.HttpProvider(GOERLI_HTTP));
 
 const consumer = new web3.eth.Contract(CONSUMER_ABI as AbiItem[], CONSUMER_CA);
 
-const getPricesFromChainLink = async () => {
+const getPricesFromChainLink = async (): Promise<{
+  BTC?: string;
+  ETH?: string;
+  LINK?: string;
+}> => {
   const BTC = await consumer.methods.getLatestBTCPrice().call();
   const ETH = await consumer.methods.getLatestETHPrice().call();
   const LINK = await consumer.methods.getLatestLINKPrice().call();
