@@ -20,7 +20,7 @@ function useCDS() {
       const CDSToSet = {
         createSwap: async (data, userAddress)=>{
           const {
-            role, 
+            isBuyer, 
             initialPriceOfAssets,
             claimPrice, 
             liquidationPrice,
@@ -41,8 +41,12 @@ function useCDS() {
             || !userAddress
           ) return new Error("Not valid inputs");
 
+          let deposit;
+          if (isBuyer === true) deposit = premiumPrice * 3;
+          else if(isBuyer === false) deposit = sellerDeposit;
+
           const receipt = await contract.methods.createSwap(
-            role,
+            isBuyer,
             initialPriceOfAssets,
             claimPrice, 
             liquidationPrice,
@@ -51,7 +55,7 @@ function useCDS() {
             premiumInterval,
             premiumRounds
           )
-          .send({from: userAddress, value: premiumPrice}, (result)=>{
+          .send({from: userAddress, value: deposit}, (result)=>{
             console.log(result);
           })
 

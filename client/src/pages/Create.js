@@ -43,7 +43,7 @@ function Create() {
   const isLogin = useSelector((state) => state.auth.isLogin);
 
   // CDS Creator Role => 0: Buyer, 1: Seller
-  const [role, setRole] = useState(0);
+  const [isBuyer, setIsbuyer] = useState(true);
 
   // CDS Content State Variable
   const [contractAddress, setContractAddress] = useState('');
@@ -71,7 +71,7 @@ function Create() {
   // Create CDS Handler
   const createButtonHandler = async () =>{
     const data = {
-      role,
+      isBuyer,
       initialPriceOfAssets,
       claimPrice,
       liquidationPrice,
@@ -150,8 +150,8 @@ function Create() {
             <h2 className='section-title'>User</h2>
             <div className='input-group'>
               <div className='input-radio'>
-                <label><input name='role' type='radio' onChange={e=>setRole(0)} defaultChecked/>Buyer</label>
-                <label><input name='role' type='radio' onChange={e=>setRole(1)}/>Seller</label>
+                <label><input name='role' type='radio' onChange={e=>setIsbuyer(1)} defaultChecked/>Buyer</label>
+                <label><input name='role' type='radio' onChange={e=>setIsbuyer(0)}/>Seller</label>
               </div>
               <div className='input-button'>
                 <input 
