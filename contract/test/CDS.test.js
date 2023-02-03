@@ -107,19 +107,19 @@ contract('CDS', (accounts) => {
         ),
       );
       const [currentSwapId] = await cds.getSwapId();
-      const currentSwap = await cds.getSwap(currentSwapId);
       const buyer = await cds.getBuyer(currentSwapId);
       const seller = await cds.getSeller(currentSwapId);
       const deposits = await cds.getDeposits(currentSwapId);
-      const totalRounds = await cds.getRoundsLeft(currentSwapId);
+      const totalRounds = await cds.getRounds(currentSwapId);
 
-      const {
+      const currentSwap = await cds.getPrices(currentSwapId);
+      const [
         initAssetPrice,
         claimPrice,
         liquidationPrice,
         premium,
         sellerDeposit,
-      } = currentSwap;
+      ] = currentSwap;
       const [buyerDepositDetail, sellerDepositDetail] = deposits;
 
       await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
@@ -160,19 +160,19 @@ contract('CDS', (accounts) => {
         ),
       );
       const [currentSwapId] = await cds.getSwapId();
-      const currentSwap = await cds.getSwap(currentSwapId);
       const buyer = await cds.getBuyer(currentSwapId);
       const seller = await cds.getSeller(currentSwapId);
       const deposits = await cds.getDeposits(currentSwapId);
-      const totalRounds = await cds.getRoundsLeft(currentSwapId);
-
-      const {
+      const totalRounds = await cds.getRounds(currentSwapId);
+      const currentSwap = await cds.getPrices(currentSwapId);
+      const [
         initAssetPrice,
         claimPrice,
         liquidationPrice,
         premium,
         sellerDeposit,
-      } = currentSwap;
+      ] = currentSwap;
+
       const [buyerDepositDetail, sellerDepositDetail] = deposits;
 
       await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
@@ -311,21 +311,23 @@ contract('CDS', (accounts) => {
           from: accounts[1],
           value: defaultSellerDeposit,
         }),
+        'accepting',
       );
 
-      const currentSwap = await cds.getSwap(currentSwapId);
       const buyer = await cds.getBuyer(currentSwapId);
       const seller = await cds.getSeller(currentSwapId);
       const deposits = await cds.getDeposits(currentSwapId);
-      const totalRounds = await cds.getRoundsLeft(currentSwapId);
+      const totalRounds = await cds.getRounds(currentSwapId);
 
-      const {
+      const currentSwap = await cds.getPrices(currentSwapId);
+      const [
         initAssetPrice,
         claimPrice,
         liquidationPrice,
         premium,
         sellerDeposit,
-      } = currentSwap;
+      ] = currentSwap;
+
       const [buyerDepositDetail, sellerDepositDetail] = deposits;
 
       await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
@@ -373,19 +375,19 @@ contract('CDS', (accounts) => {
         }),
       );
 
-      const currentSwap = await cds.getSwap(currentSwapId);
       const buyer = await cds.getBuyer(currentSwapId);
       const seller = await cds.getSeller(currentSwapId);
       const deposits = await cds.getDeposits(currentSwapId);
-      const totalRounds = await cds.getRoundsLeft(currentSwapId);
-
-      const {
+      const totalRounds = await cds.getRounds(currentSwapId);
+      const currentSwap = await cds.getPrices(currentSwapId);
+      const [
         initAssetPrice,
         claimPrice,
         liquidationPrice,
         premium,
         sellerDeposit,
-      } = currentSwap;
+      ] = currentSwap;
+
       const [buyerDepositDetail, sellerDepositDetail] = deposits;
 
       await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
@@ -588,10 +590,10 @@ contract('CDS', (accounts) => {
       );
     });
 
-    it('should throw error if the caller of cancelSwap is not the buyer', async () => {
+    it('should throw error if the caller of cancelSwap is not the buyer/seller', async () => {
       const [currentSwapId] = await cds.getSwapId();
       await truffleAssert.fails(
-        cds.cancelSwap(currentSwapId, { from: accounts[1] }),
+        cds.cancelSwap(currentSwapId, { from: accounts[3] }),
       );
     });
 
@@ -602,7 +604,7 @@ contract('CDS', (accounts) => {
       );
       const depositDetail = await cds.getDeposits(currentSwapId);
       const [buyerDepositDetail, sellerDepositDetail] = depositDetail;
-      const swapStatus = await cds.getSwapStatus(currentSwapId);
+      const swapStatus = await cds.getStatus(currentSwapId);
 
       await assert.strictEqual(+buyerDepositDetail.deposit, 0);
       await assert.strictEqual(buyerDepositDetail.isPaid, false);
@@ -667,7 +669,7 @@ contract('CDS', (accounts) => {
       );
     });
 
-    it('should throw error if the caller of cancelSwap is not the buyer', async () => {
+    it('should throw error if the caller is not the buyer', async () => {
       const [currentSwapId] = await cds.getSwapId();
 
       await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
@@ -694,7 +696,7 @@ contract('CDS', (accounts) => {
 
       const depositDetail = await cds.getDeposits(currentSwapId);
       const [buyerDepositDetail, sellerDepositDetail] = depositDetail;
-      const swapStatus = await cds.getSwapStatus(currentSwapId);
+      const swapStatus = await cds.getStatus(currentSwapId);
 
       await assert.strictEqual(+buyerDepositDetail.deposit, 0);
       await assert.strictEqual(buyerDepositDetail.isPaid, false);
@@ -702,7 +704,7 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(+sellerDepositDetail.deposit, 0);
       await assert.strictEqual(sellerDepositDetail.isPaid, false);
 
-      await assert.strictEqual(0, +swapStatus);
+      await assert.strictEqual(4, +swapStatus);
     });
 
     it('should have proper amount of balance after closeSwap is called', async () => {
@@ -791,7 +793,7 @@ contract('CDS', (accounts) => {
     });
 
     // claim when currPrice is btwn CP~LP => 70, claimReward should be 300
-    it('should pass and return proper reward if the current price of the asset is below claim price ', async () => {
+    it('should return proper status and reward if the current price of the asset is below claim price ', async () => {
       const changedPrice = 70;
       const claimRewardIntended = 300;
 
@@ -835,10 +837,14 @@ contract('CDS', (accounts) => {
         balanceBeforeClaim.seller + +defaultSellerDeposit - +claimReward,
         await web3.eth.getBalance(accounts[1]),
       );
+
+      // status
+      const status = await cds.getStatus(currentSwapId);
+      assert.strictEqual(3, +status);
     });
 
     // claim when currPrice is below LP => 50
-    it('should pass and reward seller deposit to buyer if the current price of the asset is below liquidation price ', async () => {
+    it('should return proper status and reward seller deposit to buyer if the current price of the asset is below liquidation price ', async () => {
       const changedPrice = 50;
 
       const [currentSwapId] = await cds.getSwapId();
@@ -881,6 +887,10 @@ contract('CDS', (accounts) => {
         balanceBeforeClaim.seller,
         await web3.eth.getBalance(accounts[1]),
       );
+
+      // status
+      const status = await cds.getStatus(currentSwapId);
+      assert.strictEqual(3, +status);
     });
   });
 
@@ -939,7 +949,6 @@ contract('CDS', (accounts) => {
       );
     });
 
-    // after payPremium passes
     it('should pass if proper premium paid, and check the balance of the participants', async () => {
       const [currentSwapId] = await cds.getSwapId();
       await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
@@ -981,7 +990,7 @@ contract('CDS', (accounts) => {
         value: defaultSellerDeposit,
       });
 
-      const beforePayPremium = await cds.getRoundsLeft(currentSwapId);
+      const beforePayPremium = await cds.getRounds(currentSwapId);
 
       await truffleAssert.passes(
         cds.payPremium(currentSwapId, {
@@ -990,7 +999,7 @@ contract('CDS', (accounts) => {
         }),
       );
 
-      const afterPayPremium = await cds.getRoundsLeft(currentSwapId);
+      const afterPayPremium = await cds.getRounds(currentSwapId);
       assert.equal(beforePayPremium - 1, afterPayPremium);
     });
   });
