@@ -893,7 +893,7 @@ contract('CDS', (accounts) => {
       assert.strictEqual(3, +status);
     });
   });
-  /*
+
   describe('Pay Premium', async () => {
     beforeEach(async () => {
       await cds.createSwap(
@@ -949,7 +949,6 @@ contract('CDS', (accounts) => {
       );
     });
 
-    // after payPremium passes
     it('should pass if proper premium paid, and check the balance of the participants', async () => {
       const [currentSwapId] = await cds.getSwapId();
       await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
@@ -1003,6 +1002,5 @@ contract('CDS', (accounts) => {
       const afterPayPremium = await cds.getRounds(currentSwapId);
       assert.equal(beforePayPremium - 1, afterPayPremium);
     });
-  }); 
-  */
+  });
 });
