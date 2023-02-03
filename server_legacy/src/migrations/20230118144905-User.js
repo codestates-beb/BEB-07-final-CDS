@@ -19,7 +19,6 @@ module.exports = {
       nickname: {
         type: Sequelize.STRING(50),
         allowNull: true,
-        defaultValue: 'unnamed',
       },
       soldCount: {
         type: Sequelize.INTEGER,
