@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, Index, OneToMany } from 'typeorm';
 import { Swaps } from './Swaps';
 
 @Index('address', ['address'], { unique: true })
-@Entity('users', { schema: 'cds_dev2' })
+@Entity('users', { schema: 'cds_dev3' })
 export class Users {
   @Column('varchar', { primary: true, name: 'address', length: 100 })
   address: string;

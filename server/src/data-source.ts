@@ -7,6 +7,7 @@ import { DataSource } from 'typeorm';
 import { Users } from './entities/Users';
 import { Transactions } from './entities/Transactions';
 import { Swaps } from './entities/Swaps';
+import { SequelizeToTypeOrm1675407005234 } from '../migrations/1675407005234-SequelizeToTypeOrm';
 import getEnv from './utils/getEnv';
 
 export const AppDataSource = new DataSource({
@@ -15,10 +16,10 @@ export const AppDataSource = new DataSource({
   port: 3306,
   username: getEnv('DB_USERNAME'),
   password: getEnv('DB_PASSWORD'),
-  database: 'cds_dev2',
+  database: 'cds_dev3',
   synchronize: true,
   logging: false,
   entities: [Users, Transactions, Swaps],
-  migrations: [],
+  migrations: [SequelizeToTypeOrm1675407005234],
   subscribers: [],
 });

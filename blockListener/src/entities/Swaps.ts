@@ -13,7 +13,7 @@ import { Transactions } from './Transactions';
 @Index('swapId', ['swapId'], { unique: true })
 @Index('swaps_buyer_foreign_idx', ['buyer'], {})
 @Index('swaps_seller_foreign_idx', ['seller'], {})
-@Entity('swaps', { schema: 'cds_dev2' })
+@Entity('swaps', { schema: 'cds_dev3' })
 export class Swaps {
   @Column('int', { primary: true, name: 'swapId' })
   swapId: number;

@@ -10,7 +10,7 @@ import { Swaps } from './Swaps';
 
 @Index('transactions_swapId_foreign_idx', ['swapId'], {})
 @Index('txHash', ['txHash'], { unique: true })
-@Entity('transactions', { schema: 'cds_dev2' })
+@Entity('transactions', { schema: 'cds_dev3' })
 export class Transactions {
   @Column('varchar', { primary: true, name: 'txHash', length: 100 })
   txHash: string;
