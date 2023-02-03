@@ -3,7 +3,7 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     gridTemplateColumns: {
-      'fill-25': 'repeat(auto-fit)',
+      'fill-25': 'repeat(auto-fit, 350px)',
     },
     extend: {},
     colors: {
