@@ -3,30 +3,56 @@ pragma solidity ^0.8.7;
 
 import './Handler/SwapHandler.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
-contract CDS is Ownable, SwapHandler {
+interface CDSInterface {
+  function create(
+    bool isBuyer,
+    uint256 initAssetPrice,
+    uint256 claimPrice,
+    uint256 liquidationPrice,
+    uint256 sellerDeposit,
+    uint256 premium,
+    uint32 premiumInterval,
+    uint32 totalRounds
+  ) external payable returns (uint256);
+
+  function accept(
+    uint256 initAssetPrice,
+    uint256 swapId
+  ) external payable returns (uint256);
+
+  function cancel(uint256 swapId) external returns (bool);
+
+  function close(uint256 swapId) external returns (bool);
+
+  function claim(uint256 swapId) external returns (bool);
+
+  function payPremium(uint256 swapId) external payable returns (bool);
+
+  event Create(
+    address indexed hostAddr,
+    bool isBuyer,
+    uint256 swapId,
+    address swap
+  );
+  event Accept(address indexed guestAddr, uint256 swapId);
+  event Cancel(uint256 swapId);
+  event Claim(uint256 swapId, uint256 claimReward);
+  event Close(uint256 swapId);
+  event PayPremium(uint256 swapId);
+}
+
+contract CDS is CDSInterface, Ownable, SwapHandler {
   using SafeMath for uint256;
 
   constructor() payable {}
 
   receive() external payable {}
 
-  // events
-  event CreateSwap(
-    address indexed hostAddr,
-    bool isBuyer,
-    uint256 swapId,
-    address swap
-  );
-  event AcceptSwap(address indexed guestAddr, uint256 swapId);
-  event CancelSwap(uint256 swapId);
-  event ClaimSwap(uint256 swapId, uint256 claimReward);
-  event CloseSwap(uint256 swapId);
-  event PayPremium(uint256 swapId);
-
   // transactions
-  function createSwap(
+  function create(
     bool isBuyer,
     uint256 initAssetPrice,
     uint256 claimPrice,
@@ -39,7 +65,7 @@ contract CDS is Ownable, SwapHandler {
     uint256 buyerDeposit = premium.mul(3) * 1 wei;
     isBuyer ? _sendDeposit(buyerDeposit) : _sendDeposit(sellerDeposit);
 
-    uint256 newSwapId = _createSwap(
+    uint256 newSwapId = _create(
       isBuyer,
       initAssetPrice,
       claimPrice,
@@ -49,16 +75,11 @@ contract CDS is Ownable, SwapHandler {
       premiumInterval,
       totalRounds
     );
-    emit CreateSwap(
-      msg.sender,
-      isBuyer,
-      newSwapId,
-      address(getSwap(newSwapId))
-    );
+    emit Create(msg.sender, isBuyer, newSwapId, address(getSwap(newSwapId)));
     return newSwapId;
   }
 
-  function acceptSwap(
+  function accept(
     uint256 initAssetPrice,
     uint256 swapId
   ) external payable isNotOwner isPending(swapId) returns (uint256) {
@@ -73,12 +94,12 @@ contract CDS is Ownable, SwapHandler {
       ? _sendDeposit(getSellerDeposit(swapId))
       : _sendDeposit(getPremium(swapId).mul(3));
 
-    uint256 acceptedSwapId = _acceptSwap(isBuyerHost, initAssetPrice, swapId);
-    emit AcceptSwap(msg.sender, acceptedSwapId);
+    uint256 acceptedSwapId = _accept(isBuyerHost, initAssetPrice, swapId);
+    emit Accept(msg.sender, acceptedSwapId);
     return acceptedSwapId;
   }
 
-  function cancelSwap(
+  function cancel(
     uint256 swapId
   )
     external
@@ -93,12 +114,12 @@ contract CDS is Ownable, SwapHandler {
       : deposit = getDeposits(swapId)[1].deposit;
     (bool sent, ) = msg.sender.call{value: deposit}('');
     require(sent, 'Sending failed');
-    _cancelSwap(swapId);
-    emit CancelSwap(swapId);
+    _cancel(swapId);
+    emit Cancel(swapId);
     return sent;
   }
 
-  function closeSwap(
+  function close(
     uint256 swapId
   ) external isBuyer(swapId) isActive(swapId) returns (bool) {
     // 어짜피 sent관련은 토큰 적용시 없어짐.
@@ -112,8 +133,8 @@ contract CDS is Ownable, SwapHandler {
       value: getDeposits(swapId)[1].deposit
     }('');
     require(sentBuyer && sentSeller, 'Sending deposit failed');
-    _closeSwap(swapId);
-    emit CloseSwap(swapId);
+    _close(swapId);
+    emit Close(swapId);
     return true;
   }
 
@@ -132,7 +153,7 @@ contract CDS is Ownable, SwapHandler {
     return true;
   }
 
-  function claimSwap(
+  function claim(
     uint256 swapId
   ) external isNotOwner isBuyer(swapId) isActive(swapId) returns (bool) {
     uint256 claimReward = getClaimReward(swapId);
@@ -147,8 +168,8 @@ contract CDS is Ownable, SwapHandler {
       value: (getDeposits(swapId)[1].deposit - claimReward)
     }('');
     require(sentBuyer && sentSeller, 'Sending reward failed');
-    _claimSwap(swapId);
-    emit ClaimSwap(swapId, claimReward);
+    _claim(swapId);
+    emit Claim(swapId, claimReward);
     return true;
   }
 

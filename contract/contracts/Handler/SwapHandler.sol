@@ -28,7 +28,7 @@ contract SwapHandler is PriceConsumer {
 
   constructor() {}
 
-  function _createSwap(
+  function _create(
     bool _isBuyer,
     uint256 _initAssetPrice,
     uint256 _claimPrice,
@@ -59,7 +59,7 @@ contract SwapHandler is PriceConsumer {
     return newSwapId;
   }
 
-  function _acceptSwap(
+  function _accept(
     bool _isBuyerHost,
     uint256 _initAssetPrice,
     uint256 _acceptedSwapId
@@ -81,12 +81,12 @@ contract SwapHandler is PriceConsumer {
     return _acceptedSwapId;
   }
 
-  function _cancelSwap(uint256 _targetSwapId) internal {
+  function _cancel(uint256 _targetSwapId) internal {
     clearDeposit(_targetSwapId);
     _swaps[_targetSwapId].setStatus(Swap.Status.inactive);
   }
 
-  function _closeSwap(uint256 _targetSwapId) internal {
+  function _close(uint256 _targetSwapId) internal {
     clearDeposit(_targetSwapId);
     _swaps[_targetSwapId].setStatus(Swap.Status.expired);
   }
@@ -96,7 +96,7 @@ contract SwapHandler is PriceConsumer {
     _swaps[_targetSwapId].setRounds(getRounds(_targetSwapId) - 1);
   }
 
-  function _claimSwap(uint256 _targetSwapId) internal {
+  function _claim(uint256 _targetSwapId) internal {
     clearDeposit(_targetSwapId);
     _swaps[_targetSwapId].setStatus(Swap.Status.claimed);
   }
