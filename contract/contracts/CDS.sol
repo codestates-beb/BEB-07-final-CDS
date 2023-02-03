@@ -130,6 +130,26 @@ contract CDS is Ownable, SwapHandler {
     return true;
   }
 
+  function claimSwap(
+    uint256 swapId
+  ) external isNotOwner isBuyer(swapId) isActive(swapId) returns (bool) {
+    uint256 claimReward = getSwap(swapId).getClaimReward();
+    require(
+      claimReward != 0,
+      'Claim price in CDS should be higher than current price of asset'
+    );
+    (bool sentBuyer, ) = msg.sender.call{
+      value: (claimReward + getDeposits(swapId)[0].deposit)
+    }('');
+    (bool sentSeller, ) = msg.sender.call{
+      value: (getDeposits(swapId)[1].deposit - claimReward)
+    }('');
+    require(sentBuyer && sentSeller, 'Sending reward failed');
+    _claimSwap(swapId);
+    emit ClaimSwap(swapId, claimReward);
+    return true;
+  }
+
   function _sendDeposit(uint256 deposit) public payable returns (bool) {
     require(deposit == msg.value, 'Invalid eth amount');
     (bool sent, ) = payable(address(this)).call{value: msg.value}('');

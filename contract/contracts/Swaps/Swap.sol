@@ -2,11 +2,13 @@
 pragma solidity ^0.8.7;
 
 import '../Oracle/PriceConsumer.sol';
+import '../libs/LibClaim.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 contract Swap is PriceConsumer, Ownable {
   using SafeMath for uint256;
+  using LibClaim for uint256;
 
   enum Status {
     inactive,
@@ -59,6 +61,19 @@ contract Swap is PriceConsumer, Ownable {
       premium,
       sellerDeposit
     ];
+  }
+
+  function getClaimReward() public view returns (uint256) {
+    uint256 currPrice = getPriceFromOracle();
+    if (claimPrice < currPrice) {
+      return 0;
+    }
+    return
+      sellerDeposit.calcClaimReward(
+        liquidationPrice,
+        initAssetPrice,
+        currPrice
+      );
   }
 
   function getBuyer() public view returns (address) {

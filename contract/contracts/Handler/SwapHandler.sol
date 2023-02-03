@@ -2,12 +2,10 @@
 pragma solidity ^0.8.7;
 
 import '../Swaps/Swap.sol';
-import '../libs/LibClaim.sol';
-import '../Oracle/PriceConsumer.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
-contract SwapHandler is PriceConsumer {
+contract SwapHandler {
   using Counters for Counters.Counter;
   using SafeMath for uint256;
   using LibClaim for uint256;
@@ -91,6 +89,11 @@ contract SwapHandler is PriceConsumer {
     getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
   }
 
+  function _claimSwap(uint256 _targetSwapId) internal {
+    _clearDeposit(_targetSwapId);
+    _swaps[_targetSwapId].setStatus(Swap.Status.claimed);
+  }
+
   function getSwapId() public view returns (Counters.Counter memory) {
     return _swapId;
   }
@@ -101,6 +104,10 @@ contract SwapHandler is PriceConsumer {
 
   function getPrices(uint256 swapId) public view returns (uint256[5] memory) {
     return _swaps[swapId].getPrices();
+  }
+
+  function getClaimReward(uint256 swapId) public view returns (uint256) {
+    return _swaps[swapId].getClaimReward();
   }
 
   function getPremium(uint256 swapId) public view returns (uint256) {
