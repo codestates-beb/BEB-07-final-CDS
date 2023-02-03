@@ -6,21 +6,21 @@ import { Transactions } from '../entities/Transactions';
 const transactionRepository = AppDataSource.getRepository(Transactions);
 const transactionRouter = express.Router();
 
-transactionRouter.get('/transactions', async (req, res, next) => {
+transactionRouter.get('/:txHash', async (req, res, next) => {
   try {
-    const allTransactions = await transactionRepository.find({});
-    return res.status(200).json(allTransactions);
+    const txHash = req.params.txHash;
+    const singleTransaction = await transactionRepository.findOneBy({ txHash });
+    return res.status(200).json(singleTransaction);
   } catch (err) {
     console.error(err);
     next(err);
   }
 });
 
-transactionRouter.get('/transactions/:txHash', async (req, res, next) => {
+transactionRouter.get('/', async (req, res, next) => {
   try {
-    const txHash = req.params.txHash;
-    const singleTransaction = await transactionRepository.findOneBy({ txHash });
-    return res.status(200).json(singleTransaction);
+    const allTransactions = await transactionRepository.find({});
+    return res.status(200).json(allTransactions);
   } catch (err) {
     console.error(err);
     next(err);
