@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 import getEnv from '../utils/getEnv';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
@@ -11,7 +10,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider(GOERLI_HTTP));
 
 const consumer = new web3.eth.Contract(CONSUMER_ABI as AbiItem[], CONSUMER_CA);
 
-const getPricesFromChainLink = async (): Promise<{
+export const getPricesFromChainLink = async (): Promise<{
   BTC?: string;
   ETH?: string;
   LINK?: string;
@@ -22,5 +21,3 @@ const getPricesFromChainLink = async (): Promise<{
   const result = { BTC, ETH, LINK };
   return result;
 };
-
-export default getPricesFromChainLink;

@@ -1,4 +1,4 @@
-import getPricesFromChainLink from '../web3utils/getPricesFromChainLink';
+import { getPricesFromChainLink } from '../web3utils/getPricesFromChainLink';
 import redisClient from './redisClient';
 
 async function updateChainLinkFeed() {
