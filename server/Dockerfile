@@ -15,7 +15,7 @@ RUN npm install -g pm2 typescript
 
 # 앱 소스 추가
 COPY . .
-RUN tsc
+RUN npx tsc
 
 EXPOSE 80
 CMD [ "pm2-runtime", "start", "dist/index.js" ]
