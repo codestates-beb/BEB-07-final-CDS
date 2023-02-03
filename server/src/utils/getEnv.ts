@@ -1,4 +1,4 @@
-module.exports = (key, alternative) => {
+export default (key: string, alternative?: string): string => {
   if (!key) {
     throw new Error('You must provide key argument');
   }

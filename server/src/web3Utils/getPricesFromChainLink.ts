@@ -1,20 +1,15 @@
 /* eslint-disable global-require */
-const getEnv = require('../utils/getEnv');
-
-if (require.main === module) {
-  console.log('index.js running independently');
-  require('dotenv').config({ path: '../.env' });
-}
+import getEnv from '../utils/getEnv';
+import Web3 from 'web3';
+import { AbiItem } from 'web3-utils';
+import CONSUMER_ABI from './ABIs/Consumer.json';
 
 const CONSUMER_CA = getEnv('CONSUMER_CA');
 const GOERLI_HTTP = getEnv('GOERLI_HTTP');
 
-const Web3 = require('web3');
-const CONSUMER_ABI = require('./ABIs/Consumer.json');
-
 const web3 = new Web3(new Web3.providers.HttpProvider(GOERLI_HTTP));
 
-const consumer = new web3.eth.Contract(CONSUMER_ABI, CONSUMER_CA);
+const consumer = new web3.eth.Contract(CONSUMER_ABI as AbiItem[], CONSUMER_CA);
 
 const getPricesFromChainLink = async () => {
   const BTC = await consumer.methods.getLatestBTCPrice().call();
@@ -24,4 +19,4 @@ const getPricesFromChainLink = async () => {
   return result;
 };
 
-module.exports = { getPricesFromChainLink };
+export default getPricesFromChainLink;
