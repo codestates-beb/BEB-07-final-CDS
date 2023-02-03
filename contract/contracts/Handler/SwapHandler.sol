@@ -13,8 +13,6 @@ contract SwapHandler is PriceConsumer {
   using LibClaim for uint256;
   Counters.Counter internal _swapId;
 
-  Swap private swap;
-
   struct Deposit {
     uint256 deposit;
     bool isPaid;
