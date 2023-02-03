@@ -16,9 +16,6 @@ RUN npm install -g pm2
 
 # 앱 소스 추가
 COPY . .
-RUN pwd
-RUN ls -al
-RUN tree src
 RUN npx tsc
 
 EXPOSE 80
