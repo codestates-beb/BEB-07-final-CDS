@@ -122,7 +122,7 @@ function Create() {
     );
     setPremiumPrice( premiumPriceCalculated );
 
-  }, [initialPriceOfAssets, dropRate])
+  }, [initialPriceOfAssets, dropRate, premiumRate])
 
   useEffect(()=>{
     setSellerDeposit( calculateSellerDeposit(
@@ -231,7 +231,17 @@ function Create() {
           <div className='form-section'>
             <h2 className='section-title'>Premium</h2>
             <div className='input-group'>
-              <input placeholder='Premium Rate' value='Premium Rate: 2 %' disabled/>
+              <div className='input-range'>
+                <input placeholder='Premium Rate' value={`Premium Rate: ${premiumRate} %`} disabled/>
+                <input
+                  className='range'
+                  type='range'
+                  value={premiumRate}
+                  max={20}
+                  min={0}
+                  onChange={e=>setPremiumRate(e.target.value)}
+                />
+              </div>
               <input 
                 placeholder='Premium Price'
                 value={`Premium Price: ${premiumPrice}`}
@@ -276,7 +286,7 @@ function Create() {
                   className='value'
                   placeholder='Liquidated Price'
                   value={`Liquidated Price: ${liquidationPrice}`}
-                  max={initialPriceOfAssets || 0}
+                  max={claimPrice || 0}
                   onChange={e=>{
                     const currentValue = onlyNumber(e.target.value);
                     if(currentValue > initialPriceOfAssets) 
@@ -288,7 +298,7 @@ function Create() {
                   className='range'
                   type='range'
                   value={liquidationPrice}
-                  max={initialPriceOfAssets || 0}
+                  max={claimPrice || 0}
                   min='0'
                   onChange={e=>setLiquidationPrice(e.target.value)}
                 />
