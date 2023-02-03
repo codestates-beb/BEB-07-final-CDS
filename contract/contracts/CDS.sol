@@ -135,7 +135,7 @@ contract CDS is Ownable, SwapHandler {
   function claimSwap(
     uint256 swapId
   ) external isNotOwner isBuyer(swapId) isActive(swapId) returns (bool) {
-    uint256 claimReward = getSwap(swapId).getClaimReward();
+    uint256 claimReward = getClaimReward(swapId);
     require(
       claimReward != 0,
       'Claim price in CDS should be higher than current price of asset'
