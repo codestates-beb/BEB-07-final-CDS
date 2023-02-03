@@ -110,9 +110,9 @@ contract('CDS', (accounts) => {
       const buyer = await cds.getBuyer(currentSwapId);
       const seller = await cds.getSeller(currentSwapId);
       const deposits = await cds.getDeposits(currentSwapId);
-      const totalRounds = await cds.getRoundsLeft(currentSwapId);
+      const totalRounds = await cds.getRounds(currentSwapId);
 
-      const currentSwap = await cds.getPriceDetail(currentSwapId);
+      const currentSwap = await cds.getPrices(currentSwapId);
       const [
         initAssetPrice,
         claimPrice,
@@ -163,8 +163,8 @@ contract('CDS', (accounts) => {
       const buyer = await cds.getBuyer(currentSwapId);
       const seller = await cds.getSeller(currentSwapId);
       const deposits = await cds.getDeposits(currentSwapId);
-      const totalRounds = await cds.getRoundsLeft(currentSwapId);
-      const currentSwap = await cds.getPriceDetail(currentSwapId);
+      const totalRounds = await cds.getRounds(currentSwapId);
+      const currentSwap = await cds.getPrices(currentSwapId);
       const [
         initAssetPrice,
         claimPrice,
@@ -317,9 +317,9 @@ contract('CDS', (accounts) => {
       const buyer = await cds.getBuyer(currentSwapId);
       const seller = await cds.getSeller(currentSwapId);
       const deposits = await cds.getDeposits(currentSwapId);
-      const totalRounds = await cds.getRoundsLeft(currentSwapId);
+      const totalRounds = await cds.getRounds(currentSwapId);
 
-      const currentSwap = await cds.getPriceDetail(currentSwapId);
+      const currentSwap = await cds.getPrices(currentSwapId);
       const [
         initAssetPrice,
         claimPrice,
@@ -378,8 +378,8 @@ contract('CDS', (accounts) => {
       const buyer = await cds.getBuyer(currentSwapId);
       const seller = await cds.getSeller(currentSwapId);
       const deposits = await cds.getDeposits(currentSwapId);
-      const totalRounds = await cds.getRoundsLeft(currentSwapId);
-      const currentSwap = await cds.getPriceDetail(currentSwapId);
+      const totalRounds = await cds.getRounds(currentSwapId);
+      const currentSwap = await cds.getPrices(currentSwapId);
       const [
         initAssetPrice,
         claimPrice,
@@ -604,7 +604,7 @@ contract('CDS', (accounts) => {
       );
       const depositDetail = await cds.getDeposits(currentSwapId);
       const [buyerDepositDetail, sellerDepositDetail] = depositDetail;
-      const swapStatus = await cds.getSwapStatus(currentSwapId);
+      const swapStatus = await cds.getStatus(currentSwapId);
 
       await assert.strictEqual(+buyerDepositDetail.deposit, 0);
       await assert.strictEqual(buyerDepositDetail.isPaid, false);
@@ -647,7 +647,6 @@ contract('CDS', (accounts) => {
     });
   });
 
-  /*
   describe('Close Swap', async () => {
     beforeEach(async () => {
       await cds.createSwap(
@@ -670,7 +669,7 @@ contract('CDS', (accounts) => {
       );
     });
 
-    it('should throw error if the caller of cancelSwap is not the buyer', async () => {
+    it('should throw error if the caller is not the buyer', async () => {
       const [currentSwapId] = await cds.getSwapId();
 
       await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
@@ -697,7 +696,7 @@ contract('CDS', (accounts) => {
 
       const depositDetail = await cds.getDeposits(currentSwapId);
       const [buyerDepositDetail, sellerDepositDetail] = depositDetail;
-      const swapStatus = await cds.getSwapStatus(currentSwapId);
+      const swapStatus = await cds.getStatus(currentSwapId);
 
       await assert.strictEqual(+buyerDepositDetail.deposit, 0);
       await assert.strictEqual(buyerDepositDetail.isPaid, false);
@@ -705,7 +704,7 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(+sellerDepositDetail.deposit, 0);
       await assert.strictEqual(sellerDepositDetail.isPaid, false);
 
-      await assert.strictEqual(0, +swapStatus);
+      await assert.strictEqual(4, +swapStatus);
     });
 
     it('should have proper amount of balance after closeSwap is called', async () => {
@@ -742,7 +741,7 @@ contract('CDS', (accounts) => {
     });
   });
 
-  
+  /*
   describe('Claim Swap', async () => {
     beforeEach(async () => {
       await cds.createSwap(
@@ -985,7 +984,7 @@ contract('CDS', (accounts) => {
         value: defaultSellerDeposit,
       });
 
-      const beforePayPremium = await cds.getRoundsLeft(currentSwapId);
+      const beforePayPremium = await cds.getRounds(currentSwapId);
 
       await truffleAssert.passes(
         cds.payPremium(currentSwapId, {
@@ -994,7 +993,7 @@ contract('CDS', (accounts) => {
         }),
       );
 
-      const afterPayPremium = await cds.getRoundsLeft(currentSwapId);
+      const afterPayPremium = await cds.getRounds(currentSwapId);
       assert.equal(beforePayPremium - 1, afterPayPremium);
     });
   }); 
