@@ -18,6 +18,7 @@ RUN npm install -g pm2
 COPY . .
 RUN pwd
 RUN ls -al
+RUN tree src
 RUN npx tsc
 
 EXPOSE 80
