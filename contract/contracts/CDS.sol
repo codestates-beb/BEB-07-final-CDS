@@ -112,7 +112,7 @@ contract CDS is Ownable, SwapHandler {
       value: getDeposits(swapId)[1].deposit
     }('');
     require(sentBuyer && sentSeller, 'Sending deposit failed');
-    _cancelSwap(swapId);
+    _closeSwap(swapId);
     emit CloseSwap(swapId);
     return true;
   }

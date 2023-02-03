@@ -86,6 +86,11 @@ contract SwapHandler is PriceConsumer {
     _swaps[_targetSwapId].setStatus(Swap.Status.inactive);
   }
 
+  function _closeSwap(uint256 _targetSwapId) internal {
+    clearDeposit(_targetSwapId);
+    _swaps[_targetSwapId].setStatus(Swap.Status.expired);
+  }
+
   function _payPremium(uint256 _targetSwapId) internal {
     _nextPayDate[_targetSwapId] = block.timestamp + getInterval(_targetSwapId);
     getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
