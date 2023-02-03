@@ -1,22 +1,44 @@
 // modules
 import { useState, useEffect } from 'react';
 
+//APIs
+import { getSwaps } from '../apis/request.js';
+
 // components
 import ProposedCardType2 from '../components/ProposedCardType2.js';
+import Pagination from '../components/Pagination.js';
 import Footer from '../components/Footer.js';
 
 function CardDisplayProposed() {
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [index, setIndex] = useState(4);
+  // proposed swaps를 필터링 한 후 저장합니다
+  const [proposed, setProposed] = useState([]);
 
-  const loadMore = () => {
-    setIndex(index + 4);
-    if (index >= 3) {
-      setIsCompleted(true);
-    } else {
-      setIsCompleted(false);
+  // 하나의 page에 들어갈 데이터를 저장합니다
+  const [page, setPage] = useState(1); //페이지
+  const limit = 10; // posts가 보일 최대한의 갯수
+  const offset = (page - 1) * limit; // 시작점과 끝점을 구하는 offset
+
+  const postsData = (posts) => {
+    if (posts) {
+      let result = posts.slice(offset, offset + limit);
+      return result;
     }
   };
+
+  useEffect(() => {
+    const APIdata = getSwaps();
+    const getData = () => {
+      APIdata.then((response) => {
+        console.log(response);
+
+        const proposedData = response.filter(
+          (swap) => swap.status === 'pending',
+        );
+        setProposed(proposedData);
+      });
+    };
+    getData();
+  }, []);
 
   return (
     <>
@@ -45,44 +67,28 @@ function CardDisplayProposed() {
           </div>
         </div>
         <div className="grid grid-cols-fill-25 justify-center">
-          <div className="mx-auto">
-            <ProposedCardType2 />
-          </div>
-          <div className="mx-auto">
-            <ProposedCardType2 />
-          </div>
-          <div className="mx-auto">
-            <ProposedCardType2 />
-          </div>
-          <div className="mx-auto">
-            <ProposedCardType2 />
-          </div>
-          <div className="mx-auto">
-            <ProposedCardType2 />
-          </div>
-          <div className="mx-auto">
-            <ProposedCardType2 />
-          </div>
-          <div className="mx-auto">
-            <ProposedCardType2 />
-          </div>
+          {proposed.map((swap) => {
+            return (
+              <div className="mx-auto">
+                <ProposedCardType2
+                  swapId={swap.swapId}
+                  premium={swap.premium}
+                  premiumInterval={swap.premiumInterval}
+                  requiredDeposit={swap.sellerDeposit}
+                  premiumRounds={swap.totalPremiumRounds}
+                  buyerAddress={swap.buyer}
+                />
+              </div>
+            );
+          })}
         </div>
-        <div className="mt-[5rem] flex justify-center">
-          {isCompleted ? (
-            <button
-              onClick={loadMore}
-              type="button"
-              className="hidden"
-            ></button>
-          ) : (
-            <button
-              onClick={loadMore}
-              type="button"
-              className="h-16 w-44 rounded-3xl bg-primaryColor text-center transition-all hover:scale-110"
-            >
-              More Cards
-            </button>
-          )}
+        <div>
+          <Pagination
+            limit={limit}
+            page={page}
+            totalPosts={proposed.length}
+            setPage={setPage}
+          />
         </div>
       </div>
       <div>
