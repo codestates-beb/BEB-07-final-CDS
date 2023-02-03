@@ -18,7 +18,7 @@ export const AppDataSource = new DataSource({
   password: getEnv('DB_PASSWORD'),
   database: 'cds_dev3',
   synchronize: true,
-  logging: false,
+  logging: getEnv('NODE_ENV') === 'production' ? false : true,
   entities: [Users, Transactions, Swaps],
   migrations: [SequelizeToTypeOrm1675407005234],
   subscribers: [],
