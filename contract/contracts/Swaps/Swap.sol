@@ -51,7 +51,7 @@ contract Swap is PriceConsumer, Ownable {
     status = Status.pending;
   }
 
-  function getDetail() public view returns (uint256[5] memory) {
+  function getPrices() public view returns (uint256[5] memory) {
     return [
       initAssetPrice,
       claimPrice,

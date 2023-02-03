@@ -88,7 +88,7 @@ contract SwapHandler is PriceConsumer {
 
   function _payPremium(uint256 _targetSwapId) internal {
     _nextPayDate[_targetSwapId] = block.timestamp + getInterval(_targetSwapId);
-    getSwap(_targetSwapId).setRounds(getRoundsLeft(_targetSwapId) - 1);
+    getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
   }
 
   function getSwapId() public view returns (Counters.Counter memory) {
@@ -100,7 +100,7 @@ contract SwapHandler is PriceConsumer {
   }
 
   function getPrices(uint256 swapId) public view returns (uint256[5] memory) {
-    return _swaps[swapId].getDetail();
+    return _swaps[swapId].getPrices();
   }
 
   function getPremium(uint256 swapId) public view returns (uint256) {
@@ -111,11 +111,11 @@ contract SwapHandler is PriceConsumer {
     return _swaps[swapId].sellerDeposit();
   }
 
-  function getSwapStatus(uint256 swapId) public view returns (Swap.Status) {
+  function getStatus(uint256 swapId) public view returns (Swap.Status) {
     return _swaps[swapId].status();
   }
 
-  function getRoundsLeft(uint256 swapId) public view returns (uint32) {
+  function getRounds(uint256 swapId) public view returns (uint32) {
     return _swaps[swapId].rounds();
   }
 
@@ -170,7 +170,7 @@ contract SwapHandler is PriceConsumer {
 
   modifier isPending(uint256 swapId) {
     require(
-      getSwapStatus(swapId) == Swap.Status.pending,
+      getStatus(swapId) == Swap.Status.pending,
       'The status of the CDS should be pending'
     );
     _;
@@ -178,7 +178,7 @@ contract SwapHandler is PriceConsumer {
 
   modifier isActive(uint256 swapId) {
     require(
-      getSwapStatus(swapId) == Swap.Status.active,
+      getStatus(swapId) == Swap.Status.active,
       'The status of the CDS should be active'
     );
     _;
