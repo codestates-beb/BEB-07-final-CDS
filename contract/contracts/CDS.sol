@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import './Swaps/Swaps.sol';
+import './Handler/SwapHandler.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
-contract CDS is Swaps, Ownable {
+contract CDS is Ownable, SwapHandler {
   using SafeMath for uint256;
 
   constructor() payable {}
@@ -13,21 +13,19 @@ contract CDS is Swaps, Ownable {
   receive() external payable {}
 
   // events
-  event CreateSwap(address indexed hostAddr, bool isBuyer, uint256 swapId);
+  event CreateSwap(
+    address indexed hostAddr,
+    bool isBuyer,
+    uint256 swapId,
+    address swap
+  );
   event AcceptSwap(address indexed guestAddr, uint256 swapId);
   event CancelSwap(uint256 swapId);
   event ClaimSwap(uint256 swapId, uint256 claimReward);
   event CloseSwap(uint256 swapId);
-
-  // modifiers
-
-  modifier isNotOwner() {
-    require(msg.sender != owner(), 'Owner can not call the method');
-    _;
-  }
+  event PayPremium(uint256 swapId);
 
   // transactions
-
   function createSwap(
     bool isBuyer,
     uint256 initAssetPrice,
@@ -51,18 +49,13 @@ contract CDS is Swaps, Ownable {
       premiumInterval,
       totalRounds
     );
-
-    emit CreateSwap(msg.sender, isBuyer, newSwapId);
-
+    emit CreateSwap(
+      msg.sender,
+      isBuyer,
+      newSwapId,
+      address(getSwap(newSwapId))
+    );
     return newSwapId;
-  }
-
-  // token => internal로 바꿀 수 있다.
-  function _sendDeposit(uint256 deposit) public payable returns (bool) {
-    require(deposit == msg.value, 'Invalid eth amount');
-    (bool sent, ) = payable(address(this)).call{value: msg.value}('');
-    require(sent, 'Sending deposit failed');
-    return true;
   }
 
   function acceptSwap(
@@ -77,8 +70,8 @@ contract CDS is Swaps, Ownable {
     bool isBuyerHost = (getSeller(swapId) == address(0));
 
     isBuyerHost
-      ? _sendDeposit(getSwap(swapId).sellerDeposit)
-      : _sendDeposit(getSwap(swapId).premium.mul(3));
+      ? _sendDeposit(getSellerDeposit(swapId))
+      : _sendDeposit(getPremium(swapId).mul(3));
 
     uint256 acceptedSwapId = _acceptSwap(isBuyerHost, initAssetPrice, swapId);
     emit AcceptSwap(msg.sender, acceptedSwapId);
@@ -87,8 +80,18 @@ contract CDS is Swaps, Ownable {
 
   function cancelSwap(
     uint256 swapId
-  ) external isNotOwner isBuyer(swapId) isPending(swapId) returns (bool) {
-    (bool sent, ) = msg.sender.call{value: getDeposits(swapId)[0].deposit}('');
+  )
+    external
+    isNotOwner
+    isParticipants(swapId)
+    isPending(swapId)
+    returns (bool)
+  {
+    uint256 deposit;
+    (msg.sender == getBuyer(swapId))
+      ? deposit = getDeposits(swapId)[0].deposit
+      : deposit = getDeposits(swapId)[1].deposit;
+    (bool sent, ) = msg.sender.call{value: deposit}('');
     require(sent, 'Sending failed');
     _cancelSwap(swapId);
     emit CancelSwap(swapId);
@@ -98,6 +101,7 @@ contract CDS is Swaps, Ownable {
   function closeSwap(
     uint256 swapId
   ) external isBuyer(swapId) isActive(swapId) returns (bool) {
+    // 어짜피 sent관련은 토큰 적용시 없어짐.
     bool sentBuyer = true;
     if (getDeposits(swapId)[0].deposit != 0) {
       (sentBuyer, ) = msg.sender.call{value: getDeposits(swapId)[0].deposit}(
@@ -108,7 +112,7 @@ contract CDS is Swaps, Ownable {
       value: getDeposits(swapId)[1].deposit
     }('');
     require(sentBuyer && sentSeller, 'Sending deposit failed');
-    _cancelSwap(swapId);
+    _closeSwap(swapId);
     emit CloseSwap(swapId);
     return true;
   }
@@ -119,11 +123,12 @@ contract CDS is Swaps, Ownable {
     // date check
     // require(_checkDate(swapId), 'Invalid date');
 
-    require(msg.value == getSwap(swapId).premium, 'Invalid premium');
+    require(msg.value == getPremium(swapId), 'Invalid premium');
     (bool sent, ) = getSeller(swapId).call{value: msg.value}('');
     require(sent, 'Sending premium failed');
     // status update
     _payPremium(swapId);
+    emit PayPremium(swapId);
     return true;
   }
 
@@ -147,7 +152,20 @@ contract CDS is Swaps, Ownable {
     return true;
   }
 
+  function _sendDeposit(uint256 deposit) public payable returns (bool) {
+    require(deposit == msg.value, 'Invalid eth amount');
+    (bool sent, ) = payable(address(this)).call{value: msg.value}('');
+    require(sent, 'Sending deposit failed');
+    return true;
+  }
+
   function getContractBalance() public view returns (uint256) {
     return address(this).balance;
+  }
+
+  // modifiers
+  modifier isNotOwner() {
+    require(msg.sender != owner(), 'Owner can not call the method');
+    _;
   }
 }
