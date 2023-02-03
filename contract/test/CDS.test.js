@@ -741,7 +741,6 @@ contract('CDS', (accounts) => {
     });
   });
 
-  /*
   describe('Claim Swap', async () => {
     beforeEach(async () => {
       await cds.createSwap(
@@ -794,7 +793,7 @@ contract('CDS', (accounts) => {
     });
 
     // claim when currPrice is btwn CP~LP => 70, claimReward should be 300
-    it('should pass and return proper reward if the current price of the asset is below claim price ', async () => {
+    it('should return proper status and reward if the current price of the asset is below claim price ', async () => {
       const changedPrice = 70;
       const claimRewardIntended = 300;
 
@@ -838,10 +837,14 @@ contract('CDS', (accounts) => {
         balanceBeforeClaim.seller + +defaultSellerDeposit - +claimReward,
         await web3.eth.getBalance(accounts[1]),
       );
+
+      // status
+      const status = await cds.getStatus(currentSwapId);
+      assert.strictEqual(3, +status);
     });
 
     // claim when currPrice is below LP => 50
-    it('should pass and reward seller deposit to buyer if the current price of the asset is below liquidation price ', async () => {
+    it('should return proper status and reward seller deposit to buyer if the current price of the asset is below liquidation price ', async () => {
       const changedPrice = 50;
 
       const [currentSwapId] = await cds.getSwapId();
@@ -884,9 +887,13 @@ contract('CDS', (accounts) => {
         balanceBeforeClaim.seller,
         await web3.eth.getBalance(accounts[1]),
       );
+
+      // status
+      const status = await cds.getStatus(currentSwapId);
+      assert.strictEqual(3, +status);
     });
   });
-
+  /*
   describe('Pay Premium', async () => {
     beforeEach(async () => {
       await cds.createSwap(
