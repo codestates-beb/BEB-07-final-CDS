@@ -11,6 +11,7 @@ COPY package*.json ./
 # RUN npm install
 # 프로덕션을 위한 코드를 빌드하는 경우
 RUN npm ci --only=production
+RUN npm i typescript
 RUN npm install -g pm2 typescript
 
 # 앱 소스 추가
