@@ -4,7 +4,8 @@
     {
       "inputs": [],
       "stateMutability": "payable",
-      "type": "constructor"
+      "type": "constructor",
+      "payable": true
     },
     {
       "anonymous": false,
@@ -150,7 +151,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -169,7 +171,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -200,7 +203,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -219,7 +223,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -238,7 +243,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -251,7 +257,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -270,7 +277,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -289,7 +297,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -308,7 +317,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -327,7 +337,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -346,7 +357,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -365,7 +377,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -385,7 +398,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -398,7 +412,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -441,7 +456,8 @@
     },
     {
       "stateMutability": "payable",
-      "type": "receive"
+      "type": "receive",
+      "payable": true
     },
     {
       "inputs": [
@@ -495,7 +511,8 @@
         }
       ],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -519,7 +536,8 @@
         }
       ],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -576,7 +594,8 @@
         }
       ],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -614,7 +633,8 @@
         }
       ],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [],
@@ -627,7 +647,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.16+commit.07a7930e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"payable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"guestAddr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"AcceptSwap\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"CancelSwap\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"claimReward\",\"type\":\"uint256\"}],\"name\":\"ClaimSwap\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"CloseSwap\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"hostAddr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"isBuyer\",\"type\":\"bool\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"swap\",\"type\":\"address\"}],\"name\":\"CreateSwap\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"PayPremium\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"deposit\",\"type\":\"uint256\"}],\"name\":\"_sendDeposit\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"initAssetPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"acceptSwap\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"cancelSwap\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"claimSwap\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"closeSwap\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"isBuyer\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"initAssetPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"liquidationPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"sellerDeposit\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"premium\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"premiumInterval\",\"type\":\"uint32\"},{\"internalType\":\"uint32\",\"name\":\"totalRounds\",\"type\":\"uint32\"}],\"name\":\"createSwap\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getBuyer\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getClaimReward\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getContractBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getDeposits\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"deposit\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isPaid\",\"type\":\"bool\"}],\"internalType\":\"struct SwapHandler.Deposit[2]\",\"name\":\"\",\"type\":\"tuple[2]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getInterval\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getPremium\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getPriceFromOracle\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getPrices\",\"outputs\":[{\"internalType\":\"uint256[5]\",\"name\":\"\",\"type\":\"uint256[5]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getRounds\",\"outputs\":[{\"internalType\":\"uint32\",\"name\":\"\",\"type\":\"uint32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getSeller\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getSellerDeposit\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getStatus\",\"outputs\":[{\"internalType\":\"enum Swap.Status\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"getSwap\",\"outputs\":[{\"internalType\":\"contract Swap\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getSwapId\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"}],\"internalType\":\"struct Counters.Counter\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"swapId\",\"type\":\"uint256\"}],\"name\":\"payPremium\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_priceOracleAddress\",\"type\":\"address\"}],\"name\":\"setOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/CDS.sol\":\"CDS\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0xa94b34880e3c1b0b931662cb1c09e5dfa6662f31cba80e07c5ee71cd135c9673\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://40fb1b5102468f783961d0af743f91b9980cf66b50d1d12009f6bb1869cea4d2\",\"dweb:/ipfs/QmYqEbJML4jB1GHbzD4cUZDtJg5wVwNm3vDJq1GbyDus8y\"]},\"@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]},\"@openzeppelin/contracts/utils/Counters.sol\":{\"keccak256\":\"0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee\",\"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu\"]},\"@openzeppelin/contracts/utils/math/SafeMath.sol\":{\"keccak256\":\"0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://864a40efcffdf408044c332a5aa38ec5618ed7b4eecb8f65faf45671bd6cdc65\",\"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN\"]},\"project:/contracts/CDS.sol\":{\"keccak256\":\"0x42585b44f380d16c20e1149dfeca9a0043e07935a97ec3ce8c5d9b5534bf10d2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://40bc935ad9dce7248b54404acf33f5f87a19276569e7684b2dc8439f63563e15\",\"dweb:/ipfs/QmfChaG7qrq5c8JgSWcAbERnFrTEhpKUXF9na2AJctnYZn\"]},\"project:/contracts/Handler/SwapHandler.sol\":{\"keccak256\":\"0xad5baba6aac67df851ed9dc4675d576c02fa5eea127654de68e51e70049d62cc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0d0440a3cadda4eacf78d8ed885cb36f75eddad3628c56efe15e410de3f325fb\",\"dweb:/ipfs/QmNguSrxUVov2TdS2jF6EDYNRowkc83BbDezUUbcPMuDJN\"]},\"project:/contracts/Oracle/PriceConsumer.sol\":{\"keccak256\":\"0xe91bd79174b252c953e491125462f1ae2767bf8b13bedba3afc70d48f9e00121\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1f05fbdbb3b6343dc1331ba5e99e50f9c095b7f20f1daa36d7b7e2a81bff4334\",\"dweb:/ipfs/QmZk8y35BJ78LmXaPfXWtvNNYLKJeXovf1QpNFn3baShsP\"]},\"project:/contracts/Oracle/PriceOracleMock.sol\":{\"keccak256\":\"0x85e656a1d0a17c7aa3653e953fbc7f1b3966fd8db584f46cdd2e73ca71935f8f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://82bca1e94280ede850a87e7731659c1bf57d303bb2da8ee077b0e5e9a6ed82c3\",\"dweb:/ipfs/QmcL8Sw6nTa9Si4jsZFWPDLRL5y9LhcFXjRvR1KQyWLoNW\"]},\"project:/contracts/Swaps/Swap.sol\":{\"keccak256\":\"0x38d497341f5ed9ae8851efdde0ad1115b702b26e21013110da9dc3de46cb98cb\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5bcea9e6c653f03cb9f33b5ebfcd185b627240ca7c2bc9ac3d8b07360c1f9a15\",\"dweb:/ipfs/QmcMuWNpYmgDTCZ71eG2VMxmcEyDxsFztRbNpouPBSj8HU\"]},\"project:/contracts/libs/LibClaim.sol\":{\"keccak256\":\"0xdc39c3c4958b3b77db1650fb8439e7df00e6c74b212cb5acdc05d36655317614\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://393f12e02be75b6c072ab51ada6fb368ac5ea57efc673b6b66e4f100d3a2ee02\",\"dweb:/ipfs/QmRnRpWtcLRdZgSacdyGegVQz3rmBCx1TkMrAGswAeCMmC\"]}},\"version\":1}",
@@ -25001,11 +25022,55 @@
           ],
           "name": "OwnershipTransferred",
           "type": "event"
+        },
+        "0xfe0728f16b61ded19416fa941dc2fbb5f345c84d79e9da02bf47b9e669000d1d": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "hostAddr",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "bool",
+              "name": "isBuyer",
+              "type": "bool"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "swapId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "swap",
+              "type": "address"
+            }
+          ],
+          "name": "CreateSwap",
+          "type": "event"
+        },
+        "0x73fe46267e05ae56a3625c045df1b74c1b1736a7535eeadef3c57551bfd00599": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "swapId",
+              "type": "uint256"
+            }
+          ],
+          "name": "PayPremium",
+          "type": "event"
         }
       },
       "links": {},
-      "address": "0x95b326beCe3F876b6662934B92B4f632D5381ED1",
-      "transactionHash": "0x20badd207e95562d854df576e7d87b5f8dbb3710298754c9fee2b8c0ff3075c9"
+      "address": "0x17dd585c459271a9d5a81299fE968fF1049FEd6B",
+      "transactionHash": "0x48ce718f7190dbb46abf7ddbde0d96229441ff91bfea25cade2743b32f6db639"
     },
     "1674132869145": {
       "events": {
@@ -25327,7 +25392,8 @@
     }
   },
   "schemaVersion": "3.4.9",
-  "updatedAt": "2023-02-04T07:41:25.403Z",
+  "updatedAt": "2023-02-04T14:08:54.713Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {

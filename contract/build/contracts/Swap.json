@@ -5987,18 +5987,10 @@
   "ast": {
     "absolutePath": "project:/contracts/Swaps/Swap.sol",
     "exportedSymbols": {
-      "Context": [
-        134
-      ],
-      "Ownable": [
-        112
-      ],
-      "SafeMath": [
-        520
-      ],
-      "Swap": [
-        1996
-      ]
+      "Context": [134],
+      "Ownable": [112],
+      "SafeMath": [520],
+      "Swap": [1996]
     },
     "id": 1997,
     "license": "MIT",
@@ -6006,12 +5998,7 @@
     "nodes": [
       {
         "id": 1785,
-        "literals": [
-          "solidity",
-          "^",
-          "0.8",
-          ".7"
-        ],
+        "literals": ["solidity", "^", "0.8", ".7"],
         "nodeType": "PragmaDirective",
         "src": "32:23:8"
       },
@@ -6046,9 +6033,7 @@
             "baseName": {
               "id": 1788,
               "name": "Ownable",
-              "nameLocations": [
-                "186:7:8"
-              ],
+              "nameLocations": ["186:7:8"],
               "nodeType": "IdentifierPath",
               "referencedDeclaration": 112,
               "src": "186:7:8"
@@ -6063,11 +6048,7 @@
         "contractKind": "contract",
         "fullyImplemented": true,
         "id": 1996,
-        "linearizedBaseContracts": [
-          1996,
-          112,
-          134
-        ],
+        "linearizedBaseContracts": [1996, 112, 134],
         "name": "Swap",
         "nameLocation": "178:4:8",
         "nodeType": "ContractDefinition",
@@ -6078,9 +6059,7 @@
             "libraryName": {
               "id": 1790,
               "name": "SafeMath",
-              "nameLocations": [
-                "204:8:8"
-              ],
+              "nameLocations": ["204:8:8"],
               "nodeType": "IdentifierPath",
               "referencedDeclaration": 520,
               "src": "204:8:8"
@@ -6165,9 +6144,7 @@
               "pathNode": {
                 "id": 1799,
                 "name": "Status",
-                "nameLocations": [
-                  "313:6:8"
-                ],
+                "nameLocations": ["313:6:8"],
                 "nodeType": "IdentifierPath",
                 "referencedDeclaration": 1798,
                 "src": "313:6:8"
@@ -7762,9 +7739,7 @@
                 "modifierName": {
                   "id": 1934,
                   "name": "onlyOwner",
-                  "nameLocations": [
-                    "1636:9:8"
-                  ],
+                  "nameLocations": ["1636:9:8"],
                   "nodeType": "IdentifierPath",
                   "referencedDeclaration": 31,
                   "src": "1636:9:8"
@@ -7801,9 +7776,7 @@
                     "pathNode": {
                       "id": 1930,
                       "name": "Status",
-                      "nameLocations": [
-                        "1613:6:8"
-                      ],
+                      "nameLocations": ["1613:6:8"],
                       "nodeType": "IdentifierPath",
                       "referencedDeclaration": 1798,
                       "src": "1613:6:8"
@@ -7845,9 +7818,7 @@
                     "pathNode": {
                       "id": 1936,
                       "name": "Status",
-                      "nameLocations": [
-                        "1655:6:8"
-                      ],
+                      "nameLocations": ["1655:6:8"],
                       "nodeType": "IdentifierPath",
                       "referencedDeclaration": 1798,
                       "src": "1655:6:8"
@@ -7950,9 +7921,7 @@
                 "modifierName": {
                   "id": 1951,
                   "name": "onlyOwner",
-                  "nameLocations": [
-                    "1754:9:8"
-                  ],
+                  "nameLocations": ["1754:9:8"],
                   "nodeType": "IdentifierPath",
                   "referencedDeclaration": 31,
                   "src": "1754:9:8"
@@ -8120,9 +8089,7 @@
                 "modifierName": {
                   "id": 1967,
                   "name": "onlyOwner",
-                  "nameLocations": [
-                    "1872:9:8"
-                  ],
+                  "nameLocations": ["1872:9:8"],
                   "nodeType": "IdentifierPath",
                   "referencedDeclaration": 31,
                   "src": "1872:9:8"
@@ -8290,9 +8257,7 @@
                 "modifierName": {
                   "id": 1983,
                   "name": "onlyOwner",
-                  "nameLocations": [
-                    "1992:9:8"
-                  ],
+                  "nameLocations": ["1992:9:8"],
                   "nodeType": "IdentifierPath",
                   "referencedDeclaration": 31,
                   "src": "1992:9:8"
