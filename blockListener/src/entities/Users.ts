@@ -31,6 +31,9 @@ export class Users {
   @Column('int', { name: 'lastBought', unsigned: true, nullable: true })
   lastBought: number | null;
 
+  @Column('int', { name: 'nonce', unsigned: true, nullable: true })
+  nonce: number | null;
+
   @Column('int', { name: 'createdAt', unsigned: true, nullable: false })
   createdAt: number;
 
