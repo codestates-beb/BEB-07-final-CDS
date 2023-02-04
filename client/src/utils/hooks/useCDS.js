@@ -57,7 +57,13 @@ function useCDS() {
           )
           .send({from: userAddress, value: deposit}, (result)=>{
             console.log(result);
+            return result;
           })
+          .on('sent', (result)=>{
+            console.log(result);
+          });
+
+          console.log(receipt);
 
           return receipt;
         },
@@ -113,7 +119,6 @@ function useCDS() {
 
         getSwap: async (swapId)=>{
           const receipt = await contract.methods.getSwap(swapId).call();
-          console.log(receipt);
           return receipt
         }
       }

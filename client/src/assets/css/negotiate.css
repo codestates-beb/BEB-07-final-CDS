@@ -180,7 +180,22 @@
         @apply flex justify-end;
     }
 
-    .negotiate-form .form-section .negotiate-button {
-        @apply p-4 font-bold
+    .negotiate-form .form-section .negotiate-button,
+    .negotiate-form .form-section .accept-button,
+    .negotiate-form .form-section .cancel-button
+    {
+        @apply p-4 font-bold;
+    }
+
+    .negotiate-form .form-section .cancel-button{
+        @apply bg-secondaryColor;
+    }
+
+    .negotiate-form .form-section button{
+        @apply mr-5;
+    }
+
+    .negotiate-form .form-section button:last-child{
+        @apply mr-0;
     }
 }
