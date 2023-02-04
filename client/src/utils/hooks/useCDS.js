@@ -43,7 +43,7 @@ function useCDS() {
 
           let deposit;
           if (isBuyer === true) deposit = premiumPrice * 3;
-          else if(isBuyer === false) deposit = sellerDeposit;
+          else deposit = sellerDeposit;
 
           const receipt = await contract.methods.createSwap(
             isBuyer,
@@ -68,7 +68,7 @@ function useCDS() {
           return receipt;
         },
 
-        acceptSwap: async (initialPriceOfAssets, swapId, deposit, userAddress)=>{
+        acceptSwap: async (initialPriceOfAssets, swapId, deposit, userAddress)=>{          
           if( !initialPriceOfAssets || !swapId || !deposit || !userAddress)
             return new Error("Invalid Arguments");
 
@@ -76,7 +76,7 @@ function useCDS() {
             initialPriceOfAssets, 
             swapId
           )
-          .send({from:userAddress, value: deposit});
+          .send({from: userAddress, value: deposit});
 
           return receipt;
         },

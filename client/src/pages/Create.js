@@ -149,8 +149,8 @@ function Create() {
             <h2 className='section-title'>User</h2>
             <div className='input-group'>
               <div className='input-radio'>
-                <label><input name='role' type='radio' onChange={e=>setIsbuyer(1)} defaultChecked/>Buyer</label>
-                <label><input name='role' type='radio' onChange={e=>setIsbuyer(0)}/>Seller</label>
+                <label><input name='role' type='radio' onChange={e=>setIsbuyer(true)} defaultChecked/>Buyer</label>
+                <label><input name='role' type='radio' onChange={e=>setIsbuyer(false)}/>Seller</label>
               </div>
               <div className='input-button'>
                 <input 
