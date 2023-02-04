@@ -1,6 +1,6 @@
 // modules
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Route } from 'react-router-dom';
 
 //image
 import MainLogo from '../assets/img/CDS_Symbol_bright_removebg.png';
@@ -112,6 +112,14 @@ function Main() {
           <ProposedCardScroll response={swapResponse} />
         </div>
       </div>
+      <Link
+        to={'/cardProposed'}
+        className="text-sm font-bold flex justify-center"
+      >
+        <button className="w-[7rem] h-[2rem]">See More</button>
+      </Link>
+      <div className="flex justify-center"></div>
+
       <div className="flex-col">
         <div className="mt-32 font-bold text-2xl text-center">
           Accepted CDSs
