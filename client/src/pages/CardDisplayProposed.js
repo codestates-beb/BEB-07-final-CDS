@@ -14,27 +14,32 @@ function CardDisplayProposed() {
   const [proposed, setProposed] = useState([]);
 
   // 하나의 page에 들어갈 데이터를 저장합니다
-  const [page, setPage] = useState(1); //페이지
+  const [page, setPage] = useState(1); //현재 페이지
+  const handlePageChange = (page) => {
+    setPage(page);
+  };
   const limit = 10; // posts가 보일 최대한의 갯수
-  const offset = (page - 1) * limit; // 시작점과 끝점을 구하는 offset
+  const offset = (page - 1) * limit; // 시작점과 끝점을 구하는 offset, 현재의 page가 변함에 따라 offset도 달라진다
 
   const postsData = (posts) => {
     if (posts) {
-      let result = posts.slice(offset, offset + limit);
+      let result = posts.slice(offset, offset + limit); // offset: 하나의 페이지에 보여줄 posts의 시작점, limit: 끝점
       return result;
     }
   };
+
+  const postCards = postsData(proposed);
 
   useEffect(() => {
     const APIdata = getSwaps();
     const getData = () => {
       APIdata.then((response) => {
-        console.log(response);
-
         const proposedData = response.filter(
           (swap) => swap.status === 'pending',
         );
-        setProposed(proposedData);
+
+        setProposed([...proposedData].reverse());
+        console.log([...proposedData].reverse());
       });
     };
     getData();
@@ -67,9 +72,9 @@ function CardDisplayProposed() {
           </div>
         </div>
         <div className="grid grid-cols-fill-25 justify-center">
-          {proposed.map((swap) => {
+          {postCards.map((swap) => {
             return (
-              <div className="mx-auto">
+              <div className="mx-auto" key={swap.swapId}>
                 <ProposedCardType2
                   swapId={swap.swapId}
                   premium={swap.premium}
@@ -84,10 +89,10 @@ function CardDisplayProposed() {
         </div>
         <div>
           <Pagination
-            limit={limit}
             page={page}
+            limit={limit}
             totalPosts={proposed.length}
-            setPage={setPage}
+            handlePageChange={handlePageChange} //현재 페이지의 위치를 설정하는 handlePageChange props로 넘긴다
           />
         </div>
       </div>
