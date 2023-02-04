@@ -8,8 +8,8 @@
     "start": "npx nodemon dist/index.js",
     "build": "npx tsc",
     "typeorm": "typeorm-ts-node-commonjs",
-    "migrate": "npx typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
-    "revert": "npx typeorm-ts-node-commonjs migration:revert -d ./src/data-source.ts"
+    "db:migrate": "npx typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
+    "db:revert": "npx typeorm-ts-node-commonjs migration:revert -d ./src/data-source.ts"
   },
   "author": "",
   "license": "ISC",
