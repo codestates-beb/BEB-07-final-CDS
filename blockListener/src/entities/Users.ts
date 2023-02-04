@@ -1,40 +1,44 @@
-import { Column, CreateDateColumn, Entity, Index, OneToMany } from 'typeorm';
+import { Column, PrimaryColumn, Entity, Index, OneToMany } from 'typeorm';
 import { Swaps } from './Swaps';
 
 @Index('address', ['address'], { unique: true })
 @Entity('users', { schema: 'cds_dev3' })
 export class Users {
-  @Column('varchar', { primary: true, name: 'address', length: 100 })
+  @PrimaryColumn('varchar', {
+    primary: true,
+    name: 'address',
+    length: 100,
+  })
   address: string;
 
   @Column('varchar', {
     name: 'nickname',
     nullable: true,
     length: 50,
-    default: () => "'unnamed'",
+    default: null,
   })
   nickname: string | null;
 
-  @Column('int', { name: 'soldCount', default: () => "'0'" })
+  @Column('int', { name: 'soldCount', unsigned: true, default: () => "'0'" })
   soldCount: number;
 
-  @Column('int', { name: 'boughtCount', default: () => "'0'" })
+  @Column('int', { name: 'boughtCount', unsigned: true, default: () => "'0'" })
   boughtCount: number;
 
-  @Column('datetime', { name: 'lastSold', nullable: true })
-  lastSold: Date | null;
+  @Column('int', { name: 'lastSold', unsigned: true, nullable: true })
+  lastSold: number | null;
 
-  @Column('datetime', { name: 'lastBought', nullable: true })
-  lastBought: Date | null;
+  @Column('int', { name: 'lastBought', unsigned: true, nullable: true })
+  lastBought: number | null;
 
-  @CreateDateColumn()
-  createdAt: Date;
+  @Column('int', { name: 'createdAt', unsigned: true, nullable: false })
+  createdAt: number;
 
-  @CreateDateColumn()
-  updatedAt: Date;
+  @Column('int', { name: 'updatedAt', unsigned: true, nullable: false })
+  updatedAt: number;
 
-  @Column('datetime', { name: 'deletedAt', nullable: true })
-  deletedAt: Date | null;
+  @Column('int', { name: 'deletedAt', unsigned: true, nullable: true })
+  deletedAt: number | null;
 
   @OneToMany(() => Swaps, (swaps) => swaps.buyer2)
   swaps: Swaps[];
