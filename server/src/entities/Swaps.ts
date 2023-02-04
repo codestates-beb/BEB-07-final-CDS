@@ -50,6 +50,9 @@ export class Swaps {
   @Column('int', { name: 'premiumInterval', unsigned: true })
   premiumInterval: number;
 
+  @Column('int', { name: 'remainPremiumRounds', unsigned: true })
+  remainPremiumRounds: number;
+
   @Column('int', { name: 'totalPremiumRounds', unsigned: true })
   totalPremiumRounds: number;
 
@@ -81,6 +84,9 @@ export class Swaps {
 
   @Column('int', { name: 'updatedAt', unsigned: true, nullable: false })
   updatedAt: number;
+
+  @Column('int', { name: 'lastPaidAt', unsigned: true, nullable: true })
+  lastPaidAt: number | null;
 
   @Column('int', { name: 'terminatedAt', unsigned: true, nullable: true })
   terminatedAt: number | null;
