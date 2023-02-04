@@ -212,6 +212,14 @@ export default class CDS {
       .on('data', async (event: EventData) => {
         await this.closeSwapHandler(event);
       });
+
+    this.contract.events
+      .PayPremium({}, (err: Error, event: EventData) => {
+        console.log(`** PayPremium Swap Emitted ${event.transactionHash} **`);
+      })
+      .on('data', async (event: EventData) => {
+        await this.payPremiumHandler(event);
+      });
   }
 
   // get detailed swapinfo from Swap.sol
