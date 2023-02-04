@@ -33,6 +33,7 @@ function App() {
         <Route path="/acceptTest/:swapId" element={<AcceptTest />} />
         <Route path="/oracleTest" element={<OracleTest />} />
         <Route path="/cardProposed" element={<CardDisplayProposed />} />
+        <Route path="/cardAccepted" element={<CardDisplayProposed />} />
       </Routes>
     </div>
   );
