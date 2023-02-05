@@ -50,24 +50,27 @@ function CardDisplayAccepted() {
       <div>
         <div className="mt-[6rem] mb-[7rem]">
           <div className="text-center text-5xl font-bold">
-            Proposed Crypto Default Swap Cards
+            Accepted Crypto Default Swap Cards
           </div>
           <div className="flex justify-center w-screen mx-auto">
             <div className="w-[18.5rem] h-[3px] bg-primaryColor my-[2rem]"></div>
           </div>
           <div className="text-center text-sm font-light">
-            As a buyer, you can accpet CDS Card, pay Seller a premium for a
-            period of time, and protect your assets.{' '}
+            Explore our decentralized Crypto Defatult Swaps!
           </div>
           <div>
             <p className="text-center text-sm font-light">
-              As a Seller, you can provide liquidity and receive a premium from
-              Buyer for a period of time.
+              Buyer can claim compensation from Seller when the reference asset
+              reaches below Claim Price.
             </p>
             <p className="text-center text-sm font-light">
               {' '}
-              If the Claim incident does not occur, you will receive back all
-              the liquidity you provided.
+              When the reference asset falls below the Liquidation price,
+            </p>
+            <p className="text-center text-sm font-light">
+              {' '}
+              the maximum compensation will be paid immediately upon requesting
+              Claim.
             </p>
           </div>
         </div>

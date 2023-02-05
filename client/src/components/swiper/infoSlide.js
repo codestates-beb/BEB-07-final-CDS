@@ -9,7 +9,7 @@ import 'swiper/css/pagination';
 // import required modules
 import { Navigation, Mousewheel, Keyboard } from 'swiper';
 
-//image
+// image
 import infoSlide1 from '../../assets/img/infoSlide_bg_1.jpg';
 import infoSlide2 from '../../assets/img/infoSlide_bg_2.jpg';
 import infoSlide3 from '../../assets/img/infoSlide_bg_3.jpg';
