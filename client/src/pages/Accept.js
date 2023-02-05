@@ -1,11 +1,21 @@
 // modules
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 
 // components
 import Footer from '../components/Footer';
 import ScrollButton from '../components/ScrollButton';
+
+// actions
+import { 
+  openModal, 
+  closeModal,
+  setProcessing,
+  setSuccess,
+  setFail,
+  setWaiting 
+} from '../features/modalSlice';
 
 // hooks
 import useCDS from '../utils/hooks/useCDS';
@@ -24,6 +34,7 @@ import acceptBackGround from '../assets/img/acceptPage_bg.png';
 
 function Accept() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const { swapId } = useParams();
   const [swapOnChain, setSwapOnChain] = useState(null);
@@ -53,6 +64,9 @@ function Accept() {
     console.log(deposit);
 
     try {
+      dispatch( openModal() );
+      dispatch( setProcessing() );
+
       const result = await CDS.acceptSwap(
         swapOnDB.initialAssetPrice,
         swapId,
@@ -61,10 +75,23 @@ function Accept() {
       );
 
       console.log(result);
+      dispatch( setSuccess() );
 
-      navigate('/');
+      setTimeout(()=>{
+        dispatch( closeModal() );
+        dispatch( setWaiting() );
+        navigate('/');
+      },3000)
     } catch (err) {
       console.log(err);
+
+      const timeoutId = setTimeout(()=>{
+        dispatch( closeModal() );
+        dispatch( setWaiting() );
+        navigate('/');
+      },3000)
+
+      dispatch( setFail(timeoutId) );
     }
   };
 
@@ -73,13 +100,28 @@ function Accept() {
     console.log(swapId);
 
     try {
+      dispatch( openModal() );
+      dispatch( setProcessing() );
+
       const result = await CDS.cancelSwap(swapId, userAddress);
-
       console.log(result);
+      dispatch( setSuccess() );
 
-      navigate('/');
+      setTimeout(()=>{
+        dispatch( closeModal() );
+        dispatch( setWaiting() );
+        navigate('/');
+      },3000)
     } catch (err) {
       console.log(err);
+
+      const timeoutId = setTimeout(()=>{
+        dispatch( closeModal() );
+        dispatch( setWaiting() );
+        navigate('/');
+      },3000)
+
+      dispatch( setFail(timeoutId) );
     }
   };
 
