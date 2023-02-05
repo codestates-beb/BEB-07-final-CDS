@@ -19,6 +19,9 @@ import { calculateTimeRemaining } from '../utils/calendar';
 // css
 import '../assets/css/negotiate.css';
 
+// images
+import background_img from '../assets/img/createPage_bg.jpg';
+
 function Accept() {
   const navigate = useNavigate();
 
@@ -119,7 +122,7 @@ function Accept() {
   return (
     <>
       <div className='negotiate-banner'>
-        <img/>
+        <img className='negotiate-banner-img' src={background_img}/>
       </div>
       <div className='container container-negotiate'>
         <div className='negotiate-head'>

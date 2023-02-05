@@ -23,8 +23,13 @@
 
     /* negotiate-banner */
     .negotiate-banner{
+        @apply relative overflow-hidden;
         height: 465px;
         background-color: var(--white-color);
+    }
+
+    .negotiate-banner .negotiate-banner-img {
+        @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
     }
 
     /* negotiate-head */

@@ -3,6 +3,10 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
+// components
+import ScrollButton from '../components/ScrollButton.js';
+import Footer from '../components/Footer.js';
+
 // actions
 import { setAuth } from '../features/authSlice';
 
@@ -29,9 +33,8 @@ import {
 // css
 import '../assets/css/negotiate.css';
 
-// components
-import ScrollButton from '../components/ScrollButton.js';
-import Footer from '../components/Footer.js';
+// images
+import background_img from '../assets/img/createPage_bg.jpg';
 
 function Create() {
   const metamask = useMetamask();
@@ -134,7 +137,7 @@ function Create() {
   return (
     <>
       <div className="negotiate-banner">
-        <img />
+        <img className='negotiate-banner-img' src={background_img}/>
       </div>
       <div className="container container-negotiate">
         <div className="negotiate-head">
