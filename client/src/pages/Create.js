@@ -25,6 +25,9 @@ import { weeksToUnixTime } from '../utils/calendar';
 // css
 import '../assets/css/negotiate.css';
 
+// imgage
+import createBackGround from '../assets/img/createPage_bg.png';
+
 // components
 import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
@@ -137,7 +140,7 @@ function Create() {
   return (
     <>
       <div className="negotiate-banner">
-        <img />
+        <img src={createBackGround} alt="acceptBackGround" />
       </div>
       <div className="container container-negotiate">
         <div className="negotiate-head">
