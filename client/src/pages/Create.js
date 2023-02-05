@@ -29,17 +29,8 @@ import { weeksToUnixTime } from '../utils/calendar';
 // css
 import '../assets/css/negotiate.css';
 
-<<<<<<< HEAD
-// images
-import background_img from '../assets/img/createPage_bg.jpg';
-=======
 // imgage
 import createBackGround from '../assets/img/createPage_bg.png';
-
-// components
-import ScrollButton from '../components/ScrollButton.js';
-import Footer from '../components/Footer.js';
->>>>>>> 221594ce81d31c6375ecb2a6fa76f0d896903353
 
 function Create() {
   const metamask = useMetamask();
