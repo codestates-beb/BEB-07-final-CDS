@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 // components
 import Header from './components/Header';
 import Notice from './components/Notice';
+import ScrollToTop from './components/ScrollToTop';
 
 // pages
 import Main from './pages/Main';
@@ -23,6 +24,7 @@ import './App.css';
 function App() {
   return (
     <div className="App">
+      <ScrollToTop />
       <Header />
       <Routes>
         <Route path="/" element={<Main />} />
