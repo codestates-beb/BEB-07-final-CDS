@@ -1,6 +1,6 @@
 // modules
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 // components
@@ -24,6 +24,8 @@ import Footer from '../components/Footer.js';
 import { calculateTimeRemaining } from '../utils/calendar';
 
 function Detail() {
+  const navigate = useNavigate();
+
   const { swapId } = useParams();
   const userAddress = useSelector(state=>state.auth.user_addr);
   const [swapOnDB, setSwapOnDB] = useState(null);
@@ -35,45 +37,63 @@ function Detail() {
   const premiumButtonHandler = async()=>{
     console.log(swapId);
 
-    const result = await CDS.payPremium(swapId, userAddress, swapOnChain.premium);
-    
-    console.log(result);
+    try {
+      const result = await CDS.payPremium(swapId, userAddress, swapOnChain.premium);
+      
+      console.log(result);
+    } catch(err){
+      console.log(err);
+    }
   }
 
   // CDS Cancel Handler
   const cancelButtonHandler = async()=>{
     console.log(swapId);
 
-    const result = await CDS.cancelSwap(
-      swapId,
-      userAddress,
-    );
+    try {
+      const result = await CDS.cancelSwap(
+        swapId,
+        userAddress,
+      );
 
-    console.log(result);
+      console.log(result);
+      navigate('/');
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   // CDS Claim Handler
   const claimButtonHandler = async()=>{
     console.log(swapId);
 
-    const result = await CDS.claimSwap(
-      swapId,
-      userAddress,
-    );   
+    try {
+      const result = await CDS.claimSwap(
+        swapId,
+        userAddress,
+      );   
 
-    console.log(result);
+      console.log(result);
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   // CDS Close Handler
   const closeButtonHandler = async()=>{
     console.log(swapId);
 
-    const result = await CDS.closeSwap(
-      swapId,
-      userAddress,
-    );
-
-    console.log(result);
+    try{
+      const result = await CDS.closeSwap(
+        swapId,
+        userAddress,
+      );
+      
+      console.log(result);
+      navigate('/');
+    } catch(err) {
+      console.log(err)
+    }
   }
 
   useEffect(()=>{
@@ -86,16 +106,16 @@ function Detail() {
 
   useEffect(()=>{
     let intervalId;
-    if (CDS){
-      CDS.getSwap(swapId)
-      .then(result=>{
-        setSwapOnChain(result);
-        intervalId = setInterval(()=>{
-          const current = parseInt(new Date().getTime() / 1000);
-          setTimeRemainingToPay( calculateTimeRemaining( current, result.buyer.nextPayDate ));
-        }, 1000)
-      })
-    }
+    // if (CDS){
+    //   CDS.getSwap(swapId)
+    //   .then(result=>{
+    //     setSwapOnChain(result);
+    //     intervalId = setInterval(()=>{
+    //       const current = parseInt(new Date().getTime() / 1000);
+    //       setTimeRemainingToPay( calculateTimeRemaining( current, result.buyer.nextPayDate ));
+    //     }, 1000)
+    //   })
+    // }
 
     return ()=>{
       clearInterval(intervalId);
@@ -110,7 +130,7 @@ function Detail() {
             <div className="detail-title-group">
               <h1 className="detail-title">Bitcoin Crypto Default Swap</h1>
               <p className="detail-issued">Issued on Jan 22, 2023</p>
-              <p className='detail-payday'>{swapOnChain ? timeRemainingToPay:''}</p>
+              {/* <p className='detail-payday'>{swapOnChain ? timeRemainingToPay:''}</p> */}
             </div>
             <div className="detail-party">
               <div className="party-item">
@@ -176,7 +196,7 @@ function Detail() {
               </div>
               <div className="content-item">
                 <p className="item-name">Premium Interval</p>
-                <p className="item-figures">{swapOnDB ? `${swapOnDB.premiumInterval} seconds` : ''}</p>
+                <p className="item-figures">{swapOnDB ? `${calculateTimeRemaining(0, swapOnDB.premiumInterval)}` : ''}</p>
               </div>
               <div className="content-item">
                 <p className="item-name">Premium Rounds</p>

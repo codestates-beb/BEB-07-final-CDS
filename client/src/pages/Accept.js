@@ -25,25 +25,32 @@ function Accept() {
   const {swapId} = useParams();
   const [swapOnChain, setSwapOnChain] = useState(null);
   const [swapOnDB, setSwapOnDB] = useState(null);
-  const [position, setPosition] = useState(null);
+  
+  const [isBuyer, setIsBuyer] = useState(null);
+  const [proposer, setProposer] = useState(null);
+
   const userAddress = useSelector(state=>state.auth.user_addr);
   const CDS = useCDS();
 
   // Accept CDS Handler
   const acceptButtonHandler = async()=>{
     console.log(
-      swapOnChain.initAssetPrice,
+      swapOnDB.initialAssetPrice,
       swapId,
-      swapOnChain.seller.deposit,
+      swapOnDB.buyerDeposit,
+      swapOnDB.sellerDeposit,
       swapOnDB.buyer,
       swapOnDB.seller,
     )
 
+    const deposit = isBuyer ? swapOnDB.sellerDeposit : swapOnDB.buyerDeposit;
+    console.log(deposit);
+
     try {
       const result = await CDS.acceptSwap(
-        swapOnChain.initAssetPrice, 
+        swapOnDB.initialAssetPrice, 
         swapId,
-        swapOnChain.seller.deposit,
+        deposit,
         userAddress
       );
 
@@ -59,19 +66,32 @@ function Accept() {
   const cancelButtonHandler = async()=>{
     console.log(swapId);
 
-    const result = await CDS.cancelSwap(
-      swapId,
-      userAddress,
-    );
+    try {
+      const result = await CDS.cancelSwap(
+        swapId,
+        userAddress,
+      );
 
-    console.log(result);
+      console.log(result);
+
+      navigate('/');
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   useEffect(()=>{
     getSwapById(swapId)
     .then(result=>{
       setSwapOnDB(result);
-      setPosition(result.buyer ? 0 : 1);
+
+      if (result.buyer){
+        setIsBuyer(true);
+        setProposer(result.buyer);
+      } else {
+        setIsBuyer(false);
+        setProposer(result.seller);
+      }
     })
   },[])
 
@@ -86,9 +106,9 @@ function Accept() {
 
   useEffect(()=>{
     if(swapOnDB){
-      console.log(userAddress);
-      console.log(swapOnDB.buyer.toLowerCase());
-      console.log(userAddress === swapOnDB.buyer.toLowerCase());
+      console.log(`Address Logined : ${userAddress}`);
+      console.log(`Address's Propsoer : ${proposer.toLowerCase()}`);
+      console.log(`Address Logined === Address's Proposer ${userAddress === proposer.toLowerCase()}`);
 
     }
   }, [swapOnDB, userAddress])
@@ -109,14 +129,14 @@ function Accept() {
             <h2 className='section-title'>Address</h2>
             <div className='input-group'>
               <div className='input-button'>
-                { position === 0 ? 
+                { isBuyer ? 
                   <input 
-                    value={swapOnDB ? `Buyer Address: ${swapOnDB.buyer}` : null}
+                    value={swapOnDB ? `Buyer Address: ${proposer}` : null}
                     disabled
                   />
                 :
                   <input
-                    value={swapOnDB ? `Seller Address: ${swapOnDB.Seller}` : null}
+                    value={swapOnDB ? `Seller Address: ${proposer}` : null}
                     disabled
                   />
                 }
@@ -230,7 +250,7 @@ function Accept() {
           </div>
           <div className='form-section'>
             <div className='button-group'>
-              { swapOnDB && userAddress === swapOnDB.buyer.toLowerCase() ?
+              { swapOnDB && proposer.toLowerCase() === userAddress ?
                 <button
                   className='cancel-button'
                   onClick={cancelButtonHandler}
