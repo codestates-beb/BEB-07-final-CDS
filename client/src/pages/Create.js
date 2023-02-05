@@ -107,12 +107,12 @@ function Create() {
   useEffect(()=>{
     const totalAssetsCalculated = calculateTotalAssets( initialPriceOfAssets, amountOfAssets )
     setTotalAssets( totalAssetsCalculated );
-    setLiquidationPrice( initialPriceOfAssets );
   }, [initialPriceOfAssets, amountOfAssets])
 
   useEffect(()=>{
-    const calimPriceCalculated = calculateClaimPrice(initialPriceOfAssets, dropRate);
-    setClaimPrice( calimPriceCalculated );
+    const claimPriceCalculated = calculateClaimPrice(initialPriceOfAssets, dropRate);
+    setClaimPrice( claimPriceCalculated );
+    setLiquidationPrice( claimPriceCalculated );
 
     const premiumPriceCalculated = calculatePremiumPrice(
       initialPriceOfAssets, 
@@ -121,7 +121,6 @@ function Create() {
       premiumRate
     );
     setPremiumPrice( premiumPriceCalculated );
-
   }, [initialPriceOfAssets, dropRate, premiumRate])
 
   useEffect(()=>{
@@ -150,8 +149,8 @@ function Create() {
             <h2 className='section-title'>User</h2>
             <div className='input-group'>
               <div className='input-radio'>
-                <label><input name='role' type='radio' onChange={e=>setIsbuyer(1)} defaultChecked/>Buyer</label>
-                <label><input name='role' type='radio' onChange={e=>setIsbuyer(0)}/>Seller</label>
+                <label><input name='role' type='radio' onChange={e=>setIsbuyer(true)} defaultChecked/>Buyer</label>
+                <label><input name='role' type='radio' onChange={e=>setIsbuyer(false)}/>Seller</label>
               </div>
               <div className='input-button'>
                 <input 
@@ -289,9 +288,8 @@ function Create() {
                   max={claimPrice || 0}
                   onChange={e=>{
                     const currentValue = onlyNumber(e.target.value);
-                    if(currentValue > initialPriceOfAssets) 
-                      currentValue=initialPriceOfAssets;
-                    setLiquidationPrice(currentValue);
+                    if( Number(currentValue) > Number(claimPrice) ) return;
+                    else setLiquidationPrice(currentValue);
                   }}
                 />
                 <input
