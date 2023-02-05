@@ -52,8 +52,8 @@ function infoSlide() {
                 </p>
                 <p>who agrees to reimburse them if the borrower defaults.</p>
               </div>
-              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl">
-                <div className="font-semibold">More Details</div>
+              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100">
+                <div className="font-semibold ">More Details</div>
               </button>
             </div>
           </div>
@@ -81,7 +81,7 @@ function infoSlide() {
                   volatility of tokens, on-chain vulnerabilities etc
                 </p>
               </div>
-              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl">
+              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100">
                 <div className="font-semibold">More Details</div>
               </button>
             </div>
@@ -100,11 +100,11 @@ function infoSlide() {
                 <p>Our team consists of creative and collaborative talents.</p>
                 <p>They value communication, cooperation, and efficiency.</p>
                 <p>
-                  In the future, you will grow into an experienced professional
+                  In the future, we will grow into an experienced professional
                   in finance, systems engineering, business strategy, and law.
                 </p>
               </div>
-              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl">
+              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100">
                 <div className="font-semibold">More Details</div>
               </button>
             </div>

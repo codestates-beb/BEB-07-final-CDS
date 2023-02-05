@@ -12,6 +12,7 @@ import Accept from './pages/Accept';
 import Detail from './pages/Detail';
 import Mypage from './pages/Mypage';
 import CardDisplayProposed from './pages/CardDisplayProposed';
+import CardDisplayAccepted from './pages/CardDisplayAccepted';
 import OracleTest from './pages/OracleTest';
 
 // css
@@ -29,7 +30,7 @@ function App() {
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/oracleTest" element={<OracleTest />} />
         <Route path="/cardProposed" element={<CardDisplayProposed />} />
-        <Route path="/cardAccepted" element={<CardDisplayProposed />} />
+        <Route path="/cardAccepted" element={<CardDisplayAccepted />} />
       </Routes>
     </div>
   );
