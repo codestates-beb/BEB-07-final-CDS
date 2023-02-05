@@ -9,6 +9,14 @@ import Footer from '../components/Footer.js';
 
 // actions
 import { setAuth } from '../features/authSlice';
+import { 
+  openModal, 
+  closeModal,
+  setProcessing,
+  setSuccess,
+  setFail,
+  setWaiting 
+} from '../features/modalSlice';
 
 // hooks
 import useMetamask from '../utils/hooks/useMetamask';
@@ -82,14 +90,33 @@ function Create() {
     };
     console.log(data);
 
+    dispatch( setSuccess() );
+
     try {
+      dispatch( openModal() );
+      dispatch( setProcessing() );
+
       const result = await CDS.createSwap(data, userAddress);
       console.log(result);
+
       const swapId = result.events.CreateSwap.returnValues.swapId;
       console.log(swapId);
+      dispatch( setSuccess() );
 
-      navigate('/');
+      const timeoutId = setTimeout(()=>{
+        dispatch( closeModal() );
+        navigate('/');
+      },3000)
     } catch (err) {
+
+      
+      const timeoutId = setTimeout(()=>{
+        dispatch( closeModal() );
+        dispatch( setWaiting() );
+      },3000)
+
+      dispatch( setFail( timeoutId ) );
+
       console.log(err);
     }
   };

@@ -1,9 +1,11 @@
 // module
 import React from 'react';
 import { Link, Routes, Route } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 // components
 import Header from './components/Header';
+import Notice from './components/Notice';
 
 // pages
 import Main from './pages/Main';
@@ -32,6 +34,7 @@ function App() {
         <Route path="/cardProposed" element={<CardDisplayProposed />} />
         <Route path="/cardAccepted" element={<CardDisplayAccepted />} />
       </Routes>
+      <Notice />
     </div>
   );
 }
