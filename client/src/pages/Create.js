@@ -3,6 +3,10 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
+// components
+import ScrollButton from '../components/ScrollButton.js';
+import Footer from '../components/Footer.js';
+
 // actions
 import { setAuth } from '../features/authSlice';
 
@@ -27,10 +31,6 @@ import '../assets/css/negotiate.css';
 
 // imgage
 import createBackGround from '../assets/img/createPage_bg.png';
-
-// components
-import ScrollButton from '../components/ScrollButton.js';
-import Footer from '../components/Footer.js';
 
 function Create() {
   const metamask = useMetamask();

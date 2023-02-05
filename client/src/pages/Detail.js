@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 // components
 import ProposedCard from '../components/ProposedCard';
-import MarketPrice from '../components/MarketPrice';
+import MarketPriceType2 from '../components/MarketPriceType2';
 
 // apis
 import { getSwapById } from '../apis/request';
@@ -26,12 +26,17 @@ import { calculateTimeRemaining } from '../utils/calendar';
 function Detail() {
   const navigate = useNavigate();
 
+  // CDS Info State
   const { swapId } = useParams();
   const userAddress = useSelector(state=>state.auth.user_addr);
   const [swapOnDB, setSwapOnDB] = useState(null);
   const [swapOnChain, setSwapOnChain] = useState(null);
   const [timeRemainingToPay, setTimeRemainingToPay] = useState(null);
   const CDS = useCDS();
+
+  // CDS Availability
+  const [isPayablePremium, setIsPayablePremium] = useState(false);
+  const [isClaimable, setIsClaimable] = useState(false);
 
   // CDS pay premium Handler
   const premiumButtonHandler = async()=>{
@@ -223,23 +228,27 @@ function Detail() {
           </div>
         </div>
         {/* content */}
-        <div className="flex justify-center mt-16 py-14">
-          <hr className="line w-[720px] border-b-2 border-primaryColor" />
+        <div className="fixed bottom-11 right-11">
+          <ScrollButton />
         </div>
-        <div className="detail-tail flex flex-col items-center mb-24">
-          <MarketPrice />
+      </div>
+      <div className='detail-tail'>
+        <div className='detail-price'>
+          <MarketPriceType2/>
           <div className='button-group'>
             { swapOnDB && swapOnDB.buyer.toLowerCase() === userAddress ?
               <>
                 <button
                   className='button pay-button'
                   onClick={premiumButtonHandler}
+                  disabled={!isPayablePremium}
                 >
                   Pay Premium
                 </button>
                 <button 
                   className='button claim-button'
                   onClick={claimButtonHandler}
+                  disabled={!isClaimable}
                 >
                 Claim
                 </button>
@@ -260,8 +269,8 @@ function Detail() {
             }
           </div>
         </div>
-        <div className="fixed bottom-11 right-11">
-          <ScrollButton />
+        <div className="flex justify-center py-14">
+          <hr className="line w-[720px] border-b-2 border-primaryColor" />
         </div>
       </div>
       <div>

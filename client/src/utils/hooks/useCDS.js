@@ -120,6 +120,16 @@ function useCDS() {
         getSwap: async (swapId)=>{
           const receipt = await contract.methods.getSwap(swapId).call();
           return receipt
+        },
+
+        getDeposits: async (swapId) =>{
+          const receipt = await contract.methods.getDeposits(swapId).call();
+          return receipt;
+        },
+
+        getPremium: async (swapId) =>{
+          const receipt = await contract.methods.getPremium(swapId).call();
+          return receipt;
         }
       }
 
