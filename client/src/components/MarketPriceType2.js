@@ -146,7 +146,7 @@ function MarketPriceType2() {
         <div className="flex justify-center">
           <div className="flex-col w-[25%] mr-[1.25%]">
             <div className="text-center font-extrabold text-3xl my-[2rem]">
-              Database
+              CoinGecko
             </div>
 
             <div className="marketPriceCard p-[1rem] rounded-2xl mb-[0.5rem]">
@@ -258,7 +258,7 @@ function MarketPriceType2() {
                 <div className="flex-col ml-[1rem] grow">
                   <div className="font-extrabold text-xl">Bitcoin</div>
                   <div className="font-normal text-lightGray text-xs">
-                    Price Difference From The Database
+                    Price Difference From CoinGecko
                   </div>
                 </div>
                 <div className="flex-col m-auto p-auto">
@@ -290,7 +290,7 @@ function MarketPriceType2() {
                 <div className="flex-col ml-[1rem] grow">
                   <div className="font-extrabold text-xl">Ethereum</div>
                   <div className="font-normal text-lightGray text-xs">
-                    Price Difference From The Database
+                    Price Difference From CoinGecko
                   </div>
                 </div>
                 <div className="flex-col m-auto p-auto">
@@ -321,7 +321,7 @@ function MarketPriceType2() {
                 <div className="flex-col ml-[1rem] grow">
                   <div className="font-extrabold text-xl">Chainlink</div>
                   <div className="font-normal text-lightGray text-xs">
-                    Price Difference From The Database
+                    Price Difference From CoinGecko
                   </div>
                 </div>
                 <div className="flex-col m-auto p-auto">
@@ -343,7 +343,7 @@ function MarketPriceType2() {
               </div>
             </div>
             <div className="text-lightGray text-[8px] text-right mt-[1rem]">
-              <p>Database Prices Updated at : {updatedTimeGecko}</p>
+              <p>CoinGecko Prices Updated at : {updatedTimeGecko}</p>
             </div>
             <div className="text-lightGray text-[8px] text-right mb-[1rem]">
               <p>Chainlink Prices Updated at : {updatedTimeLink}</p>
