@@ -43,6 +43,9 @@ function Accept() {
       swapOnDB.seller,
     )
 
+    const deposits = await CDS.getDeposits(swapId);
+    console.log(deposits);
+
     const deposit = isBuyer ? swapOnDB.sellerDeposit : swapOnDB.buyerDeposit;
     console.log(deposit);
 
