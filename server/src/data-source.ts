@@ -7,7 +7,7 @@ import { DataSource } from 'typeorm';
 import { Users } from './entities/Users';
 import { Transactions } from './entities/Transactions';
 import { Swaps } from './entities/Swaps';
-import { SequelizeToTypeOrm1675407005234 } from '../migrations/1675407005234-SequelizeToTypeOrm';
+import { SequelizeToTypeOrm1675407005234 } from './migrations/1675407005234-SequelizeToTypeOrm';
 import getEnv from './utils/getEnv';
 
 export const AppDataSource = new DataSource({
