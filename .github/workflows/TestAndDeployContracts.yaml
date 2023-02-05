@@ -36,6 +36,9 @@ jobs:
         env: # env available for only this steps
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
+          GETH_HOST: ${{ secrets.GETH_HOST }}
+          GETH_PORT: ${{ secrets.GETH_PORT }}
+          GETH_NETWORK_ID: ${{ secrets.GETH_NETWORK_ID }}
 
       - name: Install node packages
         run: npm install --production
