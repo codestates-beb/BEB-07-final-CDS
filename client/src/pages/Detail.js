@@ -105,7 +105,10 @@ function Detail() {
     getSwapById(swapId)
     .then(result=> {
       if(result) setSwapOnDB(result);
-      else console.log(result);
+      else {
+        console.log(result)
+        navigate('/NotFound');
+      };
     })
   }, [])
 
@@ -121,6 +124,8 @@ function Detail() {
     //     }, 1000)
     //   })
     // }
+
+    
 
     return ()=>{
       clearInterval(intervalId);

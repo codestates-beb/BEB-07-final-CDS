@@ -152,7 +152,7 @@ function Create() {
       premiumRate,
     );
     setPremiumPrice(premiumPriceCalculated);
-  }, [initialPriceOfAssets, dropRate, premiumRate]);
+  }, [totalAssets, dropRate, premiumRate]);
 
   useEffect(() => {
     setSellerDeposit(
