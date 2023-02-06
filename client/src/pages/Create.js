@@ -9,13 +9,13 @@ import Footer from '../components/Footer.js';
 
 // actions
 import { setAuth } from '../features/authSlice';
-import { 
-  openModal, 
+import {
+  openModal,
   closeModal,
   setProcessing,
   setSuccess,
   setFail,
-  setWaiting 
+  setWaiting,
 } from '../features/modalSlice';
 
 // hooks
@@ -38,7 +38,7 @@ import { weeksToUnixTime } from '../utils/calendar';
 import '../assets/css/negotiate.css';
 
 // imgage
-import createBackGround from '../assets/img/createPage_bg.png';
+import createBackGround from '../assets/img/createPage_bg.jpg';
 
 function Create() {
   const metamask = useMetamask();
@@ -90,32 +90,30 @@ function Create() {
     };
     console.log(data);
 
-    dispatch( setSuccess() );
+    dispatch(setSuccess());
 
     try {
-      dispatch( openModal() );
-      dispatch( setProcessing() );
+      dispatch(openModal());
+      dispatch(setProcessing());
 
       const result = await CDS.createSwap(data, userAddress);
       console.log(result);
 
       const swapId = result.events.CreateSwap.returnValues.swapId;
       console.log(swapId);
-      dispatch( setSuccess() );
+      dispatch(setSuccess());
 
-      const timeoutId = setTimeout(()=>{
-        dispatch( closeModal() );
+      const timeoutId = setTimeout(() => {
+        dispatch(closeModal());
         navigate('/');
-      },3000)
+      }, 3000);
     } catch (err) {
+      const timeoutId = setTimeout(() => {
+        dispatch(closeModal());
+        dispatch(setWaiting());
+      }, 3000);
 
-      
-      const timeoutId = setTimeout(()=>{
-        dispatch( closeModal() );
-        dispatch( setWaiting() );
-      },3000)
-
-      dispatch( setFail( timeoutId ) );
+      dispatch(setFail(timeoutId));
 
       console.log(err);
     }
