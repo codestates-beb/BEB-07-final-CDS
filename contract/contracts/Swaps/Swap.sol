@@ -16,17 +16,16 @@ contract Swap is Ownable {
   }
   Status public status;
 
-  address private buyer;
-  address private seller;
-
   uint256 public initAssetPrice;
   uint256 public claimPrice;
   uint256 public liquidationPrice;
   uint256 public premium;
   uint256 public sellerDeposit;
-
   uint256 public interval;
+  address private buyer;
+  address private seller;
   uint32 public rounds;
+  uint32 public totalRounds;
 
   constructor(
     uint256 _initAssetPrice,
@@ -44,6 +43,7 @@ contract Swap is Ownable {
     sellerDeposit = _sellerDeposit;
     interval = _interval;
     rounds = _rounds;
+    totalRounds = _rounds;
 
     buyer = address(0);
     seller = address(0);
