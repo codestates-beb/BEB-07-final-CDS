@@ -78,6 +78,10 @@
     @apply border-l-4 border-[#2b2b2b];
   }
 
+  .negotiate-form .input-group .input-wrapper input:first-child{
+    @apply border-0;
+  }
+
   .negotiate-form .input-group .input-wrapper input:disabled{
     @apply bg-darkGrayColor;
   }
