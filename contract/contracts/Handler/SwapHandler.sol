@@ -145,6 +145,10 @@ contract SwapHandler is PriceConsumer {
     return _swaps[swapId].getSeller();
   }
 
+  function getNextPayDate(uint256 swapId) public view returns (uint256) {
+    return _nextPayDate[swapId];
+  }
+
   // modifiers
   modifier isBuyer(uint256 swapId) {
     require(msg.sender == getBuyer(swapId), 'Only buyer of the CDS can call');
