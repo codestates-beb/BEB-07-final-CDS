@@ -27,9 +27,9 @@ function infoSlide() {
         mousewheel={true}
         keyboard={true}
         modules={[Navigation, Mousewheel, Keyboard]}
-        className="mySwiperInfo w-[68rem] h-[24rem] bg-blackColor rounded-2xl relative my-[10rem]"
+        className="mySwiperInfo w-[66rem] h-[24rem] bg-blackColor rounded-2xl relative my-[10rem]"
       >
-        <SwiperSlide className="w-[68rem] h-[24rem]">
+        <SwiperSlide className="object-cover w-[68rem] h-[24rem]">
           <img
             src={infoSlide1}
             alt=" infoSlide1"
@@ -40,18 +40,16 @@ function infoSlide() {
               <div className="text-4xl font-bold mb-[5%]">What is CDS ?</div>
               <div className="text-base font-light mb-[10%]">
                 <p>
-                  A credit default swap (CDS) is a financial derivative that
-                  allows an investor
+                  A credit default swap is a financial derivative that allows an
+                  investor
                 </p>
                 <p>
                   to swap or offset their credit risk with that of another
                   investor.
                 </p>
                 <p>
-                  To swap the risk of default, the lender buys a CDS from
-                  another investor
+                  To swap the risk of default, buyers buy a CDS from seller.
                 </p>
-                <p>who agrees to reimburse them if the borrower defaults.</p>
               </div>
               <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100">
                 <div className="font-semibold ">More Details</div>
