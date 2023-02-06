@@ -165,9 +165,15 @@ function Accept() {
       <div className="negotiate-banner">
         <img src={acceptBackGround} alt="acceptBackGround" />
       </div>
-      <div className="container container-negotiate">
+      <div className="container container-negotiate accpet">
         <div className="negotiate-head">
-          <h1 className="negotiate-head-title">Check Crypto Default Swap</h1>
+          <h1 className="negotiate-head-title">
+            Check Crypto Default Swap proposed by
+            { isBuyer ? 
+              <span className="text-green ml-2">Buyer</span> 
+              : <span className="text-red ml-2">Seller</span>
+            }
+          </h1>
           <p className="negotiate-head-notice text-xl font-semibold py-2">
             Check Your Crypto Default Swap Contract in detail and sign it!
           </p>
