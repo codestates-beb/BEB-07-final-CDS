@@ -127,6 +127,7 @@ function Accept() {
 
   useEffect(() => {
     getSwapById(swapId).then((result) => {
+      if(result === null) navigate('/NotFound');
       setSwapOnDB(result);
 
       if (result.buyer) {

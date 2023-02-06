@@ -1,5 +1,3 @@
-
-
 function PageNotFound() {
     return(
         <div className='page-not-found  flex flex-col justify-center items-center h-[80vh]'>
