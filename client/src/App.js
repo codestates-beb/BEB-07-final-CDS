@@ -1,7 +1,6 @@
 // module
 import React from 'react';
 import { Link, Routes, Route } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 
 // components
 import Header from './components/Header';
@@ -17,6 +16,7 @@ import Mypage from './pages/Mypage';
 import CardDisplayProposed from './pages/CardDisplayProposed';
 import CardDisplayAccepted from './pages/CardDisplayAccepted';
 import OracleTest from './pages/OracleTest';
+import PageNotFound from './pages/PageNotFound';
 
 // css
 import './App.css';
@@ -35,6 +35,7 @@ function App() {
         <Route path="/oracleTest" element={<OracleTest />} />
         <Route path="/cardProposed" element={<CardDisplayProposed />} />
         <Route path="/cardAccepted" element={<CardDisplayAccepted />} />
+        <Route path="*" element={<PageNotFound/>}/>
       </Routes>
       <Notice />
     </div>
