@@ -8,13 +8,13 @@ import Footer from '../components/Footer';
 import ScrollButton from '../components/ScrollButton';
 
 // actions
-import { 
-  openModal, 
+import {
+  openModal,
   closeModal,
   setProcessing,
   setSuccess,
   setFail,
-  setWaiting 
+  setWaiting,
 } from '../features/modalSlice';
 
 // hooks
@@ -30,7 +30,7 @@ import { calculateTimeRemaining } from '../utils/calendar';
 import '../assets/css/negotiate.css';
 
 // imgage
-import acceptBackGround from '../assets/img/acceptPage_bg.png';
+import acceptBackGround from '../assets/img/acceptPage_bg.jpg';
 
 function Accept() {
   const navigate = useNavigate();
@@ -64,8 +64,8 @@ function Accept() {
     console.log(deposit);
 
     try {
-      dispatch( openModal() );
-      dispatch( setProcessing() );
+      dispatch(openModal());
+      dispatch(setProcessing());
 
       const result = await CDS.acceptSwap(
         swapOnDB.initialAssetPrice,
@@ -75,23 +75,23 @@ function Accept() {
       );
 
       console.log(result);
-      dispatch( setSuccess() );
+      dispatch(setSuccess());
 
-      setTimeout(()=>{
-        dispatch( closeModal() );
-        dispatch( setWaiting() );
+      setTimeout(() => {
+        dispatch(closeModal());
+        dispatch(setWaiting());
         navigate('/');
-      },3000)
+      }, 3000);
     } catch (err) {
       console.log(err);
 
-      const timeoutId = setTimeout(()=>{
-        dispatch( closeModal() );
-        dispatch( setWaiting() );
+      const timeoutId = setTimeout(() => {
+        dispatch(closeModal());
+        dispatch(setWaiting());
         navigate('/');
-      },3000)
+      }, 3000);
 
-      dispatch( setFail(timeoutId) );
+      dispatch(setFail(timeoutId));
     }
   };
 
@@ -100,34 +100,34 @@ function Accept() {
     console.log(swapId);
 
     try {
-      dispatch( openModal() );
-      dispatch( setProcessing() );
+      dispatch(openModal());
+      dispatch(setProcessing());
 
       const result = await CDS.cancelSwap(swapId, userAddress);
       console.log(result);
-      dispatch( setSuccess() );
+      dispatch(setSuccess());
 
-      setTimeout(()=>{
-        dispatch( closeModal() );
-        dispatch( setWaiting() );
+      setTimeout(() => {
+        dispatch(closeModal());
+        dispatch(setWaiting());
         navigate('/');
-      },3000)
+      }, 3000);
     } catch (err) {
       console.log(err);
 
-      const timeoutId = setTimeout(()=>{
-        dispatch( closeModal() );
-        dispatch( setWaiting() );
+      const timeoutId = setTimeout(() => {
+        dispatch(closeModal());
+        dispatch(setWaiting());
         navigate('/');
-      },3000)
+      }, 3000);
 
-      dispatch( setFail(timeoutId) );
+      dispatch(setFail(timeoutId));
     }
   };
 
   useEffect(() => {
     getSwapById(swapId).then((result) => {
-      if(result === null) navigate('/NotFound');
+      if (result === null) navigate('/NotFound');
       setSwapOnDB(result);
 
       if (result.buyer) {
