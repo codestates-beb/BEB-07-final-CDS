@@ -13,22 +13,13 @@ contract SwapHandler is PriceConsumer {
   using LibClaim for uint256;
   Counters.Counter internal _swapId;
 
-  Swap private swap;
-
-  struct Deposit {
-    uint256 deposit;
-    bool isPaid;
-  }
-
   mapping(uint256 => Swap) private _swaps;
 
   mapping(uint256 => uint256) private _nextPayDate;
 
-  mapping(uint256 => Deposit[2]) private _deposits;
-
   constructor() {}
 
-  function _createSwap(
+  function _create(
     bool _isBuyer,
     uint256 _initAssetPrice,
     uint256 _claimPrice,
@@ -54,12 +45,12 @@ contract SwapHandler is PriceConsumer {
 
     // newSwap.setStatus(Swap.Status.pending);
 
-    _isBuyer ? setSwapForBuyer(newSwapId) : setSwapForSeller(newSwapId);
+    _isBuyer ? newSwap.setBuyer(msg.sender) : newSwap.setSeller(msg.sender);
 
     return newSwapId;
   }
 
-  function _acceptSwap(
+  function _accept(
     bool _isBuyerHost,
     uint256 _initAssetPrice,
     uint256 _acceptedSwapId
@@ -68,8 +59,8 @@ contract SwapHandler is PriceConsumer {
     targetSwap.setInitAssetPrice(_initAssetPrice);
 
     _isBuyerHost
-      ? setSwapForSeller(_acceptedSwapId)
-      : setSwapForBuyer(_acceptedSwapId);
+      ? targetSwap.setSeller(msg.sender)
+      : targetSwap.setBuyer(msg.sender);
 
     // check => 토큰으로 처리시 바로 보내고 이거도 되야함.
     _nextPayDate[_acceptedSwapId] =
@@ -81,23 +72,23 @@ contract SwapHandler is PriceConsumer {
     return _acceptedSwapId;
   }
 
-  function _cancelSwap(uint256 _targetSwapId) internal {
-    clearDeposit(_targetSwapId);
+  function _cancel(uint256 _targetSwapId) internal {
+    // clearDeposit(_targetSwapId);
     _swaps[_targetSwapId].setStatus(Swap.Status.inactive);
   }
 
-  function _closeSwap(uint256 _targetSwapId) internal {
-    clearDeposit(_targetSwapId);
+  function _close(uint256 _targetSwapId) internal {
+    // clearDeposit(_targetSwapId);
     _swaps[_targetSwapId].setStatus(Swap.Status.expired);
   }
 
   function _payPremium(uint256 _targetSwapId) internal {
     _nextPayDate[_targetSwapId] = block.timestamp + getInterval(_targetSwapId);
-    getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
+    _swaps[_targetSwapId].setRounds(getRounds(_targetSwapId) - 1);
   }
 
-  function _claimSwap(uint256 _targetSwapId) internal {
-    clearDeposit(_targetSwapId);
+  function _claim(uint256 _targetSwapId) internal {
+    // clearDeposit(_targetSwapId);
     _swaps[_targetSwapId].setStatus(Swap.Status.claimed);
   }
 
@@ -115,13 +106,13 @@ contract SwapHandler is PriceConsumer {
 
   function getClaimReward(uint256 swapId) public view returns (uint256) {
     uint256 currPrice = getPriceFromOracle();
-    if (getSwap(swapId).claimPrice() < currPrice) {
+    if (_swaps[swapId].claimPrice() < currPrice) {
       return 0;
     }
     return
       getSellerDeposit(swapId).calcClaimReward(
-        getSwap(swapId).liquidationPrice(),
-        getSwap(swapId).initAssetPrice(),
+        _swaps[swapId].liquidationPrice(),
+        _swaps[swapId].initAssetPrice(),
         currPrice
       );
   }
@@ -154,27 +145,12 @@ contract SwapHandler is PriceConsumer {
     return _swaps[swapId].getSeller();
   }
 
-  function getDeposits(uint256 swapId) public view returns (Deposit[2] memory) {
-    return _deposits[swapId];
+  function getNextPayDate(uint256 swapId) public view returns (uint256) {
+    return _nextPayDate[swapId];
   }
 
-  function setSwapForBuyer(uint256 swapId) private {
-    _swaps[swapId].setBuyer(msg.sender);
-    _deposits[swapId][0].deposit = getPremium(swapId).mul(3);
-    _deposits[swapId][0].isPaid = true;
-  }
-
-  function setSwapForSeller(uint256 swapId) private {
-    _swaps[swapId].setSeller(msg.sender);
-    _deposits[swapId][1].deposit = getSellerDeposit(swapId);
-    _deposits[swapId][1].isPaid = true;
-  }
-
-  function clearDeposit(uint256 swapId) private {
-    for (uint i = 0; i <= 1; i++) {
-      _deposits[swapId][i].deposit = 0;
-      _deposits[swapId][i].isPaid = false;
-    }
+  function getTotalRounds(uint256 swapId) public view returns (uint32) {
+    return _swaps[swapId].totalRounds();
   }
 
   // modifiers
