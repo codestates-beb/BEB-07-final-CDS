@@ -58,7 +58,10 @@ function Header() {
         {isLogin ? (
           <></>
         ) : (
-          <button className="navbar-button" onClick={connectButtonHandler}>
+          <button
+            className="navbar-button hover:bg-mintHover transition delay-80"
+            onClick={connectButtonHandler}
+          >
             Connect Wallet
           </button>
         )}

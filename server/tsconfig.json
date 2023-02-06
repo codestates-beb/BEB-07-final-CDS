@@ -5,7 +5,7 @@
       "es6"
     ],
     "target": "es6",
-    "module": "commonjs",
+    "module": "CommonJS",
     "moduleResolution": "node",
     "outDir": "./dist",
     "emitDecoratorMetadata": true,

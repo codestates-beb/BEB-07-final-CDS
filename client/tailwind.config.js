@@ -3,7 +3,7 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     gridTemplateColumns: {
-      'fill-25': 'repeat(auto-fit)',
+      'fill-25': 'repeat(auto-fit, 350px)',
     },
     extend: {},
     colors: {
@@ -14,8 +14,10 @@ module.exports = {
       whiteColor: '#ffffff',
       darkGrayColor: '#858584',
       ligthGrayColor: '#EFF0F4',
+      ligthGrayColorHover: '#474A56',
       black: '#000000',
       mint: '#00FFF6',
+      mintHover: '#278EA5',
       darkBlue: '#071E3D',
       lightGray: '#B4B4B4',
       transparent: 'transparent',
