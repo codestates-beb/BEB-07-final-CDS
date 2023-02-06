@@ -4,6 +4,8 @@ import { Link, Routes, Route } from 'react-router-dom';
 
 // components
 import Header from './components/Header';
+import Notice from './components/Notice';
+import ScrollToTop from './components/ScrollToTop';
 
 // pages
 import Main from './pages/Main';
@@ -12,7 +14,9 @@ import Accept from './pages/Accept';
 import Detail from './pages/Detail';
 import Mypage from './pages/Mypage';
 import CardDisplayProposed from './pages/CardDisplayProposed';
+import CardDisplayAccepted from './pages/CardDisplayAccepted';
 import OracleTest from './pages/OracleTest';
+import PageNotFound from './pages/PageNotFound';
 
 // css
 import './App.css';
@@ -20,6 +24,7 @@ import './App.css';
 function App() {
   return (
     <div className="App">
+      <ScrollToTop />
       <Header />
       <Routes>
         <Route path="/" element={<Main />} />
@@ -29,8 +34,10 @@ function App() {
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/oracleTest" element={<OracleTest />} />
         <Route path="/cardProposed" element={<CardDisplayProposed />} />
-        <Route path="/cardAccepted" element={<CardDisplayProposed />} />
+        <Route path="/cardAccepted" element={<CardDisplayAccepted />} />
+        <Route path="*" element={<PageNotFound/>}/>
       </Routes>
+      <Notice />
     </div>
   );
 }
