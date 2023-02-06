@@ -259,8 +259,9 @@ export default class CDS {
   }
 
   private async createSwapHandler(event: EventData) {
-    const { hostAddr, isBuyer, swapId } = event.returnValues;
-    const swapAddr = event.returnValues.swap;
+    const { isBuyer, swapId } = event.returnValues;
+    const hostAddr = event.returnValues.hostAddr.toLowerCase();
+    const swapAddr = event.returnValues.swap.toLowerCase();
     const {
       initAssetPrice,
       claimPrice,
@@ -338,10 +339,10 @@ export default class CDS {
 
   private async acceptSwapHandler(event: EventData) {
     const { swapId } = event.returnValues;
-    const swapAddr = await this.getSwapAddr(swapId);
+    const swapAddr = (await this.getSwapAddr(swapId)).toLowerCase();
     const swapInfo = await this.getSwapInfo(swapAddr);
-    const buyerAddr = swapInfo.buyer;
-    const sellerAddr = swapInfo.seller;
+    const buyerAddr = swapInfo.buyer.toLowerCase();
+    const sellerAddr = swapInfo.seller.toLowerCase();
     const currentTime: number = await this.getTxTimestamp(
       event.transactionHash,
     );

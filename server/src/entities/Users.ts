@@ -12,6 +12,14 @@ export class Users {
   address: string;
 
   @Column('varchar', {
+    name: 'email',
+    nullable: true,
+    length: 100,
+    default: null,
+  })
+  email: string | null;
+
+  @Column('varchar', {
     name: 'nickname',
     nullable: true,
     length: 50,

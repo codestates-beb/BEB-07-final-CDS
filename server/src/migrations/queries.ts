@@ -1,5 +1,6 @@
 export const createUsersTable = `CREATE TABLE IF NOT EXISTS users (
   address VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NULL DEFAULT NULL,
   nickname VARCHAR(50) NULL DEFAULT NULL,
   soldCount INT UNSIGNED NOT NULL DEFAULT 0,
   boughtCount INT UNSIGNED NOT NULL DEFAULT 0,
