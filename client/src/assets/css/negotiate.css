@@ -51,8 +51,38 @@
     @apply py-4 text-2xl font-bold;
   }
 
-  .negotiate-form .input-group input {
-    @apply py-2 px-3 rounded-xl mb-6;
+  .negotiate-form .input-group .input-wrapper{
+    @apply flex items-center items-stretch 
+    w-full mb-6 bg-whiteColor rounded-xl
+    overflow-hidden;
+  }
+
+  .negotiate-form .input-group .input-radio input,
+  .negotiate-form .input-group .input-button input,
+  .negotiate-form .input-group .input-range input,
+  .negotiate-form .input-group .input-select input
+  {
+    @apply rounded-xl;
+  }
+
+  .negotiate-form .input-group .input-wrapper .input-label{
+    @apply w-full py-2 pl-3 bg-darkGrayColor 
+    text-black;
+  }
+
+  .negotiate-form .input-group input{
+    @apply w-full py-2 px-3 outline-0;
+  }
+
+  .negotiate-form .input-group .input-wrapper input{
+    @apply border-l-4 border-[#2b2b2b];
+  }
+
+  .negotiate-form .input-group .input-wrapper input:disabled{
+    @apply bg-darkGrayColor;
+  }
+
+  .negotiate-form .input-group .input-wrapper input{
   }
 
   .negotiate-form button {
