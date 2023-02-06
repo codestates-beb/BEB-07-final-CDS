@@ -5,20 +5,27 @@ import cors from 'cors';
 import session from 'express-session';
 import path from 'path';
 import cookieParser from 'cookie-parser';
+import connectRedis from 'connect-redis';
 
 import getEnv from './utils/getEnv';
 import redisClient from './utils/redisClient';
 import routers from './routes';
 
+declare module 'express-session' {
+  export interface SessionData {
+    address: string;
+  }
+}
 const { devRouter, userRouter, swapRouter, transactionRouter, priceRouter } =
   routers;
 const port = getEnv('PORT', '5050');
+const RedisStore = connectRedis(session);
 
 const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.set('port', port);
-// app.use(session());
+
 app.use(
   cors({
     origin: [
@@ -33,7 +40,21 @@ app.use(
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser(getEnv('COOKIE_SECRET')));
+app.use(
+  session({
+    secret: getEnv('COOKIE_SECRET'),
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 15 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    },
+    store: new RedisStore({ client: redisClient as any }),
+  }),
+);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/dev', devRouter);
