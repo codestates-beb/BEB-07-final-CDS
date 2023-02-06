@@ -18,7 +18,7 @@ export async function getNonce(address) {
 }
 
 // Request login to Server
-export async function requestLogin(address, signature){
+export async function requestLogin(address, signature) {
     const requestURL = new URL(`${config.apiURL}users/login`);
     
     const result = await axios.post(
@@ -32,8 +32,18 @@ export async function requestLogin(address, signature){
     return result;
 }
 
-export async function requestLogout(){
+export async function requestLogout() {
     const requestURL = new URL(`${config.apiURL}users/logout`);
+
+    const result = await axios.get(requestURL, {withCredentials:true})
+    .then(result=>result.data)
+    .catch(err=>err);
+
+    return result;
+}
+
+export async function requestMyData() {
+    const requestURL = new URL(`${config.apiURL}users/my`);
 
     const result = await axios.get(requestURL, {withCredentials:true})
     .then(result=>result.data)
