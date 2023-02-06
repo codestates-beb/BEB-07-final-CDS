@@ -149,6 +149,10 @@ contract SwapHandler is PriceConsumer {
     return _nextPayDate[swapId];
   }
 
+  function getTotalRounds(uint256 swapId) public view returns (uint32) {
+    return _swaps[swapId].totalRounds();
+  }
+
   // modifiers
   modifier isBuyer(uint256 swapId) {
     require(msg.sender == getBuyer(swapId), 'Only buyer of the CDS can call');
