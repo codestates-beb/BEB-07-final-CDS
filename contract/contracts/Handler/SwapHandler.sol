@@ -13,16 +13,9 @@ contract SwapHandler is PriceConsumer {
   using LibClaim for uint256;
   Counters.Counter internal _swapId;
 
-  struct Deposit {
-    uint256 deposit;
-    bool isPaid;
-  }
-
   mapping(uint256 => Swap) private _swaps;
 
   mapping(uint256 => uint256) private _nextPayDate;
-
-  mapping(uint256 => Deposit[2]) private _deposits;
 
   constructor() {}
 
@@ -52,7 +45,7 @@ contract SwapHandler is PriceConsumer {
 
     // newSwap.setStatus(Swap.Status.pending);
 
-    _isBuyer ? setSwapForBuyer(newSwapId) : setSwapForSeller(newSwapId);
+    _isBuyer ? newSwap.setBuyer(msg.sender) : newSwap.setSeller(msg.sender);
 
     return newSwapId;
   }
@@ -66,8 +59,8 @@ contract SwapHandler is PriceConsumer {
     targetSwap.setInitAssetPrice(_initAssetPrice);
 
     _isBuyerHost
-      ? setSwapForSeller(_acceptedSwapId)
-      : setSwapForBuyer(_acceptedSwapId);
+      ? targetSwap.setSeller(msg.sender)
+      : targetSwap.setBuyer(msg.sender);
 
     // check => 토큰으로 처리시 바로 보내고 이거도 되야함.
     _nextPayDate[_acceptedSwapId] =
@@ -80,12 +73,12 @@ contract SwapHandler is PriceConsumer {
   }
 
   function _cancel(uint256 _targetSwapId) internal {
-    clearDeposit(_targetSwapId);
+    // clearDeposit(_targetSwapId);
     _swaps[_targetSwapId].setStatus(Swap.Status.inactive);
   }
 
   function _close(uint256 _targetSwapId) internal {
-    clearDeposit(_targetSwapId);
+    // clearDeposit(_targetSwapId);
     _swaps[_targetSwapId].setStatus(Swap.Status.expired);
   }
 
@@ -95,7 +88,7 @@ contract SwapHandler is PriceConsumer {
   }
 
   function _claim(uint256 _targetSwapId) internal {
-    clearDeposit(_targetSwapId);
+    // clearDeposit(_targetSwapId);
     _swaps[_targetSwapId].setStatus(Swap.Status.claimed);
   }
 
@@ -150,30 +143,6 @@ contract SwapHandler is PriceConsumer {
 
   function getSeller(uint256 swapId) public view returns (address) {
     return _swaps[swapId].getSeller();
-  }
-
-  function getDeposits(uint256 swapId) public view returns (Deposit[2] memory) {
-    return _deposits[swapId];
-  }
-
-  // 얘네도 cds쪽으로 좀 나눠서 뺄 듯 아니면 asset쪽으로 deposit관련은 빼거나.
-  function setSwapForBuyer(uint256 swapId) private {
-    _swaps[swapId].setBuyer(msg.sender);
-    _deposits[swapId][0].deposit = getPremium(swapId).mul(3);
-    _deposits[swapId][0].isPaid = true;
-  }
-
-  function setSwapForSeller(uint256 swapId) private {
-    _swaps[swapId].setSeller(msg.sender);
-    _deposits[swapId][1].deposit = getSellerDeposit(swapId);
-    _deposits[swapId][1].isPaid = true;
-  }
-
-  function clearDeposit(uint256 swapId) private {
-    for (uint i = 0; i <= 1; i++) {
-      _deposits[swapId][i].deposit = 0;
-      _deposits[swapId][i].isPaid = false;
-    }
   }
 
   // modifiers

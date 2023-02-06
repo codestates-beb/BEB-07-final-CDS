@@ -44,7 +44,7 @@ interface CDSInterface {
   event PayPremium(uint256 swapId);
 }
 
-contract CDS is CDSInterface, Ownable, SwapHandler {
+contract CDS is CDSInterface, Ownable, SwapHandler, AssetHandler {
   using SafeMath for uint256;
 
   constructor() payable {}
@@ -63,7 +63,6 @@ contract CDS is CDSInterface, Ownable, SwapHandler {
     uint32 totalRounds
   ) external payable override isNotOwner returns (uint256) {
     uint256 buyerDeposit = premium.mul(3) * 1 wei;
-    isBuyer ? _sendDeposit(buyerDeposit) : _sendDeposit(sellerDeposit);
 
     uint256 newSwapId = _create(
       isBuyer,
@@ -75,6 +74,15 @@ contract CDS is CDSInterface, Ownable, SwapHandler {
       premiumInterval,
       totalRounds
     );
+
+    if (isBuyer) {
+      _sendDeposit(buyerDeposit);
+      setSwapForBuyer(newSwapId, premium);
+    } else {
+      _sendDeposit(sellerDeposit);
+      setSwapForSeller(newSwapId, sellerDeposit);
+    }
+
     emit Create(msg.sender, isBuyer, newSwapId, address(getSwap(newSwapId)));
     return newSwapId;
   }
@@ -90,9 +98,13 @@ contract CDS is CDSInterface, Ownable, SwapHandler {
 
     bool isBuyerHost = (getSeller(swapId) == address(0));
 
-    isBuyerHost
-      ? _sendDeposit(getSellerDeposit(swapId))
-      : _sendDeposit(getPremium(swapId).mul(3));
+    if (isBuyerHost) {
+      _sendDeposit(getSellerDeposit(swapId));
+      setSwapForSeller(swapId, getSellerDeposit(swapId));
+    } else {
+      _sendDeposit(getPremium(swapId).mul(3));
+      setSwapForBuyer(swapId, getPremium(swapId));
+    }
 
     uint256 acceptedSwapId = _accept(isBuyerHost, initAssetPrice, swapId);
     emit Accept(msg.sender, acceptedSwapId);
