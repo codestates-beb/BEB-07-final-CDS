@@ -45,7 +45,21 @@ export async function requestLogout() {
         return false;
     })
 
-    console.log(result);
+    return result;
+}
+
+export async function requestVerify() {
+    const requestURL = new URL(`${config.apiURL}/auth/verify`);
+
+    const result = await axios.get(
+        requestURL.toString(),
+        {withCredentials: true}
+    )
+    .then(result=>result)
+    .catch(err=>{
+        console.log(err);
+        return false;
+    })
 
     return result;
 }
