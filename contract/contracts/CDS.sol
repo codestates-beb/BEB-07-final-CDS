@@ -68,13 +68,9 @@ interface CDSInterface {
       totalRounds
     );
 
-    if (isBuyer) {
-      _sendDeposit(buyerDeposit);
-      setSwapForBuyer(newSwapId, premium);
-    } else {
-      _sendDeposit(sellerDeposit);
-      setSwapForSeller(newSwapId, sellerDeposit);
-    }
+    isBuyer
+      ? setDepoForBuyer(newSwapId, premium)
+      : setDepoForSeller(newSwapId, sellerDeposit);
 
     emit Create(msg.sender, isBuyer, newSwapId, address(getSwap(newSwapId)));
     return newSwapId;
@@ -90,14 +86,9 @@ interface CDSInterface {
     );
 
     bool isBuyerHost = (getSeller(swapId) == address(0));
-
-    if (isBuyerHost) {
-      _sendDeposit(getSellerDeposit(swapId));
-      setSwapForSeller(swapId, getSellerDeposit(swapId));
-    } else {
-      _sendDeposit(getPremium(swapId).mul(3));
-      setSwapForBuyer(swapId, getPremium(swapId));
-    }
+    isBuyerHost
+      ? setDepoForSeller(swapId, getSellerDeposit(swapId))
+      : setDepoForBuyer(swapId, getPremium(swapId));
 
     uint256 acceptedSwapId = _accept(isBuyerHost, initAssetPrice, swapId);
     emit Accept(msg.sender, acceptedSwapId);
@@ -183,13 +174,6 @@ interface CDSInterface {
     require(sentBuyer && sentSeller, 'Sending reward failed');
     _claim(swapId);
     emit Claim(swapId, claimReward);
-    return true;
-  }
-
-  function _sendDeposit(uint256 deposit) public payable returns (bool) {
-    require(deposit == msg.value, 'Invalid eth amount');
-    (bool sent, ) = payable(address(this)).call{value: msg.value}('');
-    require(sent, 'Sending deposit failed');
     return true;
   }
 

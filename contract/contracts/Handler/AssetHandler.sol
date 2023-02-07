@@ -36,12 +36,12 @@ contract AssetHandler is Ownable {
     return _deposits[swapId];
   }
 
-  function setSwapForBuyer(uint256 _swapId, uint256 _premium) internal {
+  function setDepoForBuyer(uint256 _swapId, uint256 _premium) internal {
     _deposits[_swapId][0].deposit = _premium.mul(3);
     _deposits[_swapId][0].isPaid = true;
   }
 
-  function setSwapForSeller(uint256 _swapId, uint256 _sellerDeposit) internal {
+  function setDepoForSeller(uint256 _swapId, uint256 _sellerDeposit) internal {
     _deposits[_swapId][1].deposit = _sellerDeposit;
     _deposits[_swapId][1].isPaid = true;
   }
