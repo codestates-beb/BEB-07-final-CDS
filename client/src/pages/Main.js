@@ -17,22 +17,33 @@ import Footer from '../components/Footer.js';
 import '../assets/css/main.css';
 
 //APIs
-import { getSwaps } from '../apis/request.js';
+import { getSwaps, getPendingSwaps, getActiveSwaps } from '../apis/request.js';
 
 function Main() {
   // database에서 swap구조체에 대한 정보를 받아옵니다
-  const [swapResponse, setResponse] = useState([]);
+  const [pendingSwaps, setPendingSwaps] = useState([]);
+  const [activeSwaps, setActiveSwaps] = useState([]);
 
-  // useEffect(() => {
-  //   const APIdata = getSwaps();
-  //   const getData = () => {
-  //     APIdata.then((response) => {
-  //       setResponse(response);
-  //       console.log(response);
-  //     });
-  //   };
-  //   getData();
-  // }, []);
+  useEffect(() => {
+    const pendingAPIdata = getPendingSwaps();
+    const getPending = () => {
+      pendingAPIdata.then((response) => {
+        setPendingSwaps(response.swaps);
+        console.log(response.swaps);
+      });
+    };
+
+    const activeAPIdata = getActiveSwaps();
+    const getActive = () => {
+      activeAPIdata.then((response) => {
+        setActiveSwaps(response.swaps);
+        console.log(response.swaps);
+      });
+    };
+
+    getPending();
+    getActive();
+  }, []);
 
   return (
     <div className="">
@@ -112,7 +123,7 @@ function Main() {
           </div>
         </div>
         <div className="">
-          <ProposedCardScroll response={swapResponse} />
+          <ProposedCardScroll response={pendingSwaps} />
         </div>
       </div>
       <div className="flex justify-center mt-[2rem]">
@@ -136,7 +147,7 @@ function Main() {
         </div>
         <div className="flex justify-center">
           <div className="w-screen">
-            <AcceptedCardScroll response={swapResponse} />
+            <AcceptedCardScroll response={activeSwaps} />
           </div>
         </div>
       </div>
