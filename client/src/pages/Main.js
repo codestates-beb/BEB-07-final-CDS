@@ -23,16 +23,16 @@ function Main() {
   // database에서 swap구조체에 대한 정보를 받아옵니다
   const [swapResponse, setResponse] = useState([]);
 
-  useEffect(() => {
-    const APIdata = getSwaps();
-    const getData = () => {
-      APIdata.then((response) => {
-        setResponse(response);
-        console.log(response);
-      });
-    };
-    getData();
-  }, []);
+  // useEffect(() => {
+  //   const APIdata = getSwaps();
+  //   const getData = () => {
+  //     APIdata.then((response) => {
+  //       setResponse(response);
+  //       console.log(response);
+  //     });
+  //   };
+  //   getData();
+  // }, []);
 
   return (
     <div className="">
