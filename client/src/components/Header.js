@@ -51,6 +51,7 @@ function Header() {
     });
 
     const isLogin = await requestLogin(address, signature);
+    console.log(isLogin)
 
     if ( !isLogin ) {
       console.log(isLogin)
