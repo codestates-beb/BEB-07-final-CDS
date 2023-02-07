@@ -36,19 +36,21 @@ function App() {
   const metamask = useMetamask();
   
   useEffect(()=>{
-    (async ()=>{
-      const isLoginSuccess = await requestVerify();
+    if(metamask){
+      (async ()=>{
+        const isLoginSuccess = await requestVerify();
 
-      if(!isLoginSuccess) {
-        console.log(new Error('Not User Logined'));
-        return;
-      }
-      
-      const address = await metamask.request({ method: 'eth_requestAccounts' })
-      .then(result=> result[0]);
+        if(!isLoginSuccess) {
+          console.log(new Error('Not User Logined'));
+          return;
+        }
+        
+        const address = await metamask.request({ method: 'eth_requestAccounts' })
+        .then(result=> result[0]);
 
-      dispatch( setAuth(address) );
-    })()
+        dispatch( setAuth(address) );
+      })()
+    }
   }, [metamask]);
 
   return (
