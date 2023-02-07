@@ -18,7 +18,7 @@ function useCDS() {
 
       // CDS Contract Methods
       const CDSToSet = {
-        createSwap: async (data, userAddress)=>{
+        create: async (data, userAddress)=>{
           const {
             isBuyer, 
             initialPriceOfAssets,
@@ -45,7 +45,7 @@ function useCDS() {
           if (isBuyer === true) deposit = premiumPrice * 3;
           else deposit = sellerDeposit;
 
-          const receipt = await contract.methods.createSwap(
+          const receipt = await contract.methods.create(
             isBuyer,
             initialPriceOfAssets,
             claimPrice, 
@@ -55,7 +55,7 @@ function useCDS() {
             premiumInterval,
             premiumRounds
           )
-          .send({from: userAddress, value: deposit}, (result)=>{
+          .send({from: userAddress}, (result)=>{
             console.log(result);
             return result;
           })
@@ -68,41 +68,41 @@ function useCDS() {
           return receipt;
         },
 
-        acceptSwap: async (initialPriceOfAssets, swapId, deposit, userAddress)=>{          
+        accept: async (initialPriceOfAssets, swapId, deposit, userAddress)=>{          
           if( !initialPriceOfAssets || !swapId || !deposit || !userAddress)
             return new Error("Invalid Arguments");
 
-          const receipt = await contract.methods.acceptSwap(
+          const receipt = await contract.methods.accept(
             initialPriceOfAssets, 
             swapId
           )
-          .send({from: userAddress, value: deposit});
+          .send({from: userAddress});
 
           return receipt;
         },
 
-        cancelSwap: async (swapId, address)=>{
+        cancel: async (swapId, address)=>{
           if(!swapId || !address) return new Error("Invalid Arguments");
 
-          const receipt = await contract.methods.cancelSwap(swapId)
+          const receipt = await contract.methods.cancel(swapId)
           .send({from:address});
 
           return receipt;
         },
 
-        claimSwap: async (swapId, address)=>{
+        claim: async (swapId, address)=>{
           if(!swapId || !address) return new Error("Invalid Arguments");
 
-          const receipt = await contract.methods.claimSwap(swapId)
+          const receipt = await contract.methods.claim(swapId)
           .send({from:address});
 
           return receipt;
         },
 
-        closeSwap: async (swapId, address)=>{
+        close: async (swapId, address)=>{
           if(!swapId || !address) return new Error("Invalid Arguments");
 
-          const receipt = await contract.methods.closeSwap(swapId)
+          const receipt = await contract.methods.close(swapId)
           .send({from:address});
 
           return receipt;
@@ -112,7 +112,7 @@ function useCDS() {
           if(!swapId || !address || premium) return new Error("Invalid Arguments");
 
           const receipt = await contract.methods.payPremium(swapId)
-          .send({from:address, value: premium});
+          .send({from:address});
           
           return receipt;
         },
