@@ -36,7 +36,7 @@ function Header() {
   const connectButtonHandler = async () => {
     const address = await metamask.request({ method: 'eth_requestAccounts' })
     .then(address=>address[0]);
-    console.log(address);
+    console.log(`user address: ${address}`);
 
     const nonce = await getNonce(address);
 
@@ -50,15 +50,14 @@ function Header() {
         params: [`sign: ${nonce}`, address]
     });
 
-    const isLogin = await requestLogin(address, signature);
-    console.log(isLogin)
-
-    if ( !isLogin ) {
-      console.log(isLogin)
+    // request login by signature
+    const isSuccess = await requestLogin(address, signature);
+    if ( !isSuccess ) {
+      console.log(isSuccess)
       return;
     }
 
-    dispatch(setAuth(address));
+    dispatch( setAuth(address) );
   };
 
   // Logout Handler
