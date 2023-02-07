@@ -2,42 +2,20 @@ import express, { CookieOptions } from 'express';
 import { recoverPersonalSignature } from 'eth-sig-util';
 import { bufferToHex } from 'ethereumjs-util';
 
-import isLoggedIn from '../middlewares/isLoggedIn';
+import { isLoggedIn } from '../middlewares/loginChecker';
 import { AppDataSource } from '../data-source';
 import { Users } from '../entities/Users';
 import redisClient from '../utils/redisClient';
-import { TreeChildren } from 'typeorm';
-
+import { isValidAddress, isValidEmail } from '../utils/inputValidators';
+import { getNonce } from '../utils/getNonce';
+import userController from '../controllers/userController';
 const userRepository = AppDataSource.getRepository(Users);
 const userRouter = express.Router();
 
-const getNonce = () => {
-  return Math.floor(Math.random() * 1e9);
-};
-
-const isValidAddress = (address: string): boolean => {
-  const re = /0x[\d\w]{40}/i;
-  return re.test(address);
-};
-
-function isValidEmail(email: string): boolean {
-  const re = /[^\s@]+@[^\s@]+\.[^\s@]+/gi;
-  return re.test(email);
-}
-
-userRouter.post('/my', isLoggedIn, async (req, res, next) => {
-  const { email, nickname } = req.body;
-  if (!isValidEmail(email) && !nickname) {
-    return res.status(403).json('Neither email nor nickname provided');
-  }
-  const address = await redisClient.get(req.cookies.sessionID);
-  const user = await userRepository.findOneBy({ address });
-  if (!user) return res.status(403).json('no such user');
-  if (isValidEmail(email)) user.email = email;
-  if (nickname) user.nickname = nickname;
-  await userRepository.save(user);
-  return res.status(200).json('User Update Successful');
-});
+userRouter.post('/my', isLoggedIn, userController.postMine);
+userRouter.get('/my', isLoggedIn, userController.getMine);
+userRouter.get('/:address', userController.getByAddress);
+userRouter.get('/', userController.getAll);
 
 userRouter.post('/login', async (req, res, next) => {
   try {
@@ -82,18 +60,6 @@ userRouter.post('/login', async (req, res, next) => {
   }
 });
 
-userRouter.get('/my', isLoggedIn, async (req, res, next) => {
-  try {
-    const address = await redisClient.get(req.cookies.sessionID);
-    const user = await userRepository.findOneBy({ address });
-    if (!user) return res.status(404).json('no such user');
-    return res.status(200).json(user);
-  } catch (err) {
-    console.error(err);
-    next(err);
-  }
-});
-
 userRouter.get('/nonce', async (req, res, next) => {
   try {
     const address = req.query.address as string;
@@ -126,27 +92,6 @@ userRouter.get('/logout', async (req, res, next) => {
     await redisClient.del(req.cookies.sessionID);
     res.clearCookie(req.cookies.sessionId);
     return res.status(200).json('Logout successful!');
-  } catch (err) {
-    console.error(err);
-    next(err);
-  }
-});
-
-userRouter.get('/:address', async (req, res, next) => {
-  try {
-    const address = req.params.address;
-    const singleUser = await userRepository.findOneBy({ address });
-    return res.status(200).json(singleUser);
-  } catch (err) {
-    console.error(err);
-    next(err);
-  }
-});
-
-userRouter.get('/', async (req, res, next) => {
-  try {
-    const allUsers = await userRepository.find({});
-    return res.status(200).json(allUsers);
   } catch (err) {
     console.error(err);
     next(err);

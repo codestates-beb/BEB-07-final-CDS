@@ -1,11 +1,11 @@
-import devRouter from './devRouter';
+import authRouter from './authRouter';
 import userRouter from './userRouter';
 import swapRouter from './swapRouter';
 import transactionRouter from './transactionRouter';
 import priceRouter from './priceRouter';
 
 export default {
-  devRouter,
+  authRouter,
   userRouter,
   swapRouter,
   transactionRouter,
