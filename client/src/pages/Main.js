@@ -116,9 +116,11 @@ function Main() {
         </div>
       </div>
       <div className="flex justify-center mt-[2rem]">
-        <button className="SeeMoreButton text-center text-xs font-bold hover:bg-ligthGrayColorHover transition delay-80 hover:-translate-y-1">
-          <Link to={'/cardProposed'}>See More</Link>
-        </button>
+        <Link to={'/cardProposed'}>
+          <button className="SeeMoreButton text-center text-xs font-bold hover:bg-ligthGrayColorHover transition delay-80 hover:-translate-y-1">
+            See More
+          </button>
+        </Link>
       </div>
 
       <div className="flex-col">
@@ -139,9 +141,11 @@ function Main() {
         </div>
       </div>
       <div className="flex justify-center mt-[2rem]">
-        <button className="SeeMoreButton text-center text-xs font-bold hover:bg-ligthGrayColorHover transition delay-80 hover:-translate-y-1">
-          <Link to={'/cardAccepted'}>See More</Link>
-        </button>
+        <Link to={'/cardAccepted'}>
+          <button className="SeeMoreButton text-center text-xs font-bold hover:bg-ligthGrayColorHover transition delay-80 hover:-translate-y-1">
+            See More
+          </button>
+        </Link>
       </div>
       <div className="fixed bottom-11 right-11">
         <ScrollButton />
