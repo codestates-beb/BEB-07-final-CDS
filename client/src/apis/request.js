@@ -28,11 +28,12 @@ export async function getSwapById(swapId) {
   }
 }
 
-export async function getCoinGeckoAPI(coinName) {
+export async function getCoinGeckoAPI() {
   try {
     const requestURL = `${config.coinGeckoAPI}`;
 
     const marketPriceData = await axios.get(requestURL);
+
     return marketPriceData.data;
   } catch (e) {
     console.log(e);
@@ -40,11 +41,12 @@ export async function getCoinGeckoAPI(coinName) {
   }
 }
 
-export async function getChainLinkAPI(coinSymbol) {
+export async function getChainLinkAPI() {
   try {
     const requestURL = `${config.chainLinkAPI}`;
 
     const marketPriceData = await axios.get(requestURL);
+
     return marketPriceData.data;
   } catch (e) {
     console.log(e);
