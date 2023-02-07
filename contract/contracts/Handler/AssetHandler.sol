@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
+import './SwapHandler.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
-contract AssetHandler is Ownable {
+contract AssetHandler is Ownable, SwapHandler {
   using SafeMath for uint256;
 
   IERC20 public token;
@@ -36,6 +37,26 @@ contract AssetHandler is Ownable {
     return _deposits[swapId];
   }
 
+  function _afterCancel(uint256 _swapId) internal returns (bool) {
+    uint256 deposit;
+    bool isBuyer = (msg.sender == getBuyer(_swapId));
+    isBuyer ? deposit = getDeposits(_swapId)[0].deposit : getDeposits(_swapId)[1].deposit;
+    bool sent = token.transfer(msg.sender, deposit);
+    require(sent, 'Sending deposit failed');
+    clearDeposit(_swapId);
+    return true;
+  }
+
+  function _afterClose(uint256 _swapId) internal returns (bool) {
+    uint256 buyerDeposit = getDeposits(_swapId)[0].deposit;
+    uint256 sellerDeposit = getDeposits(_swapId)[1].deposit;
+    bool buyerSent = token.transfer(getBuyer(_swapId), buyerDeposit);
+    bool sellerSent = token.transfer(getSeller(_swapId), sellerDeposit);
+    require(buyerSent && sellerSent, 'Sending deposit failed');
+    clearDeposit(_swapId);
+    return true;
+  }
+
   function setDepoForBuyer(uint256 _swapId, uint256 _premium) internal {
     _deposits[_swapId][0].deposit = _premium.mul(3);
     _deposits[_swapId][0].isPaid = true;
@@ -46,12 +67,10 @@ contract AssetHandler is Ownable {
     _deposits[_swapId][1].isPaid = true;
   }
 
-  function clearDeposit(uint256 swapId) internal {
+  function clearDeposit(uint256 swapId) private {
     for (uint i = 0; i <= 1; i++) {
       _deposits[swapId][i].deposit = 0;
       _deposits[swapId][i].isPaid = false;
     }
   }
-
-  // transferFrom 하면 premium 지불 시 마다 allowance가 줄어듦 => 매번 setPremium 매번 다시 세팅하면 되긴함;
 }

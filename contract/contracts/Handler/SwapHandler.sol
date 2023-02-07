@@ -54,7 +54,7 @@ contract SwapHandler is PriceConsumer {
     bool _isBuyerHost,
     uint256 _initAssetPrice,
     uint256 _acceptedSwapId
-  ) internal returns (uint256) {
+  ) internal isPending(_acceptedSwapId) returns (uint256) {
     Swap targetSwap = _swaps[_acceptedSwapId];
     targetSwap.setInitAssetPrice(_initAssetPrice);
 
@@ -72,23 +72,24 @@ contract SwapHandler is PriceConsumer {
     return _acceptedSwapId;
   }
 
-  function _cancel(uint256 _targetSwapId) internal {
-    // clearDeposit(_targetSwapId);
+  function _cancel(uint256 _targetSwapId) internal     
+    isParticipants(_targetSwapId)
+    isPending(_targetSwapId) {
     _swaps[_targetSwapId].setStatus(Swap.Status.inactive);
   }
 
-  function _close(uint256 _targetSwapId) internal {
-    // clearDeposit(_targetSwapId);
+  function _close(uint256 _targetSwapId) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
     _swaps[_targetSwapId].setStatus(Swap.Status.expired);
   }
 
-  function _payPremium(uint256 _targetSwapId) internal {
+  function _payPremium(uint256 _targetSwapId) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
     _nextPayDate[_targetSwapId] = block.timestamp + getInterval(_targetSwapId);
     _swaps[_targetSwapId].setRounds(getRounds(_targetSwapId) - 1);
   }
 
-  function _claim(uint256 _targetSwapId) internal {
-    // clearDeposit(_targetSwapId);
+  function _claim(uint256 _targetSwapId) internal     
+    isBuyer(_targetSwapId)
+    isActive(_targetSwapId) {
     _swaps[_targetSwapId].setStatus(Swap.Status.claimed);
   }
 
