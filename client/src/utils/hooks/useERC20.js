@@ -6,7 +6,7 @@ import Web3 from 'web3';
 import ERC20ABI from '../../assets/contract/ERC20.json';
 
 // config
-import { contractAddr } from '../../config/config';
+import config from '../../config/config';
 
 function useERC20() {
     const [ERC20, setERC20] = useState(null);
@@ -24,7 +24,7 @@ function useERC20() {
             transfer: async (amount, sender)=>{
                 if(!amount || !sender) return new Error('Invalid Inputs!');
 
-                const result = await erc20.transfer(contractAddr, amount)
+                const result = await erc20.transfer(config.contractAddr, amount)
                 .send({from:sender});
 
                 console.log(result);
@@ -35,7 +35,7 @@ function useERC20() {
             approve: async (amount, sender)=>{
                 if(!amount || !sender) return new Error('Invalid Inputs!');
 
-                const result = await erc20.approve(contractAddr, amount)
+                const result = await erc20.approve(config.contractAddr, amount)
                 .send({from:sender});
                 
                 console.log(result);
