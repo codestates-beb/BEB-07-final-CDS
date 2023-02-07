@@ -50,9 +50,11 @@ const swapController = {
       ? seller
       : null;
     const filteredBuyer: string | null = isValidAddress(buyer) ? buyer : null;
-
+    console.log({
+      filteredAddress,
+    });
     try {
-      let swapQuery = swapRepository.createQueryBuilder('swaps').select();
+      let swapQuery = swapRepository.createQueryBuilder('swaps');
       if (filteredAddress) {
         swapQuery = swapQuery
           .where(filteredAddress ? 'swaps.buyer = :filteredAddress' : '1=1', {
@@ -89,7 +91,7 @@ const swapController = {
         .offset(filteredOffset)
         .limit(filteredLimit);
 
-      const filteredSwaps = swapQuery.getManyAndCount();
+      const filteredSwaps = await swapQuery.getManyAndCount();
       return res.status(200).json({
         totalSwapCount: await swapRepository.count(),
         filteredSwapCount: filteredSwaps[1],
