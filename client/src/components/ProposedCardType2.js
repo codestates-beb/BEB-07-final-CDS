@@ -20,7 +20,7 @@ function ProposedCard_type2(props) {
         <div className="mx-[10%]">
           <div className="text-2xl font-extrabold">Bitcoin CDS</div>
           <div className="mb-[4%] flex font-semibold text-[9px]">
-            <p>This CDS proposed as</p>
+            <p>This CDS proposed by</p>
             <div>
               {props.buyerAddress !== null ? (
                 <p className="text-green">&nbsp; Buyer</p>
@@ -41,7 +41,7 @@ function ProposedCard_type2(props) {
             <div className="font-light text-xs">{props.requiredDeposit}</div>
           </div>
           <div className="mb-[2%]">
-            <div className="font-medium text-sm">Expire Date</div>
+            <div className="font-medium text-sm">Expiration Date</div>
             <div className="font-light text-xs">
               {' '}
               {(Math.floor((props.premiumInterval / 604800) * 100) / 100) *
@@ -50,11 +50,11 @@ function ProposedCard_type2(props) {
             </div>
           </div>
         </div>
-        <button className="w-[80%] h-[6%] my-[4%] mx-[10%] rounded-3xl bg-primaryColor content-center">
-          <Link to={`/accept/${props.swapId}`} className="text-sm font-bold">
+        <Link to={`/accept/${props.swapId}`} className="text-sm font-bold">
+          <button className="w-[80%] h-[6%] my-[4%] mx-[10%] rounded-3xl bg-primaryColor content-center">
             More Details
-          </Link>
-        </button>
+          </button>
+        </Link>
       </div>
     </>
   );

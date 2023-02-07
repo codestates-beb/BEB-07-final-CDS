@@ -15,7 +15,7 @@ export const AppDataSource = new DataSource({
   port: 3306,
   username: getEnv('DB_USERNAME'),
   password: getEnv('DB_PASSWORD'),
-  database: 'cds_dev2',
+  database: getEnv('DB_SCHEMA'),
   synchronize: true,
   logging: false,
   entities: [Users, Transactions, Swaps],

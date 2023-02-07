@@ -6,6 +6,7 @@ export const authSlice = createSlice({
     initialState: {
         user_addr: '',
         isLogin: false,
+        userId: null,
     },
     reducers: {
         setAuth: (state, action)=>{

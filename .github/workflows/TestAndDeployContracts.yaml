@@ -4,13 +4,12 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
       - dev
     paths:
       - contract/contracts/**
 
 jobs:
-  contractTester:
+  contractJobs:
     runs-on: ubuntu-20.04
     defaults:
       run:
@@ -36,6 +35,9 @@ jobs:
         env: # env available for only this steps
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
+          GETH_HOST: ${{ secrets.GETH_HOST }}
+          GETH_PORT: ${{ secrets.GETH_PORT }}
+          GETH_NETWORK_ID: ${{ secrets.GETH_NETWORK_ID }}
 
       - name: Install node packages
         run: npm install --production
@@ -52,8 +54,11 @@ jobs:
       #       - name: Test with Truffle test
       #         run: truffle test --network remote
 
-      - name: Deploy Contract to Remote Server
-        run: truffle migrate --network remote
+      # - name: Deploy Contract to Remote Server
+      #   run: truffle migrate --network remote
+
+      - name: Deploy Contract to GETH Server
+        run: truffle migrate --network geth
 
       - name: Trigger discord webhook with CDS CA
         uses: tsickert/discord-webhook@v5.3.0

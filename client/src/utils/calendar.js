@@ -9,15 +9,15 @@ export function unixTimeToWeeks(time) {
 }
 
 // Calculate Time Remaining for paying premium
-export function calculateTimeRemaining(currentTime, payTime){
-    const diffSeconds = payTime - currentTime;
+export function calculateTimeRemaining(currentTime, nextTime){
+    const diffSeconds = nextTime - currentTime;
 
     if (diffSeconds <= 0) return `overdue`;
     else{
         if (parseInt(diffSeconds / 60) === 0) return `${diffSeconds} seconds`;
         const diffMinutes = parseInt( diffSeconds / 60 );
 
-        if (parseInt(diffMinutes / 60) === 0) return `${diffSeconds} minutes`;
+        if (parseInt(diffMinutes / 60) === 0) return `${diffMinutes} minutes`;
         const diffHours = parseInt( diffMinutes / 60 );
 
         if (parseInt(diffHours / 24) === 0 ) return `${diffHours} hours`;

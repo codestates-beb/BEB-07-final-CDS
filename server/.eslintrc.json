@@ -24,8 +24,7 @@
     "func-names": "off",
     "class-methods-use-this": "off",
     "no-plusplus": "off",
-    "no-param-reassign": "warn",
-    "strict": "warn",
+    "no-param-reassign": "warn"
   },
   "globals": {
     "describe": true,

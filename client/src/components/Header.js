@@ -3,8 +3,18 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
+// apis
+import { 
+  getNonce,
+  requestLogin,
+  requestLogout,
+} from '../apis/auth';
+
 // Redux Actions
-import { setAuth } from '../features/authSlice';
+import { 
+  setAuth,
+  resetAuth
+} from '../features/authSlice';
 
 // hooks
 import useMetamask from '../utils/hooks/useMetamask';
@@ -12,20 +22,56 @@ import useMetamask from '../utils/hooks/useMetamask';
 // css
 import '../assets/css/header.css';
 
-//image
-import MainLogo from '../assets/img/CDS_Symbol_bright_removebg.png';
-
 function Header() {
   const metamask = useMetamask();
   const dispatch = useDispatch();
 
   const isLogin = useSelector((state) => state.auth.isLogin);
 
-  // Contracdt & User Setting Handler
+  /********************/
+  //     Handler      //
+  /********************/
+
+  // Contract & User Setting Handler
   const connectButtonHandler = async () => {
-    const result = await metamask.request({ method: 'eth_requestAccounts' });
+    const address = await metamask.request({ method: 'eth_requestAccounts' })
+    .then(address=>address[0]);
+    console.log(`user address: ${address}`);
+
+    const nonce = await getNonce(address);
+
+    console.log(nonce);
+
+    if(!nonce) return new Error('Nonce is not valid');
+
+    // sign nonce by address
+    const signature = await metamask.request({ 
+        method: 'personal_sign', 
+        params: [`sign: ${nonce}`, address]
+    });
+
+    // request login by signature
+    const isSuccess = await requestLogin(address, signature);
+    if ( !isSuccess ) {
+      console.log(isSuccess)
+      return;
+    }
+
+    dispatch( setAuth(address) );
+  };
+
+  // Logout Handler
+  const logoutButtonHandler = async () => {
+    const result =await requestLogout();
+
     console.log(result);
-    if (result && result.length > 0) dispatch(setAuth(result[0]));
+
+    if(!result) {
+      console.log(result);
+      return;
+    }
+
+    dispatch(resetAuth());
   };
 
   return (
@@ -45,21 +91,35 @@ function Header() {
       </div>
       <div className="navbar flex items-center">
         <ul className="navbar-wrapper mr-[2rem] flex">
-          <Link to="/mypage">
-            <li className="navbar-item mx-[1rem]">MyPage</li>
-          </Link>
+          {isLogin ? 
+            <Link to="/mypage">
+              <li className="navbar-item mx-[1rem]">MyPage</li>
+            </Link>
+            :<></>
+          }
           <Link>
             <li className="navbar-item mx-[1rem]">About</li>
           </Link>
           <Link to="/create">
             <li className="navbar-item mx-[1rem]">Create CDS</li>
           </Link>
+          <Link to="/signup">
+            <li className="navbar-item mx-[1rem]">Sign Up</li>
+          </Link>
         </ul>
         {isLogin ? (
-          <></>
+          <button
+            className="navbar-button hover:bg-mintHover transition delay-80"
+            onClick={logoutButtonHandler}
+          >
+            Log Out
+          </button>
         ) : (
-          <button className="navbar-button" onClick={connectButtonHandler}>
-            Connect Wallet
+          <button
+            className="navbar-button hover:bg-mintHover transition delay-80"
+            onClick={connectButtonHandler}
+          >
+            Log In
           </button>
         )}
       </div>

@@ -1,6 +1,6 @@
 // modules
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Route } from 'react-router-dom';
 
 //image
 import MainLogo from '../assets/img/CDS_Symbol_bright_removebg.png';
@@ -13,6 +13,9 @@ import AcceptedCardScroll from '../components/swiper/AcceptedCardScroll.js';
 import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
+// css
+import '../assets/css/main.css';
+
 //APIs
 import { getSwaps } from '../apis/request.js';
 
@@ -20,16 +23,16 @@ function Main() {
   // database에서 swap구조체에 대한 정보를 받아옵니다
   const [swapResponse, setResponse] = useState([]);
 
-  useEffect(() => {
-    const APIdata = getSwaps();
-    const getData = () => {
-      APIdata.then((response) => {
-        setResponse(response);
-        console.log(response);
-      });
-    };
-    getData();
-  }, []);
+  // useEffect(() => {
+  //   const APIdata = getSwaps();
+  //   const getData = () => {
+  //     APIdata.then((response) => {
+  //       setResponse(response);
+  //       console.log(response);
+  //     });
+  //   };
+  //   getData();
+  // }, []);
 
   return (
     <div className="">
@@ -52,7 +55,7 @@ function Main() {
           </div>
           <div>
             <Link to="/create">
-              <button className="mt-10 rounded-2xl w-64 h-10 text-sm font-semibold bg-primaryColor hover:scale-105 transition-all">
+              <button className="mt-10 rounded-2xl w-64 h-10 text-sm font-semibold bg-primaryColor hover:bg-mintHover transition delay-80">
                 Create Crypto Default Swap (CDS)
               </button>
             </Link>
@@ -112,8 +115,16 @@ function Main() {
           <ProposedCardScroll response={swapResponse} />
         </div>
       </div>
+      <div className="flex justify-center mt-[2rem]">
+        <Link to={'/cardProposed'}>
+          <button className="SeeMoreButton text-center text-xs font-bold hover:bg-ligthGrayColorHover transition delay-80 hover:-translate-y-1">
+            See More
+          </button>
+        </Link>
+      </div>
+
       <div className="flex-col">
-        <div className="mt-32 font-bold text-2xl text-center">
+        <div className="mt-60 font-bold text-2xl text-center">
           Accepted CDSs
         </div>
         <div className="mt-4 font-regular text-base text-center text-lightGray">
@@ -128,6 +139,13 @@ function Main() {
             <AcceptedCardScroll response={swapResponse} />
           </div>
         </div>
+      </div>
+      <div className="flex justify-center mt-[2rem]">
+        <Link to={'/cardAccepted'}>
+          <button className="SeeMoreButton text-center text-xs font-bold hover:bg-ligthGrayColorHover transition delay-80 hover:-translate-y-1">
+            See More
+          </button>
+        </Link>
       </div>
       <div className="fixed bottom-11 right-11">
         <ScrollButton />
