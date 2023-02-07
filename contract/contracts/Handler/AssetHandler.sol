@@ -11,12 +11,7 @@ contract AssetHandler is Ownable, SwapHandler {
 
   IERC20 public token;
 
-  struct Deposit {
-    uint256 deposit;
-    bool isPaid;
-  }
-
-  mapping(uint256 => Deposit[2]) private _deposits;
+  mapping(uint256 => uint256[2]) private _deposits;
 
   constructor() {
     token = IERC20(0xd9145CCE52D386f254917e481eB44e9943F39138);
@@ -28,12 +23,7 @@ contract AssetHandler is Ownable, SwapHandler {
     return true;
   }
 
-  function _deposit(address sender, uint amount) public returns (bool) {
-    token.transferFrom(sender, address(this), amount); // allowance[sender][CDS CA] = 0;
-    return true;
-  }
-
-  function getDeposits(uint256 swapId) public view returns (Deposit[2] memory) {
+  function getDeposits(uint256 swapId) public view returns (uint256[2] memory) {
     return _deposits[swapId];
   }
 
@@ -42,8 +32,8 @@ contract AssetHandler is Ownable, SwapHandler {
     bool _isBuyer
   ) internal returns (bool) {
     _isBuyer
-      ? setDepoForBuyer(_swapId, getPremium(_swapId))
-      : setDepoForSeller(_swapId, getSellerDeposit(_swapId));
+      ? _deposits[_swapId][0] = getPremium(_swapId).mul(3)
+      : _deposits[_swapId][1] = getSellerDeposit(_swapId);
     return true;
   }
 
@@ -52,8 +42,8 @@ contract AssetHandler is Ownable, SwapHandler {
     bool _isBuyerHost
   ) internal returns (bool) {
     _isBuyerHost
-      ? setDepoForSeller(_swapId, getSellerDeposit(_swapId))
-      : setDepoForBuyer(_swapId, getPremium(_swapId));
+      ? _deposits[_swapId][1] = getSellerDeposit(_swapId)
+      : _deposits[_swapId][0] = getPremium(_swapId).mul(3);
     return true;
   }
 
@@ -61,8 +51,8 @@ contract AssetHandler is Ownable, SwapHandler {
     uint256 deposit;
     bool isBuyer = (msg.sender == getBuyer(_swapId));
     isBuyer
-      ? deposit = getDeposits(_swapId)[0].deposit
-      : getDeposits(_swapId)[1].deposit;
+      ? deposit = getDeposits(_swapId)[0]
+      : getDeposits(_swapId)[1];
     bool sent = token.transfer(msg.sender, deposit);
     require(sent, 'Sending deposit failed');
     clearDeposit(_swapId);
@@ -70,8 +60,8 @@ contract AssetHandler is Ownable, SwapHandler {
   }
 
   function _afterClose(uint256 _swapId) internal returns (bool) {
-    uint256 buyerDeposit = getDeposits(_swapId)[0].deposit;
-    uint256 sellerDeposit = getDeposits(_swapId)[1].deposit;
+    uint256 buyerDeposit = getDeposits(_swapId)[0];
+    uint256 sellerDeposit = getDeposits(_swapId)[1];
     bool buyerSent = token.transfer(getBuyer(_swapId), buyerDeposit);
     bool sellerSent = token.transfer(getSeller(_swapId), sellerDeposit);
     require(buyerSent && sellerSent, 'Sending deposit failed');
@@ -87,30 +77,19 @@ contract AssetHandler is Ownable, SwapHandler {
     );
     bool sentBuyer = token.transfer(
       getBuyer(_swapId),
-      claimReward + getDeposits(_swapId)[0].deposit
+      claimReward + getDeposits(_swapId)[0]
     );
     bool sentSeller = token.transfer(
       getSeller(_swapId),
-      getDeposits(_swapId)[1].deposit - claimReward
+      getDeposits(_swapId)[1] - claimReward
     );
     require(sentBuyer && sentSeller, 'Sending reward failed');
     return claimReward;
   }
 
-  function setDepoForBuyer(uint256 _swapId, uint256 _premium) private {
-    _deposits[_swapId][0].deposit = _premium.mul(3);
-    _deposits[_swapId][0].isPaid = true;
-  }
-
-  function setDepoForSeller(uint256 _swapId, uint256 _sellerDeposit) private {
-    _deposits[_swapId][1].deposit = _sellerDeposit;
-    _deposits[_swapId][1].isPaid = true;
-  }
-
   function clearDeposit(uint256 swapId) private {
     for (uint i = 0; i <= 1; i++) {
-      _deposits[swapId][i].deposit = 0;
-      _deposits[swapId][i].isPaid = false;
+      _deposits[swapId][i] = 0;
     }
   }
 }

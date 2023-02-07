@@ -58,9 +58,7 @@ contract SwapHandler {
       : targetSwap.setBuyer(msg.sender);
 
     // check => 토큰으로 처리시 바로 보내고 이거도 되야함.
-    _nextPayDate[_acceptedSwapId] =
-      block.timestamp +
-      getInterval(_acceptedSwapId);
+    _nextPayDate[_acceptedSwapId] += getInterval(_acceptedSwapId);
 
     targetSwap.setStatus(Swap.Status.active);
 
@@ -78,7 +76,7 @@ contract SwapHandler {
   }
 
   function _payPremium(uint256 _targetSwapId) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
-    _nextPayDate[_targetSwapId] = block.timestamp + getInterval(_targetSwapId);
+    _nextPayDate[_targetSwapId] += getInterval(_targetSwapId);
     getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
   }
 
