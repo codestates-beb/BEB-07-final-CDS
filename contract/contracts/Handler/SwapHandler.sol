@@ -43,8 +43,6 @@ contract SwapHandler is PriceConsumer {
     );
     _swaps[newSwapId] = newSwap;
 
-    // newSwap.setStatus(Swap.Status.pending);
-
     _isBuyer ? newSwap.setBuyer(msg.sender) : newSwap.setSeller(msg.sender);
 
     return newSwapId;
@@ -91,6 +89,14 @@ contract SwapHandler is PriceConsumer {
     isBuyer(_targetSwapId)
     isActive(_targetSwapId) {
     _swaps[_targetSwapId].setStatus(Swap.Status.claimed);
+  }
+
+  function _expireByRounds(uint256 _targetSwapId) internal isSeller(_targetSwapId) isActive(_targetSwapId) {
+    
+  }
+
+  function _expireByDate(uint256 _targetSwapId) internal isSeller(_targetSwapId) isActive(_targetSwapId) {
+    
   }
 
   function getSwapId() public view returns (Counters.Counter memory) {
@@ -157,6 +163,11 @@ contract SwapHandler is PriceConsumer {
   // modifiers
   modifier isBuyer(uint256 swapId) {
     require(msg.sender == getBuyer(swapId), 'Only buyer of the CDS can call');
+    _;
+  }
+
+  modifier isSeller(uint256 swapId) {
+    require(msg.sender == getSeller(swapId), 'Only seller of the CDS can call');
     _;
   }
 

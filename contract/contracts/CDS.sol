@@ -31,6 +31,10 @@ interface CDSInterface {
 
   function payPremium(uint256 swapId) external payable returns (bool);
 
+  function expireByRounds(uint256 swapId) external returns (bool);
+
+  function expireByDate(uint256 swapId) external returns (bool);
+
   event Create(
     address indexed hostAddr,
     bool isBuyer,
@@ -41,6 +45,7 @@ interface CDSInterface {
   event Cancel(uint256 swapId);
   event Claim(uint256 swapId, uint256 claimReward);
   event Close(uint256 swapId);
+  event Expire(uint256 swapId);
   event PayPremium(uint256 swapId);
 }
 
@@ -66,11 +71,7 @@ contract CDS is Ownable, AssetHandler, CDSInterface {
       premiumInterval,
       totalRounds
     );
-
-    isBuyer
-      ? setDepoForBuyer(newSwapId, premium)
-      : setDepoForSeller(newSwapId, sellerDeposit);
-
+    _afterCreate(newSwapId, isBuyer);
     emit Create(msg.sender, isBuyer, newSwapId, address(getSwap(newSwapId)));
     return newSwapId;
   }
@@ -85,11 +86,8 @@ contract CDS is Ownable, AssetHandler, CDSInterface {
     );
 
     bool isBuyerHost = (getSeller(swapId) == address(0));
-    isBuyerHost
-      ? setDepoForSeller(swapId, getSellerDeposit(swapId))
-      : setDepoForBuyer(swapId, getPremium(swapId));
-
     uint256 acceptedSwapId = _accept(isBuyerHost, initAssetPrice, swapId);
+    _afterAccept(swapId, isBuyerHost);
     emit Accept(msg.sender, acceptedSwapId);
     return acceptedSwapId;
   }
@@ -109,20 +107,25 @@ contract CDS is Ownable, AssetHandler, CDSInterface {
   }
 
   function claim(uint256 swapId) external override returns (bool) {
-    uint256 claimReward = getClaimReward(swapId);
-    require(
-      claimReward != 0,
-      'Claim price in CDS should be higher than current price of asset'
-    );
-    (bool sentBuyer, ) = msg.sender.call{
-      value: (claimReward + getDeposits(swapId)[0].deposit)
-    }('');
-    (bool sentSeller, ) = msg.sender.call{
-      value: (getDeposits(swapId)[1].deposit - claimReward)
-    }('');
-    require(sentBuyer && sentSeller, 'Sending reward failed');
     _claim(swapId);
+    uint256 claimReward = _afterClaim(swapId);
     emit Claim(swapId, claimReward);
+    return true;
+  }
+
+  // total Rounds 만료시 seller 콜 => 각자 deposit 가져가기
+  function expireByRounds(uint256 swapId) external override returns (bool) {
+    _expireByRounds(swapId);
+    _afterExpireByRounds(swapId);
+    emit Expire(swapId);
+    return true;
+  }
+
+  // buyer Deposit = 0 인데, nextPayDate이 이미 지났을 경우 seller 콜 => 각자 deposit 가져가기
+  function expireByDate(uint256 swapId) external override returns (bool) {
+    _expireByDate(swapId);
+    _afterExpireByDate(swapId);
+    emit Expire(swapId);
     return true;
   }
 
