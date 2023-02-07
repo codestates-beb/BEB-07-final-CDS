@@ -16,6 +16,54 @@ export async function getSwaps() {
   }
 }
 
+export async function getPendingSwaps() {
+  try {
+    const requestURL = `${config.apiURL}/swaps?status=pending`;
+
+    const swaps = await axios.get(requestURL);
+    return swaps.data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+}
+
+export async function getPendingSwapsByOffset(offset) {
+  try {
+    const requestURL = `${config.apiURL}/swaps?status=pending&offset=${offset}`;
+
+    const swaps = await axios.get(requestURL);
+    return swaps.data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+}
+
+export async function getActiveSwaps() {
+  try {
+    const requestURL = `${config.apiURL}/swaps?status=active`;
+
+    const swaps = await axios.get(requestURL);
+    return swaps.data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+}
+
+export async function getActiveSwapsByOffset(offset) {
+  try {
+    const requestURL = `${config.apiURL}/swaps?status=active&offset=${offset}`;
+
+    const swaps = await axios.get(requestURL);
+    return swaps.data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+}
+
 export async function getSwapById(swapId) {
   try {
     const requestURL = `${config.apiURL}/swaps/${swapId}`;
