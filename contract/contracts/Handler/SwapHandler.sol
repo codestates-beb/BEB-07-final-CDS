@@ -2,15 +2,12 @@
 pragma solidity ^0.8.7;
 
 import '../Swaps/Swap.sol';
-import '../Oracle/PriceConsumer.sol';
-import '../libs/LibClaim.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
-contract SwapHandler is PriceConsumer {
+contract SwapHandler {
   using Counters for Counters.Counter;
   using SafeMath for uint256;
-  using LibClaim for uint256;
   Counters.Counter internal _swapId;
 
   mapping(uint256 => Swap) private _swaps;
@@ -73,22 +70,22 @@ contract SwapHandler is PriceConsumer {
   function _cancel(uint256 _targetSwapId) internal     
     isParticipants(_targetSwapId)
     isPending(_targetSwapId) {
-    _swaps[_targetSwapId].setStatus(Swap.Status.inactive);
+    getSwap(_targetSwapId).setStatus(Swap.Status.inactive);
   }
 
   function _close(uint256 _targetSwapId) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
-    _swaps[_targetSwapId].setStatus(Swap.Status.expired);
+    getSwap(_targetSwapId).setStatus(Swap.Status.expired);
   }
 
   function _payPremium(uint256 _targetSwapId) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
     _nextPayDate[_targetSwapId] = block.timestamp + getInterval(_targetSwapId);
-    _swaps[_targetSwapId].setRounds(getRounds(_targetSwapId) - 1);
+    getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
   }
 
   function _claim(uint256 _targetSwapId) internal     
     isBuyer(_targetSwapId)
     isActive(_targetSwapId) {
-    _swaps[_targetSwapId].setStatus(Swap.Status.claimed);
+    getSwap(_targetSwapId).setStatus(Swap.Status.claimed);
   }
 
   function _expireByRounds(uint256 _targetSwapId) internal isSeller(_targetSwapId) isActive(_targetSwapId) {
@@ -114,19 +111,6 @@ contract SwapHandler is PriceConsumer {
 
   function getPrices(uint256 swapId) public view returns (uint256[5] memory) {
     return _swaps[swapId].getPrices();
-  }
-
-  function getClaimReward(uint256 swapId) public view returns (uint256) {
-    uint256 currPrice = getPriceFromOracle();
-    if (_swaps[swapId].claimPrice() < currPrice) {
-      return 0;
-    }
-    return
-      getSellerDeposit(swapId).calcClaimReward(
-        _swaps[swapId].liquidationPrice(),
-        _swaps[swapId].initAssetPrice(),
-        currPrice
-      );
   }
 
   function getPremium(uint256 swapId) public view returns (uint256) {

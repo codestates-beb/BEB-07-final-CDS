@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
+import '../Oracle/PriceConsumer.sol';
+import '../libs/LibClaim.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
-contract Swap is Ownable {
+contract Swap is Ownable, PriceConsumer {
   using SafeMath for uint256;
+  using LibClaim for uint256;
 
   enum Status {
     inactive,
@@ -66,6 +69,19 @@ contract Swap is Ownable {
 
   function getSeller() public view returns (address) {
     return seller;
+  }
+
+  function getClaimReward() public view returns (uint256) {
+    uint256 currPrice = getPriceFromOracle();
+    if (claimPrice < currPrice) {
+      return 0;
+    }
+    return
+      sellerDeposit.calcClaimReward(
+        liquidationPrice,
+        initAssetPrice,
+        currPrice
+      );
   }
 
   function setInitAssetPrice(uint256 _initAssetPrice) public returns (uint256) {

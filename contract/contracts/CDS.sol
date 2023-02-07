@@ -112,9 +112,9 @@ contract CDS is Ownable, AssetHandler, CDSInterface {
     emit Claim(swapId, claimReward);
     return true;
   }
- 
+
   // total Rounds 만료시 seller 콜 => 각자 deposit 가져가기. 근데 기간 만료인데 claimable 상태라면?
-  function expireByRounds(uint256 swapId) external override returns (bool) { 
+  function expireByRounds(uint256 swapId) external override returns (bool) {
     _expireByRounds(swapId);
     _afterClose(swapId);
     emit Expire(swapId);
@@ -137,10 +137,6 @@ contract CDS is Ownable, AssetHandler, CDSInterface {
     _payPremium(swapId);
     emit PayPremium(swapId);
     return true;
-  }
-
-  function getContractBalance() public view returns (uint256) {
-    return address(this).balance;
   }
 
   // modifiers
