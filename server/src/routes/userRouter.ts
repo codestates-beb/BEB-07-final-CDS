@@ -40,29 +40,36 @@ userRouter.post('/login', async (req, res, next) => {
   try {
     const { address, signature } = req.body;
     console.log(address, signature);
-    if (!address || !signature) {
-      return res.status(403).json('You Must POST both address and signature');
-    }
-    const user = await userRepository.findOneBy({ address });
-    if (!user || !user.nonce) {
-      return res.status(403).json('You Must ask for Nonce before logging in');
-    }
-    const nonce = user.nonce;
-    user.nonce = null;
-    await userRepository.save(user);
+    // if (!address || !signature) {
+    //   return res.status(403).json('You Must POST both address and signature');
+    // }
+    // const user = await userRepository.findOneBy({ address });
+    // if (!user || !user.nonce) {
+    //   return res.status(403).json('You Must ask for Nonce before logging in');
+    // }
+    // const nonce = user.nonce;
+    // user.nonce = null;
+    // await userRepository.save(user);
 
-    const msgBufferHex = bufferToHex(Buffer.from('sign: ' + nonce.toString()));
-    const parsedAddress = recoverPersonalSignature({
-      data: msgBufferHex,
-      sig: signature,
+    // const msgBufferHex = bufferToHex(Buffer.from('sign: ' + nonce.toString()));
+    // const parsedAddress = recoverPersonalSignature({
+    //   data: msgBufferHex,
+    //   sig: signature,
+    // });
+    // console.log({ parsedAddress });
+    // if (parsedAddress.toLowerCase() !== address.toLowerCase()) {
+    //   return res
+    //     .status(403)
+    //     .json('Login Failed : Signature from invalid address');
+    // }
+    res.cookie('cookie test', 'cookie test content', {
+      sameSite: 'none',
+      secure: true,
+      maxAge: 15 * 60 * 1000,
+      httpOnly: true,
     });
-    console.log({ parsedAddress });
-    if (parsedAddress.toLowerCase() !== address.toLowerCase()) {
-      return res
-        .status(403)
-        .json('Login Failed : Signature from invalid address');
-    }
     req.session.address = address;
+    console.log(req.session);
     return res.status(200).json('Login Successful!');
   } catch (err) {
     console.error(err);
