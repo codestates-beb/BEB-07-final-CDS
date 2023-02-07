@@ -2,15 +2,10 @@
 pragma solidity ^0.8.7;
 
 import '../Swaps/Swap.sol';
-import '../Oracle/PriceConsumer.sol';
-import '../libs/LibClaim.sol';
-import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
-contract SwapHandler is PriceConsumer {
+contract SwapHandler {
   using Counters for Counters.Counter;
-  using SafeMath for uint256;
-  using LibClaim for uint256;
   Counters.Counter internal _swapId;
 
   mapping(uint256 => Swap) private _swaps;
@@ -43,8 +38,6 @@ contract SwapHandler is PriceConsumer {
     );
     _swaps[newSwapId] = newSwap;
 
-    // newSwap.setStatus(Swap.Status.pending);
-
     _isBuyer ? newSwap.setBuyer(msg.sender) : newSwap.setSeller(msg.sender);
 
     return newSwapId;
@@ -54,7 +47,7 @@ contract SwapHandler is PriceConsumer {
     bool _isBuyerHost,
     uint256 _initAssetPrice,
     uint256 _acceptedSwapId
-  ) internal returns (uint256) {
+  ) internal isPending(_acceptedSwapId) returns (uint256) {
     Swap targetSwap = _swaps[_acceptedSwapId];
     targetSwap.setInitAssetPrice(_initAssetPrice);
 
@@ -63,33 +56,38 @@ contract SwapHandler is PriceConsumer {
       : targetSwap.setBuyer(msg.sender);
 
     // check => 토큰으로 처리시 바로 보내고 이거도 되야함.
-    _nextPayDate[_acceptedSwapId] =
-      block.timestamp +
-      getInterval(_acceptedSwapId);
+    _nextPayDate[_acceptedSwapId] += getInterval(_acceptedSwapId);
 
     targetSwap.setStatus(Swap.Status.active);
 
     return _acceptedSwapId;
   }
 
-  function _cancel(uint256 _targetSwapId) internal {
-    // clearDeposit(_targetSwapId);
-    _swaps[_targetSwapId].setStatus(Swap.Status.inactive);
+  function _cancel(uint256 _targetSwapId) internal     
+    isParticipants(_targetSwapId)
+    isPending(_targetSwapId) {
+    getSwap(_targetSwapId).setStatus(Swap.Status.inactive);
   }
 
-  function _close(uint256 _targetSwapId) internal {
-    // clearDeposit(_targetSwapId);
-    _swaps[_targetSwapId].setStatus(Swap.Status.expired);
+  function _close(uint256 _targetSwapId) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
+    getSwap(_targetSwapId).setStatus(Swap.Status.expired);
   }
 
-  function _payPremium(uint256 _targetSwapId) internal {
-    _nextPayDate[_targetSwapId] = block.timestamp + getInterval(_targetSwapId);
-    _swaps[_targetSwapId].setRounds(getRounds(_targetSwapId) - 1);
+  function _payPremium(uint256 _targetSwapId) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
+    _nextPayDate[_targetSwapId] += getInterval(_targetSwapId);
+    getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
   }
 
-  function _claim(uint256 _targetSwapId) internal {
-    // clearDeposit(_targetSwapId);
-    _swaps[_targetSwapId].setStatus(Swap.Status.claimed);
+  function _claim(uint256 _targetSwapId) internal     
+    isBuyer(_targetSwapId)
+    isActive(_targetSwapId) {
+    getSwap(_targetSwapId).setStatus(Swap.Status.claimed);
+  }
+
+  function _expireByRounds(uint256 _targetSwapId) internal isSeller(_targetSwapId) isActive(_targetSwapId) {
+    require((block.timestamp >= _nextPayDate[_targetSwapId]) && (getTotalRounds(_targetSwapId) == 0),
+    'Too early to call');
+    getSwap(_targetSwapId).setStatus(Swap.Status.expired);
   }
 
   function getSwapId() public view returns (Counters.Counter memory) {
@@ -102,19 +100,6 @@ contract SwapHandler is PriceConsumer {
 
   function getPrices(uint256 swapId) public view returns (uint256[5] memory) {
     return _swaps[swapId].getPrices();
-  }
-
-  function getClaimReward(uint256 swapId) public view returns (uint256) {
-    uint256 currPrice = getPriceFromOracle();
-    if (_swaps[swapId].claimPrice() < currPrice) {
-      return 0;
-    }
-    return
-      getSellerDeposit(swapId).calcClaimReward(
-        _swaps[swapId].liquidationPrice(),
-        _swaps[swapId].initAssetPrice(),
-        currPrice
-      );
   }
 
   function getPremium(uint256 swapId) public view returns (uint256) {
@@ -156,6 +141,11 @@ contract SwapHandler is PriceConsumer {
   // modifiers
   modifier isBuyer(uint256 swapId) {
     require(msg.sender == getBuyer(swapId), 'Only buyer of the CDS can call');
+    _;
+  }
+
+  modifier isSeller(uint256 swapId) {
+    require(msg.sender == getSeller(swapId), 'Only seller of the CDS can call');
     _;
   }
 

@@ -50,13 +50,13 @@ contract('CDS', (accounts) => {
   describe('Create Swap', () => {
     it('should throw error when invalid input', async () => {
       await truffleAssert.fails(
-        cds.createSwap(true, 20000, 15000, 10000, 100000, -3000, 60 * 10, 10, {
+        cds.create(true, 20000, 15000, 10000, 100000, -3000, 60 * 10, 10, {
           from: accounts[2],
           value: defaultBuyerDeposit,
         }),
       );
       await truffleAssert.fails(
-        cds.createSwap(true, 20000, 15000, 10000, 100000, -3000, 60 * 10, 10, {
+        cds.create(true, 20000, 15000, 10000, 100000, -3000, 60 * 10, 10, {
           from: accounts[2],
           value: defaultBuyerDeposit,
         }),
@@ -65,7 +65,7 @@ contract('CDS', (accounts) => {
 
     it('should throw error when invalid deposit provided', async () => {
       await truffleAssert.fails(
-        cds.createSwap(
+        cds.create(
           defaultHostSetting,
           defaultInitAssetPrice,
           defaultClaimPrice,
@@ -78,7 +78,7 @@ contract('CDS', (accounts) => {
         ),
       );
       await truffleAssert.fails(
-        cds.createSwap(
+        cds.create(
           !defaultHostSetting,
           defaultInitAssetPrice,
           defaultClaimPrice,
@@ -94,7 +94,7 @@ contract('CDS', (accounts) => {
 
     it('should be able to create Swap as BUYER when valid input provided and check it from mapping', async () => {
       await truffleAssert.passes(
-        cds.createSwap(
+        cds.create(
           defaultHostSetting,
           defaultInitAssetPrice,
           defaultClaimPrice,
@@ -147,7 +147,7 @@ contract('CDS', (accounts) => {
 
     it('should be able to create Swap as SELLER when valid input provided and check it from mapping', async () => {
       await truffleAssert.passes(
-        cds.createSwap(
+        cds.create(
           !defaultHostSetting,
           defaultInitAssetPrice,
           defaultClaimPrice,
@@ -198,9 +198,9 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(defaultPremiumRounds, +totalRounds);
     });
 
-    it('should throw error when owner calls createSwap', async () => {
+    it('should throw error when owner calls create', async () => {
       await truffleAssert.fails(
-        cds.createSwap(
+        cds.create(
           defaultHostSetting,
           defaultInitAssetPrice,
           defaultClaimPrice,
@@ -213,7 +213,7 @@ contract('CDS', (accounts) => {
         ),
       );
       await truffleAssert.fails(
-        cds.createSwap(
+        cds.create(
           !defaultHostSetting,
           defaultInitAssetPrice,
           defaultClaimPrice,
@@ -229,7 +229,7 @@ contract('CDS', (accounts) => {
 
     it('should have decreased ETH amount of buyer after creating swap as BUYER', async () => {
       const before = await web3.eth.getBalance(accounts[2]);
-      const receipt = await cds.createSwap(
+      const receipt = await cds.create(
         defaultHostSetting,
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -260,7 +260,7 @@ contract('CDS', (accounts) => {
 
     it('should have decreased ETH amount of buyer after creating swap as SELLER', async () => {
       const before = await web3.eth.getBalance(accounts[1]);
-      const receipt = await cds.createSwap(
+      const receipt = await cds.create(
         !defaultHostSetting,
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -292,7 +292,7 @@ contract('CDS', (accounts) => {
 
   describe('Accept Swap', () => {
     it('should be able to accept Swap as SELLER when valid deposit provided and check it from mapping', async () => {
-      await cds.createSwap(
+      await cds.create(
         defaultHostSetting,
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -307,7 +307,7 @@ contract('CDS', (accounts) => {
       const [currentSwapId] = await cds.getSwapId();
 
       await truffleAssert.passes(
-        cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+        cds.accept(defaultInitAssetPrice, currentSwapId, {
           from: accounts[1],
           value: defaultSellerDeposit,
         }),
@@ -354,7 +354,7 @@ contract('CDS', (accounts) => {
     });
 
     it('should be able to accept Swap as BUYER when valid deposit provided and check it from mapping', async () => {
-      await cds.createSwap(
+      await cds.create(
         !defaultHostSetting,
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -369,7 +369,7 @@ contract('CDS', (accounts) => {
       const [currentSwapId] = await cds.getSwapId();
 
       await truffleAssert.passes(
-        cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+        cds.accept(defaultInitAssetPrice, currentSwapId, {
           from: accounts[2],
           value: defaultBuyerDeposit,
         }),
@@ -414,7 +414,7 @@ contract('CDS', (accounts) => {
     });
 
     it('should throw error if the seller provides invalid deposit', async () => {
-      await cds.createSwap(
+      await cds.create(
         defaultHostSetting,
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -429,7 +429,7 @@ contract('CDS', (accounts) => {
       const [currentSwapId] = await cds.getSwapId();
 
       await truffleAssert.fails(
-        cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+        cds.accept(defaultInitAssetPrice, currentSwapId, {
           from: accounts[1],
           value: defaultSellerDeposit + 1,
         }),
@@ -437,7 +437,7 @@ contract('CDS', (accounts) => {
     });
 
     it('should throw error if the buyer provides invalid deposit', async () => {
-      await cds.createSwap(
+      await cds.create(
         !defaultHostSetting,
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -451,7 +451,7 @@ contract('CDS', (accounts) => {
       const [currentSwapId] = await cds.getSwapId();
 
       await truffleAssert.fails(
-        cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+        cds.accept(defaultInitAssetPrice, currentSwapId, {
           from: accounts[2],
           value: defaultBuyerDeposit + 1,
         }),
@@ -459,7 +459,7 @@ contract('CDS', (accounts) => {
     });
 
     it('should throw error if the host accepts the swap', async () => {
-      await cds.createSwap(
+      await cds.create(
         defaultHostSetting,
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -473,13 +473,13 @@ contract('CDS', (accounts) => {
       let [currentSwapId] = await cds.getSwapId();
 
       await truffleAssert.fails(
-        cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+        cds.accept(defaultInitAssetPrice, currentSwapId, {
           from: accounts[2],
           value: defaultSellerDeposit,
         }),
       );
 
-      await cds.createSwap(
+      await cds.create(
         !defaultHostSetting,
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -493,7 +493,7 @@ contract('CDS', (accounts) => {
       [currentSwapId] = await cds.getSwapId();
 
       await truffleAssert.fails(
-        cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+        cds.accept(defaultInitAssetPrice, currentSwapId, {
           from: accounts[1],
           value: defaultBuyerDeposit,
         }),
@@ -501,7 +501,7 @@ contract('CDS', (accounts) => {
     });
 
     it('should have right ETH amount of seller after accepting swap as SELLER', async () => {
-      await cds.createSwap(
+      await cds.create(
         defaultHostSetting,
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -515,14 +515,10 @@ contract('CDS', (accounts) => {
       const [currentSwapId] = await cds.getSwapId();
 
       const before = await web3.eth.getBalance(accounts[1]);
-      const receipt = await cds.acceptSwap(
-        defaultInitAssetPrice,
-        currentSwapId,
-        {
-          from: accounts[1],
-          value: defaultSellerDeposit,
-        },
-      );
+      const receipt = await cds.accept(defaultInitAssetPrice, currentSwapId, {
+        from: accounts[1],
+        value: defaultSellerDeposit,
+      });
 
       const tx = await web3.eth.getTransaction(receipt.tx);
       const { gasUsed } = receipt.receipt;
@@ -538,7 +534,7 @@ contract('CDS', (accounts) => {
     });
 
     it('should have right ETH amount of buyer after accepting swap as BUYER', async () => {
-      await cds.createSwap(
+      await cds.create(
         !defaultHostSetting,
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -552,14 +548,10 @@ contract('CDS', (accounts) => {
       const [currentSwapId] = await cds.getSwapId();
 
       const before = await web3.eth.getBalance(accounts[2]);
-      const receipt = await cds.acceptSwap(
-        defaultInitAssetPrice,
-        currentSwapId,
-        {
-          from: accounts[2],
-          value: defaultBuyerDeposit,
-        },
-      );
+      const receipt = await cds.accept(defaultInitAssetPrice, currentSwapId, {
+        from: accounts[2],
+        value: defaultBuyerDeposit,
+      });
 
       const tx = await web3.eth.getTransaction(receipt.tx);
       const { gasUsed } = receipt.receipt;
@@ -577,7 +569,7 @@ contract('CDS', (accounts) => {
 
   describe('Cancel Swap', async () => {
     beforeEach(async () => {
-      await cds.createSwap(
+      await cds.create(
         defaultHostSetting,
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -590,17 +582,17 @@ contract('CDS', (accounts) => {
       );
     });
 
-    it('should throw error if the caller of cancelSwap is not the buyer/seller', async () => {
+    it('should throw error if the caller of cancel is not the buyer/seller', async () => {
       const [currentSwapId] = await cds.getSwapId();
       await truffleAssert.fails(
-        cds.cancelSwap(currentSwapId, { from: accounts[3] }),
+        cds.cancel(currentSwapId, { from: accounts[3] }),
       );
     });
 
-    it('should be able to cancel if the buyer calls cancelSwap and check the swap', async () => {
+    it('should be able to cancel if the buyer calls cancel and check the swap', async () => {
       const [currentSwapId] = await cds.getSwapId();
       await truffleAssert.passes(
-        cds.cancelSwap(currentSwapId, { from: accounts[2] }),
+        cds.cancel(currentSwapId, { from: accounts[2] }),
       );
       const depositDetail = await cds.getDeposits(currentSwapId);
       const [buyerDepositDetail, sellerDepositDetail] = depositDetail;
@@ -618,7 +610,7 @@ contract('CDS', (accounts) => {
     it('should have decreased amount of contract balance after successful cancel swap call', async () => {
       const beforeContract = await cds.getContractBalance();
       const [currentSwapId] = await cds.getSwapId();
-      const receipt = await cds.cancelSwap(currentSwapId, {
+      const receipt = await cds.cancel(currentSwapId, {
         from: accounts[2],
       });
       const afterContractBalance = await cds.getContractBalance();
@@ -631,7 +623,7 @@ contract('CDS', (accounts) => {
     it('should return proper amount of ETH to buyer after successful cancel swap call', async () => {
       const before = await web3.eth.getBalance(accounts[2]);
       const [currentSwapId] = await cds.getSwapId();
-      const receipt = await cds.cancelSwap(currentSwapId, {
+      const receipt = await cds.cancel(currentSwapId, {
         from: accounts[2],
       });
       const tx = await web3.eth.getTransaction(receipt.tx);
@@ -649,7 +641,7 @@ contract('CDS', (accounts) => {
 
   describe('Close Swap', async () => {
     beforeEach(async () => {
-      await cds.createSwap(
+      await cds.create(
         defaultHostSetting,
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -665,33 +657,33 @@ contract('CDS', (accounts) => {
     it('should throw error if the status is not active', async () => {
       const [currentSwapId] = await cds.getSwapId();
       await truffleAssert.fails(
-        cds.closeSwap(currentSwapId, { from: accounts[2] }),
+        cds.close(currentSwapId, { from: accounts[2] }),
       );
     });
 
     it('should throw error if the caller is not the buyer', async () => {
       const [currentSwapId] = await cds.getSwapId();
 
-      await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
         value: defaultSellerDeposit,
       });
 
       await truffleAssert.fails(
-        cds.closeSwap(currentSwapId, { from: accounts[1] }),
+        cds.close(currentSwapId, { from: accounts[1] }),
       );
     });
 
-    it('should be able to close if the buyer calls closeSwap and check the state of the swap', async () => {
+    it('should be able to close if the buyer calls close and check the state of the swap', async () => {
       const [currentSwapId] = await cds.getSwapId();
 
-      await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
         value: defaultSellerDeposit,
       });
 
       await truffleAssert.passes(
-        cds.closeSwap(currentSwapId, { from: accounts[2] }),
+        cds.close(currentSwapId, { from: accounts[2] }),
       );
 
       const depositDetail = await cds.getDeposits(currentSwapId);
@@ -707,9 +699,9 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(4, +swapStatus);
     });
 
-    it('should have proper amount of balance after closeSwap is called', async () => {
+    it('should have proper amount of balance after close is called', async () => {
       const [currentSwapId] = await cds.getSwapId();
-      await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
         value: defaultSellerDeposit,
       });
@@ -718,7 +710,7 @@ contract('CDS', (accounts) => {
       const buyerBalance = await web3.eth.getBalance(accounts[2]);
       const sellerBalance = await web3.eth.getBalance(accounts[1]);
 
-      const receipt = await cds.closeSwap(currentSwapId, { from: accounts[2] });
+      const receipt = await cds.close(currentSwapId, { from: accounts[2] });
       const tx = await web3.eth.getTransaction(receipt.tx);
       const { gasUsed } = receipt.receipt;
       const { gasPrice } = tx;
@@ -743,7 +735,7 @@ contract('CDS', (accounts) => {
 
   describe('Claim Swap', async () => {
     beforeEach(async () => {
-      await cds.createSwap(
+      await cds.create(
         defaultHostSetting,
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -760,13 +752,13 @@ contract('CDS', (accounts) => {
     it('should throw error if the status of the swap is not active', async () => {
       const [currentSwapId] = await cds.getSwapId();
       await truffleAssert.fails(
-        cds.claimSwap(currentSwapId, { from: accounts[2] }),
+        cds.claim(currentSwapId, { from: accounts[2] }),
       );
     });
 
     it('should throw error if the method is not called by the buyer', async () => {
       const [currentSwapId] = await cds.getSwapId();
-      await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
         value: defaultSellerDeposit,
       });
@@ -774,7 +766,7 @@ contract('CDS', (accounts) => {
       const currPrice = 70;
       await priceOracle.setPrice(currPrice);
       await truffleAssert.fails(
-        cds.claimSwap(currentSwapId, { from: accounts[1] }),
+        cds.claim(currentSwapId, { from: accounts[1] }),
       );
     });
 
@@ -782,13 +774,13 @@ contract('CDS', (accounts) => {
     // claim when currPrice is above CP => 100
     it('should throw error if the current price of the asset is above the claim price', async () => {
       const [currentSwapId] = await cds.getSwapId();
-      await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
         value: defaultSellerDeposit,
       });
 
       await truffleAssert.fails(
-        cds.claimSwap(currentSwapId, { from: accounts[2] }),
+        cds.claim(currentSwapId, { from: accounts[2] }),
       );
     });
 
@@ -798,7 +790,7 @@ contract('CDS', (accounts) => {
       const claimRewardIntended = 300;
 
       const [currentSwapId] = await cds.getSwapId();
-      await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
         value: defaultSellerDeposit,
       });
@@ -810,7 +802,7 @@ contract('CDS', (accounts) => {
         seller: +(await web3.eth.getBalance(accounts[1])),
       };
 
-      const receipt = await cds.claimSwap(currentSwapId, { from: accounts[2] });
+      const receipt = await cds.claim(currentSwapId, { from: accounts[2] });
       const { claimReward } = receipt.logs[0].args;
       const tx = await web3.eth.getTransaction(receipt.tx);
       const { gasUsed } = receipt.receipt;
@@ -848,7 +840,7 @@ contract('CDS', (accounts) => {
       const changedPrice = 50;
 
       const [currentSwapId] = await cds.getSwapId();
-      await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
         value: defaultSellerDeposit,
       });
@@ -860,7 +852,7 @@ contract('CDS', (accounts) => {
         seller: +(await web3.eth.getBalance(accounts[1])),
       };
 
-      const receipt = await cds.claimSwap(currentSwapId, { from: accounts[2] });
+      const receipt = await cds.claim(currentSwapId, { from: accounts[2] });
       const { claimReward } = receipt.logs[0].args;
       const tx = await web3.eth.getTransaction(receipt.tx);
       const { gasUsed } = receipt.receipt;
@@ -896,7 +888,7 @@ contract('CDS', (accounts) => {
 
   describe('Pay Premium', async () => {
     beforeEach(async () => {
-      await cds.createSwap(
+      await cds.create(
         defaultHostSetting,
         defaultInitAssetPrice,
         defaultClaimPrice,
@@ -921,7 +913,7 @@ contract('CDS', (accounts) => {
 
     it('should throw error if the method is not called by the buyer', async () => {
       const [currentSwapId] = await cds.getSwapId();
-      await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
         value: defaultSellerDeposit,
       });
@@ -936,7 +928,7 @@ contract('CDS', (accounts) => {
 
     it('should throw error if the buyer paid invalid amount of premium', async () => {
       const [currentSwapId] = await cds.getSwapId();
-      await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
         value: defaultSellerDeposit,
       });
@@ -951,7 +943,7 @@ contract('CDS', (accounts) => {
 
     it('should pass if proper premium paid, and check the balance of the participants', async () => {
       const [currentSwapId] = await cds.getSwapId();
-      await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
         value: defaultSellerDeposit,
       });
@@ -985,7 +977,7 @@ contract('CDS', (accounts) => {
     // total round check
     it('should pass if totalPremiumRounds changed properly', async () => {
       const [currentSwapId] = await cds.getSwapId();
-      await cds.acceptSwap(defaultInitAssetPrice, currentSwapId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
         value: defaultSellerDeposit,
       });
