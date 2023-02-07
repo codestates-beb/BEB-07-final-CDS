@@ -90,13 +90,6 @@ contract SwapHandler {
     getSwap(_targetSwapId).setStatus(Swap.Status.expired);
   }
 
-  // require문에서 validation of totalRounds => buyerDeposit 
-  function _expireByDate(uint256 _targetSwapId) internal isSeller(_targetSwapId) isActive(_targetSwapId) {
-    require((block.timestamp >= _nextPayDate[_targetSwapId]) && (getTotalRounds(_targetSwapId) == 0),
-    'Too early to call');
-    getSwap(_targetSwapId).setStatus(Swap.Status.expired);
-  }
-
   function getSwapId() public view returns (Counters.Counter memory) {
     return _swapId;
   }

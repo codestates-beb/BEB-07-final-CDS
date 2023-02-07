@@ -77,6 +77,12 @@ contract AssetHandler is Ownable, SwapHandler {
     return claimReward;
   }
 
+  function _expireByDate(uint256 _swapId) internal isSeller(_swapId) isActive(_swapId) {
+    require((block.timestamp >= getNextPayDate(_swapId)) && (getDeposits(_swapId)[0] == 0),
+    'Too early to call');
+    getSwap(_swapId).setStatus(Swap.Status.expired);
+  }
+
   function clearDeposit(uint256 swapId) private {
     for (uint i = 0; i <= 1; i++) {
       _deposits[swapId][i] = 0;
