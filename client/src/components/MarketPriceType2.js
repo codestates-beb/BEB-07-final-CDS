@@ -1,5 +1,5 @@
 // modules
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // css
 import '../assets/css/marketPrice.css';
@@ -51,7 +51,29 @@ function MarketPriceType2() {
   const [negativeETHDiffer, setNegativeETHDiffer] = useState(false);
   const [negativeLINKDiffer, setNegativeLINKDiffer] = useState(false);
 
-  useEffect(() => {
+  // setInterval custom hook
+  function useInterval(callback, delay) {
+    const savedCallback = useRef(); // 최근에 들어온 callback을 저장할 ref를 하나 만든다.
+
+    useEffect(() => {
+      savedCallback.current = callback; // callback이 바뀔 때마다 ref를 업데이트 해준다.
+      callback(); // 첫번째 랜더링 시 market data를 가져오기 위해 입력받은 callback을 실행한다.
+    }, [callback]);
+
+    useEffect(() => {
+      function tick() {
+        savedCallback.current(); // tick이 실행되면 callback 함수를 실행시킨다.
+      }
+      if (delay !== null) {
+        // 만약 delay가 null이 아니라면
+        let id = setInterval(tick, delay); // delay에 맞추어 interval을 새로 실행시킨다.
+        // return () => clearInterval(id); // unmount될 때 clearInterval을 해준다.
+      }
+    }, [delay]); // delay가 바뀔 때마다 새로 실행된다.
+  }
+
+  useInterval(() => {
+    // CoinGecko와 Chinlink에서 market data를 api로 가져옵니다.
     const coinGeckoData = getCoinGeckoAPI();
     const chainLinkData = getChainLinkAPI();
 
@@ -111,7 +133,7 @@ function MarketPriceType2() {
 
     getCoinGeckoData();
     getChainLinkData();
-  }, []);
+  }, 20000); // 20초마다 갱신됩니다.
 
   useEffect(() => {
     // coingecko price 데이터와 chainlink price 데이터 차이의 변화율을 계산합니다
