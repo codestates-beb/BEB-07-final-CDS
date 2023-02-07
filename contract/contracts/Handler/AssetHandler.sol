@@ -32,7 +32,7 @@ contract AssetHandler is Ownable, SwapHandler {
     bool _isBuyer
   ) internal returns (bool) {
     _isBuyer
-      ? _deposits[_swapId][0] = getPremium(_swapId).mul(3)
+      ? _deposits[_swapId][0] = getPremium(_swapId).mul(4)
       : _deposits[_swapId][1] = getSellerDeposit(_swapId);
     return true;
   }
@@ -40,6 +40,7 @@ contract AssetHandler is Ownable, SwapHandler {
   function _firstPremium(uint256 _swapId) internal returns (bool) {
     bool sent = token.transfer(getSeller(_swapId), getPremium(_swapId));
     require(sent, 'Sending first premium failed');
+    _deposits[_swapId][0] -= getPremium(_swapId);
     return true;
   }
 
