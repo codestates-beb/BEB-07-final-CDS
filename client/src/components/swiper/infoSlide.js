@@ -131,7 +131,7 @@ function infoSlide() {
                 </p>
               </div>
               <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100">
-                <div className="font-semibold">More Details</div>
+                <a href='http://snowdelver.iptime.org:43000' target='_blank' className="font-semibold">More Details</a>
               </button>
             </div>
           </div>

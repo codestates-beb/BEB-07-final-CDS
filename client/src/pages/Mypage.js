@@ -1,8 +1,15 @@
+// modules
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+// apis
+import {
+  requestMyData
+} from '../apis/auth';
+
 // components
 import ProposedCard from '../components/ProposedCard';
 import AcceptedCard from '../components/AcceptedCard.js';
-
-// components
 import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
@@ -11,6 +18,15 @@ import MyPage_bg from '../assets/img/MyPage_bg.jpg';
 import Profile from '../assets/img/profile.jpg';
 
 function Mypage() {
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    requestMyData()
+    .then(result=>{
+      console.log(result);
+    })
+  }, [])
+  
   return (
     <>
       <div className="flex-col px-[10%]">

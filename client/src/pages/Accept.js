@@ -165,9 +165,15 @@ function Accept() {
       <div className="negotiate-banner">
         <img src={acceptBackGround} alt="acceptBackGround" />
       </div>
-      <div className="container container-negotiate">
+      <div className="container container-negotiate accpet">
         <div className="negotiate-head">
-          <h1 className="negotiate-head-title">Check Crypto Default Swap</h1>
+          <h1 className="negotiate-head-title">
+            Check Crypto Default Swap proposed by
+            { isBuyer ? 
+              <span className="text-green ml-2">Buyer</span> 
+              : <span className="text-red ml-2">Seller</span>
+            }
+          </h1>
           <p className="negotiate-head-notice text-xl font-semibold py-2">
             Check Your Crypto Default Swap Contract in detail and sign it!
           </p>
@@ -195,41 +201,49 @@ function Accept() {
           <div className="form-section">
             <h2 className="section-title">Assets</h2>
             <div className="input-group">
-              <input
-                placeholder="Initial Price of Assets"
-                value={
-                  swapOnDB
-                    ? `Initial Price of Assets: ${swapOnDB.initialAssetPrice}`
-                    : null
-                }
-                disabled
-              />
-              <input
-                placeholder="The Amount of Assets"
-                value={
-                  swapOnDB
-                    ? `The Amount of Assets: ${swapOnDB.amountOfAssets}`
-                    : null
-                }
-                disabled
-              />
-              <input
-                placeholder="Total Assets"
-                value={
-                  swapOnDB ? `Total Assets: ${swapOnDB.totalAssets}` : null
-                }
-                disabled
-              />
+              <div className='input-wrapper'>
+                <input
+                  placeholder="Initial Price of Assets"
+                  value={
+                    swapOnDB
+                      ? `Initial Price of Assets: ${swapOnDB.initialAssetPrice}`
+                      : null
+                  }
+                  disabled
+                />
+              </div>
+              <div className='input-wrapper'>
+                <input
+                  placeholder="The Amount of Assets"
+                  value={
+                    swapOnDB
+                      ? `The Amount of Assets: ${swapOnDB.amountOfAssets}`
+                      : null
+                  }
+                  disabled
+                />
+              </div>
+              <div className='input-wrapper'>
+                <input
+                  placeholder="Total Assets"
+                  value={
+                    swapOnDB ? `Total Assets: ${swapOnDB.totalAssets}` : null
+                  }
+                  disabled
+                />
+              </div>
             </div>
           </div>
           <div className="form-section">
             <h2 className="section-title">Claim</h2>
             <div className="input-group">
-              <input
-                placeholder="Claim Price"
-                value={swapOnDB ? `Claim Price: ${swapOnDB.claimPrice}` : null}
-                disabled
-              />
+              <div className='input-wrapper'>
+                <input
+                  placeholder="Claim Price"
+                  value={swapOnDB ? `Claim Price: ${swapOnDB.claimPrice}` : null}
+                  disabled
+                />
+              </div>
               <div className="input-range">
                 <input
                   placeholder="Drop Rate"
@@ -252,18 +266,22 @@ function Accept() {
           <div className="form-section">
             <h2 className="section-title">Premium</h2>
             <div className="input-group">
-              <input
-                placeholder="Premium Rate"
-                value={
-                  swapOnDB ? `Premium Rate: ${swapOnDB.premiumRate}` : null
-                }
-                disabled
-              />
-              <input
-                placeholder="Premium Price"
-                value={swapOnDB ? `Premium Price: ${swapOnDB.premium}` : null}
-                disabled
-              />
+              <div className='input-wrapper'>
+                <input
+                  placeholder="Premium Rate"
+                  value={
+                    swapOnDB ? `Premium Rate: ${swapOnDB.premiumRate}` : null
+                  }
+                  disabled
+                />
+              </div>
+              <div className='input-wrapper'>
+                <input
+                  placeholder="Premium Price"
+                  value={swapOnDB ? `Premium Price: ${swapOnDB.premium}` : null}
+                  disabled
+                />
+              </div>
               <div className="input-select">
                 <input
                   placeholder="Premium Interval"
@@ -278,27 +296,31 @@ function Accept() {
                   disabled
                 />
               </div>
-              <input
-                placeholder="Premium Rounds"
-                value={
-                  swapOnDB
-                    ? `Premium Rounds: ${swapOnDB.totalPremiumRounds}`
-                    : null
-                }
-                disabled
-              />
+              <div className='input-wrapper'>
+                <input
+                  placeholder="Premium Rounds"
+                  value={
+                    swapOnDB
+                      ? `Premium Rounds: ${swapOnDB.totalPremiumRounds}`
+                      : null
+                  }
+                  disabled
+                />
+              </div>
             </div>
           </div>
           <div className="form-section">
             <h2 className="section-title">Liquidation</h2>
             <div className="input-group">
-              <input
-                placeholder="Seller Deposit"
-                value={
-                  swapOnDB ? `Seller Deposit: ${swapOnDB.sellerDeposit}` : null
-                }
-                disabled
-              />
+              <div className='input-wrapper'>
+                <input
+                  placeholder="Seller Deposit"
+                  value={
+                    swapOnDB ? `Seller Deposit: ${swapOnDB.sellerDeposit}` : null
+                  }
+                  disabled
+                />
+              </div>
               <div className="input-range">
                 <input
                   placeholder="Liquidated Price"
@@ -318,13 +340,15 @@ function Accept() {
                   disabled
                 />
               </div>
-              <input
-                placeholder="Buyer Deposit"
-                value={
-                  swapOnDB ? `Buyer Deposit: ${swapOnDB.buyerDeposit}` : null
-                }
-                disabled
-              />
+              <div className='input-wrapper'>
+                <input
+                  placeholder="Buyer Deposit"
+                  value={
+                    swapOnDB ? `Buyer Deposit: ${swapOnDB.buyerDeposit}` : null
+                  }
+                  disabled
+                />
+              </div>
             </div>
           </div>
           <div className="form-section">
