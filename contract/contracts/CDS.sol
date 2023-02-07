@@ -71,7 +71,7 @@ contract CDS is Ownable, AssetHandler, CDSInterface {
       premiumInterval,
       totalRounds
     );
-    _afterCreate(newSwapId, isBuyer);
+    _afterDeposit(newSwapId, isBuyer);
     emit Create(msg.sender, isBuyer, newSwapId, address(getSwap(newSwapId)));
     return newSwapId;
   }
@@ -85,9 +85,9 @@ contract CDS is Ownable, AssetHandler, CDSInterface {
       'The host can not call the method'
     );
 
-    bool isBuyerHost = (getSeller(swapId) == address(0));
-    uint256 acceptedSwapId = _accept(isBuyerHost, initAssetPrice, swapId);
-    _afterAccept(swapId, isBuyerHost);
+    bool isSeller = (getSeller(swapId) == address(0)); 
+    uint256 acceptedSwapId = _accept(isSeller, initAssetPrice, swapId);
+    _afterDeposit(swapId, !isSeller);
     emit Accept(msg.sender, acceptedSwapId);
     return acceptedSwapId;
   }
@@ -129,6 +129,7 @@ contract CDS is Ownable, AssetHandler, CDSInterface {
     return true;
   }
 
+// approve 받았다고 가정.
   function payPremium(uint256 swapId) external payable override returns (bool) {
     require(msg.value == getPremium(swapId), 'Invalid premium');
     (bool sent, ) = getSeller(swapId).call{value: msg.value}('');

@@ -2,12 +2,10 @@
 pragma solidity ^0.8.7;
 
 import '../Swaps/Swap.sol';
-import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
 contract SwapHandler {
   using Counters for Counters.Counter;
-  using SafeMath for uint256;
   Counters.Counter internal _swapId;
 
   mapping(uint256 => Swap) private _swaps;

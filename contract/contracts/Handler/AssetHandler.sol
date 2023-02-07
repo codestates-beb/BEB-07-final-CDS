@@ -27,23 +27,13 @@ contract AssetHandler is Ownable, SwapHandler {
     return _deposits[swapId];
   }
 
-  function _afterCreate(
+  function _afterDeposit(
     uint256 _swapId,
     bool _isBuyer
   ) internal returns (bool) {
     _isBuyer
       ? _deposits[_swapId][0] = getPremium(_swapId).mul(3)
       : _deposits[_swapId][1] = getSellerDeposit(_swapId);
-    return true;
-  }
-
-  function _afterAccept(
-    uint256 _swapId,
-    bool _isBuyerHost
-  ) internal returns (bool) {
-    _isBuyerHost
-      ? _deposits[_swapId][1] = getSellerDeposit(_swapId)
-      : _deposits[_swapId][0] = getPremium(_swapId).mul(3);
     return true;
   }
 
