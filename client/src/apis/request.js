@@ -6,7 +6,7 @@ import config from '../config/config';
 
 export async function getSwaps() {
   try {
-    const requestURL = `${config.devURL}/swaps`;
+    const requestURL = `${config.apiURL}/swaps`;
 
     const swaps = await axios.get(requestURL);
     return swaps.data;
@@ -18,7 +18,7 @@ export async function getSwaps() {
 
 export async function getSwapById(swapId) {
   try {
-    const requestURL = `${config.devURL}/swaps/${swapId}`;
+    const requestURL = `${config.apiURL}/swaps/${swapId}`;
 
     const swaps = await axios.get(requestURL);
     return swaps.data;

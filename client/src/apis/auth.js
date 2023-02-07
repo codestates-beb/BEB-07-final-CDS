@@ -6,7 +6,7 @@ import config from '../config/config';
 
 // Get nonce data for Login
 export async function getNonce(address) {
-    const requestURL = new URL(`${config.apiURL}users/nonce`);
+    const requestURL = new URL(`${config.apiURL}/users/nonce`);
     const params = requestURL.searchParams;
     params.append("address", address);
 
@@ -19,7 +19,7 @@ export async function getNonce(address) {
 
 // Request login to Server
 export async function requestLogin(address, signature) {
-    const requestURL = new URL(`${config.apiURL}users/login`);
+    const requestURL = new URL(`${config.apiURL}/users/login`);
     
     const result = await axios.post(
         requestURL.toString(), 
@@ -33,7 +33,7 @@ export async function requestLogin(address, signature) {
 }
 
 export async function requestLogout() {
-    const requestURL = new URL(`${config.apiURL}users/logout`);
+    const requestURL = new URL(`${config.apiURL}/users/logout`);
 
     const result = await axios.get(requestURL, {withCredentials:true})
     .then(result=>result.data)
@@ -43,9 +43,9 @@ export async function requestLogout() {
 }
 
 export async function requestMyData() {
-    const requestURL = new URL(`${config.apiURL}users/my`);
+    const requestURL = new URL(`${config.apiURL}/users/my`);
 
-    const result = await axios.get(requestURL, {withCredentials:true})
+    const result = await axios.get(requestURL.toString(), {withCredentials:true})
     .then(result=>result.data)
     .catch(err=>err);
 
