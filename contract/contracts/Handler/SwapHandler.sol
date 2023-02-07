@@ -12,7 +12,16 @@ contract SwapHandler {
 
   mapping(uint256 => uint256) private _nextPayDate;
 
-  constructor() {}
+  address priceOracle;
+  
+  constructor () {}
+
+  // 고얼리시 oracle 관련된 부분은 모두 삭제 후 Swap에 getPrice.sol 이식
+  function setOracle(address _priceOracleAddress) public returns (bool) {
+    require(_priceOracleAddress != address(0x0), 'Invalid address');
+    priceOracle = _priceOracleAddress;
+    return true;
+  }
 
   function _create(
     bool _isBuyer,
@@ -34,7 +43,8 @@ contract SwapHandler {
       _premium,
       _sellerDeposit,
       _premiumInterval,
-      _totalRounds
+      _totalRounds,
+      priceOracle
     );
     _swaps[newSwapId] = newSwap;
 
