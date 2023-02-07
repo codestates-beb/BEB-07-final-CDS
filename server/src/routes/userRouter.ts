@@ -1,10 +1,13 @@
-import express from 'express';
+import express, { CookieOptions } from 'express';
 import { recoverPersonalSignature } from 'eth-sig-util';
 import { bufferToHex } from 'ethereumjs-util';
 
 import isLoggedIn from '../middlewares/isLoggedIn';
 import { AppDataSource } from '../data-source';
 import { Users } from '../entities/Users';
+import redisClient from '../utils/redisClient';
+import { TreeChildren } from 'typeorm';
+
 const userRepository = AppDataSource.getRepository(Users);
 const userRouter = express.Router();
 
@@ -27,7 +30,7 @@ userRouter.post('/my', isLoggedIn, async (req, res, next) => {
   if (!isValidEmail(email) && !nickname) {
     return res.status(403).json('Neither email nor nickname provided');
   }
-  const { address } = req.session;
+  const address = await redisClient.get(req.cookies.sessionID);
   const user = await userRepository.findOneBy({ address });
   if (!user) return res.status(403).json('no such user');
   if (isValidEmail(email)) user.email = email;
@@ -62,20 +65,16 @@ userRouter.post('/login', async (req, res, next) => {
         .status(403)
         .json('Login Failed : Signature from invalid address');
     }
-    res.cookie('cookie test', 'cookie test content', {
+    const cookieOptions: CookieOptions = {
       sameSite: 'none',
       secure: true,
-      maxAge: 15 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
       httpOnly: true,
-    });
+    };
 
-    req.session.cookie.sameSite = 'none';
-    req.session.cookie.secure = true;
-    req.session.cookie.httpOnly = true;
-
-    req.session.address = address;
-    console.log(req.session);
-    console.log({ ...req.session.cookie });
+    res.cookie('cookie test', 'cookie test content', cookieOptions);
+    res.cookie('sessionID', req.sessionID, cookieOptions);
+    await redisClient.set(req.sessionID, address, 'EX', 60 * 60);
     return res.status(200).json('Login Successful!');
   } catch (err) {
     console.error(err);
@@ -84,9 +83,15 @@ userRouter.post('/login', async (req, res, next) => {
 });
 
 userRouter.get('/my', isLoggedIn, async (req, res, next) => {
-  const user = await userRepository.findOneBy({ address: req.session.address });
-  if (!user) return res.status(404).json('no such user');
-  return res.status(200).json(user);
+  try {
+    const address = await redisClient.get(req.cookies.sessionID);
+    const user = await userRepository.findOneBy({ address });
+    if (!user) return res.status(404).json('no such user');
+    return res.status(200).json(user);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
 });
 
 userRouter.get('/nonce', async (req, res, next) => {
@@ -117,9 +122,14 @@ userRouter.get('/nonce', async (req, res, next) => {
 });
 
 userRouter.get('/logout', async (req, res, next) => {
-  req.session.destroy(() => {
-    res.status(200).json('Logout Success');
-  });
+  try {
+    await redisClient.del(req.cookies.sessionID);
+    res.clearCookie(req.cookies.sessionId);
+    return res.status(200).json('Logout successful!');
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
 });
 
 userRouter.get('/:address', async (req, res, next) => {
