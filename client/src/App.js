@@ -1,6 +1,16 @@
 // module
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Link, Routes, Route } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+
+// apis
+import { requestVerify } from './apis/auth';
+
+// actions
+import { setAuth } from './features/authSlice';
+
+// hooks
+import useMetamask from './utils/hooks/useMetamask';
 
 // components
 import Header from './components/Header';
@@ -22,6 +32,25 @@ import PageNotFound from './pages/PageNotFound';
 import './App.css';
 
 function App() {
+  const dispatch = useDispatch();
+  const metamask = useMetamask();
+  
+  useEffect(()=>{
+    (async ()=>{
+      const isLoginSuccess = await requestVerify();
+
+      if(!isLoginSuccess) {
+        console.log(new Error('Not User Logined'));
+        return;
+      }
+      
+      const address = await metamask.request({ method: 'eth_requestAccounts' })
+      .then(result=> result[0]);
+
+      dispatch( setAuth(address) );
+    })()
+  }, [metamask]);
+
   return (
     <div className="App">
       <ScrollToTop />

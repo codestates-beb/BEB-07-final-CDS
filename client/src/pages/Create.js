@@ -59,7 +59,7 @@ function Create() {
   // Assets State Var
   const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('');
   const [amountOfAssets, setAmountOfAssets] = useState('');
-  const [totalAssets, setTotalAssets] = useState();
+  const [totalAssets, setTotalAssets] = useState('0');
 
   // Claim State Var
   const [claimPrice, setClaimPrice] = useState('');

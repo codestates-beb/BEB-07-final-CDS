@@ -11,7 +11,7 @@ export default {
 
   // market price API
   coinGeckoAPI:
-    'https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com/dev/prices/coingecko',
+    'https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com/prices/coingecko',
   chainLinkAPI:
-    'https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com/dev/prices/chainlink',
+    'https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com/prices/chainlink',
 };
