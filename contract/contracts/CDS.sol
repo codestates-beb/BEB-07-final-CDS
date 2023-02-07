@@ -68,6 +68,7 @@ contract CDS is AssetHandler, CDSInterface {
       premiumInterval,
       totalRounds
     );
+    // *4만큼 받고 *3은 deposit으로, *1은 우리가 accept되면 seller한테 보내준다.
     _afterDeposit(newSwapId, isBuyer);
     emit Create(msg.sender, isBuyer, newSwapId, address(getSwap(newSwapId)));
     return newSwapId;
@@ -85,7 +86,8 @@ contract CDS is AssetHandler, CDSInterface {
     bool isSeller = (getSeller(swapId) == address(0));
     uint256 acceptedSwapId = _accept(isSeller, initAssetPrice, swapId);
     _afterDeposit(swapId, !isSeller);
-    // *4만큼 받고 *3은 deposit으로, *1은 우리가 seller한테 보내준다.
+    // *4만큼 받고 *3은 deposit으로, *1은 우리가 accept되면 seller한테 보내준다.
+    _firstPremium(swapId);
     emit Accept(msg.sender, acceptedSwapId);
     return acceptedSwapId;
   }

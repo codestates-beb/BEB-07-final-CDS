@@ -37,6 +37,12 @@ contract AssetHandler is Ownable, SwapHandler {
     return true;
   }
 
+  function _firstPremium(uint256 _swapId) internal returns (bool) {
+    bool sent = token.transfer(getSeller(_swapId), getPremium(_swapId));
+    require(sent, 'Sending first premium failed');
+    return true;
+  }
+
   function _endSwap(uint256 _swapId) internal returns (bool) {
     address[2] memory participants = [getBuyer(_swapId), getSeller(_swapId)];
     for (uint i = 0; i <= 1; i++) {
