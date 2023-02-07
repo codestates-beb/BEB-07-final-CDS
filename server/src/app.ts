@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import createError from 'http-errors';
 import morgan from 'morgan';
 import cors from 'cors';
@@ -16,7 +16,7 @@ declare module 'express-session' {
     address: string;
   }
 }
-const { devRouter, userRouter, swapRouter, transactionRouter, priceRouter } =
+const { authRouter, userRouter, swapRouter, transactionRouter, priceRouter } =
   routers;
 const port = getEnv('PORT', '5050');
 const RedisStore = connectRedis(session);
@@ -57,7 +57,7 @@ app.use(
 );
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/dev', devRouter);
+app.use('/auth', authRouter);
 app.use('/users', userRouter);
 app.use('/swaps', swapRouter);
 app.use('/transactions', transactionRouter);
@@ -71,7 +71,7 @@ app.use(function (req, res, next) {
   next(createError(404, 'There is no router'));
 });
 
-app.use((err: any, req: Request, res: Response, _) => {
+app.use((err: any, req: Request, res: Response, _: NextFunction) => {
   res.locals.message = err.message;
   res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
   return res.status(err.status || 500).json(err.message);
