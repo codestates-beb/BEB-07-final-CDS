@@ -75,7 +75,7 @@ const authController = {
           .status(403)
           .json('Login Failed : Signature from invalid address');
       }
-      res.cookie('', req.sessionID, cookieOptions);
+      res.cookie('sessionID', req.sessionID, cookieOptions);
       await redisClient.set(req.sessionID, address, 'EX', 60 * 60);
       return res.status(200).json('Login Successful!');
     } catch (err) {
@@ -87,7 +87,7 @@ const authController = {
   logout: async (req: Request, res: Response, next: NextFunction) => {
     try {
       await redisClient.del(req.cookies.sessionID);
-      res.clearCookie('sessionID');
+      res.clearCookie('sessionID', cookieOptions);
       return res.status(200).json('Logout successful!');
     } catch (err) {
       console.error(err);

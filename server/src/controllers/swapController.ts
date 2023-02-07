@@ -1,11 +1,7 @@
-import { all } from 'axios';
-import { Address } from 'ethereumjs-util';
 import { Request, Response, NextFunction } from 'express';
-import { off } from 'process';
 
 import { AppDataSource } from '../data-source';
 import { Swaps } from '../entities/Swaps';
-import { Users } from '../entities/Users';
 import { isValidAddress } from '../utils/inputValidators';
 
 const swapRepository = AppDataSource.getRepository(Swaps);
@@ -50,26 +46,50 @@ const swapController = {
       ? address
       : null;
 
-    // const filteredSeller: string | null = isValidAddress(seller)
-    //   ? seller
-    //   : null;
-    // const filteredBuyer: string | null = isValidAddress(buyer) ? buyer : null;
+    const filteredSeller: string | null = isValidAddress(seller)
+      ? seller
+      : null;
+    const filteredBuyer: string | null = isValidAddress(buyer) ? buyer : null;
 
     try {
-      const filteredSwaps = await swapRepository
-        .createQueryBuilder('swaps')
-        .select()
-        .where(filteredAddress ? 'swaps.buyer = :filteredAddress' : '1=1', {
-          filteredAddress,
-        })
-        .orWhere(filteredAddress ? 'swaps.seller = :filteredAddress' : '1=1', {
-          filteredAddress,
-        })
-        .andWhere(status ? 'swaps.status = :status' : '1=1', { status })
+      let swapQuery = swapRepository.createQueryBuilder('swaps').select();
+      if (filteredAddress) {
+        swapQuery = swapQuery
+          .where(filteredAddress ? 'swaps.buyer = :filteredAddress' : '1=1', {
+            filteredAddress,
+          })
+          .orWhere(
+            filteredAddress ? 'swaps.seller = :filteredAddress' : '1=1',
+            { filteredAddress },
+          );
+      } else if (filteredBuyer) {
+        swapQuery = swapQuery.where(
+          filteredBuyer ? 'swaps.buyer = :filteredBuyer' : '1=1',
+          {
+            filteredBuyer,
+          },
+        );
+      } else if (filteredSeller) {
+        swapQuery = swapQuery.andWhere(
+          filteredSeller ? 'swaps.seller = :filteredSeller' : '1=1',
+          {
+            filteredSeller,
+          },
+        );
+      }
+
+      if (status) {
+        swapQuery = swapQuery.andWhere(
+          status ? 'swaps.status = :status' : '1=1',
+          { status },
+        );
+      }
+      swapQuery = swapQuery
         .orderBy('swaps.createdAt', filteredOrder)
         .offset(filteredOffset)
-        .limit(filteredLimit)
-        .getManyAndCount();
+        .limit(filteredLimit);
+
+      const filteredSwaps = swapQuery.getManyAndCount();
       return res.status(200).json({
         totalSwapCount: await swapRepository.count(),
         filteredSwapCount: filteredSwaps[1],
@@ -78,33 +98,9 @@ const swapController = {
         limit: filteredLimit,
         statusFilter: status ? status : 'all',
         addressFilter: filteredAddress,
-        // sellerFilter: seller,
-        // buyerFilter: buyer,
+        sellerFilter: filteredSeller,
+        buyerFilter: filteredBuyer,
       });
-
-      // try {
-      //   const filteredSwaps = await swapRepository
-      //     .createQueryBuilder('swaps')
-      //     .select()
-      //     .where(status ? 'swaps.status = :status' : '1=1', { status })
-      //     .andWhere(filteredSeller ? 'swaps.buyer = :filteredSeller' : '1=1', {
-      //       filteredSeller,
-      //     })
-      //     .andWhere(filteredBuyer ? 'swaps.seller = :filteredBuyer' : '1=1', {
-      //       filteredBuyer,
-      //     })
-      //     .orderBy('swaps.createdAt', filteredOrder)
-      //     .offset(filteredOffset)
-      //     .limit(filteredLimit)
-      //     .getManyAndCount();
-      //   return res.status(200).json({
-      //     totalSwapCount: await swapRepository.count(),
-      //     filteredSwapCount: filteredSwaps[1],
-      //     swaps: filteredSwaps[0],
-      //     offset: filteredOffset,
-      //     limit: filteredLimit,
-      //     filter: status ? status : 'all',
-      //   });
     } catch (err) {
       console.error(err);
       next(err);
