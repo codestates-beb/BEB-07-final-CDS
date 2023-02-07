@@ -51,53 +51,27 @@ function MarketPriceType2() {
   const [negativeETHDiffer, setNegativeETHDiffer] = useState(false);
   const [negativeLINKDiffer, setNegativeLINKDiffer] = useState(false);
 
-  // setInterval custom hook
-  function useInterval(callback, delay) {
-    const savedCallback = useRef(); // 최근에 들어온 callback을 저장할 ref를 하나 만든다.
-
-    useEffect(() => {
-      savedCallback.current = callback; // callback이 바뀔 때마다 ref를 업데이트 해준다.
-      callback(); // 첫번째 랜더링 시 market data를 가져오기 위해 입력받은 callback을 실행한다.
-    }, [callback]);
-
-    useEffect(() => {
-      function tick() {
-        savedCallback.current(); // tick이 실행되면 callback 함수를 실행시킨다.
-      }
-      if (delay !== null) {
-        // 만약 delay가 null이 아니라면
-        let id = setInterval(tick, delay); // delay에 맞추어 interval을 새로 실행시킨다.
-        // return () => clearInterval(id); // unmount될 때 clearInterval을 해준다.
-      }
-    }, [delay]); // delay가 바뀔 때마다 새로 실행된다.
-  }
-
-  useInterval(() => {
-    // CoinGecko와 Chinlink에서 market data를 api로 가져옵니다.
+  // CoinGecko와 Chinlink에서 market data를 api로 가져옵니다.
+  function getMarketData() {
     const coinGeckoData = getCoinGeckoAPI();
     const chainLinkData = getChainLinkAPI();
-
     const getCoinGeckoData = () => {
       coinGeckoData
         .then((response) => {
           setPriceBTCGecko(response.bitcoin.usd);
           setPriceETHGecko(response.ethereum.usd);
           setPriceLINKGecko(response.chainlink.usd);
-
           const btcChange = response.bitcoin.usd_24h_change;
           const ethChange = response.ethereum.usd_24h_change;
           const linkChange = response.chainlink.usd_24h_change;
           setChangeRateBTCGecko(btcChange);
           setChangeRateETHGecko(ethChange);
           setChangeRateLINKGecko(linkChange);
-
           let geckoTimestamp = response.bitcoin.last_updated_at;
           let geckoTime = new Date(geckoTimestamp * 1000);
           let geckoTimeToString = geckoTime.toString();
           setTimeGecko(geckoTimeToString);
-
           const changes = [btcChange, ethChange, linkChange];
-
           return changes;
         })
         .then((changes) => {
@@ -118,7 +92,6 @@ function MarketPriceType2() {
         setPriceBTCLink(response.bitcoin.usd);
         setPriceETHLink(response.ethereum.usd);
         setPriceLINKLink(response.chainlink.usd);
-
         let linkTimestamp = response.bitcoin.last_updated_at;
         let numToString = linkTimestamp.toString();
         let sliceNum = numToString.slice(0, 10);
@@ -126,14 +99,24 @@ function MarketPriceType2() {
         let linkTime = new Date(StringToNum * 1000);
         let linkTimeToString = linkTime.toString();
         setTimeLink(linkTimeToString);
-
         return response;
       });
     };
-
     getCoinGeckoData();
     getChainLinkData();
-  }, 20000); // 20초마다 갱신됩니다.
+  }
+
+  // 첫 랜더링 시 getMarketData를 실행하고, 이후에는 setInterval을 통해 getMarketData를 실행합니다.
+  useEffect(() => {
+    getMarketData();
+    const intervalId = setInterval(() => {
+      getMarketData();
+    }, 20000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
 
   useEffect(() => {
     // coingecko price 데이터와 chainlink price 데이터 차이의 변화율을 계산합니다
