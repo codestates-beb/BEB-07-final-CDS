@@ -90,7 +90,7 @@ userRouter.get('/nonce', async (req, res, next) => {
 userRouter.get('/logout', async (req, res, next) => {
   try {
     await redisClient.del(req.cookies.sessionID);
-    res.clearCookie(req.cookies.sessionId);
+    res.clearCookie('sessionID');
     return res.status(200).json('Logout successful!');
   } catch (err) {
     console.error(err);
