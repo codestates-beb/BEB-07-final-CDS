@@ -1,7 +1,7 @@
 export default {
   devURL:
-    'https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com/dev',
-  apiURL: 
+    'https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com',
+  apiURL:
     'https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com',
 
   // contract address
