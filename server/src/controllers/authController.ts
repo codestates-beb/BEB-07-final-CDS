@@ -8,6 +8,13 @@ import { Users } from '../entities/Users';
 import { getNonce } from '../utils/getNonce';
 import { isValidAddress } from '../utils/inputValidators';
 
+const cookieOptions: CookieOptions = {
+  sameSite: 'none',
+  secure: true,
+  maxAge: 60 * 60 * 1000,
+  httpOnly: true,
+};
+
 const userRepository = AppDataSource.getRepository(Users);
 
 const authController = {
@@ -42,8 +49,10 @@ const authController = {
     try {
       const { address, signature } = req.body;
       console.log(address, signature);
-      if (!address || !signature) {
-        return res.status(403).json('You Must POST both address and signature');
+      if (!isValidAddress(address) || !signature) {
+        return res
+          .status(403)
+          .json('You Must POST both valid address and signature');
       }
       const user = await userRepository.findOneBy({ address });
       if (!user || !user.nonce) {
@@ -66,14 +75,6 @@ const authController = {
           .status(403)
           .json('Login Failed : Signature from invalid address');
       }
-      const cookieOptions: CookieOptions = {
-        sameSite: 'none',
-        secure: true,
-        maxAge: 60 * 60 * 1000,
-        httpOnly: true,
-      };
-
-      res.cookie('cookie test', 'cookie test content', cookieOptions);
       res.cookie('sessionID', req.sessionID, cookieOptions);
       await redisClient.set(req.sessionID, address, 'EX', 60 * 60);
       return res.status(200).json('Login Successful!');
@@ -94,6 +95,33 @@ const authController = {
     }
   },
 
-  verify: async (req: Request, res: Response, next: NextFunction) => {},
+  verify: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const address = await redisClient.get(req.cookies.sessionID);
+      if (!address) {
+        return res
+          .status(404)
+          .json('You Do NOT have valid login cookie, please login again');
+      }
+
+      const user = await userRepository.findOneBy({ address });
+      if (!user) {
+        return res
+          .status(404)
+          .json('You Do NOT have valid login cookie, please login again');
+      }
+
+      // if correct login info, clear cookie and reissue
+      res.clearCookie(req.cookies.sessionID);
+      await redisClient.del(req.cookies.sessionID);
+
+      res.cookie('sessionID', req.sessionID, cookieOptions);
+      await redisClient.set(req.sessionID, address, 'EX', 60 * 60);
+      return res.status(200).json('Login Successful!');
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  },
 };
 export default authController;
