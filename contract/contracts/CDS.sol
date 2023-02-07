@@ -77,10 +77,10 @@ contract CDS is CDSInterface, Ownable, SwapHandler, AssetHandler {
 
     if (isBuyer) {
       _sendDeposit(buyerDeposit);
-      setSwapForBuyer(newSwapId, premium);
+      setDepoForBuyer(newSwapId, premium);
     } else {
       _sendDeposit(sellerDeposit);
-      setSwapForSeller(newSwapId, sellerDeposit);
+      setDepoForSeller(newSwapId, sellerDeposit);
     }
 
     emit Create(msg.sender, isBuyer, newSwapId, address(getSwap(newSwapId)));
@@ -100,10 +100,10 @@ contract CDS is CDSInterface, Ownable, SwapHandler, AssetHandler {
 
     if (isBuyerHost) {
       _sendDeposit(getSellerDeposit(swapId));
-      setSwapForSeller(swapId, getSellerDeposit(swapId));
+      setDepoForSeller(swapId, getSellerDeposit(swapId));
     } else {
       _sendDeposit(getPremium(swapId).mul(3));
-      setSwapForBuyer(swapId, getPremium(swapId));
+      setDepoForBuyer(swapId, getPremium(swapId));
     }
 
     uint256 acceptedSwapId = _accept(isBuyerHost, initAssetPrice, swapId);
