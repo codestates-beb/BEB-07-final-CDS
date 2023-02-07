@@ -112,11 +112,11 @@ contract CDS is Ownable, AssetHandler, CDSInterface {
     emit Claim(swapId, claimReward);
     return true;
   }
-
-  // total Rounds 만료시 seller 콜 => 각자 deposit 가져가기
-  function expireByRounds(uint256 swapId) external override returns (bool) {
+ 
+  // total Rounds 만료시 seller 콜 => 각자 deposit 가져가기. 근데 기간 만료인데 claimable 상태라면?
+  function expireByRounds(uint256 swapId) external override returns (bool) { 
     _expireByRounds(swapId);
-    _afterExpireByRounds(swapId);
+    _afterClose(swapId);
     emit Expire(swapId);
     return true;
   }
@@ -124,15 +124,12 @@ contract CDS is Ownable, AssetHandler, CDSInterface {
   // buyer Deposit = 0 인데, nextPayDate이 이미 지났을 경우 seller 콜 => 각자 deposit 가져가기
   function expireByDate(uint256 swapId) external override returns (bool) {
     _expireByDate(swapId);
-    _afterExpireByDate(swapId);
+    _afterClose(swapId);
     emit Expire(swapId);
     return true;
   }
 
   function payPremium(uint256 swapId) external payable override returns (bool) {
-    // date check
-    // require(_checkDate(swapId), 'Invalid date');
-
     require(msg.value == getPremium(swapId), 'Invalid premium');
     (bool sent, ) = getSeller(swapId).call{value: msg.value}('');
     require(sent, 'Sending premium failed');

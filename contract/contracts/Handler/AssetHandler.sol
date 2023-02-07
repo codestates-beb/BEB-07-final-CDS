@@ -37,14 +37,20 @@ contract AssetHandler is Ownable, SwapHandler {
     return _deposits[swapId];
   }
 
-  function _afterCreate(uint256 _swapId, bool _isBuyer) internal returns (bool) {
+  function _afterCreate(
+    uint256 _swapId,
+    bool _isBuyer
+  ) internal returns (bool) {
     _isBuyer
       ? setDepoForBuyer(_swapId, getPremium(_swapId))
       : setDepoForSeller(_swapId, getSellerDeposit(_swapId));
     return true;
   }
 
-  function _afterAccept(uint256 _swapId, bool _isBuyerHost) internal returns (bool) {
+  function _afterAccept(
+    uint256 _swapId,
+    bool _isBuyerHost
+  ) internal returns (bool) {
     _isBuyerHost
       ? setDepoForSeller(_swapId, getSellerDeposit(_swapId))
       : setDepoForBuyer(_swapId, getPremium(_swapId));
@@ -54,7 +60,9 @@ contract AssetHandler is Ownable, SwapHandler {
   function _afterCancel(uint256 _swapId) internal returns (bool) {
     uint256 deposit;
     bool isBuyer = (msg.sender == getBuyer(_swapId));
-    isBuyer ? deposit = getDeposits(_swapId)[0].deposit : getDeposits(_swapId)[1].deposit;
+    isBuyer
+      ? deposit = getDeposits(_swapId)[0].deposit
+      : getDeposits(_swapId)[1].deposit;
     bool sent = token.transfer(msg.sender, deposit);
     require(sent, 'Sending deposit failed');
     clearDeposit(_swapId);
@@ -77,8 +85,14 @@ contract AssetHandler is Ownable, SwapHandler {
       claimReward != 0,
       'Claim price in CDS should be higher than current price of asset'
     );
-    bool sentBuyer = token.transfer(getBuyer(_swapId), claimReward + getDeposits(_swapId)[0].deposit);
-    bool sentSeller = token.transfer(getSeller(_swapId), getDeposits(_swapId)[1].deposit - claimReward);
+    bool sentBuyer = token.transfer(
+      getBuyer(_swapId),
+      claimReward + getDeposits(_swapId)[0].deposit
+    );
+    bool sentSeller = token.transfer(
+      getSeller(_swapId),
+      getDeposits(_swapId)[1].deposit - claimReward
+    );
     require(sentBuyer && sentSeller, 'Sending reward failed');
     return claimReward;
   }
