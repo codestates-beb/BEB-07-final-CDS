@@ -9,6 +9,6 @@ authRouter.post('/login', isNotLoggedIn, authController.login);
 
 authRouter.get('/logout', isLoggedIn, authController.logout);
 authRouter.get('/nonce', isNotLoggedIn, authController.getNonce);
-authRouter.get('/verify', authController.verify);
+authRouter.get('/verify', isLoggedIn, authController.verify);
 
 export default authRouter;
