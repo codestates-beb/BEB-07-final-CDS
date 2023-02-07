@@ -37,24 +37,15 @@ contract AssetHandler is Ownable, SwapHandler {
     return true;
   }
 
-  function _afterCancel(uint256 _swapId) internal returns (bool) {
-    uint256 deposit;
-    bool isBuyer = (msg.sender == getBuyer(_swapId));
-    isBuyer
-      ? deposit = getDeposits(_swapId)[0]
-      : getDeposits(_swapId)[1];
-    bool sent = token.transfer(msg.sender, deposit);
-    require(sent, 'Sending deposit failed');
-    clearDeposit(_swapId);
-    return true;
-  }
-
-  function _afterClose(uint256 _swapId) internal returns (bool) {
-    uint256 buyerDeposit = getDeposits(_swapId)[0];
-    uint256 sellerDeposit = getDeposits(_swapId)[1];
-    bool buyerSent = token.transfer(getBuyer(_swapId), buyerDeposit);
-    bool sellerSent = token.transfer(getSeller(_swapId), sellerDeposit);
-    require(buyerSent && sellerSent, 'Sending deposit failed');
+  function _endSwap(uint256 _swapId) internal returns (bool) {
+    address[2] memory participants = [getBuyer(_swapId), getSeller(_swapId)];
+    for (uint i = 0; i <= 1; i++) {
+      uint256 deposit = getDeposits(_swapId)[i];
+      if (deposit != 0) {
+        bool sent = token.transfer(participants[i], deposit);
+        require(sent, 'Sending deposit back failed');
+      }
+    }
     clearDeposit(_swapId);
     return true;
   }
@@ -74,12 +65,28 @@ contract AssetHandler is Ownable, SwapHandler {
       getDeposits(_swapId)[1] - claimReward
     );
     require(sentBuyer && sentSeller, 'Sending reward failed');
+    clearDeposit(_swapId);
     return claimReward;
   }
 
-  function _expireByDate(uint256 _swapId) internal isSeller(_swapId) isActive(_swapId) {
-    require((block.timestamp >= getNextPayDate(_swapId)) && (getDeposits(_swapId)[0] == 0),
-    'Too early to call');
+  function _afterPayPremium(uint256 _swapId) internal returns (bool) {
+    bool sent = token.transferFrom(
+      msg.sender,
+      getSeller(_swapId),
+      getPremium(_swapId)
+    );
+    require(sent, 'Sending premium failed');
+    return true;
+  }
+
+  function _expire(
+    uint256 _swapId
+  ) internal isSeller(_swapId) isActive(_swapId) {
+    bool byRounds = ((block.timestamp >= getNextPayDate(_swapId)) &&
+      (getTotalRounds(_swapId) == 0));
+    bool byDate = ((block.timestamp >= getNextPayDate(_swapId)) &&
+      (getDeposits(_swapId)[0] == 0));
+    require(byDate || byRounds, 'Buyer deposit / Rounds remaining');
     getSwap(_swapId).setStatus(Swap.Status.expired);
   }
 

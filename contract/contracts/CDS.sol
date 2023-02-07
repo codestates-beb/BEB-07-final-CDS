@@ -2,7 +2,6 @@
 pragma solidity ^0.8.7;
 
 import './Handler/AssetHandler.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
@@ -29,11 +28,9 @@ interface CDSInterface {
 
   function claim(uint256 swapId) external returns (bool);
 
-  function payPremium(uint256 swapId) external payable returns (bool);
+  function expire(uint256 swapId) external returns (bool);
 
-  function expireByRounds(uint256 swapId) external returns (bool);
-
-  function expireByDate(uint256 swapId) external returns (bool);
+  function payPremium(uint256 swapId) external returns (bool);
 
   event Create(
     address indexed hostAddr,
@@ -49,7 +46,7 @@ interface CDSInterface {
   event PayPremium(uint256 swapId);
 }
 
-contract CDS is Ownable, AssetHandler, CDSInterface {
+contract CDS is AssetHandler, CDSInterface {
   // transactions
   function create(
     bool isBuyer,
@@ -85,23 +82,24 @@ contract CDS is Ownable, AssetHandler, CDSInterface {
       'The host can not call the method'
     );
 
-    bool isSeller = (getSeller(swapId) == address(0)); 
+    bool isSeller = (getSeller(swapId) == address(0));
     uint256 acceptedSwapId = _accept(isSeller, initAssetPrice, swapId);
     _afterDeposit(swapId, !isSeller);
+    // *4만큼 받고 *3은 deposit으로, *1은 우리가 seller한테 보내준다.
     emit Accept(msg.sender, acceptedSwapId);
     return acceptedSwapId;
   }
 
   function cancel(uint256 swapId) external override returns (bool) {
     _cancel(swapId);
-    _afterCancel(swapId);
+    _endSwap(swapId);
     emit Cancel(swapId);
     return true;
   }
 
   function close(uint256 swapId) external override returns (bool) {
     _close(swapId);
-    _afterClose(swapId);
+    _endSwap(swapId);
     emit Close(swapId);
     return true;
   }
@@ -114,29 +112,31 @@ contract CDS is Ownable, AssetHandler, CDSInterface {
   }
 
   // total Rounds 만료시 seller 콜 => 각자 deposit 가져가기. 근데 기간 만료인데 claimable 상태라면?
-  function expireByRounds(uint256 swapId) external override returns (bool) {
-    _expireByRounds(swapId);
-    _afterClose(swapId);
-    emit Expire(swapId);
-    return true;
-  }
-
   // buyer Deposit = 0 인데, nextPayDate이 이미 지났을 경우 seller 콜 => 각자 deposit 가져가기
-  function expireByDate(uint256 swapId) external override returns (bool) {
-    _expireByDate(swapId);
-    _afterClose(swapId);
+  function expire(uint256 swapId) external override returns (bool) {
+    _expire(swapId);
+    _endSwap(swapId);
     emit Expire(swapId);
     return true;
   }
 
-// approve 받았다고 가정.
-  function payPremium(uint256 swapId) external payable override returns (bool) {
-    require(msg.value == getPremium(swapId), 'Invalid premium');
-    (bool sent, ) = getSeller(swapId).call{value: msg.value}('');
-    require(sent, 'Sending premium failed');
-    // status update
+  // approve 받았다고 가정. => allowance 확인 가능
+  function payPremium(uint256 swapId) external override returns (bool) {
+    require(
+      token.allowance(msg.sender, address(this)) == getPremium(swapId),
+      'Need allowance'
+    );
     _payPremium(swapId);
+    _afterPayPremium(swapId);
     emit PayPremium(swapId);
+    return true;
+  }
+
+  // called by server? seller?
+  function payPremiumByDeposit(
+    uint256 swapId
+  ) external onlyOwner returns (bool) {
+    _payPremium(swapId);
     return true;
   }
 

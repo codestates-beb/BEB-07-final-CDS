@@ -63,33 +63,39 @@ contract SwapHandler {
     return _acceptedSwapId;
   }
 
-  function _cancel(uint256 _targetSwapId) internal     
-    isParticipants(_targetSwapId)
-    isPending(_targetSwapId) {
+  function _cancel(
+    uint256 _targetSwapId
+  ) internal isParticipants(_targetSwapId) isPending(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.inactive);
   }
 
-  function _close(uint256 _targetSwapId) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
+  function _close(
+    uint256 _targetSwapId
+  ) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.expired);
   }
 
-  function _payPremium(uint256 _targetSwapId) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
+  function _payPremium(
+    uint256 _targetSwapId
+  ) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
+    // rqr문 작성 필요 for 1day term
+    uint256 payDate = getNextPayDate(_targetSwapId);
+    uint256 currTime = block.timestamp;
+    require(
+      (payDate - 1 days <= currTime) && (currTime <= payDate),
+      'Invalid pay date'
+    );
     _nextPayDate[_targetSwapId] += getInterval(_targetSwapId);
     getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
   }
 
-  function _claim(uint256 _targetSwapId) internal     
-    isBuyer(_targetSwapId)
-    isActive(_targetSwapId) {
+  function _claim(
+    uint256 _targetSwapId
+  ) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.claimed);
   }
 
-  function _expireByRounds(uint256 _targetSwapId) internal isSeller(_targetSwapId) isActive(_targetSwapId) {
-    require((block.timestamp >= _nextPayDate[_targetSwapId]) && (getTotalRounds(_targetSwapId) == 0),
-    'Too early to call');
-    getSwap(_targetSwapId).setStatus(Swap.Status.expired);
-  }
-
+  // getter transactions
   function getSwapId() public view returns (Counters.Counter memory) {
     return _swapId;
   }
