@@ -82,12 +82,12 @@ contract SwapHandler is PriceConsumer {
   }
 
   function _cancel(uint256 _targetSwapId) internal {
-    clearDeposit(_targetSwapId);
+    // clearDeposit(_targetSwapId);
     _swaps[_targetSwapId].setStatus(Swap.Status.inactive);
   }
 
   function _close(uint256 _targetSwapId) internal {
-    clearDeposit(_targetSwapId);
+    // clearDeposit(_targetSwapId);
     _swaps[_targetSwapId].setStatus(Swap.Status.expired);
   }
 
@@ -97,7 +97,7 @@ contract SwapHandler is PriceConsumer {
   }
 
   function _claim(uint256 _targetSwapId) internal {
-    clearDeposit(_targetSwapId);
+    // clearDeposit(_targetSwapId);
     _swaps[_targetSwapId].setStatus(Swap.Status.claimed);
   }
 
@@ -156,25 +156,6 @@ contract SwapHandler is PriceConsumer {
 
   function getDeposits(uint256 swapId) public view returns (Deposit[2] memory) {
     return _deposits[swapId];
-  }
-
-  function setSwapForBuyer(uint256 swapId) private {
-    _swaps[swapId].setBuyer(msg.sender);
-    _deposits[swapId][0].deposit = getPremium(swapId).mul(3);
-    _deposits[swapId][0].isPaid = true;
-  }
-
-  function setSwapForSeller(uint256 swapId) private {
-    _swaps[swapId].setSeller(msg.sender);
-    _deposits[swapId][1].deposit = getSellerDeposit(swapId);
-    _deposits[swapId][1].isPaid = true;
-  }
-
-  function clearDeposit(uint256 swapId) private {
-    for (uint i = 0; i <= 1; i++) {
-      _deposits[swapId][i].deposit = 0;
-      _deposits[swapId][i].isPaid = false;
-    }
   }
 
   // modifiers
