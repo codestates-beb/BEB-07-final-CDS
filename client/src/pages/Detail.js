@@ -1,11 +1,11 @@
 // modules
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 // components
 import ProposedCard from '../components/ProposedCard';
-import MarketPrice from '../components/MarketPrice';
+import MarketPriceType2 from '../components/MarketPriceType2';
 
 // apis
 import { getSwapById } from '../apis/request';
@@ -24,6 +24,9 @@ import Footer from '../components/Footer.js';
 import { calculateTimeRemaining } from '../utils/calendar';
 
 function Detail() {
+  const navigate = useNavigate();
+
+  // CDS Info State
   const { swapId } = useParams();
   const userAddress = useSelector(state=>state.auth.user_addr);
   const [swapOnDB, setSwapOnDB] = useState(null);
@@ -31,71 +34,98 @@ function Detail() {
   const [timeRemainingToPay, setTimeRemainingToPay] = useState(null);
   const CDS = useCDS();
 
+  // CDS Availability
+  const [isPayablePremium, setIsPayablePremium] = useState(false);
+  const [isClaimable, setIsClaimable] = useState(false);
+
   // CDS pay premium Handler
   const premiumButtonHandler = async()=>{
     console.log(swapId);
 
-    const result = await CDS.payPremium(swapId, userAddress, swapOnChain.premium);
-    
-    console.log(result);
+    try {
+      const result = await CDS.payPremium(swapId, userAddress, swapOnChain.premium);
+      
+      console.log(result);
+    } catch(err){
+      console.log(err);
+    }
   }
 
   // CDS Cancel Handler
   const cancelButtonHandler = async()=>{
     console.log(swapId);
 
-    const result = await CDS.cancelSwap(
-      swapId,
-      userAddress,
-    );
+    try {
+      const result = await CDS.cancelSwap(
+        swapId,
+        userAddress,
+      );
 
-    console.log(result);
+      console.log(result);
+      navigate('/');
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   // CDS Claim Handler
   const claimButtonHandler = async()=>{
     console.log(swapId);
 
-    const result = await CDS.claimSwap(
-      swapId,
-      userAddress,
-    );   
+    try {
+      const result = await CDS.claimSwap(
+        swapId,
+        userAddress,
+      );   
 
-    console.log(result);
+      console.log(result);
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   // CDS Close Handler
   const closeButtonHandler = async()=>{
     console.log(swapId);
 
-    const result = await CDS.closeSwap(
-      swapId,
-      userAddress,
-    );
-
-    console.log(result);
+    try{
+      const result = await CDS.closeSwap(
+        swapId,
+        userAddress,
+      );
+      
+      console.log(result);
+      navigate('/');
+    } catch(err) {
+      console.log(err)
+    }
   }
 
   useEffect(()=>{
     getSwapById(swapId)
     .then(result=> {
       if(result) setSwapOnDB(result);
-      else console.log(result);
+      else {
+        console.log(result)
+        navigate('/NotFound');
+      };
     })
   }, [])
 
   useEffect(()=>{
     let intervalId;
-    if (CDS){
-      CDS.getSwap(swapId)
-      .then(result=>{
-        setSwapOnChain(result);
-        intervalId = setInterval(()=>{
-          const current = parseInt(new Date().getTime() / 1000);
-          setTimeRemainingToPay( calculateTimeRemaining( current, result.buyer.nextPayDate ));
-        }, 1000)
-      })
-    }
+    // if (CDS){
+    //   CDS.getSwap(swapId)
+    //   .then(result=>{
+    //     setSwapOnChain(result);
+    //     intervalId = setInterval(()=>{
+    //       const current = parseInt(new Date().getTime() / 1000);
+    //       setTimeRemainingToPay( calculateTimeRemaining( current, result.buyer.nextPayDate ));
+    //     }, 1000)
+    //   })
+    // }
+
+    
 
     return ()=>{
       clearInterval(intervalId);
@@ -110,7 +140,7 @@ function Detail() {
             <div className="detail-title-group">
               <h1 className="detail-title">Bitcoin Crypto Default Swap</h1>
               <p className="detail-issued">Issued on Jan 22, 2023</p>
-              <p className='detail-payday'>{swapOnChain ? timeRemainingToPay:''}</p>
+              {/* <p className='detail-payday'>{swapOnChain ? timeRemainingToPay:''}</p> */}
             </div>
             <div className="detail-party">
               <div className="party-item">
@@ -176,7 +206,7 @@ function Detail() {
               </div>
               <div className="content-item">
                 <p className="item-name">Premium Interval</p>
-                <p className="item-figures">{swapOnDB ? `${swapOnDB.premiumInterval} seconds` : ''}</p>
+                <p className="item-figures">{swapOnDB ? `${calculateTimeRemaining(0, swapOnDB.premiumInterval)}` : ''}</p>
               </div>
               <div className="content-item">
                 <p className="item-name">Premium Rounds</p>
@@ -203,23 +233,27 @@ function Detail() {
           </div>
         </div>
         {/* content */}
-        <div className="flex justify-center mt-16 py-14">
-          <hr className="line w-[720px] border-b-2 border-primaryColor" />
+        <div className="fixed bottom-11 right-11">
+          <ScrollButton />
         </div>
-        <div className="detail-tail flex flex-col items-center mb-24">
-          <MarketPrice />
+      </div>
+      <div className='detail-tail'>
+        <div className='detail-price'>
+          <MarketPriceType2/>
           <div className='button-group'>
             { swapOnDB && swapOnDB.buyer.toLowerCase() === userAddress ?
               <>
                 <button
                   className='button pay-button'
                   onClick={premiumButtonHandler}
+                  disabled={!isPayablePremium}
                 >
                   Pay Premium
                 </button>
                 <button 
                   className='button claim-button'
                   onClick={claimButtonHandler}
+                  disabled={!isClaimable}
                 >
                 Claim
                 </button>
@@ -240,8 +274,8 @@ function Detail() {
             }
           </div>
         </div>
-        <div className="fixed bottom-11 right-11">
-          <ScrollButton />
+        <div className="flex justify-center py-14">
+          <hr className="line w-[720px] border-b-2 border-primaryColor" />
         </div>
       </div>
       <div>

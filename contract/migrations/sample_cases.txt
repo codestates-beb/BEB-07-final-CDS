@@ -1,14 +1,14 @@
-case1: account[2] create, account[1] accepts
+case1: account[2] creates, account[1] accepts
 
-case2: account[2] create and cancel
+case2: account[2] creates and cancels
 
 case3 : account[4] creates and nobody accepts
 
 case4: account[3] creates and account[1] accepts
-    after price dropped below claim price, account[3] claimes
+    after price dropped below claim price, account[3] claims
 
 case5: account[2] creates and account[3] accepts
-    after price dropped below liquidation price, account[2] claimes
+    after price dropped below liquidation price, account[2] claims
 
 case6: account[1] creates and account[3] accepts
     account[1] closes swap

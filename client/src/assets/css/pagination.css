@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  ul.pagination li {
+    display: inline-block;
+    width: 2.5rem;
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+  }
+
+  ul.pagination li:first-child {
+    border-radius: 5px 0 0 5px;
+  }
+
+  ul.pagination li:last-child {
+    border-radius: 0 5px 5px 0;
+  }
+
+  ul.pagination li a {
+    text-decoration: none;
+    color: #eff0f4;
+    font-size: 1rem;
+  }
+
+  ul.pagination li.active a {
+    color: white;
+  }
+
+  ul.pagination li.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 9999px;
+  }
+
+  ul.pagination li a:hover,
+  ul.pagination li a.active {
+    color: #858584;
+  }
+
+  .page-selection {
+    width: 48px;
+    height: 30px;
+    color: #337ab7;
+  }
+}

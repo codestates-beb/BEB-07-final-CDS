@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    /* Overlay */
+    .ReactModalPortal .overlay{
+        @apply top-0 left-0 inset-0 bg-black/50 fixed;
+    }
+
+    /* Modal */
+    .ReactModalPortal .notice {
+        @apply absolute bg-blackColor top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2
+        w-[300px]
+        rounded-2xl;
+    }
+
+    /* Modal title */
+    .notice .modal-head .modal-title{
+        @apply text-2xl font-bold p-4
+        border-b border-darkGrayColor;
+    }
+
+    .notice .modal-content .notice-wrapper{
+        @apply py-10 flex flex-col justify-center items-center;
+    }
+
+    .notice .modal-content img{
+        @apply mb-5 w-10 h-10;
+    }
+
+    /* Modal Tail */
+    .modal-tail .button-group{
+        @apply p-4 flex justify-center;
+    }
+
+    .modal-tail .button-group button{
+        @apply p-2 rounded-xl bg-primaryColor;
+    }
+}

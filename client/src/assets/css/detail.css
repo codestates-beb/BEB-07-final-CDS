@@ -59,16 +59,20 @@
     @apply py-4 font-normal text-2xl;
   }
 
-  /* detail tail */
-  .detail-tail .button-group{
-    @apply w-[68rem] flex justify-end mt-10;
+  /* detail price */
+  .detail-price .button-group{
+    @apply flex justify-center mt-10;
   }
 
-  .detail-tail .button{
+  .detail-price .button{
     @apply py-4 w-[8rem] font-bold bg-secondaryColor rounded-xl mr-5;
   }
 
-  .detail-tail .button:last-child{
+  .detail-price .button:disabled {
+    @apply bg-darkGrayColor;
+  }
+
+  .detail-price .button:last-child{
     @apply mr-0;
   }
 }

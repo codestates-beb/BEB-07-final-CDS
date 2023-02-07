@@ -13,18 +13,9 @@ contract SwapHandler is PriceConsumer {
   using LibClaim for uint256;
   Counters.Counter internal _swapId;
 
-  Swap private swap;
-
-  struct Deposit {
-    uint256 deposit;
-    bool isPaid;
-  }
-
   mapping(uint256 => Swap) private _swaps;
 
   mapping(uint256 => uint256) private _nextPayDate;
-
-  mapping(uint256 => Deposit[2]) private _deposits;
 
   constructor() {}
 
@@ -54,7 +45,7 @@ contract SwapHandler is PriceConsumer {
 
     // newSwap.setStatus(Swap.Status.pending);
 
-    _isBuyer ? setSwapForBuyer(newSwapId) : setSwapForSeller(newSwapId);
+    _isBuyer ? newSwap.setBuyer(msg.sender) : newSwap.setSeller(msg.sender);
 
     return newSwapId;
   }
@@ -68,8 +59,8 @@ contract SwapHandler is PriceConsumer {
     targetSwap.setInitAssetPrice(_initAssetPrice);
 
     _isBuyerHost
-      ? setSwapForSeller(_acceptedSwapId)
-      : setSwapForBuyer(_acceptedSwapId);
+      ? targetSwap.setSeller(msg.sender)
+      : targetSwap.setBuyer(msg.sender);
 
     // check => 토큰으로 처리시 바로 보내고 이거도 되야함.
     _nextPayDate[_acceptedSwapId] =
@@ -154,8 +145,12 @@ contract SwapHandler is PriceConsumer {
     return _swaps[swapId].getSeller();
   }
 
-  function getDeposits(uint256 swapId) public view returns (Deposit[2] memory) {
-    return _deposits[swapId];
+  function getNextPayDate(uint256 swapId) public view returns (uint256) {
+    return _nextPayDate[swapId];
+  }
+
+  function getTotalRounds(uint256 swapId) public view returns (uint32) {
+    return _swaps[swapId].totalRounds();
   }
 
   // modifiers

@@ -14,9 +14,7 @@ AppDataSource.initialize()
         updateGeckoFeed();
       }, 20 * 1000);
 
-      console.log(
-        `[server]: Server is running at <https://localhost>:${app.get('port')}`,
-      );
+      console.log(`Server is running at ${app.get('port')}`);
     });
   })
   .catch((error) => console.log(error));

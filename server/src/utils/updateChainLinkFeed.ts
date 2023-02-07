@@ -1,5 +1,22 @@
-import getPricesFromChainLink from '../web3utils/getPricesFromChainLink';
 import redisClient from './redisClient';
+import Web3 from 'web3';
+import { AbiItem } from 'web3-utils';
+import getEnv from '../utils/getEnv';
+import CONSUMER_ABI from './Consumer.json';
+
+const CONSUMER_CA = getEnv('CONSUMER_CA');
+const GOERLI_HTTP = getEnv('GOERLI_HTTP');
+
+const web3 = new Web3(new Web3.providers.HttpProvider(GOERLI_HTTP));
+const consumer = new web3.eth.Contract(CONSUMER_ABI as AbiItem[], CONSUMER_CA);
+
+async function getPricesFromChainLink() {
+  const BTC = await consumer.methods.getLatestBTCPrice().call();
+  const ETH = await consumer.methods.getLatestETHPrice().call();
+  const LINK = await consumer.methods.getLatestLINKPrice().call();
+  const result = { BTC, ETH, LINK };
+  return result;
+}
 
 async function updateChainLinkFeed() {
   try {

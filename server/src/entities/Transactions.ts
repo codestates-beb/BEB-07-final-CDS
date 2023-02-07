@@ -1,31 +1,34 @@
 import {
   Column,
+  PrimaryColumn,
   Entity,
   Index,
   JoinColumn,
   ManyToOne,
-  CreateDateColumn,
 } from 'typeorm';
 import { Swaps } from './Swaps';
 
 @Index('transactions_swapId_foreign_idx', ['swapId'], {})
 @Index('txHash', ['txHash'], { unique: true })
-@Entity('transactions', { schema: 'cds_dev2' })
+@Entity('transactions', { schema: 'cds_dev3' })
 export class Transactions {
-  @Column('varchar', { primary: true, name: 'txHash', length: 100 })
+  @PrimaryColumn('varchar', { primary: true, name: 'txHash', length: 100 })
   txHash: string;
 
   @Column('int', { name: 'blockNum' })
   blockNum: number;
 
-  @CreateDateColumn()
-  createdAt: Date;
+  @Column('varchar', { name: 'event', length: 20, nullable: true })
+  event: string | null;
 
-  @CreateDateColumn()
-  updatedAt: Date;
+  @Column('int', { name: 'createdAt', unsigned: true, nullable: false })
+  createdAt: number;
 
-  @Column('datetime', { name: 'deletedAt', nullable: true })
-  deletedAt: Date | null;
+  @Column('int', { name: 'updatedAt', unsigned: true, nullable: false })
+  updatedAt: number;
+
+  @Column('int', { name: 'deletedAt', unsigned: true, nullable: true })
+  deletedAt: number | null;
 
   @Column('int', { name: 'swapId', nullable: true })
   swapId: number | null;
