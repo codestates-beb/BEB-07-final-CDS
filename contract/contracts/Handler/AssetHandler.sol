@@ -59,10 +59,6 @@ contract AssetHandler is Ownable, SwapHandler {
 
   function _afterClaim(uint256 _swapId) internal returns (uint256) {
     uint256 claimReward = getSwap(_swapId).getClaimReward();
-    require(
-      claimReward != 0,
-      'Claim price in CDS should be higher than current price of asset'
-    );
     bool sentBuyer = token.transfer(
       getBuyer(_swapId),
       claimReward + getDeposits(_swapId)[0]
