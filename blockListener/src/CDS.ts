@@ -1,16 +1,12 @@
 import Web3 from 'web3';
 import { Contract, EventData } from 'web3-eth-contract';
-import { Transaction } from 'web3-core';
 import { AbiItem } from 'web3-utils';
-import { abi as cdsAbi } from './contractArtifacts/CDS.json';
 import { swapAbi } from './contractArtifacts/Swap.json';
-import { EntityManager, TreeChildren } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { Users } from './entities/Users';
 import { Transactions } from './entities/Transactions';
 import { Swaps } from './entities/Swaps';
 import Swap from './Swap';
-import getEnv from './utils/getEnv';
-const GETH_WEBSOCKET = getEnv('GETH_WEBSOCKET');
 
 interface CreateSwapEvent extends Omit<EventData, 'returnValues'> {
   returnValues: {
@@ -64,6 +60,7 @@ export default class CDS {
   private manager: EntityManager = null;
   private fromBlock: number = 0;
   private web3Endpoint: string;
+  private defaultNickName: string = 'anonymous';
 
   private constructor(webSocketURI: string, manager: EntityManager) {
     this.web3 = new Web3(webSocketURI);
@@ -289,7 +286,7 @@ export default class CDS {
         console.log('** no such user **');
         user = new Users();
         user.address = hostAddr;
-        user.nickname = null;
+        user.nickname = this.defaultNickName + '_' + hostAddr.slice(2, 7);
         user.soldCount = 0;
         user.boughtCount = 0;
         user.createdAt = currentTime;
@@ -509,7 +506,7 @@ export default class CDS {
       console.log('** no such user, creating**');
       seller = new Users();
       seller.address = sellerAddr;
-      seller.nickname = null;
+      seller.nickname = this.defaultNickName + '_' + sellerAddr.slice(2, 7);
       seller.soldCount = 1;
       seller.boughtCount = 0;
       seller.lastBought = null;
@@ -535,7 +532,7 @@ export default class CDS {
       console.log('** no such user, creating**');
       buyer = new Users();
       buyer.address = buyerAddr;
-      buyer.nickname = null;
+      buyer.nickname = this.defaultNickName + '_' + buyerAddr.slice(2, 7);
       buyer.soldCount = 0;
       buyer.boughtCount = 1;
       buyer.lastBought = currentTime;
