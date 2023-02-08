@@ -2,8 +2,6 @@
 pragma solidity ^0.8.7;
 
 import './Handler/AssetHandler.sol';
-import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 interface CDSInterface {
   function create(
@@ -78,7 +76,6 @@ contract CDS is AssetHandler, CDSInterface {
       msg.sender != getBuyer(swapId) && msg.sender != getSeller(swapId),
       'The host can not call the method'
     );
-
     bool isSeller = (getSeller(swapId) == address(0));
     uint256 acceptedSwapId = _accept(isSeller, initAssetPrice, swapId);
     _sendDeposit(swapId, !isSeller);
