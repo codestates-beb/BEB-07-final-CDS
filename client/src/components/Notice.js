@@ -40,7 +40,8 @@ function Notice() {
         <Modal 
             className='notice'
             overlayClassName={'overlay'}
-            isOpen={isModalOpened} 
+            isOpen={isModalOpened}
+            ariaHideApp={false}
         >
             <div className='modal-head'>
                 <div className='modal-title'>
