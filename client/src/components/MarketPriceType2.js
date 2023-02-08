@@ -1,5 +1,5 @@
 // modules
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // css
 import '../assets/css/marketPrice.css';
@@ -51,31 +51,27 @@ function MarketPriceType2() {
   const [negativeETHDiffer, setNegativeETHDiffer] = useState(false);
   const [negativeLINKDiffer, setNegativeLINKDiffer] = useState(false);
 
-  useEffect(() => {
+  // CoinGecko와 Chinlink에서 market data를 api로 가져옵니다.
+  function getMarketData() {
     const coinGeckoData = getCoinGeckoAPI();
     const chainLinkData = getChainLinkAPI();
-
     const getCoinGeckoData = () => {
       coinGeckoData
         .then((response) => {
           setPriceBTCGecko(response.bitcoin.usd);
           setPriceETHGecko(response.ethereum.usd);
           setPriceLINKGecko(response.chainlink.usd);
-
           const btcChange = response.bitcoin.usd_24h_change;
           const ethChange = response.ethereum.usd_24h_change;
           const linkChange = response.chainlink.usd_24h_change;
           setChangeRateBTCGecko(btcChange);
           setChangeRateETHGecko(ethChange);
           setChangeRateLINKGecko(linkChange);
-
           let geckoTimestamp = response.bitcoin.last_updated_at;
           let geckoTime = new Date(geckoTimestamp * 1000);
           let geckoTimeToString = geckoTime.toString();
           setTimeGecko(geckoTimeToString);
-
           const changes = [btcChange, ethChange, linkChange];
-
           return changes;
         })
         .then((changes) => {
@@ -96,7 +92,6 @@ function MarketPriceType2() {
         setPriceBTCLink(response.bitcoin.usd);
         setPriceETHLink(response.ethereum.usd);
         setPriceLINKLink(response.chainlink.usd);
-
         let linkTimestamp = response.bitcoin.last_updated_at;
         let numToString = linkTimestamp.toString();
         let sliceNum = numToString.slice(0, 10);
@@ -104,13 +99,23 @@ function MarketPriceType2() {
         let linkTime = new Date(StringToNum * 1000);
         let linkTimeToString = linkTime.toString();
         setTimeLink(linkTimeToString);
-
         return response;
       });
     };
-
     getCoinGeckoData();
     getChainLinkData();
+  }
+
+  // 첫 랜더링 시 getMarketData를 실행하고, 이후에는 setInterval을 통해 getMarketData를 실행합니다.
+  useEffect(() => {
+    getMarketData();
+    const intervalId = setInterval(() => {
+      getMarketData();
+    }, 20000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
   useEffect(() => {

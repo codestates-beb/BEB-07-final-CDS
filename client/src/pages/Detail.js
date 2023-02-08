@@ -125,8 +125,6 @@ function Detail() {
     //   })
     // }
 
-    
-
     return ()=>{
       clearInterval(intervalId);
     }
