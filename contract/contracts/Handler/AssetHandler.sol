@@ -41,7 +41,7 @@ contract AssetHandler is Ownable, SwapHandler {
     bool sent = token.transfer(getSeller(_swapId), getPremium(_swapId));
     require(sent, 'Sending first premium failed');
     deposits[_swapId][0] -= getPremium(_swapId);
-    getSwap(_swapId).setRounds(getSwap(_swapId).rounds() - 1);
+    getSwap(_swapId).setRounds(getRounds(_swapId) - 1);
     return true;
   }
 
