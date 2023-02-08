@@ -88,13 +88,12 @@ contract SwapHandler {
   function _payPremium(
     uint256 _targetSwapId
   ) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
-    // rqr문 작성 필요 for 1day term
-    uint256 currTime = block.timestamp;
-    require(
-      (_nextPayDate[_targetSwapId] - 1 days <= currTime) &&
-        (currTime <= _nextPayDate[_targetSwapId]),
-      'Invalid pay date'
-    );
+    // uint256 currTime = block.timestamp;
+    // require(
+    //   (_nextPayDate[_targetSwapId] - 1 days <= currTime) &&
+    //     (currTime <= _nextPayDate[_targetSwapId]),
+    //   'Invalid pay date'
+    // );
     _nextPayDate[_targetSwapId] += getInterval(_targetSwapId);
     getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
   }
