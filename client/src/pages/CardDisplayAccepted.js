@@ -29,6 +29,7 @@ function CardDisplayAccepted() {
     const APIdata = getActiveSwapsByOffset(offset);
     const getData = () => {
       APIdata.then((response) => {
+        console.log(response.swaps);
         setAccepted(response.swaps);
         setSwapsNumber(response.filteredSwapCount);
       });

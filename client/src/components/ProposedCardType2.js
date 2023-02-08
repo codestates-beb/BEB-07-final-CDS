@@ -1,6 +1,5 @@
 // modules
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
 
 //image
 import BTCCard from '../assets/img/BTC_Card_bg.jpg';
