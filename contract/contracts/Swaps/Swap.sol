@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
+import '../Oracle/PriceOracleMock.sol';
+import '../libs/LibClaim.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 contract Swap is Ownable {
   using SafeMath for uint256;
+  using LibClaim for uint256;
+
+  PriceOracleMock private priceOracle;
 
   enum Status {
     inactive,
@@ -34,7 +39,8 @@ contract Swap is Ownable {
     uint256 _premium,
     uint256 _sellerDeposit,
     uint256 _interval,
-    uint32 _rounds
+    uint32 _rounds,
+    address priceOracleAddr
   ) {
     initAssetPrice = _initAssetPrice;
     claimPrice = _claimPrice;
@@ -48,6 +54,8 @@ contract Swap is Ownable {
     buyer = address(0);
     seller = address(0);
     status = Status.pending;
+
+    priceOracle = PriceOracleMock(priceOracleAddr);
   }
 
   function getPrices() public view returns (uint256[5] memory) {
@@ -66,6 +74,19 @@ contract Swap is Ownable {
 
   function getSeller() public view returns (address) {
     return seller;
+  }
+
+  function getClaimReward() public view returns (uint256) {
+    uint256 currPrice = priceOracle.price();
+    if (claimPrice < currPrice) {
+      return 0;
+    }
+    return
+      sellerDeposit.calcClaimReward(
+        liquidationPrice,
+        initAssetPrice,
+        currPrice
+      );
   }
 
   function setInitAssetPrice(uint256 _initAssetPrice) public returns (uint256) {
