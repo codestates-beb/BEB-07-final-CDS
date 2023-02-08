@@ -96,6 +96,17 @@ function Create() {
     };
     console.log(data);
 
+    console.log({
+      initialPriceOfAssets,
+      amountOfAssets,
+      claimPrice,
+      liquidationPrice,
+      premium: premiumPrice,
+      premiumInterval,
+      TotalPremiumRounds: premiumRounds,
+      sellerDeposit,
+    })
+
     dispatch(setSuccess());
 
     try {
