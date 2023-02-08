@@ -18,7 +18,7 @@ function useERC20() {
         }
 
         const web3 = new Web3(window.ethereum);
-        const erc20 = new web3.eth.Contract(ERC20ABI.abi, config.oracleAddr);
+        const erc20 = new web3.eth.Contract(ERC20ABI.abi, config.erc20Addr);
 
         const ERC20Listner = {
             transfer: async (amount, sender)=>{

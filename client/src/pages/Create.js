@@ -21,6 +21,7 @@ import {
 // hooks
 import useMetamask from '../utils/hooks/useMetamask';
 import useCDS from '../utils/hooks/useCDS';
+import useERC20 from '../utils/hooks/useERC20';
 
 // utils
 import {
@@ -43,6 +44,7 @@ import createBackGround from '../assets/img/createPage_bg.jpg';
 function Create() {
   const metamask = useMetamask();
   const CDS = useCDS();
+  const ERC20 = useERC20();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -97,16 +99,29 @@ function Create() {
     dispatch(setSuccess());
 
     try {
+      // Notice Modal open
       dispatch(openModal());
       dispatch(setProcessing());
+      
+      // calculate deposit
+      let deposit;
+      if(isBuyer === true) deposit = 4 * premiumPrice;
+      else deposit = sellerDeposit;
 
+      // Approve Token Amount to Contract
+      const approved = await ERC20.approve(deposit, userAddress);
+      console.log(approved);
+
+      // create CDS
       const result = await CDS.createSwap(data, userAddress);
       console.log(result);
 
+      // get SwapId
       const swapId = result.events.CreateSwap.returnValues.swapId;
       console.log(swapId);
       dispatch(setSuccess());
 
+      // Notice Modal close
       const timeoutId = setTimeout(() => {
         dispatch(closeModal());
         navigate('/');
@@ -141,7 +156,7 @@ function Create() {
       initialPriceOfAssets,
       amountOfAssets,
     );
-    setTotalAssets(totalAssetsCalculated);
+    setTotalAssets( Number(totalAssetsCalculated) );
   }, [initialPriceOfAssets, amountOfAssets]);
 
   // change claimPrice, liquidationPrice, premiumPrice
@@ -150,8 +165,8 @@ function Create() {
       initialPriceOfAssets,
       dropRate,
     );
-    setClaimPrice(claimPriceCalculated);
-    setLiquidationPrice(claimPriceCalculated);
+    setClaimPrice( Number(claimPriceCalculated) );
+    setLiquidationPrice( Number(claimPriceCalculated) );
 
     const premiumPriceCalculated = calculatePremiumPrice(
       initialPriceOfAssets,
@@ -159,18 +174,18 @@ function Create() {
       dropRate,
       premiumRate,
     );
-    setPremiumPrice(premiumPriceCalculated);
+    setPremiumPrice( Number(premiumPriceCalculated) );
   }, [totalAssets, dropRate, premiumRate]);
 
 
   // change sellerDeposit
   useEffect(() => {
     setSellerDeposit(
-      calculateSellerDeposit(
+      Number( calculateSellerDeposit(
         initialPriceOfAssets,
         amountOfAssets,
         liquidationPrice,
-      ),
+      )),
     );
   }, [totalAssets, liquidationPrice]);
 
@@ -235,27 +250,27 @@ function Create() {
               <div className='input-wrapper'>
                 <div className='input-label'>Initial Price of Assets: </div>
                 <input
-                  value={initialPriceOfAssets}
+                  value={initialPriceOfAssets.toLocaleString()}
                   onChange={(e) => {
                     const currentValue = onlyNumber(e.target.value);
-                    setInitialPriceOfAssets(currentValue);
+                    setInitialPriceOfAssets( Number(currentValue) );
                   }}
                 />
               </div>
               <div className='input-wrapper'>
                 <div className='input-label'>The Amount of Assets: </div>
                 <input
-                  value={amountOfAssets}
+                  value={amountOfAssets.toLocaleString()}
                   onChange={(e) => {
                     const currentValue = onlyNumber(e.target.value);
-                    setAmountOfAssets(currentValue);
+                    setAmountOfAssets( Number(currentValue) );
                   }}
                 />
               </div>
               <div className='input-wrapper'>
                 <div className='input-label'>Total Assets: </div>
                 <input
-                  value={totalAssets}
+                  value={totalAssets.toLocaleString()}
                   readOnly
                   disabled
                 />
@@ -268,7 +283,7 @@ function Create() {
               <div className='input-wrapper'>
                 <div className='input-label'>Claim Price: </div>
                 <input
-                  value={claimPrice}
+                  value={claimPrice.toLocaleString()}
                   onChange={(e) => {
                     const currentValue = onlyNumber(e.target.value);
                     setClaimPrice(currentValue);
@@ -317,7 +332,7 @@ function Create() {
               <div className='input-wrapper'>
                 <div className='input-label'>Premium Price: </div>
                 <input
-                  value={premiumPrice}
+                  value={premiumPrice.toLocaleString()}
                   disabled
                 />
               </div>
@@ -355,7 +370,7 @@ function Create() {
               <div className='input-wrapper'>
                 <div className='input-label'>Seller Deposit</div>
                 <input
-                  value={sellerDeposit}
+                  value={sellerDeposit.toLocaleString()}
                   disabled
                 />
               </div>
@@ -363,12 +378,12 @@ function Create() {
                 <input
                   className="value"
                   placeholder="Liquidated Price"
-                  value={`Liquidated Price: ${liquidationPrice}`}
+                  value={`Liquidated Price: ${liquidationPrice.toLocaleString()}`}
                   max={claimPrice || 0}
                   onChange={(e) => {
                     const currentValue = onlyNumber(e.target.value);
                     if (Number(currentValue) > Number(claimPrice)) return;
-                    else setLiquidationPrice(currentValue);
+                    else setLiquidationPrice( Number(currentValue) );
                   }}
                 />
                 <input
@@ -383,7 +398,7 @@ function Create() {
               <div className='input-wrapper'>
                 <div className='input-label'>Buyer Deposit:</div>
                 <input
-                  value={premiumPrice * 3}
+                  value={Number(premiumPrice * 3).toLocaleString()}
                   disabled
                 />
               </div>

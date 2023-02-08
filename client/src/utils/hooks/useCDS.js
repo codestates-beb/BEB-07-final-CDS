@@ -68,8 +68,8 @@ function useCDS() {
           return receipt;
         },
 
-        accept: async (initialPriceOfAssets, swapId, deposit, userAddress)=>{          
-          if( !initialPriceOfAssets || !swapId || !deposit || !userAddress)
+        accept: async (initialPriceOfAssets, swapId, userAddress)=>{          
+          if( !initialPriceOfAssets || !swapId || !userAddress)
             return new Error("Invalid Arguments");
 
           const receipt = await contract.methods.accept(
@@ -128,6 +128,11 @@ function useCDS() {
         },
 
         getPremium: async (swapId) =>{
+          const receipt = await contract.methods.getPremium(swapId).call();
+          return receipt;
+        },
+
+        getNextPayDate: async (swapId) =>{
           const receipt = await contract.methods.getPremium(swapId).call();
           return receipt;
         }
