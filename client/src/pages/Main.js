@@ -17,7 +17,7 @@ import Footer from '../components/Footer.js';
 import '../assets/css/main.css';
 
 //APIs
-import { getSwaps, getPendingSwaps, getActiveSwaps } from '../apis/request.js';
+import { getPendingSwaps, getActiveSwaps } from '../apis/request.js';
 
 function Main() {
   // database에서 swap구조체에 대한 정보를 받아옵니다
@@ -27,18 +27,26 @@ function Main() {
   useEffect(() => {
     const pendingAPIdata = getPendingSwaps();
     const getPending = () => {
-      pendingAPIdata.then((response) => {
-        setPendingSwaps(response.swaps);
-        console.log(response.swaps);
-      });
+      pendingAPIdata
+        .then((response) => {
+          setPendingSwaps(response.swaps);
+          console.log(response.swaps);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     };
 
     const activeAPIdata = getActiveSwaps();
     const getActive = () => {
-      activeAPIdata.then((response) => {
-        setActiveSwaps(response.swaps);
-        console.log(response.swaps);
-      });
+      activeAPIdata
+        .then((response) => {
+          setActiveSwaps(response.swaps);
+          console.log(response.swaps);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     };
 
     getPending();
