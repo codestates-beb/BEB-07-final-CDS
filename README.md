@@ -1,4 +1,5 @@
 # Crypto Default Swap
+![banner](https://user-images.githubusercontent.com/18072469/217586197-13f969d0-2bd0-4408-a71d-60fc1f738e36.jpeg)
 
 ### 1. 팀 소개
 - 팀명: Crypto Default Swap
