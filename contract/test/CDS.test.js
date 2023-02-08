@@ -18,7 +18,6 @@ contract('CDS', (accounts) => {
   const defaultLiquidationPrice = 20000;
   const defaultSellerDeposit = 50000;
   const defaultPremium = 750;
-  const defaultPremiumInterval = 60 * 10; // 10 minutes
   const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
   const defaultBuyerDeposit = defaultPremium * (3 + 1);
   const defaultTokenFaucet = 10 ** 8;
@@ -84,7 +83,6 @@ contract('CDS', (accounts) => {
           defaultLiquidationPrice,
           defaultSellerDeposit,
           defaultPremium,
-          defaultPremiumInterval,
           defaultPremiumRounds,
           { from: accounts[2] },
         ),
@@ -101,7 +99,6 @@ contract('CDS', (accounts) => {
           defaultLiquidationPrice,
           defaultSellerDeposit,
           defaultPremium,
-          defaultPremiumInterval,
           defaultPremiumRounds,
           { from: accounts[1] },
         ),
@@ -120,7 +117,6 @@ contract('CDS', (accounts) => {
           defaultLiquidationPrice,
           defaultSellerDeposit,
           defaultPremium,
-          defaultPremiumInterval,
           defaultPremiumRounds,
           { from: accounts[2] },
         ),
@@ -171,7 +167,6 @@ contract('CDS', (accounts) => {
           defaultLiquidationPrice,
           defaultSellerDeposit,
           defaultPremium,
-          defaultPremiumInterval,
           defaultPremiumRounds,
           { from: accounts[1] },
         ),
@@ -222,7 +217,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -255,7 +249,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[1] },
       );
@@ -288,7 +281,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -347,7 +339,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[1] },
       );
@@ -406,7 +397,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -432,7 +422,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[1] },
       );
@@ -459,7 +448,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -484,7 +472,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[1] },
       );
@@ -510,7 +497,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -549,7 +535,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[1] },
       );
@@ -587,7 +572,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -639,7 +623,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[1] },
       );
@@ -691,7 +674,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -799,7 +781,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -968,7 +949,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -1074,7 +1054,6 @@ contract('CDS', (accounts) => {
     });
   });
 
-  /*
   describe('Expire', async () => {
     beforeEach(async () => {
       await fusd.approve(cds.address, defaultBuyerDeposit, {
@@ -1087,11 +1066,9 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
     });
   });
-  */
 });
