@@ -9,10 +9,9 @@ const defaultClaimPrice = 21250;
 const defaultLiquidationPrice = 20000;
 const defaultSellerDeposit = 50000;
 const defaultPremium = 750;
-const defaultPremiumInterval = 60 * 10; // 10 minutes
 const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
 const defaultBuyerDeposit = defaultPremium * (3 + 1);
-const defaultTokenFaucet = 10 ** 8;
+const defaultTokenFaucet = '1000000';
 
 let currentSwapId;
 module.exports = async function (deployer, network, accounts) {
@@ -44,7 +43,6 @@ module.exports = async function (deployer, network, accounts) {
       defaultLiquidationPrice,
       defaultSellerDeposit,
       defaultPremium,
-      defaultPremiumInterval,
       defaultPremiumRounds,
       { from: accounts[2] },
     );
@@ -68,7 +66,6 @@ module.exports = async function (deployer, network, accounts) {
       defaultLiquidationPrice,
       defaultSellerDeposit,
       defaultPremium,
-      defaultPremiumInterval,
       defaultPremiumRounds,
       { from: accounts[2] },
     );
@@ -87,7 +84,6 @@ module.exports = async function (deployer, network, accounts) {
       defaultLiquidationPrice,
       defaultSellerDeposit,
       defaultPremium,
-      defaultPremiumInterval,
       defaultPremiumRounds,
       { from: accounts[4] },
     );
@@ -105,7 +101,6 @@ module.exports = async function (deployer, network, accounts) {
       defaultLiquidationPrice,
       defaultSellerDeposit,
       defaultPremium,
-      defaultPremiumInterval,
       defaultPremiumRounds,
       { from: accounts[3] },
     );
@@ -132,7 +127,6 @@ module.exports = async function (deployer, network, accounts) {
       defaultLiquidationPrice,
       defaultSellerDeposit,
       defaultPremium,
-      defaultPremiumInterval,
       defaultPremiumRounds,
       { from: accounts[3] },
     );
@@ -159,7 +153,6 @@ module.exports = async function (deployer, network, accounts) {
       defaultLiquidationPrice,
       defaultSellerDeposit,
       defaultPremium,
-      defaultPremiumInterval,
       defaultPremiumRounds,
       { from: accounts[1] },
     );
@@ -175,7 +168,6 @@ module.exports = async function (deployer, network, accounts) {
     console.log('case 6 created!');
     // case7: account[4] creates and account[2] accepts
     // account[4] pays single round premium
-    /*
     await fusd.approve(cds.address, defaultBuyerDeposit, {
       from: accounts[4],
     });
@@ -186,12 +178,10 @@ module.exports = async function (deployer, network, accounts) {
       defaultLiquidationPrice,
       defaultSellerDeposit,
       defaultPremium,
-      defaultPremiumInterval,
       defaultPremiumRounds,
       { from: accounts[4] },
     );
     [currentSwapId] = await cds.getSwapId();
-
     await fusd.approve(cds.address, defaultSellerDeposit, {
       from: accounts[2],
     });
@@ -200,12 +190,8 @@ module.exports = async function (deployer, network, accounts) {
     });
 
     await fusd.approve(cds.address, defaultPremium, { from: accounts[4] });
-    const payPremium = await cds.payPremium(currentSwapId, {
-      from: accounts[4],
-    });
-    console.log(payPremium.logs);
+    await cds.payPremium(currentSwapId, { from: accounts[4] });
     console.log('case 7 created!');
-  */
   } catch (err) {
     console.error(err);
   }

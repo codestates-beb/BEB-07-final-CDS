@@ -30,7 +30,6 @@ contract SwapHandler {
     uint256 _liquidationPrice,
     uint256 _sellerDeposit,
     uint256 _premium,
-    uint256 _premiumInterval,
     uint32 _totalRounds
   ) internal returns (uint256) {
     _swapId.increment();
@@ -42,7 +41,6 @@ contract SwapHandler {
       _liquidationPrice,
       _premium,
       _sellerDeposit,
-      _premiumInterval,
       _totalRounds,
       priceOracle
     );
@@ -66,7 +64,7 @@ contract SwapHandler {
       : targetSwap.setBuyer(msg.sender);
 
     // check => 토큰으로 처리시 바로 보내고 이거도 되야함.
-    _nextPayDate[_acceptedSwapId] += getInterval(_acceptedSwapId);
+    _nextPayDate[_acceptedSwapId] += 4 weeks;
 
     targetSwap.setStatus(Swap.Status.active);
 
@@ -88,14 +86,13 @@ contract SwapHandler {
   function _payPremium(
     uint256 _targetSwapId
   ) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
-    // rqr문 작성 필요 for 1day term
-    uint256 currTime = block.timestamp;
-    require(
-      (_nextPayDate[_targetSwapId] - 1 days <= currTime) &&
-        (currTime <= _nextPayDate[_targetSwapId]),
-      'Invalid pay date'
-    );
-    _nextPayDate[_targetSwapId] += getInterval(_targetSwapId);
+    // uint256 currTime = block.timestamp;
+    // require(
+    //   (_nextPayDate[_targetSwapId] - 1 days <= currTime) &&
+    //     (currTime <= _nextPayDate[_targetSwapId]),
+    //   'Invalid pay date'
+    // );
+    _nextPayDate[_targetSwapId] += 4 weeks;
     getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
   }
 
@@ -132,10 +129,6 @@ contract SwapHandler {
 
   function getRounds(uint256 swapId) public view returns (uint32) {
     return _swaps[swapId].rounds();
-  }
-
-  function getInterval(uint256 swapId) public view returns (uint256) {
-    return _swaps[swapId].interval();
   }
 
   function getBuyer(uint256 swapId) public view returns (address) {
