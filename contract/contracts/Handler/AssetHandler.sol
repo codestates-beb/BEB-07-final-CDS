@@ -85,10 +85,12 @@ contract AssetHandler is Ownable, SwapHandler {
   function _expire(
     uint256 _swapId
   ) internal isSeller(_swapId) isActive(_swapId) {
-    bool byRounds = ((block.timestamp >= getNextPayDate(_swapId)) &&
-      (getTotalRounds(_swapId) == 0));
-    bool byDate = ((block.timestamp >= getNextPayDate(_swapId)) &&
-      (deposits[_swapId][0] == 0));
+    // bool byRounds = ((block.timestamp >= getNextPayDate(_swapId)) &&
+    //   (getRounds(_swapId) == 0));
+    // bool byDate = ((block.timestamp >= getNextPayDate(_swapId)) &&
+    //   (deposits[_swapId][0] == 0));
+    bool byRounds = (getRounds(_swapId) == 0);
+    bool byDate = (deposits[_swapId][0] == 0);
     require(byDate || byRounds, 'Buyer deposit / Rounds remaining');
     getSwap(_swapId).setStatus(Swap.Status.expired);
   }
