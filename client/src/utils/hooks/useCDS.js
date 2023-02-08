@@ -133,7 +133,7 @@ function useCDS() {
         },
 
         getNextPayDate: async (swapId) =>{
-          const receipt = await contract.methods.getPremium(swapId).call();
+          const receipt = await contract.methods.getNextPayDate(swapId).call();
           return receipt;
         }
       }
