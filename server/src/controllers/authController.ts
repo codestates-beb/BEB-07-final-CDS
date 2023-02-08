@@ -79,7 +79,8 @@ const authController = {
       res.cookie('sessionID', req.sessionID, cookieOptions);
       await redisClient.set(req.sessionID, address, 'EX', 60 * 60);
       if (user.email) {
-        sendEmail(
+        console.log('sending email : ', user.email);
+        await sendEmail(
           'CDS-You are logged in',
           `hello ${user.address}, you are now logged in`,
           user.email,
