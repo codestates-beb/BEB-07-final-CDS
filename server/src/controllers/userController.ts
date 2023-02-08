@@ -1,11 +1,7 @@
-import express, {
-  CookieOptions,
-  NextFunction,
-  Request,
-  Response,
-} from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import redisClient from '../utils/redisClient';
+import sendEmail from '../utils/sendMail';
 import { isValidEmail } from '../utils/inputValidators';
 import { AppDataSource } from '../data-source';
 import { Users } from '../entities/Users';
@@ -24,10 +20,21 @@ const userController = {
     }
     const address = await redisClient.get(req.cookies.sessionID);
     const user = await userRepository.findOneBy({ address });
+    let isNewEmail = false;
     if (!user) return res.status(403).json('no such user');
+
+    if (user.email != email) isNewEmail = true;
     if (isValidEmail(email)) user.email = email;
     if (nickname) user.nickname = nickname;
     await userRepository.save(user);
+
+    if (isNewEmail) {
+      sendEmail(
+        'CDS : Email registered!',
+        `hello ${user.nickname}, we just registered your email\nFrom now on, you can subscribe valuable noficiations from us.`,
+        user.email,
+      );
+    }
     return res.status(200).json('User Update Successful');
   },
   getMine: async (req: Request, res: Response, next: NextFunction) => {
