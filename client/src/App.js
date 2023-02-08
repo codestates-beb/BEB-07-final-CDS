@@ -1,7 +1,7 @@
 // module
 import React, {useEffect} from 'react';
-import { Link, Routes, Route } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { Link, Routes, Route, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
 // apis
 import { requestVerify } from './apis/auth';
@@ -33,7 +33,9 @@ import './App.css';
 
 function App() {
   const dispatch = useDispatch();
+  const isLogin = useSelector(state => state.auth.isLogin);
   const metamask = useMetamask();
+  const navigate = useNavigate();
   
   useEffect(()=>{
     if(metamask){
@@ -52,6 +54,12 @@ function App() {
       })()
     }
   }, [metamask]);
+
+  useEffect(()=>{
+    if(isLogin === false){
+      navigate('/');
+    }
+  }, [isLogin])
 
   return (
     <div className="App">
