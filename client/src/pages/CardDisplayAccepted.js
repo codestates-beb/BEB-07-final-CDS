@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 
 //APIs
-import { getSwaps } from '../apis/request.js';
+import { getActiveSwapsByOffset } from '../apis/request.js';
 
 // components
 import AcceptedCardType2 from '../components/AcceptedCardType2.js';
@@ -13,37 +13,30 @@ function CardDisplayAccepted() {
   // accepted swaps를 필터링 한 후 저장합니다
   const [accepted, setAccepted] = useState([]);
 
+  // 전체 swaps 갯수를 저장합니다.
+  const [swapsNumber, setSwapsNumber] = useState('');
+
   // 하나의 page에 들어갈 데이터를 저장합니다
-  const [page, setPage] = useState(1); //현재 페이지
+  const [page, setPage] = useState(1); // 현재 페이지를 저장합나다.
   const handlePageChange = (page) => {
+    // pagination 버튼이 클릭되면 해당 함수가 작동되어 현재 page를 저장합니다.
     setPage(page);
   };
   const limit = 10; // posts가 보일 최대한의 갯수
-  const offset = (page - 1) * limit; // 시작점과 끝점을 구하는 offset, 현재의 page가 변함에 따라 offset도 달라진다
-
-  const postsData = (posts) => {
-    if (posts) {
-      let result = posts.slice(offset, offset + limit); // offset: 하나의 페이지에 보여줄 posts의 시작점, limit: 끝점
-      return result;
-    }
-  };
-
-  const postCards = postsData(accepted);
+  const offset = (page - 1) * limit; // 시작점과 끝점을 구하는 offset, 현재의 page가 변함에 따라 offset도 달라집니다.
 
   useEffect(() => {
-    const APIdata = getSwaps();
+    const APIdata = getActiveSwapsByOffset(offset);
     const getData = () => {
       APIdata.then((response) => {
-        const acceptedData = response.filter(
-          (swap) => swap.status === 'active',
-        );
-
-        setAccepted([...acceptedData].reverse());
-        console.log([...acceptedData].reverse());
+        console.log(response.swaps);
+        setAccepted(response.swaps);
+        setSwapsNumber(response.filteredSwapCount);
       });
     };
+
     getData();
-  }, []);
+  }, [page, offset]);
 
   return (
     <>
@@ -75,7 +68,7 @@ function CardDisplayAccepted() {
           </div>
         </div>
         <div className="grid grid-cols-fill-25 justify-center">
-          {postCards.map((swap) => {
+          {accepted.map((swap) => {
             return (
               <div className="mx-auto" key={swap.swapId}>
                 <AcceptedCardType2
@@ -93,7 +86,7 @@ function CardDisplayAccepted() {
           <Pagination
             page={page}
             limit={limit}
-            totalPosts={accepted.length}
+            totalPosts={Number(swapsNumber)}
             handlePageChange={handlePageChange} //현재 페이지의 위치를 설정하는 handlePageChange props로 넘긴다
           />
         </div>

@@ -19,6 +19,7 @@ import {
 
 // hooks
 import useCDS from '../utils/hooks/useCDS';
+import useERC20 from '../utils/hooks/useERC20';
 
 // apis
 import { getSwapById } from '../apis/request';
@@ -35,6 +36,8 @@ import acceptBackGround from '../assets/img/acceptPage_bg.jpg';
 function Accept() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const CDS = useCDS();
+  const ERC20 = useERC20();
 
   const { swapId } = useParams();
   const [swapOnChain, setSwapOnChain] = useState(null);
@@ -44,7 +47,6 @@ function Accept() {
   const [proposer, setProposer] = useState(null);
 
   const userAddress = useSelector((state) => state.auth.user_addr);
-  const CDS = useCDS();
 
   // Accept CDS Handler
   const acceptButtonHandler = async () => {
@@ -57,20 +59,23 @@ function Accept() {
       swapOnDB.seller,
     );
 
-    const deposits = await CDS.getDeposits(swapId);
-    console.log(deposits);
-
-    const deposit = isBuyer ? swapOnDB.sellerDeposit : swapOnDB.buyerDeposit;
-    console.log(deposit);
-
     try {
+      // Notice Modal open
       dispatch(openModal());
       dispatch(setProcessing());
 
-      const result = await CDS.acceptSwap(
+      // Calculate User's Deposit
+      const deposit = isBuyer ? swapOnDB.sellerDeposit : swapOnDB.premium * 4;
+      console.log(deposit);
+
+      // Approve token amount to Contract
+      const approved = await ERC20.approve(deposit, userAddress);
+      console.log(approved);
+
+      // Accept Swap
+      const result = await CDS.accept(
         swapOnDB.initialAssetPrice,
         swapId,
-        deposit,
         userAddress,
       );
 
@@ -91,7 +96,7 @@ function Accept() {
         navigate('/');
       }, 3000);
 
-      dispatch(setFail(timeoutId));
+      dispatch( setFail(timeoutId) );
     }
   };
 
@@ -103,7 +108,7 @@ function Accept() {
       dispatch(openModal());
       dispatch(setProcessing());
 
-      const result = await CDS.cancelSwap(swapId, userAddress);
+      const result = await CDS.cancel(swapId, userAddress);
       console.log(result);
       dispatch(setSuccess());
 
@@ -367,7 +372,7 @@ function Accept() {
                 className="negotiate-button hover:bg-mintHover transition delay-80"
                 onClick={acceptButtonHandler}
               >
-                Sign CDS
+                Accept CDS
               </button>
             </div>
           </div>
