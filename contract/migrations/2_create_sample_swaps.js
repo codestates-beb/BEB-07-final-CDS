@@ -12,7 +12,7 @@ const defaultPremium = 750;
 const defaultPremiumInterval = 60 * 10; // 10 minutes
 const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
 const defaultBuyerDeposit = defaultPremium * (3 + 1);
-const defaultTokenFaucet = '10000000000000000000000';
+const defaultTokenFaucet = '1000000';
 
 let currentSwapId;
 module.exports = async function (deployer, network, accounts) {
