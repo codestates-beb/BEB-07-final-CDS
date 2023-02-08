@@ -119,16 +119,19 @@ function Create() {
       if(isBuyer === true) deposit = 4 * premiumPrice;
       else deposit = sellerDeposit;
 
+      const currentBalance = await ERC20.balanceOf(userAddress);
+      console.log(currentBalance);
+
       // Approve Token Amount to Contract
       const approved = await ERC20.approve(deposit, userAddress);
       console.log(approved);
 
       // create CDS
-      const result = await CDS.createSwap(data, userAddress);
+      const result = await CDS.create(data, userAddress);
       console.log(result);
 
       // get SwapId
-      const swapId = result.events.CreateSwap.returnValues.swapId;
+      const swapId = result.events;
       console.log(swapId);
       dispatch(setSuccess());
 
