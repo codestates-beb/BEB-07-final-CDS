@@ -64,8 +64,6 @@ function Header() {
   const logoutButtonHandler = async () => {
     const result =await requestLogout();
 
-    console.log(result);
-
     if(!result) {
       console.log(result);
       return;
@@ -102,9 +100,6 @@ function Header() {
           </Link>
           <Link to="/create">
             <li className="navbar-item mx-[1rem]">Create CDS</li>
-          </Link>
-          <Link to="/signup">
-            <li className="navbar-item mx-[1rem]">Sign Up</li>
           </Link>
         </ul>
         {isLogin ? (
