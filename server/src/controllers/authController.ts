@@ -61,7 +61,6 @@ const authController = {
       }
       const nonce = user.nonce;
       user.nonce = null;
-      await userRepository.save(user);
 
       const msgBufferHex = bufferToHex(
         Buffer.from('sign: ' + nonce.toString()),
@@ -78,6 +77,9 @@ const authController = {
       }
       res.cookie('sessionID', req.sessionID, cookieOptions);
       await redisClient.set(req.sessionID, address, 'EX', 60 * 60);
+      console.log('******************');
+      console.log(user);
+      console.log('******************');
       if (user.email) {
         console.log('sending email : ', user.email);
         await sendEmail(
@@ -86,6 +88,10 @@ const authController = {
           user.email,
         );
       }
+      await userRepository.save(user);
+      console.log('******************');
+      console.log(user);
+      console.log('******************');
       return res.status(200).json('Login Successful!');
     } catch (err) {
       console.error(err);
