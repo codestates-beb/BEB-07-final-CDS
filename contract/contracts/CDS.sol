@@ -13,7 +13,6 @@ interface CDSInterface {
     uint256 liquidationPrice,
     uint256 sellerDeposit,
     uint256 premium,
-    uint32 premiumInterval,
     uint32 totalRounds
   ) external returns (uint256);
 
@@ -55,7 +54,6 @@ contract CDS is AssetHandler, CDSInterface {
     uint256 liquidationPrice,
     uint256 sellerDeposit,
     uint256 premium,
-    uint32 premiumInterval,
     uint32 totalRounds
   ) external override returns (uint256) {
     uint256 newSwapId = _create(
@@ -65,7 +63,6 @@ contract CDS is AssetHandler, CDSInterface {
       liquidationPrice,
       sellerDeposit,
       premium,
-      premiumInterval,
       totalRounds
     );
     _sendDeposit(newSwapId, isBuyer);

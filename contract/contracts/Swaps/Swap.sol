@@ -26,7 +26,6 @@ contract Swap is Ownable {
   uint256 public liquidationPrice;
   uint256 public premium;
   uint256 public sellerDeposit;
-  uint256 public interval;
   address private buyer;
   address private seller;
   uint32 public rounds;
@@ -38,7 +37,6 @@ contract Swap is Ownable {
     uint256 _liquidationPrice,
     uint256 _premium,
     uint256 _sellerDeposit,
-    uint256 _interval,
     uint32 _rounds,
     address priceOracleAddr
   ) {
@@ -47,7 +45,6 @@ contract Swap is Ownable {
     liquidationPrice = _liquidationPrice;
     premium = _premium;
     sellerDeposit = _sellerDeposit;
-    interval = _interval;
     rounds = _rounds;
     totalRounds = _rounds;
 
