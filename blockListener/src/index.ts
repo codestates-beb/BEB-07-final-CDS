@@ -1,7 +1,4 @@
 import { AppDataSource } from './data-source';
-// import { Swaps } from './entities/Swaps';
-// import { Transactions } from './entities/Transactions';
-// import { Users } from './entities/Users';
 import { abi } from './contractArtifacts/CDS.json';
 import CDS from './CDS';
 import getEnv from './utils/getEnv';
