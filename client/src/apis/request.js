@@ -4,17 +4,14 @@ import axios from 'axios';
 // URL
 import config from '../config/config';
 
-export async function getSwaps() {
-  try {
-    const requestURL = `${config.apiURL}/swaps`;
-
-    const swaps = await axios.get(requestURL);
-    return swaps.data;
-  } catch (e) {
-    console.log(e);
-    return e;
-  }
-}
+// dummydata
+const {
+  pendingErrorDummy,
+  activeErrorDummy,
+  swapIdDummydata,
+  coinGeckoDummydata,
+  chainlinkDummydata,
+} = require('../assets/errorDummydata/requestDummydata');
 
 export async function getPendingSwaps() {
   try {
@@ -23,8 +20,8 @@ export async function getPendingSwaps() {
     const swaps = await axios.get(requestURL);
     return swaps.data;
   } catch (e) {
-    console.log(e);
-    return e;
+    console.log('An error occurred');
+    return pendingErrorDummy;
   }
 }
 
@@ -35,8 +32,8 @@ export async function getPendingSwapsByOffset(offset) {
     const swaps = await axios.get(requestURL);
     return swaps.data;
   } catch (e) {
-    console.log(e);
-    return e;
+    console.log('An error occurred');
+    return pendingErrorDummy;
   }
 }
 
@@ -47,8 +44,8 @@ export async function getActiveSwaps() {
     const swaps = await axios.get(requestURL);
     return swaps.data;
   } catch (e) {
-    console.log(e);
-    return e;
+    console.log('An error occurred');
+    return activeErrorDummy;
   }
 }
 
@@ -59,8 +56,8 @@ export async function getActiveSwapsByOffset(offset) {
     const swaps = await axios.get(requestURL);
     return swaps.data;
   } catch (e) {
-    console.log(e);
-    return e;
+    console.log('An error occurred');
+    return activeErrorDummy;
   }
 }
 
@@ -71,8 +68,8 @@ export async function getSwapById(swapId) {
     const swaps = await axios.get(requestURL);
     return swaps.data;
   } catch (e) {
-    console.log(e);
-    return e;
+    console.log('An error occurred');
+    return swapIdDummydata;
   }
 }
 
@@ -84,8 +81,8 @@ export async function getCoinGeckoAPI() {
 
     return marketPriceData.data;
   } catch (e) {
-    console.log(e);
-    return e;
+    console.log('An error occurred');
+    return coinGeckoDummydata;
   }
 }
 
@@ -97,7 +94,7 @@ export async function getChainLinkAPI() {
 
     return marketPriceData.data;
   } catch (e) {
-    console.log(e);
-    return e;
+    console.log('An error occurred');
+    return chainlinkDummydata;
   }
 }

@@ -3,6 +3,7 @@ import { recoverPersonalSignature } from 'eth-sig-util';
 import { bufferToHex } from 'ethereumjs-util';
 
 import redisClient from '../utils/redisClient';
+import sendEmail from '../utils/sendMail';
 import { AppDataSource } from '../data-source';
 import { Users } from '../entities/Users';
 import { getNonce } from '../utils/getNonce';
@@ -60,7 +61,6 @@ const authController = {
       }
       const nonce = user.nonce;
       user.nonce = null;
-      await userRepository.save(user);
 
       const msgBufferHex = bufferToHex(
         Buffer.from('sign: ' + nonce.toString()),
@@ -77,6 +77,21 @@ const authController = {
       }
       res.cookie('sessionID', req.sessionID, cookieOptions);
       await redisClient.set(req.sessionID, address, 'EX', 60 * 60);
+      console.log('******************');
+      console.log(user);
+      console.log('******************');
+      if (user.email) {
+        console.log('sending email : ', user.email);
+        await sendEmail(
+          'CDS-You are logged in',
+          `hello ${user.address}, you are now logged in`,
+          user.email,
+        );
+      }
+      await userRepository.save(user);
+      console.log('******************');
+      console.log(user);
+      console.log('******************');
       return res.status(200).json('Login Successful!');
     } catch (err) {
       console.error(err);
