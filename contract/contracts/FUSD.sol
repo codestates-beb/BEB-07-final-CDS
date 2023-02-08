@@ -9,6 +9,7 @@ contract FUSD is ERC20('FUSD', 'FUSD') {
     // Similar to how
     // 1 dollar = 100 cents
     // 1 token = 1 * (10 ** decimals)
-    _mint(msg.sender, 100 * 10 ** uint256(decimals()));
+    _setupDecimals(0);
+    _mint(msg.sender, 10000000 * 1e18);
   }
 }
