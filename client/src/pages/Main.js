@@ -74,7 +74,7 @@ function Main() {
           </div>
           <div>
             <Link to="/create">
-              <button className="mt-10 rounded-2xl w-64 h-10 text-sm font-semibold bg-primaryColor hover:bg-mintHover transition delay-80">
+              <button className="mt-10 rounded-2xl w-64 h-10 text-sm font-semibold bg-primaryColor hover:bg-mintHover transition delay-80 drop-shadow-md">
                 Create Crypto Default Swap (CDS)
               </button>
             </Link>
