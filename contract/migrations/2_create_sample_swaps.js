@@ -9,7 +9,6 @@ const defaultClaimPrice = 21250;
 const defaultLiquidationPrice = 20000;
 const defaultSellerDeposit = 50000;
 const defaultPremium = 750;
-const defaultPremiumInterval = 60 * 10; // 10 minutes
 const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
 const defaultBuyerDeposit = defaultPremium * (3 + 1);
 const defaultTokenFaucet = '10000000000000000000000000000000';
@@ -44,7 +43,6 @@ module.exports = async function (deployer, network, accounts) {
       defaultLiquidationPrice,
       defaultSellerDeposit,
       defaultPremium,
-      defaultPremiumInterval,
       defaultPremiumRounds,
       { from: accounts[2] },
     );
@@ -68,7 +66,6 @@ module.exports = async function (deployer, network, accounts) {
       defaultLiquidationPrice,
       defaultSellerDeposit,
       defaultPremium,
-      defaultPremiumInterval,
       defaultPremiumRounds,
       { from: accounts[2] },
     );
@@ -87,7 +84,6 @@ module.exports = async function (deployer, network, accounts) {
       defaultLiquidationPrice,
       defaultSellerDeposit,
       defaultPremium,
-      defaultPremiumInterval,
       defaultPremiumRounds,
       { from: accounts[4] },
     );
@@ -105,7 +101,6 @@ module.exports = async function (deployer, network, accounts) {
       defaultLiquidationPrice,
       defaultSellerDeposit,
       defaultPremium,
-      defaultPremiumInterval,
       defaultPremiumRounds,
       { from: accounts[3] },
     );
@@ -132,7 +127,6 @@ module.exports = async function (deployer, network, accounts) {
       defaultLiquidationPrice,
       defaultSellerDeposit,
       defaultPremium,
-      defaultPremiumInterval,
       defaultPremiumRounds,
       { from: accounts[3] },
     );
@@ -159,7 +153,6 @@ module.exports = async function (deployer, network, accounts) {
       defaultLiquidationPrice,
       defaultSellerDeposit,
       defaultPremium,
-      defaultPremiumInterval,
       defaultPremiumRounds,
       { from: accounts[1] },
     );
@@ -185,7 +178,6 @@ module.exports = async function (deployer, network, accounts) {
       defaultLiquidationPrice,
       defaultSellerDeposit,
       defaultPremium,
-      defaultPremiumInterval,
       defaultPremiumRounds,
       { from: accounts[4] },
     );
