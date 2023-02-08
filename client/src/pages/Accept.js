@@ -59,16 +59,13 @@ function Accept() {
       swapOnDB.seller,
     );
 
-    const deposits = await CDS.getDeposits(swapId);
-    console.log(deposits);
-
     try {
       // Notice Modal open
       dispatch(openModal());
       dispatch(setProcessing());
 
       // Calculate User's Deposit
-      const deposit = isBuyer ? swapOnDB.sellerDeposit : swapOnDB.buyerDeposit;
+      const deposit = isBuyer ? swapOnDB.sellerDeposit : swapOnDB.premium * 4;
       console.log(deposit);
 
       // Approve token amount to Contract
@@ -76,7 +73,7 @@ function Accept() {
       console.log(approved);
 
       // Accept Swap
-      const result = await CDS.acceptSwap(
+      const result = await CDS.accept(
         swapOnDB.initialAssetPrice,
         swapId,
         userAddress,
@@ -111,7 +108,7 @@ function Accept() {
       dispatch(openModal());
       dispatch(setProcessing());
 
-      const result = await CDS.cancelSwap(swapId, userAddress);
+      const result = await CDS.cancel(swapId, userAddress);
       console.log(result);
       dispatch(setSuccess());
 
