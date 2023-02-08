@@ -1,40 +1,21 @@
-import express from 'express';
+import express, { CookieOptions } from 'express';
 import { recoverPersonalSignature } from 'eth-sig-util';
 import { bufferToHex } from 'ethereumjs-util';
 
-import isLoggedIn from '../middlewares/isLoggedIn';
+import { isLoggedIn } from '../middlewares/loginChecker';
 import { AppDataSource } from '../data-source';
 import { Users } from '../entities/Users';
+import redisClient from '../utils/redisClient';
+import { isValidAddress, isValidEmail } from '../utils/inputValidators';
+import { getNonce } from '../utils/getNonce';
+import userController from '../controllers/userController';
 const userRepository = AppDataSource.getRepository(Users);
 const userRouter = express.Router();
 
-const getNonce = () => {
-  return Math.floor(Math.random() * 1e9);
-};
-
-const isValidAddress = (address: string): boolean => {
-  const re = /0x[\d\w]{40}/i;
-  return re.test(address);
-};
-
-function isValidEmail(email: string): boolean {
-  const re = /[^\s@]+@[^\s@]+\.[^\s@]+/gi;
-  return re.test(email);
-}
-
-userRouter.post('/my', isLoggedIn, async (req, res, next) => {
-  const { email, nickname } = req.body;
-  if (!isValidEmail(email) && !nickname) {
-    return res.status(403).json('Neither email nor nickname provided');
-  }
-  const { address } = req.session;
-  const user = await userRepository.findOneBy({ address });
-  if (!user) return res.status(403).json('no such user');
-  if (isValidEmail(email)) user.email = email;
-  if (nickname) user.nickname = nickname;
-  await userRepository.save(user);
-  return res.status(200).json('User Update Successful');
-});
+userRouter.post('/my', isLoggedIn, userController.postMine);
+userRouter.get('/my', isLoggedIn, userController.getMine);
+userRouter.get('/:address', userController.getByAddress);
+userRouter.get('/', userController.getAll);
 
 userRouter.post('/login', async (req, res, next) => {
   try {
@@ -62,31 +43,21 @@ userRouter.post('/login', async (req, res, next) => {
         .status(403)
         .json('Login Failed : Signature from invalid address');
     }
-    res.cookie('cookie test', 'cookie test content', {
+    const cookieOptions: CookieOptions = {
       sameSite: 'none',
       secure: true,
-      maxAge: 15 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
       httpOnly: true,
-    });
+    };
 
-    req.session.cookie.sameSite = 'none';
-    req.session.cookie.secure = true;
-    req.session.cookie.httpOnly = true;
-
-    req.session.address = address;
-    console.log(req.session);
-    console.log({ ...req.session.cookie });
+    res.cookie('cookie test', 'cookie test content', cookieOptions);
+    res.cookie('sessionID', req.sessionID, cookieOptions);
+    await redisClient.set(req.sessionID, address, 'EX', 60 * 60);
     return res.status(200).json('Login Successful!');
   } catch (err) {
     console.error(err);
     next(err);
   }
-});
-
-userRouter.get('/my', isLoggedIn, async (req, res, next) => {
-  const user = await userRepository.findOneBy({ address: req.session.address });
-  if (!user) return res.status(404).json('no such user');
-  return res.status(200).json(user);
 });
 
 userRouter.get('/nonce', async (req, res, next) => {
@@ -117,26 +88,10 @@ userRouter.get('/nonce', async (req, res, next) => {
 });
 
 userRouter.get('/logout', async (req, res, next) => {
-  req.session.destroy(() => {
-    res.status(200).json('Logout Success');
-  });
-});
-
-userRouter.get('/:address', async (req, res, next) => {
   try {
-    const address = req.params.address;
-    const singleUser = await userRepository.findOneBy({ address });
-    return res.status(200).json(singleUser);
-  } catch (err) {
-    console.error(err);
-    next(err);
-  }
-});
-
-userRouter.get('/', async (req, res, next) => {
-  try {
-    const allUsers = await userRepository.find({});
-    return res.status(200).json(allUsers);
+    await redisClient.del(req.cookies.sessionID);
+    res.clearCookie(req.cookies.sessionId);
+    return res.status(200).json('Logout successful!');
   } catch (err) {
     console.error(err);
     next(err);

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.7;
 
 contract PriceOracleMock {
-  uint256 price;
+  uint256 public price;
 
   constructor(uint256 _initialPrice) {
     price = _initialPrice;
