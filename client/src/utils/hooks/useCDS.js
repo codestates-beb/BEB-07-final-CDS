@@ -45,6 +45,8 @@ function useCDS() {
           if (isBuyer === true) deposit = premiumPrice * 3;
           else deposit = sellerDeposit;
 
+          console.log(contract);
+
           const receipt = await contract.methods.create(
             isBuyer,
             initialPriceOfAssets,

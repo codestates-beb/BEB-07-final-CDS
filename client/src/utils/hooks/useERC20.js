@@ -24,7 +24,7 @@ function useERC20() {
             transfer: async (amount, sender)=>{
                 if(!amount || !sender) return new Error('Invalid Inputs!');
 
-                const result = await erc20.transfer(config.contractAddr, amount)
+                const result = await erc20.methods.transfer(config.contractAddr, amount)
                 .send({from:sender});
 
                 console.log(result);
@@ -35,12 +35,20 @@ function useERC20() {
             approve: async (amount, sender)=>{
                 if(!amount || !sender) return new Error('Invalid Inputs!');
 
-                const result = await erc20.approve(config.contractAddr, amount)
+                const result = await erc20.methods.approve(config.contractAddr, amount)
                 .send({from:sender});
                 
                 console.log(result);
 
                 return result;
+            },
+
+            balanceOf: async (address)=>{
+              const result = await erc20.methods.balanceOf(address).call();
+
+              console.log(result);
+
+              return result;
             }
         }
 
