@@ -2,15 +2,16 @@
 pragma solidity ^0.8.7;
 
 import '../Swaps/Swap.sol';
+import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
-contract SwapHandler {
+contract SwapHandler is Ownable {
   using Counters for Counters.Counter;
   Counters.Counter internal _swapId;
 
   mapping(uint256 => Swap) private _swaps;
 
-  mapping(uint256 => uint256) private _nextPayDate;
+  mapping(uint256 => uint256) public _nextPayDate;
 
   address public priceOracle;
   
@@ -73,19 +74,19 @@ contract SwapHandler {
 
   function _cancel(
     uint256 _targetSwapId
-  ) internal isParticipants(_targetSwapId) isPending(_targetSwapId) {
+  ) internal isPending(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.inactive);
   }
 
   function _close(
     uint256 _targetSwapId
-  ) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
+  ) internal isActive(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.expired);
   }
 
   function _payPremium(
     uint256 _targetSwapId
-  ) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
+  ) internal isActive(_targetSwapId) {
     // uint256 currTime = block.timestamp;
     // require(
     //   (_nextPayDate[_targetSwapId] - 1 days <= currTime) &&
@@ -99,7 +100,7 @@ contract SwapHandler {
 
   function _claim(
     uint256 _targetSwapId
-  ) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
+  ) internal isActive(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.claimed);
   }
 
@@ -144,9 +145,9 @@ contract SwapHandler {
     return _swaps[swapId].totalRounds();
   }
 
-  function getNextPayDate(uint256 swapId) public view returns (uint256) {
-    return _nextPayDate[swapId];
-  }
+  // function getNextPayDate(uint256 swapId) public view returns (uint256) {
+  //   return _nextPayDate[swapId];
+  // }
 
 
   // modifiers
