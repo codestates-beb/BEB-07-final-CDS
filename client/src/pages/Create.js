@@ -261,7 +261,7 @@ function Create() {
             <h2 className="section-title">Assets</h2>
             <div className="input-group">
               <div className='input-wrapper'>
-                <div className='input-label'>Initial Price of Assets: </div>
+                <div className='input-label'>Initial Price of Assets</div>
                 <input
                   value={initialPriceOfAssets.toLocaleString()}
                   onChange={(e) => {
@@ -271,7 +271,7 @@ function Create() {
                 />
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>The Amount of Assets: </div>
+                <div className='input-label'>The Amount of Assets</div>
                 <input
                   value={amountOfAssets.toLocaleString()}
                   onChange={(e) => {
@@ -281,7 +281,7 @@ function Create() {
                 />
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>Total Assets: </div>
+                <div className='input-label'>Total Assets</div>
                 <input
                   value={totalAssets.toLocaleString()}
                   readOnly
@@ -294,7 +294,7 @@ function Create() {
             <h2 className="section-title">Claim</h2>
             <div className="input-group">
               <div className='input-wrapper'>
-                <div className='input-label'>Claim Price: </div>
+                <div className='input-label'>Claim Price</div>
                 <input
                   value={claimPrice.toLocaleString()}
                   onChange={(e) => {
@@ -325,7 +325,7 @@ function Create() {
             </div>
           </div>
           <div className="form-section">
-            <h2 className="section-title">Premium: </h2>
+            <h2 className="section-title">Premium</h2>
             <div className="input-group">
               <div className="input-range">
                 <input
@@ -343,7 +343,7 @@ function Create() {
                 />
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>Premium Price: </div>
+                <div className='input-label'>Premium Price</div>
                 <input
                   value={premiumPrice.toLocaleString()}
                   disabled
@@ -366,7 +366,7 @@ function Create() {
                 </select>
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>Premium Rounds: </div>
+                <div className='input-label'>Premium Rounds</div>
                 <input
                   value={premiumRounds}
                   onChange={(e) => {
@@ -409,7 +409,7 @@ function Create() {
                 />
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>Buyer Deposit:</div>
+                <div className='input-label'>Buyer Deposit</div>
                 <input
                   value={Number(premiumPrice * 3).toLocaleString()}
                   disabled

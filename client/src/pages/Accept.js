@@ -45,6 +45,8 @@ function Accept() {
 
   const [isBuyer, setIsBuyer] = useState(null);
   const [proposer, setProposer] = useState(null);
+  const [premiumOnChain, setPremiumOnChain] = useState(null);
+  const [sellerDepositOnChain, setSellerDepositOnchain] = useState(null);
 
   const userAddress = useSelector((state) => state.auth.user_addr);
 
@@ -65,7 +67,7 @@ function Accept() {
       dispatch(setProcessing());
 
       // Calculate User's Deposit
-      const deposit = isBuyer ? swapOnDB.sellerDeposit : swapOnDB.premium * 4;
+      const deposit = isBuyer ? sellerDepositOnChain : premiumOnChain * 4;
       console.log(deposit);
 
       // Approve token amount to Contract
@@ -148,8 +150,19 @@ function Accept() {
   useEffect(() => {
     if (CDS) {
       CDS.getSwap(swapId).then((result) => {
+        console.log(`Swap OnChain: ${result}`);
         setSwapOnChain(result);
       });
+
+      CDS.getPremium(swapId).then((result) =>{
+        console.log(`Premium OnChain: ${result}`);
+        setPremiumOnChain(result);
+      })
+
+      CDS.getSellerDeposit(swapId).then(result=>{
+        console.log(`Deposits OnChain: ${result}`);
+        setSellerDepositOnchain(result);
+      })
     }
   }, [CDS]);
 

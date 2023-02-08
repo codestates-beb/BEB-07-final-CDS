@@ -125,8 +125,8 @@ function useCDS() {
           return receipt
         },
 
-        getDeposits: async (swapId) =>{
-          const receipt = await contract.methods.getDeposits(swapId).call();
+        getSellerDeposit: async (swapId) =>{
+          const receipt = await contract.methods.getSellerDeposit(swapId).call();
           return receipt;
         },
 
