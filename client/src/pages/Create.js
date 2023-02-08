@@ -9,13 +9,13 @@ import Footer from '../components/Footer.js';
 
 // actions
 import { setAuth } from '../features/authSlice';
-import { 
-  openModal, 
+import {
+  openModal,
   closeModal,
   setProcessing,
   setSuccess,
   setFail,
-  setWaiting 
+  setWaiting,
 } from '../features/modalSlice';
 
 // hooks
@@ -38,7 +38,7 @@ import { weeksToUnixTime } from '../utils/calendar';
 import '../assets/css/negotiate.css';
 
 // imgage
-import createBackGround from '../assets/img/createPage_bg.png';
+import createBackGround from '../assets/img/createPage_bg.jpg';
 
 function Create() {
   const metamask = useMetamask();
@@ -75,6 +75,10 @@ function Create() {
   const [sellerDeposit, setSellerDeposit] = useState('');
   const [liquidationPrice, setLiquidationPrice] = useState('');
 
+  /********************/
+  //     Handler      //
+  /********************/
+
   // Create CDS Handler
   const createButtonHandler = async () => {
     const data = {
@@ -90,32 +94,30 @@ function Create() {
     };
     console.log(data);
 
-    dispatch( setSuccess() );
+    dispatch(setSuccess());
 
     try {
-      dispatch( openModal() );
-      dispatch( setProcessing() );
+      dispatch(openModal());
+      dispatch(setProcessing());
 
       const result = await CDS.createSwap(data, userAddress);
       console.log(result);
 
       const swapId = result.events.CreateSwap.returnValues.swapId;
       console.log(swapId);
-      dispatch( setSuccess() );
+      dispatch(setSuccess());
 
-      const timeoutId = setTimeout(()=>{
-        dispatch( closeModal() );
+      const timeoutId = setTimeout(() => {
+        dispatch(closeModal());
         navigate('/');
-      },3000)
+      }, 3000);
     } catch (err) {
+      const timeoutId = setTimeout(() => {
+        dispatch(closeModal());
+        dispatch(setWaiting());
+      }, 3000);
 
-      
-      const timeoutId = setTimeout(()=>{
-        dispatch( closeModal() );
-        dispatch( setWaiting() );
-      },3000)
-
-      dispatch( setFail( timeoutId ) );
+      dispatch(setFail(timeoutId));
 
       console.log(err);
     }
@@ -128,7 +130,12 @@ function Create() {
     if (result && result.length > 0) dispatch(setAuth(result[0]));
   };
 
-  // Calculate Variable
+  
+  /********************/
+  //      Effect      //
+  /********************/
+  
+  // change TotalAssets
   useEffect(() => {
     const totalAssetsCalculated = calculateTotalAssets(
       initialPriceOfAssets,
@@ -137,6 +144,7 @@ function Create() {
     setTotalAssets(totalAssetsCalculated);
   }, [initialPriceOfAssets, amountOfAssets]);
 
+  // change claimPrice, liquidationPrice, premiumPrice
   useEffect(() => {
     const claimPriceCalculated = calculateClaimPrice(
       initialPriceOfAssets,
@@ -154,6 +162,8 @@ function Create() {
     setPremiumPrice(premiumPriceCalculated);
   }, [totalAssets, dropRate, premiumRate]);
 
+
+  // change sellerDeposit
   useEffect(() => {
     setSellerDeposit(
       calculateSellerDeposit(
@@ -222,42 +232,50 @@ function Create() {
           <div className="form-section">
             <h2 className="section-title">Assets</h2>
             <div className="input-group">
-              <input
-                placeholder="Initial Price of Assets"
-                value={`Initial Price of Assets: ${initialPriceOfAssets}`}
-                onChange={(e) => {
-                  const currentValue = onlyNumber(e.target.value);
-                  setInitialPriceOfAssets(currentValue);
-                }}
-              />
-              <input
-                placeholder="The Amount of Assets"
-                value={`The Amount of Assets: ${amountOfAssets}`}
-                onChange={(e) => {
-                  const currentValue = onlyNumber(e.target.value);
-                  setAmountOfAssets(currentValue);
-                }}
-              />
-              <input
-                placeholder="Total Assets"
-                value={`Total Assets: ${totalAssets}`}
-                readOnly
-                disabled
-              />
+              <div className='input-wrapper'>
+                <div className='input-label'>Initial Price of Assets: </div>
+                <input
+                  value={initialPriceOfAssets}
+                  onChange={(e) => {
+                    const currentValue = onlyNumber(e.target.value);
+                    setInitialPriceOfAssets(currentValue);
+                  }}
+                />
+              </div>
+              <div className='input-wrapper'>
+                <div className='input-label'>The Amount of Assets: </div>
+                <input
+                  value={amountOfAssets}
+                  onChange={(e) => {
+                    const currentValue = onlyNumber(e.target.value);
+                    setAmountOfAssets(currentValue);
+                  }}
+                />
+              </div>
+              <div className='input-wrapper'>
+                <div className='input-label'>Total Assets: </div>
+                <input
+                  value={totalAssets}
+                  readOnly
+                  disabled
+                />
+              </div>
             </div>
           </div>
           <div className="form-section">
             <h2 className="section-title">Claim</h2>
             <div className="input-group">
-              <input
-                placeholder="Claim Price"
-                value={`Claim Price: ${claimPrice}`}
-                onChange={(e) => {
-                  const currentValue = onlyNumber(e.target.value);
-                  setClaimPrice(currentValue);
-                }}
-                disabled
-              />
+              <div className='input-wrapper'>
+                <div className='input-label'>Claim Price: </div>
+                <input
+                  value={claimPrice}
+                  onChange={(e) => {
+                    const currentValue = onlyNumber(e.target.value);
+                    setClaimPrice(currentValue);
+                  }}
+                  disabled
+                />
+              </div>
               <div className="input-range">
                 <input
                   className="value"
@@ -279,7 +297,7 @@ function Create() {
             </div>
           </div>
           <div className="form-section">
-            <h2 className="section-title">Premium</h2>
+            <h2 className="section-title">Premium: </h2>
             <div className="input-group">
               <div className="input-range">
                 <input
@@ -296,11 +314,13 @@ function Create() {
                   onChange={(e) => setPremiumRate(e.target.value)}
                 />
               </div>
-              <input
-                placeholder="Premium Price"
-                value={`Premium Price: ${premiumPrice}`}
-                disabled
-              />
+              <div className='input-wrapper'>
+                <div className='input-label'>Premium Price: </div>
+                <input
+                  value={premiumPrice}
+                  disabled
+                />
+              </div>
               <div className="input-select">
                 <input
                   placeholder="Premium Interval"
@@ -317,24 +337,28 @@ function Create() {
                   <option value="12">12 weeks</option>
                 </select>
               </div>
-              <input
-                placeholder="Premium Rounds"
-                value={`Premium Rounds: ${premiumRounds}`}
-                onChange={(e) => {
-                  const currentValue = onlyNumber(e.target.value);
-                  setPremiumRounds(currentValue);
-                }}
-              />
+              <div className='input-wrapper'>
+                <div className='input-label'>Premium Rounds: </div>
+                <input
+                  value={premiumRounds}
+                  onChange={(e) => {
+                    const currentValue = onlyNumber(e.target.value);
+                    setPremiumRounds(currentValue);
+                  }}
+                />
+              </div>
             </div>
           </div>
           <div className="form-section">
             <h2 className="section-title">Liquidation</h2>
             <div className="input-group">
-              <input
-                placeholder="Seller Deposit"
-                value={`Seller Deposit: ${sellerDeposit}`}
-                disabled
-              />
+              <div className='input-wrapper'>
+                <div className='input-label'>Seller Deposit</div>
+                <input
+                  value={sellerDeposit}
+                  disabled
+                />
+              </div>
               <div className="input-range">
                 <input
                   className="value"
@@ -356,11 +380,13 @@ function Create() {
                   onChange={(e) => setLiquidationPrice(e.target.value)}
                 />
               </div>
-              <input
-                placeholder="Buyer Deposit"
-                value={`Buyer Deposit: ${premiumPrice * 3}`}
-                disabled
-              />
+              <div className='input-wrapper'>
+                <div className='input-label'>Buyer Deposit:</div>
+                <input
+                  value={premiumPrice * 3}
+                  disabled
+                />
+              </div>
             </div>
           </div>
           <div className="form-section">

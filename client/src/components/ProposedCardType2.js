@@ -50,11 +50,11 @@ function ProposedCard_type2(props) {
             </div>
           </div>
         </div>
-        <button className="w-[80%] h-[6%] my-[4%] mx-[10%] rounded-3xl bg-primaryColor content-center">
-          <Link to={`/accept/${props.swapId}`} className="text-sm font-bold">
+        <Link to={`/accept/${props.swapId}`} className="text-sm font-bold">
+          <button className="w-[80%] h-[6%] my-[4%] mx-[10%] rounded-3xl bg-primaryColor content-center">
             More Details
-          </Link>
-        </button>
+          </button>
+        </Link>
       </div>
     </>
   );

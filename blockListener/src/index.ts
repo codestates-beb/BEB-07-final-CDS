@@ -8,14 +8,23 @@ import getEnv from './utils/getEnv';
 import clearRecords from './utils/clearRecords';
 const REMOTE_WEBSOCKET = getEnv('REMOTE_WEBSOCKET');
 const GETH_WEBSOCKET = getEnv('GETH_WEBSOCKET');
+const NETWORK = getEnv('NETWORK');
+const DB_SCHEMA = getEnv('DB_SCHEMA');
+const CDS_CA = getEnv('CDS_CA');
 
 AppDataSource.initialize()
   .then(async () => {
-    await clearRecords(AppDataSource);
+    const rpcEndpoint = NETWORK === 'geth' ? GETH_WEBSOCKET : REMOTE_WEBSOCKET;
 
-    // let cds = CDS.getInstance(REMOTE_WEBSOCKET, AppDataSource.manager);
-    let cds = CDS.getInstance(GETH_WEBSOCKET, AppDataSource.manager);
-    cds.setContract(abi, getEnv('CDS_CA'));
+    console.log('** META INFORMATION **');
+    console.log(`WEB3 NETWORK : ${NETWORK}`);
+    console.log(`RPC ENDPOINT : ${rpcEndpoint}`);
+    console.log(`CDS_CA : ${CDS_CA}`);
+    console.log(`DB SCHEMA: ${DB_SCHEMA}`);
+
+    await clearRecords(AppDataSource);
+    let cds = CDS.getInstance(rpcEndpoint, AppDataSource.manager);
+    cds.setContract(abi, CDS_CA);
     cds.setFromBlock(getEnv('CDS_TXHASH', '0'));
     await cds.getPastEvents();
 

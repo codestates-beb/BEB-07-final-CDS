@@ -13,6 +13,7 @@ import { Navigation, Mousewheel, Keyboard } from 'swiper';
 import infoSlide1 from '../../assets/img/infoSlide_bg_1.jpg';
 import infoSlide2 from '../../assets/img/infoSlide_bg_2.jpg';
 import infoSlide3 from '../../assets/img/infoSlide_bg_3.jpg';
+import infoSlide4 from '../../assets/img/infoSlide_bg_4.jpg';
 
 // css
 import '../../assets/css/infoSlide.css';
@@ -26,9 +27,9 @@ function infoSlide() {
         mousewheel={true}
         keyboard={true}
         modules={[Navigation, Mousewheel, Keyboard]}
-        className="mySwiperInfo w-[68rem] h-[24rem] bg-blackColor rounded-2xl relative my-[10rem]"
+        className="mySwiperInfo w-[66rem] h-[24rem] bg-blackColor rounded-2xl relative my-[10rem]"
       >
-        <SwiperSlide className="w-[68rem] h-[24rem]">
+        <SwiperSlide className="object-cover w-[68rem] h-[24rem]">
           <img
             src={infoSlide1}
             alt=" infoSlide1"
@@ -39,18 +40,16 @@ function infoSlide() {
               <div className="text-4xl font-bold mb-[5%]">What is CDS ?</div>
               <div className="text-base font-light mb-[10%]">
                 <p>
-                  A credit default swap (CDS) is a financial derivative that
-                  allows an investor
+                  A credit default swap is a financial derivative that allows an
+                  investor
                 </p>
                 <p>
                   to swap or offset their credit risk with that of another
                   investor.
                 </p>
                 <p>
-                  To swap the risk of default, the lender buys a CDS from
-                  another investor
+                  To swap the risk of default, buyers buy a CDS from seller.
                 </p>
-                <p>who agrees to reimburse them if the borrower defaults.</p>
               </div>
               <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100">
                 <div className="font-semibold ">More Details</div>
@@ -106,6 +105,33 @@ function infoSlide() {
               </div>
               <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100">
                 <div className="font-semibold">More Details</div>
+              </button>
+            </div>
+          </div>
+        </SwiperSlide>
+        <SwiperSlide className="object-cover w-[68rem] h-[24rem]">
+          <img
+            src={infoSlide4}
+            alt="infoSlide1"
+            className="w-[100%] h-[100%] object-fill"
+          />
+          <div className="absolute top-[55%] left-[50%] translate-y-[-50%] translate-x-[-50%] ">
+            <div className="flex-col w-[100%] text-center">
+              <div className="text-4xl font-bold mb-[5%]">Statistics</div>
+              <div className="text-base font-light mb-[10%]">
+                <p>We obtain and analyze data about transactions</p>
+                <p>from nodes in the blockchain.</p>
+                <p>
+                  This data makes more efficient use and utilization of
+                  liquidity.
+                </p>
+                <p>
+                  Our quality of service improves as users' meaningful data
+                  accumulates.
+                </p>
+              </div>
+              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100">
+                <a href='http://snowdelver.iptime.org:43000' target='_blank' className="font-semibold">More Details</a>
               </button>
             </div>
           </div>
