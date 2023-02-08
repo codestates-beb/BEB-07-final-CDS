@@ -20,7 +20,7 @@ contract('CDS', (accounts) => {
   const defaultPremium = 750;
   const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
   const defaultBuyerDeposit = defaultPremium * (3 + 1);
-  const defaultTokenFaucet = 10 ** 8;
+  const defaultTokenFaucet = '10000000';
 
   beforeEach(async () => {
     priceOracle = await PriceOracleMock.new(defaultInitAssetPrice, {
