@@ -12,7 +12,7 @@ contract SwapHandler {
 
   mapping(uint256 => uint256) private _nextPayDate;
 
-  address priceOracle;
+  address public priceOracle;
   
   constructor () {}
 

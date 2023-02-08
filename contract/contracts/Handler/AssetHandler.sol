@@ -11,11 +11,9 @@ contract AssetHandler is Ownable, SwapHandler {
 
   IERC20 public token;
 
-  mapping(uint256 => uint256[2]) private _deposits;
+  mapping(uint256 => uint256[2]) public deposits;
 
-  constructor() {
-    token = IERC20(0xd9145CCE52D386f254917e481eB44e9943F39138);
-  }
+  constructor() {}
 
   function setToken(address _tokenAddress) external onlyOwner returns (bool) {
     require(_tokenAddress != address(0));
@@ -23,31 +21,34 @@ contract AssetHandler is Ownable, SwapHandler {
     return true;
   }
 
-  function getDeposits(uint256 swapId) public view returns (uint256[2] memory) {
-    return _deposits[swapId];
-  }
-
-  function _afterDeposit(
-    uint256 _swapId,
-    bool _isBuyer
-  ) internal returns (bool) {
-    _isBuyer
-      ? _deposits[_swapId][0] = getPremium(_swapId).mul(4)
-      : _deposits[_swapId][1] = getSellerDeposit(_swapId);
+  function _sendDeposit(uint256 _swapId, bool _isBuyer) internal returns (bool) {
+    uint256 deposit;
+    if (_isBuyer) {
+      deposit = getPremium(_swapId).mul(4);
+      require(token.allowance(getBuyer(_swapId), address(this)) == deposit, "Invalid allowance for deposit");
+      token.transferFrom(getBuyer(_swapId), address(this), deposit);
+      deposits[_swapId][0] = deposit;
+    } else {
+      deposit = getSellerDeposit(_swapId);
+      require(token.allowance(getSeller(_swapId), address(this)) == deposit, "Invalid allowance for deposit");
+      token.transferFrom(getSeller(_swapId), address(this), deposit);
+      deposits[_swapId][1] = deposit;
+    }
     return true;
   }
 
-  function _firstPremium(uint256 _swapId) internal returns (bool) {
+  function _sendFirstPremium(uint256 _swapId) internal returns (bool) {
     bool sent = token.transfer(getSeller(_swapId), getPremium(_swapId));
     require(sent, 'Sending first premium failed');
-    _deposits[_swapId][0] -= getPremium(_swapId);
+    deposits[_swapId][0] -= getPremium(_swapId);
+    getSwap(_swapId).setRounds(getRounds(_swapId) - 1);
     return true;
   }
 
   function _endSwap(uint256 _swapId) internal returns (bool) {
     address[2] memory participants = [getBuyer(_swapId), getSeller(_swapId)];
     for (uint i = 0; i <= 1; i++) {
-      uint256 deposit = getDeposits(_swapId)[i];
+      uint256 deposit = deposits[_swapId][i];
       if (deposit != 0) {
         bool sent = token.transfer(participants[i], deposit);
         require(sent, 'Sending deposit back failed');
@@ -61,25 +62,15 @@ contract AssetHandler is Ownable, SwapHandler {
     uint256 claimReward = getSwap(_swapId).getClaimReward();
     bool sentBuyer = token.transfer(
       getBuyer(_swapId),
-      claimReward + getDeposits(_swapId)[0]
+      claimReward + deposits[_swapId][0]
     );
     bool sentSeller = token.transfer(
       getSeller(_swapId),
-      getDeposits(_swapId)[1] - claimReward
+      deposits[_swapId][1] - claimReward
     );
     require(sentBuyer && sentSeller, 'Sending reward failed');
     clearDeposit(_swapId);
     return claimReward;
-  }
-
-  function _afterPayPremium(uint256 _swapId) internal returns (bool) {
-    bool sent = token.transferFrom(
-      msg.sender,
-      getSeller(_swapId),
-      getPremium(_swapId)
-    );
-    require(sent, 'Sending premium failed');
-    return true;
   }
 
   function _expire(
@@ -88,14 +79,15 @@ contract AssetHandler is Ownable, SwapHandler {
     bool byRounds = ((block.timestamp >= getNextPayDate(_swapId)) &&
       (getTotalRounds(_swapId) == 0));
     bool byDate = ((block.timestamp >= getNextPayDate(_swapId)) &&
-      (getDeposits(_swapId)[0] == 0));
+      (deposits[_swapId][0] == 0));
     require(byDate || byRounds, 'Buyer deposit / Rounds remaining');
     getSwap(_swapId).setStatus(Swap.Status.expired);
   }
 
   function clearDeposit(uint256 swapId) private {
     for (uint i = 0; i <= 1; i++) {
-      _deposits[swapId][i] = 0;
+      deposits[swapId][i] = 0;
     }
   }
 }
+
