@@ -199,19 +199,23 @@ function Accept() {
         </div>
         <div className="negotiate-form">
           <div className="form-section">
-            <h2 className="section-title">Address</h2>
+            <h2 className="section-title">Proposer Address</h2>
             <div className="input-group">
-              <div className="input-button">
+              <div className="input-wrapper">
                 {isBuyer ? (
-                  <input
-                    value={swapOnDB ? `Buyer Address: ${proposer}` : null}
-                    disabled
-                  />
+                  <>
+                    <input
+                      value={swapOnDB ? proposer : null}
+                      disabled
+                    />
+                  </>
                 ) : (
-                  <input
-                    value={swapOnDB ? `Seller Address: ${proposer}` : null}
-                    disabled
-                  />
+                  <>
+                    <input
+                      value={swapOnDB ? proposer : null}
+                      disabled
+                    />
+                  </>
                 )}
               </div>
             </div>
@@ -220,32 +224,30 @@ function Accept() {
             <h2 className="section-title">Assets</h2>
             <div className="input-group">
               <div className='input-wrapper'>
+                <div className='input-label'>Initial Price of Assets</div>
                 <input
-                  placeholder="Initial Price of Assets"
-                  value={
-                    swapOnDB
-                      ? `Initial Price of Assets: ${swapOnDB.initialAssetPrice}`
-                      : null
+                  value={ swapOnDB
+                    ? `$ ${Number( swapOnDB.initialAssetPrice ).toLocaleString()}`
+                    : null
                   }
                   disabled
                 />
               </div>
               <div className='input-wrapper'>
+                <div className='input-label'>The Amount of Assets</div>
                 <input
-                  placeholder="The Amount of Assets"
-                  value={
-                    swapOnDB
-                      ? `The Amount of Assets: ${swapOnDB.amountOfAssets}`
-                      : null
-                  }
+                  value={ swapOnDB 
+                    ? `# ${Number( swapOnDB.amountOfAssets ).toLocaleString()}`
+                    : null}
                   disabled
                 />
               </div>
               <div className='input-wrapper'>
+                <div className='input-label'>Total Assets</div>
                 <input
-                  placeholder="Total Assets"
-                  value={
-                    swapOnDB ? `Total Assets: ${swapOnDB.totalAssets}` : null
+                  value={swapOnDB 
+                    ? `$ ${Number(swapOnDB.totalAssets).toLocaleString()}`
+                    : null
                   }
                   disabled
                 />
@@ -256,9 +258,9 @@ function Accept() {
             <h2 className="section-title">Claim</h2>
             <div className="input-group">
               <div className='input-wrapper'>
+                <div className='input-label'>Claim Price</div>
                 <input
-                  placeholder="Claim Price"
-                  value={swapOnDB ? `Claim Price: ${swapOnDB.claimPrice}` : null}
+                  value={swapOnDB ? `$ ${Number(swapOnDB.claimPrice).toLocaleString()}` : null}
                   disabled
                 />
               </div>
@@ -288,15 +290,15 @@ function Accept() {
                 <input
                   placeholder="Premium Rate"
                   value={
-                    swapOnDB ? `Premium Rate: ${swapOnDB.premiumRate}` : null
+                    swapOnDB ? `Premium Rate: ${swapOnDB.premiumRate} %` : null
                   }
                   disabled
                 />
               </div>
               <div className='input-wrapper'>
+                <div className='input-label'>Premium Price</div>
                 <input
-                  placeholder="Premium Price"
-                  value={swapOnDB ? `Premium Price: ${swapOnDB.premium}` : null}
+                  value={swapOnDB ? `$ ${Number(swapOnDB.premium).toLocaleString()}` : null}
                   disabled
                 />
               </div>
@@ -315,11 +317,11 @@ function Accept() {
                 />
               </div>
               <div className='input-wrapper'>
+                <div className='input-label'>Premium Rounds</div>
                 <input
-                  placeholder="Premium Rounds"
                   value={
                     swapOnDB
-                      ? `Premium Rounds: ${swapOnDB.totalPremiumRounds}`
+                      ? Number(swapOnDB.totalPremiumRounds).toLocaleString()
                       : null
                   }
                   disabled
@@ -331,10 +333,10 @@ function Accept() {
             <h2 className="section-title">Liquidation</h2>
             <div className="input-group">
               <div className='input-wrapper'>
+                <div className='input-label'>Seller Deposit</div>
                 <input
-                  placeholder="Seller Deposit"
                   value={
-                    swapOnDB ? `Seller Deposit: ${swapOnDB.sellerDeposit}` : null
+                    swapOnDB ? `$ ${swapOnDB.sellerDeposit}` : null
                   }
                   disabled
                 />
@@ -359,10 +361,10 @@ function Accept() {
                 />
               </div>
               <div className='input-wrapper'>
+                <div className='input-label'>Buyer Deposit</div>
                 <input
-                  placeholder="Buyer Deposit"
                   value={
-                    swapOnDB ? `Buyer Deposit: ${swapOnDB.buyerDeposit}` : null
+                    swapOnDB ? `$ ${swapOnDB.buyerDeposit}` : null
                   }
                   disabled
                 />
