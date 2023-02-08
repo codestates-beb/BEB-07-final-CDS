@@ -53,16 +53,13 @@ contract('CDS', (accounts) => {
     });
   });
 
-  /*
   describe('Owner Check', () => {
     it('should throw error if owner is different', async () => {
       const ownerAddr = await cds.owner();
       await assert.strictEqual(accounts[0], ownerAddr);
     });
   });
-  */
 
-  /*
   describe('Create Swap', () => {
     it('should throw error when invalid input', async () => {
       await truffleAssert.fails(
@@ -280,7 +277,6 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(+beforeCA + defaultSellerDeposit, +afterCA);
     });
   });
-  */
 
   describe('Accept Swap', () => {
     it('should be able to accept Swap as SELLER when valid deposit provided and check it from mapping', async () => {
@@ -581,9 +577,11 @@ contract('CDS', (accounts) => {
     });
   });
 
-  /*
-  describe('Cancel Swap', async () => {
+  describe('Cancel Swap of BUYER', async () => {
     beforeEach(async () => {
+      await fusd.approve(cds.address, defaultBuyerDeposit, {
+        from: accounts[2],
+      });
       await cds.create(
         defaultHostSetting,
         defaultInitAssetPrice,
@@ -593,7 +591,7 @@ contract('CDS', (accounts) => {
         defaultPremium,
         defaultPremiumInterval,
         defaultPremiumRounds,
-        { from: accounts[2], value: defaultBuyerDeposit },
+        { from: accounts[2] },
       );
     });
 
@@ -609,53 +607,85 @@ contract('CDS', (accounts) => {
       await truffleAssert.passes(
         cds.cancel(currentSwapId, { from: accounts[2] }),
       );
-      const depositDetail = await cds.getDeposits(currentSwapId);
-      const [buyerDepositDetail, sellerDepositDetail] = depositDetail;
+      const buyerDepositDetail = await cds.deposits(currentSwapId, 0);
       const swapStatus = await cds.getStatus(currentSwapId);
 
-      await assert.strictEqual(+buyerDepositDetail.deposit, 0);
-      await assert.strictEqual(buyerDepositDetail.isPaid, false);
-
-      await assert.strictEqual(+sellerDepositDetail.deposit, 0);
-      await assert.strictEqual(sellerDepositDetail.isPaid, false);
-
-      await assert.strictEqual(0, +swapStatus);
+      await assert.strictEqual(+buyerDepositDetail, 0);
+      await assert.strictEqual(0, +swapStatus); // inactive => 0
     });
 
-    it('should have decreased amount of contract balance after successful cancel swap call', async () => {
-      const beforeContract = await cds.getContractBalance();
+    it('should have decreased amount of TOKEN after buyer calling cancel', async () => {
+      const before = await fusd.balanceOf(accounts[2]);
+      const beforeCA = await fusd.balanceOf(cds.address);
+
       const [currentSwapId] = await cds.getSwapId();
-      const receipt = await cds.cancel(currentSwapId, {
-        from: accounts[2],
+      await cds.cancel(currentSwapId, { from: accounts[2] });
+
+      const after = await fusd.balanceOf(accounts[2]);
+      const afterCA = await fusd.balanceOf(cds.address);
+
+      await assert.strictEqual(+before, +after - defaultBuyerDeposit);
+      await assert.strictEqual(+beforeCA, +afterCA + defaultBuyerDeposit);
+    });
+  });
+
+  describe('Cancel Swap of SELLER', async () => {
+    beforeEach(async () => {
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
       });
-      const afterContractBalance = await cds.getContractBalance();
-      assert.equal(
-        beforeContract.toNumber() - defaultBuyerDeposit,
-        afterContractBalance.toNumber(),
+      await cds.create(
+        !defaultHostSetting,
+        defaultInitAssetPrice,
+        defaultClaimPrice,
+        defaultLiquidationPrice,
+        defaultSellerDeposit,
+        defaultPremium,
+        defaultPremiumInterval,
+        defaultPremiumRounds,
+        { from: accounts[1] },
       );
     });
 
-    it('should return proper amount of ETH to buyer after successful cancel swap call', async () => {
-      const before = await web3.eth.getBalance(accounts[2]);
+    it('should throw error if the caller of cancel is not the buyer/seller', async () => {
       const [currentSwapId] = await cds.getSwapId();
-      const receipt = await cds.cancel(currentSwapId, {
-        from: accounts[2],
-      });
-      const tx = await web3.eth.getTransaction(receipt.tx);
-      const { gasUsed } = receipt.receipt;
-      const { gasPrice } = tx;
-      const gasCost = gasUsed * gasPrice;
-      const after = await web3.eth.getBalance(accounts[2]);
-      assert.equal(
-        +before - +gasCost + defaultBuyerDeposit,
-        +after,
-        'result of "BEFORE - defaultBuyerDeposit + value" should be equal to AFTER Balance',
+      await truffleAssert.fails(
+        cds.cancel(currentSwapId, { from: accounts[3] }),
       );
+    });
+
+    it('should be able to cancel if the seller calls cancel and check the swap', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await truffleAssert.passes(
+        cds.cancel(currentSwapId, { from: accounts[1] }),
+      );
+      const sellerDepositDetail = await cds.deposits(currentSwapId, 1);
+      const swapStatus = await cds.getStatus(currentSwapId);
+
+      await assert.strictEqual(+sellerDepositDetail, 0);
+      await assert.strictEqual(0, +swapStatus); // inactive => 0
+    });
+
+    it('should have decreased amount of TOKEN after seller calling cancel', async () => {
+      const before = await fusd.balanceOf(accounts[1]);
+      const beforeCA = await fusd.balanceOf(cds.address);
+
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.cancel(currentSwapId, { from: accounts[1] });
+
+      const after = await fusd.balanceOf(accounts[2]);
+      const afterCA = await fusd.balanceOf(cds.address);
+
+      await assert.strictEqual(+before, +after - defaultSellerDeposit);
+      await assert.strictEqual(+beforeCA, +afterCA + defaultSellerDeposit);
     });
   });
 
   describe('Close Swap', async () => {
     beforeEach(async () => {
+      await fusd.approve(cds.address, defaultBuyerDeposit, {
+        from: accounts[2],
+      });
       await cds.create(
         defaultHostSetting,
         defaultInitAssetPrice,
@@ -665,7 +695,7 @@ contract('CDS', (accounts) => {
         defaultPremium,
         defaultPremiumInterval,
         defaultPremiumRounds,
-        { from: accounts[2], value: defaultBuyerDeposit },
+        { from: accounts[2] },
       );
     });
 
@@ -679,9 +709,11 @@ contract('CDS', (accounts) => {
     it('should throw error if the caller is not the buyer', async () => {
       const [currentSwapId] = await cds.getSwapId();
 
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
       await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
-        value: defaultSellerDeposit,
       });
 
       await truffleAssert.fails(
@@ -692,62 +724,72 @@ contract('CDS', (accounts) => {
     it('should be able to close if the buyer calls close and check the state of the swap', async () => {
       const [currentSwapId] = await cds.getSwapId();
 
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
       await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
-        value: defaultSellerDeposit,
       });
 
       await truffleAssert.passes(
         cds.close(currentSwapId, { from: accounts[2] }),
       );
 
-      const depositDetail = await cds.getDeposits(currentSwapId);
-      const [buyerDepositDetail, sellerDepositDetail] = depositDetail;
+      const buyerDepositDetail = await cds.deposits(currentSwapId, 0);
+      const sellerDepositDetail = await cds.deposits(currentSwapId, 1);
       const swapStatus = await cds.getStatus(currentSwapId);
 
-      await assert.strictEqual(+buyerDepositDetail.deposit, 0);
-      await assert.strictEqual(buyerDepositDetail.isPaid, false);
-
-      await assert.strictEqual(+sellerDepositDetail.deposit, 0);
-      await assert.strictEqual(sellerDepositDetail.isPaid, false);
-
-      await assert.strictEqual(4, +swapStatus);
+      await assert.strictEqual(+buyerDepositDetail, 0);
+      await assert.strictEqual(+sellerDepositDetail, 0);
+      await assert.strictEqual(4, +swapStatus); // expired => 4
     });
 
     it('should have proper amount of balance after close is called', async () => {
       const [currentSwapId] = await cds.getSwapId();
+
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
       await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
-        value: defaultSellerDeposit,
       });
 
-      const contractBalance = await cds.getContractBalance();
-      const buyerBalance = await web3.eth.getBalance(accounts[2]);
-      const sellerBalance = await web3.eth.getBalance(accounts[1]);
+      const balanceBeforeClose = {
+        buyer: +(await fusd.balanceOf(accounts[2])),
+        seller: +(await fusd.balanceOf(accounts[1])),
+        contract: +(await fusd.balanceOf(cds.address)),
+      };
 
-      const receipt = await cds.close(currentSwapId, { from: accounts[2] });
-      const tx = await web3.eth.getTransaction(receipt.tx);
-      const { gasUsed } = receipt.receipt;
-      const { gasPrice } = tx;
-      const gasCost = gasUsed * gasPrice;
+      await truffleAssert.passes(
+        cds.close(currentSwapId, { from: accounts[2] }),
+      );
+
+      const balanceAfterClose = {
+        buyer: +(await fusd.balanceOf(accounts[2])),
+        seller: +(await fusd.balanceOf(accounts[1])),
+        contract: +(await fusd.balanceOf(cds.address)),
+      };
       // contract
       assert.equal(
-        contractBalance.toNumber() - defaultBuyerDeposit - defaultSellerDeposit,
-        (await cds.getContractBalance()).toNumber(),
+        balanceBeforeClose.contract,
+        balanceAfterClose.contract +
+          (defaultBuyerDeposit - defaultPremium) +
+          defaultSellerDeposit,
       );
       // buyer
       assert.equal(
-        +buyerBalance + defaultBuyerDeposit - +gasCost,
-        +(await web3.eth.getBalance(accounts[2])),
+        balanceBeforeClose.buyer,
+        balanceAfterClose.buyer - (defaultBuyerDeposit - defaultPremium),
       );
       // seller
       assert.equal(
-        +sellerBalance + defaultSellerDeposit,
-        await web3.eth.getBalance(accounts[1]),
+        balanceBeforeClose.seller,
+        balanceAfterClose.seller - defaultSellerDeposit,
       );
     });
   });
 
+  /*
   describe('Claim Swap', async () => {
     beforeEach(async () => {
       await cds.create(
