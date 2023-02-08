@@ -14,7 +14,8 @@ export function calculateTimeRemaining(currentTime, nextTime){
 
     if (diffSeconds <= 0) return `overdue`;
     else{
-        if (parseInt(diffSeconds / 60) === 0) return `${diffSeconds} seconds`;
+        if (parseInt(diffSeconds / 60) === 0) 
+            return diffSeconds === 1 ? `1 second`:`${diffSeconds} seconds`;
         const diffMinutes = parseInt( diffSeconds / 60 );
 
         if (parseInt(diffMinutes / 60) === 0) return `${diffMinutes} minutes`;
@@ -28,4 +29,8 @@ export function calculateTimeRemaining(currentTime, nextTime){
 
         return `${diffWeeks} weeks`;
     }
+}
+
+export function parseUnixtimeToDate(unixtime){
+    
 }
