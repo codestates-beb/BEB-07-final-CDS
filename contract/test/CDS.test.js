@@ -5,8 +5,6 @@
 const truffleAssert = require('truffle-assertions');
 
 const PriceOracleMock = artifacts.require('PriceOracleMock');
-// setOracle이 cds에 없어서 테스트 진행이 안됨...
-// setOracle을 create 이후에 하던가 // cds에 넣고 팩토리 패턴처럼 접근하던가.
 const FUSD = artifacts.require('FUSD');
 const CDS = artifacts.require('CDS');
 
@@ -20,10 +18,9 @@ contract('CDS', (accounts) => {
   const defaultLiquidationPrice = 20000;
   const defaultSellerDeposit = 50000;
   const defaultPremium = 750;
-  const defaultPremiumInterval = 60 * 10; // 10 minutes
   const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
   const defaultBuyerDeposit = defaultPremium * (3 + 1);
-  const defaultTokenFaucet = 10 ** 8;
+  const defaultTokenFaucet = '10000000';
 
   beforeEach(async () => {
     priceOracle = await PriceOracleMock.new(defaultInitAssetPrice, {
@@ -60,7 +57,7 @@ contract('CDS', (accounts) => {
     });
   });
 
-  describe('Create Swap', () => {
+  describe('Create', () => {
     it('should throw error when invalid input', async () => {
       await truffleAssert.fails(
         cds.create(true, 20000, 21250, 20000, 50000, -750, 60 * 10, 12, {
@@ -86,7 +83,6 @@ contract('CDS', (accounts) => {
           defaultLiquidationPrice,
           defaultSellerDeposit,
           defaultPremium,
-          defaultPremiumInterval,
           defaultPremiumRounds,
           { from: accounts[2] },
         ),
@@ -103,7 +99,6 @@ contract('CDS', (accounts) => {
           defaultLiquidationPrice,
           defaultSellerDeposit,
           defaultPremium,
-          defaultPremiumInterval,
           defaultPremiumRounds,
           { from: accounts[1] },
         ),
@@ -122,7 +117,6 @@ contract('CDS', (accounts) => {
           defaultLiquidationPrice,
           defaultSellerDeposit,
           defaultPremium,
-          defaultPremiumInterval,
           defaultPremiumRounds,
           { from: accounts[2] },
         ),
@@ -173,7 +167,6 @@ contract('CDS', (accounts) => {
           defaultLiquidationPrice,
           defaultSellerDeposit,
           defaultPremium,
-          defaultPremiumInterval,
           defaultPremiumRounds,
           { from: accounts[1] },
         ),
@@ -224,7 +217,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -257,7 +249,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[1] },
       );
@@ -278,7 +269,7 @@ contract('CDS', (accounts) => {
     });
   });
 
-  describe('Accept Swap', () => {
+  describe('Accept', () => {
     it('should be able to accept Swap as SELLER when valid deposit provided and check it from mapping', async () => {
       await fusd.approve(cds.address, defaultBuyerDeposit, {
         from: accounts[2],
@@ -290,7 +281,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -349,7 +339,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[1] },
       );
@@ -408,7 +397,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -434,7 +422,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[1] },
       );
@@ -461,7 +448,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -486,7 +472,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[1] },
       );
@@ -512,7 +497,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -551,7 +535,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[1] },
       );
@@ -577,7 +560,7 @@ contract('CDS', (accounts) => {
     });
   });
 
-  describe('Cancel Swap of BUYER', async () => {
+  describe('Cancel from BUYER', async () => {
     beforeEach(async () => {
       await fusd.approve(cds.address, defaultBuyerDeposit, {
         from: accounts[2],
@@ -589,7 +572,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -629,7 +611,7 @@ contract('CDS', (accounts) => {
     });
   });
 
-  describe('Cancel Swap of SELLER', async () => {
+  describe('Cancel from SELLER', async () => {
     beforeEach(async () => {
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
@@ -641,7 +623,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[1] },
       );
@@ -681,7 +662,7 @@ contract('CDS', (accounts) => {
     });
   });
 
-  describe('Close Swap', async () => {
+  describe('Close', async () => {
     beforeEach(async () => {
       await fusd.approve(cds.address, defaultBuyerDeposit, {
         from: accounts[2],
@@ -693,7 +674,6 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
         { from: accounts[2] },
       );
@@ -789,9 +769,11 @@ contract('CDS', (accounts) => {
     });
   });
 
-  /*
-  describe('Claim Swap', async () => {
+  describe('Claim', async () => {
     beforeEach(async () => {
+      await fusd.approve(cds.address, defaultBuyerDeposit, {
+        from: accounts[2],
+      });
       await cds.create(
         defaultHostSetting,
         defaultInitAssetPrice,
@@ -799,11 +781,9 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
-        { from: accounts[2], value: defaultBuyerDeposit },
+        { from: accounts[2] },
       );
-      await cds.setOracle(priceOracle.address);
     });
 
     it('should throw error if the status of the swap is not active', async () => {
@@ -815,13 +795,15 @@ contract('CDS', (accounts) => {
 
     it('should throw error if the method is not called by the buyer', async () => {
       const [currentSwapId] = await cds.getSwapId();
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
       await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
-        value: defaultSellerDeposit,
       });
 
-      const currPrice = 70;
-      await priceOracle.setPrice(currPrice);
+      const currPrice = 21000;
+      await priceOracle.setPrice(currPrice, { from: accounts[0] });
       await truffleAssert.fails(
         cds.claim(currentSwapId, { from: accounts[1] }),
       );
@@ -831,60 +813,70 @@ contract('CDS', (accounts) => {
     // claim when currPrice is above CP => 100
     it('should throw error if the current price of the asset is above the claim price', async () => {
       const [currentSwapId] = await cds.getSwapId();
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
       await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
-        value: defaultSellerDeposit,
       });
+
+      const currPrice = 22000;
+      await priceOracle.setPrice(currPrice, { from: accounts[0] });
 
       await truffleAssert.fails(
         cds.claim(currentSwapId, { from: accounts[2] }),
       );
     });
 
-    // claim when currPrice is btwn CP~LP => 70, claimReward should be 300
+    // claim when currPrice is btwn CP~LP => 21000, claimReward should be 40000
     it('should return proper status and reward if the current price of the asset is below claim price ', async () => {
-      const changedPrice = 70;
-      const claimRewardIntended = 300;
-
       const [currentSwapId] = await cds.getSwapId();
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
       await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
-        value: defaultSellerDeposit,
       });
+
+      const changedPrice = 21000;
+      const claimRewardIntended = 40000;
       await priceOracle.setPrice(changedPrice);
 
       const balanceBeforeClaim = {
-        contract: (await cds.getContractBalance()).toNumber(),
-        buyer: +(await web3.eth.getBalance(accounts[2])),
-        seller: +(await web3.eth.getBalance(accounts[1])),
+        contract: +(await fusd.balanceOf(cds.address)),
+        buyer: +(await fusd.balanceOf(accounts[2])),
+        seller: +(await fusd.balanceOf(accounts[1])),
       };
 
-      const receipt = await cds.claim(currentSwapId, { from: accounts[2] });
-      const { claimReward } = receipt.logs[0].args;
-      const tx = await web3.eth.getTransaction(receipt.tx);
-      const { gasUsed } = receipt.receipt;
-      const { gasPrice } = tx;
-      const gasCost = gasUsed * gasPrice;
+      let claimReward = await cds.claim(currentSwapId, { from: accounts[2] });
+      claimReward = claimReward.logs[0].args.claimReward;
+
+      const balanceAfterClaim = {
+        contract: +(await fusd.balanceOf(cds.address)),
+        buyer: +(await fusd.balanceOf(accounts[2])),
+        seller: +(await fusd.balanceOf(accounts[1])),
+      };
 
       // claimReward
       assert.equal(+claimReward, claimRewardIntended);
-
       // contract
       assert.equal(
-        balanceBeforeClaim.contract -
-          defaultBuyerDeposit -
+        balanceBeforeClaim.contract,
+        balanceAfterClaim.contract +
+          (defaultBuyerDeposit - defaultPremium) +
           defaultSellerDeposit,
-        (await cds.getContractBalance()).toNumber(),
       );
       // buyer
       assert.equal(
-        balanceBeforeClaim.buyer - +gasCost + +claimReward,
-        +(await web3.eth.getBalance(accounts[2])),
+        balanceBeforeClaim.buyer,
+        balanceAfterClaim.buyer -
+          claimRewardIntended -
+          (defaultBuyerDeposit - defaultPremium),
       );
       // seller
       assert.equal(
-        balanceBeforeClaim.seller + +defaultSellerDeposit - +claimReward,
-        await web3.eth.getBalance(accounts[1]),
+        balanceBeforeClaim.seller,
+        balanceAfterClaim.seller + claimRewardIntended - defaultSellerDeposit,
       );
 
       // status
@@ -894,48 +886,50 @@ contract('CDS', (accounts) => {
 
     // claim when currPrice is below LP => 50
     it('should return proper status and reward seller deposit to buyer if the current price of the asset is below liquidation price ', async () => {
-      const changedPrice = 50;
-
       const [currentSwapId] = await cds.getSwapId();
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
       await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
-        value: defaultSellerDeposit,
       });
+
+      const changedPrice = 19000;
       await priceOracle.setPrice(changedPrice);
 
       const balanceBeforeClaim = {
-        contract: (await cds.getContractBalance()).toNumber(),
-        buyer: +(await web3.eth.getBalance(accounts[2])),
-        seller: +(await web3.eth.getBalance(accounts[1])),
+        contract: +(await fusd.balanceOf(cds.address)),
+        buyer: +(await fusd.balanceOf(accounts[2])),
+        seller: +(await fusd.balanceOf(accounts[1])),
       };
 
-      const receipt = await cds.claim(currentSwapId, { from: accounts[2] });
-      const { claimReward } = receipt.logs[0].args;
-      const tx = await web3.eth.getTransaction(receipt.tx);
-      const { gasUsed } = receipt.receipt;
-      const { gasPrice } = tx;
-      const gasCost = gasUsed * gasPrice;
+      let claimReward = await cds.claim(currentSwapId, { from: accounts[2] });
+      claimReward = claimReward.logs[0].args.claimReward;
+
+      const balanceAfterClaim = {
+        contract: +(await fusd.balanceOf(cds.address)),
+        buyer: +(await fusd.balanceOf(accounts[2])),
+        seller: +(await fusd.balanceOf(accounts[1])),
+      };
 
       // claimReward
       assert.equal(+claimReward, defaultSellerDeposit);
-
       // contract
       assert.equal(
-        balanceBeforeClaim.contract -
-          defaultBuyerDeposit -
+        balanceBeforeClaim.contract,
+        balanceAfterClaim.contract +
+          (defaultBuyerDeposit - defaultPremium) +
           defaultSellerDeposit,
-        (await cds.getContractBalance()).toNumber(),
       );
       // buyer
       assert.equal(
-        balanceBeforeClaim.buyer + +claimReward - gasCost, // gas 10000
-        +(await web3.eth.getBalance(accounts[2])),
+        balanceBeforeClaim.buyer,
+        balanceAfterClaim.buyer -
+          defaultSellerDeposit -
+          (defaultBuyerDeposit - defaultPremium),
       );
       // seller
-      assert.equal(
-        balanceBeforeClaim.seller,
-        await web3.eth.getBalance(accounts[1]),
-      );
+      assert.equal(balanceBeforeClaim.seller, balanceAfterClaim.seller);
 
       // status
       const status = await cds.getStatus(currentSwapId);
@@ -945,6 +939,9 @@ contract('CDS', (accounts) => {
 
   describe('Pay Premium', async () => {
     beforeEach(async () => {
+      await fusd.approve(cds.address, defaultBuyerDeposit, {
+        from: accounts[2],
+      });
       await cds.create(
         defaultHostSetting,
         defaultInitAssetPrice,
@@ -952,105 +949,126 @@ contract('CDS', (accounts) => {
         defaultLiquidationPrice,
         defaultSellerDeposit,
         defaultPremium,
-        defaultPremiumInterval,
         defaultPremiumRounds,
-        { from: accounts[2], value: defaultBuyerDeposit },
+        { from: accounts[2] },
       );
     });
 
     it('should throw error if the status of the swap is not active', async () => {
       const [currentSwapId] = await cds.getSwapId();
+      await fusd.approve(cds.address, defaultPremium, { from: accounts[2] });
       await truffleAssert.fails(
-        cds.payPremium(currentSwapId, {
-          from: accounts[2],
-          value: defaultPremium,
-        }),
+        cds.payPremium(currentSwapId, { from: accounts[2] }),
       );
     });
 
     it('should throw error if the method is not called by the buyer', async () => {
       const [currentSwapId] = await cds.getSwapId();
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
       await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
-        value: defaultSellerDeposit,
       });
-
+      await fusd.approve(cds.address, defaultPremium, { from: accounts[2] });
       await truffleAssert.fails(
-        cds.payPremium(currentSwapId, {
-          from: accounts[1],
-          value: defaultPremium,
-        }),
+        cds.payPremium(currentSwapId, { from: accounts[1] }),
       );
     });
 
-    it('should throw error if the buyer paid invalid amount of premium', async () => {
+    it('should throw error if the buyer approved invalid amount of premium', async () => {
       const [currentSwapId] = await cds.getSwapId();
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
       await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
-        value: defaultSellerDeposit,
       });
-
+      await fusd.approve(cds.address, defaultPremium + 1, {
+        from: accounts[2],
+      });
       await truffleAssert.fails(
-        cds.payPremium(currentSwapId, {
-          from: accounts[2],
-          value: defaultPremium + 1,
-        }),
+        cds.payPremium(currentSwapId, { from: accounts[2] }),
       );
     });
 
     it('should pass if proper premium paid, and check the balance of the participants', async () => {
       const [currentSwapId] = await cds.getSwapId();
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
       await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
-        value: defaultSellerDeposit,
       });
 
       const balanceBeforePremium = {
-        buyer: +(await web3.eth.getBalance(accounts[2])),
-        seller: +(await web3.eth.getBalance(accounts[1])),
+        buyer: +(await fusd.balanceOf(accounts[2])),
+        seller: +(await fusd.balanceOf(accounts[1])),
       };
 
-      const receipt = await cds.payPremium(currentSwapId, {
+      await fusd.approve(cds.address, defaultPremium, {
         from: accounts[2],
-        value: defaultPremium,
       });
-      const tx = await web3.eth.getTransaction(receipt.tx);
-      const { gasUsed } = receipt.receipt;
-      const { gasPrice } = tx;
-      const gasCost = gasUsed * gasPrice;
+      await truffleAssert.passes(
+        cds.payPremium(currentSwapId, { from: accounts[2] }),
+      );
+
+      const balanceAfterPremium = {
+        buyer: +(await fusd.balanceOf(accounts[2])),
+        seller: +(await fusd.balanceOf(accounts[1])),
+      };
 
       // buyer
       assert.equal(
-        balanceBeforePremium.buyer - defaultPremium - gasCost,
-        +(await web3.eth.getBalance(accounts[2])),
+        balanceBeforePremium.buyer,
+        balanceAfterPremium.buyer + defaultPremium,
       );
       // seller
       assert.equal(
-        balanceBeforePremium.seller + defaultPremium,
-        await web3.eth.getBalance(accounts[1]),
+        balanceBeforePremium.seller,
+        balanceAfterPremium.seller - defaultPremium,
       );
     });
 
     // total round check
     it('should pass if totalPremiumRounds changed properly', async () => {
       const [currentSwapId] = await cds.getSwapId();
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
       await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
-        value: defaultSellerDeposit,
       });
 
-      const beforePayPremium = await cds.getRounds(currentSwapId);
+      const roundBeforePremium = await cds.getRounds(currentSwapId);
 
+      await fusd.approve(cds.address, defaultPremium, {
+        from: accounts[2],
+      });
       await truffleAssert.passes(
-        cds.payPremium(currentSwapId, {
-          from: accounts[2],
-          value: defaultPremium,
-        }),
+        cds.payPremium(currentSwapId, { from: accounts[2] }),
       );
 
-      const afterPayPremium = await cds.getRounds(currentSwapId);
-      assert.equal(beforePayPremium - 1, afterPayPremium);
+      const roundAfterPremium = await cds.getRounds(currentSwapId);
+      assert.equal(roundBeforePremium - 1, roundAfterPremium);
     });
   });
-  */
+
+  describe('Expire', async () => {
+    beforeEach(async () => {
+      await fusd.approve(cds.address, defaultBuyerDeposit, {
+        from: accounts[2],
+      });
+      await cds.create(
+        defaultHostSetting,
+        defaultInitAssetPrice,
+        defaultClaimPrice,
+        defaultLiquidationPrice,
+        defaultSellerDeposit,
+        defaultPremium,
+        defaultPremiumRounds,
+        { from: accounts[2] },
+      );
+    });
+  });
 });
