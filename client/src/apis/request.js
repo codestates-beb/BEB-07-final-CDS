@@ -63,7 +63,7 @@ export async function getActiveSwapsByOffset(offset) {
 
 export async function getSwapById(swapId) {
   try {
-    const requestURL = `${config.apiURL}/swapss/${swapId}`;
+    const requestURL = `${config.apiURL}/swaps/${swapId}`;
 
     const swaps = await axios.get(requestURL);
     return swaps.data;
