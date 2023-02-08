@@ -77,21 +77,15 @@ const authController = {
       }
       res.cookie('sessionID', req.sessionID, cookieOptions);
       await redisClient.set(req.sessionID, address, 'EX', 60 * 60);
-      console.log('******************');
-      console.log(user);
-      console.log('******************');
       if (user.email) {
         console.log('sending email : ', user.email);
         await sendEmail(
           'CDS-You are logged in',
-          `hello ${user.address}, you are now logged in`,
+          `hello ${user.nickname}, you are now logged in`,
           user.email,
         );
       }
       await userRepository.save(user);
-      console.log('******************');
-      console.log(user);
-      console.log('******************');
       return res.status(200).json('Login Successful!');
     } catch (err) {
       console.error(err);

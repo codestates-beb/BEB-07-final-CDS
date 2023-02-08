@@ -23,18 +23,18 @@ const userController = {
     let isNewEmail = false;
     if (!user) return res.status(403).json('no such user');
 
-    if (user.email != email) isNewEmail = true;
+    if (user.email !== email) isNewEmail = true;
     if (isValidEmail(email)) user.email = email;
     if (nickname) user.nickname = nickname;
-    await userRepository.save(user);
 
     if (isNewEmail) {
       sendEmail(
         'CDS : Email registered!',
-        `hello ${user.nickname}, we just registered your email\nFrom now on, you can subscribe valuable noficiations from us.`,
+        `hello ${user.nickname}, we just registered your email.\nFrom now on, you can subscribe valuable notifications from us.`,
         user.email,
       );
     }
+    await userRepository.save(user);
     return res.status(200).json('User Update Successful');
   },
   getMine: async (req: Request, res: Response, next: NextFunction) => {
