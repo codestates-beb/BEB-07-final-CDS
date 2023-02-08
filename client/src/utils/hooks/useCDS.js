@@ -26,7 +26,6 @@ function useCDS() {
             liquidationPrice,
             sellerDeposit,
             premiumPrice,
-            premiumInterval,
             premiumRounds
           } = data;
 
@@ -36,7 +35,6 @@ function useCDS() {
             || !liquidationPrice
             || !sellerDeposit
             || !premiumPrice
-            || !premiumInterval
             || !premiumRounds
             || !userAddress
           ) {
@@ -44,7 +42,7 @@ function useCDS() {
           };
 
           let deposit;
-          if (isBuyer === true) deposit = premiumPrice * 3;
+          if (isBuyer === true) deposit = premiumPrice * 4;
           else deposit = sellerDeposit;
 
           const receipt = await contract.methods.create(
@@ -54,7 +52,6 @@ function useCDS() {
             liquidationPrice,
             sellerDeposit,
             premiumPrice,
-            premiumInterval,
             premiumRounds
           )
           .send({from: userAddress}, (result)=>{

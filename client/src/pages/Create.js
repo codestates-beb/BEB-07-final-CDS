@@ -55,7 +55,6 @@ function Create() {
   const [isBuyer, setIsbuyer] = useState(true);
 
   // CDS Content State Variable
-  const [contractAddress, setContractAddress] = useState('');
   const userAddress = useSelector((state) => state.auth.user_addr);
 
   // Assets State Var
@@ -90,9 +89,8 @@ function Create() {
       liquidationPrice,
       sellerDeposit,
       premiumPrice,
-      premiumInterval: weeksToUnixTime(premiumInterval),
       premiumRounds,
-      userAddress,
+      userAddress: userAddress
     };
     console.log(data);
 
@@ -150,14 +148,6 @@ function Create() {
       console.log(err);
     }
   };
-
-  // Connect Wallet Handler
-  const connectButtonHandler = async () => {
-    const result = await metamask.request({ method: 'eth_requestAccounts' });
-    console.log(result);
-    if (result && result.length > 0) dispatch(setAuth(result[0]));
-  };
-
   
   /********************/
   //      Effect      //
@@ -238,22 +228,12 @@ function Create() {
                   Seller
                 </label>
               </div>
-              <div className="input-button">
+              <div className="input-wrapper">
+                <div className='input-label'>User Address</div>
                 <input
-                  placeholder="User Address"
                   value={userAddress}
                   disabled
                 />
-                {isLogin ? (
-                  <></>
-                ) : (
-                  <button
-                    onClick={connectButtonHandler}
-                    className="hover:bg-mintHover transition delay-80"
-                  >
-                    Connect Metamask
-                  </button>
-                )}
               </div>
             </div>
           </div>
@@ -356,9 +336,10 @@ function Create() {
                   disabled
                 />
                 <select
-                  placeholder="Premium Interval"
+                  placeholder="Premium Interval"              
                   defaultValue="4"
                   onChange={(e) => setPremiumInterval(e.target.value)}
+                  disabled
                 >
                   <option value="4">4 weeks</option>
                   <option value="8">8 weeks</option>
