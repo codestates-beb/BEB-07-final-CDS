@@ -69,7 +69,8 @@ contract CDS is AssetHandler, CDSInterface {
       totalRounds
     );
     // *4만큼 받고 *3은 deposit으로, *1은 우리가 accept되면 seller한테 보내준다.
-    _afterDeposit(newSwapId, isBuyer);
+    // _afterDeposit(newSwapId, isBuyer);
+    _sendDeposit(newSwapId, isBuyer);
     emit Create(msg.sender, isBuyer, newSwapId, address(getSwap(newSwapId)));
     return newSwapId;
   }
@@ -85,9 +86,10 @@ contract CDS is AssetHandler, CDSInterface {
 
     bool isSeller = (getSeller(swapId) == address(0));
     uint256 acceptedSwapId = _accept(isSeller, initAssetPrice, swapId);
-    _afterDeposit(swapId, !isSeller);
+    // _afterDeposit(swapId, !isSeller);
+    _sendDeposit(swapId, !isSeller);
     // *4만큼 받고 *3은 deposit으로, *1은 우리가 accept되면 seller한테 보내준다.
-    _firstPremium(swapId);
+    _sendFirstPremium(swapId);
     emit Accept(msg.sender, acceptedSwapId);
     return acceptedSwapId;
   }
@@ -129,11 +131,16 @@ contract CDS is AssetHandler, CDSInterface {
   // approve 받았다고 가정. => allowance 확인 가능
   function payPremium(uint256 swapId) external override returns (bool) {
     require(
-      token.allowance(msg.sender, address(this)) == getPremium(swapId),
+      token.allowance(getBuyer(swapId), address(this)) == getPremium(swapId),
       'Need allowance'
     );
     _payPremium(swapId);
-    _afterPayPremium(swapId);
+    bool sent = token.transferFrom(
+      getBuyer(swapId),
+      getSeller(swapId),
+      getPremium(swapId)
+    );
+    require(sent, 'Sending premium failed');
     emit PayPremium(swapId);
     return true;
   }
