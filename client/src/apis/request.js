@@ -73,6 +73,18 @@ export async function getSwapById(swapId) {
   }
 }
 
+export async function getSwapByAddress(address) {
+  try {
+    const requestURL = `${config.apiURL}/users/${address}/swaps`;
+
+    const swaps = await axios.get(requestURL);
+    return swaps.data;
+  } catch (e) {
+    console.log('An error occurred');
+    return e;
+  }
+}
+
 export async function getCoinGeckoAPI() {
   try {
     const requestURL = `${config.coinGeckoAPI}`;
