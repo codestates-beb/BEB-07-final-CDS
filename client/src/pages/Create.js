@@ -107,8 +107,6 @@ function Create() {
       sellerDeposit,
     })
 
-    dispatch(setSuccess());
-
     try {
       // Notice Modal open
       dispatch(openModal());
@@ -138,6 +136,7 @@ function Create() {
       // Notice Modal close
       const timeoutId = setTimeout(() => {
         dispatch(closeModal());
+        dispatch(setWaiting());
         navigate('/');
       }, 3000);
     } catch (err) {

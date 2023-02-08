@@ -96,7 +96,7 @@ function Accept() {
         navigate('/');
       }, 3000);
 
-      dispatch(setFail(timeoutId));
+      dispatch( setFail(timeoutId) );
     }
   };
 
@@ -372,7 +372,7 @@ function Accept() {
                 className="negotiate-button hover:bg-mintHover transition delay-80"
                 onClick={acceptButtonHandler}
               >
-                Sign CDS
+                Accept CDS
               </button>
             </div>
           </div>

@@ -39,7 +39,9 @@ function useCDS() {
             || !premiumInterval
             || !premiumRounds
             || !userAddress
-          ) return new Error("Not valid inputs");
+          ) {
+            throw new Error("Not valid inputs")
+          };
 
           let deposit;
           if (isBuyer === true) deposit = premiumPrice * 3;
@@ -69,8 +71,9 @@ function useCDS() {
         },
 
         accept: async (initialPriceOfAssets, swapId, userAddress)=>{          
-          if( !initialPriceOfAssets || !swapId || !userAddress)
-            return new Error("Invalid Arguments");
+          if( !initialPriceOfAssets || !swapId || !userAddress){
+            throw new Error("Invalid Arguments");
+          };
 
           const receipt = await contract.methods.accept(
             initialPriceOfAssets, 
