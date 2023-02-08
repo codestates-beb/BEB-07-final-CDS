@@ -2,11 +2,10 @@
 pragma solidity ^0.8.7;
 
 import './SwapHandler.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
-contract AssetHandler is Ownable, SwapHandler {
+contract AssetHandler is SwapHandler {
   using SafeMath for uint256;
 
   IERC20 public token;
@@ -95,9 +94,25 @@ contract AssetHandler is Ownable, SwapHandler {
     getSwap(_swapId).setStatus(Swap.Status.expired);
   }
 
-  function clearDeposit(uint256 swapId) private {
+  function _sendPremiumByDeposit(uint256 _swapId) internal {
+    require(deposits[_swapId][0] >= getPremium(_swapId), 'Not enough deposit');
+    bool sent = token.transfer(getSeller(_swapId), getPremium(_swapId));
+    require(sent, 'Sending premium failed');
+    deposits[_swapId][0] -= getPremium(_swapId);
+  }
+
+  function _sendPremium(uint256 _swapId) internal {
+    bool sent = token.transferFrom(
+      getBuyer(_swapId),
+      getSeller(_swapId),
+      getPremium(_swapId)
+    );
+    require(sent, 'Sending premium failed');
+  }
+
+  function clearDeposit(uint256 _swapId) private {
     for (uint i = 0; i <= 1; i++) {
-      deposits[swapId][i] = 0;
+      deposits[_swapId][i] = 0;
     }
   }
 }

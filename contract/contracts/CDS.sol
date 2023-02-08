@@ -84,21 +84,27 @@ contract CDS is AssetHandler, CDSInterface {
     return acceptedSwapId;
   }
 
-  function cancel(uint256 swapId) external override returns (bool) {
+  function cancel(
+    uint256 swapId
+  ) external override isParticipants(swapId) returns (bool) {
     _cancel(swapId);
     _endSwap(swapId);
     emit Cancel(swapId);
     return true;
   }
 
-  function close(uint256 swapId) external override returns (bool) {
+  function close(
+    uint256 swapId
+  ) external override isBuyer(swapId) returns (bool) {
     _close(swapId);
     _endSwap(swapId);
     emit Close(swapId);
     return true;
   }
 
-  function claim(uint256 swapId) external override returns (bool) {
+  function claim(
+    uint256 swapId
+  ) external override isBuyer(swapId) returns (bool) {
     require(
       getSwap(swapId).getClaimReward() != 0,
       'Claim price in CDS should be higher than current price of asset'
@@ -118,18 +124,15 @@ contract CDS is AssetHandler, CDSInterface {
     return true;
   }
 
-  function payPremium(uint256 swapId) external override returns (bool) {
+  function payPremium(
+    uint256 swapId
+  ) external override isBuyer(swapId) returns (bool) {
     require(
       token.allowance(getBuyer(swapId), address(this)) == getPremium(swapId),
       'Need allowance'
     );
     _payPremium(swapId);
-    bool sent = token.transferFrom(
-      getBuyer(swapId),
-      getSeller(swapId),
-      getPremium(swapId)
-    );
-    require(sent, 'Sending premium failed');
+    _sendPremium(swapId);
     emit PayPremium(swapId);
     return true;
   }
@@ -139,6 +142,8 @@ contract CDS is AssetHandler, CDSInterface {
     uint256 swapId
   ) external onlyOwner returns (bool) {
     _payPremium(swapId);
+    _sendPremiumByDeposit(swapId);
+    emit PayPremium(swapId);
     return true;
   }
 }

@@ -14,8 +14,8 @@ contract SwapHandler is Ownable {
   mapping(uint256 => uint256) public _nextPayDate;
 
   address public priceOracle;
-  
-  constructor () {}
+
+  constructor() {}
 
   // 고얼리시 oracle 관련된 부분은 모두 삭제 후 Swap에 getPrice.sol 이식
   function setOracle(address _priceOracleAddress) public returns (bool) {
@@ -72,21 +72,15 @@ contract SwapHandler is Ownable {
     return _acceptedSwapId;
   }
 
-  function _cancel(
-    uint256 _targetSwapId
-  ) internal isPending(_targetSwapId) {
+  function _cancel(uint256 _targetSwapId) internal isPending(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.inactive);
   }
 
-  function _close(
-    uint256 _targetSwapId
-  ) internal isActive(_targetSwapId) {
+  function _close(uint256 _targetSwapId) internal isActive(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.expired);
   }
 
-  function _payPremium(
-    uint256 _targetSwapId
-  ) internal isActive(_targetSwapId) {
+  function _payPremium(uint256 _targetSwapId) internal isActive(_targetSwapId) {
     // uint256 currTime = block.timestamp;
     // require(
     //   (_nextPayDate[_targetSwapId] - 1 days <= currTime) &&
@@ -98,9 +92,7 @@ contract SwapHandler is Ownable {
     getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
   }
 
-  function _claim(
-    uint256 _targetSwapId
-  ) internal isActive(_targetSwapId) {
+  function _claim(uint256 _targetSwapId) internal isActive(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.claimed);
   }
 
@@ -148,7 +140,6 @@ contract SwapHandler is Ownable {
   // function getNextPayDate(uint256 swapId) public view returns (uint256) {
   //   return _nextPayDate[swapId];
   // }
-
 
   // modifiers
   modifier isBuyer(uint256 swapId) {
