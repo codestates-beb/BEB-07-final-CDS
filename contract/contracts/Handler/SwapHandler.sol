@@ -92,6 +92,7 @@ contract SwapHandler {
     //     (currTime <= _nextPayDate[_targetSwapId]),
     //   'Invalid pay date'
     // );
+    require(getRounds(_targetSwapId) > 0, 'Round already ended');
     _nextPayDate[_targetSwapId] += 4 weeks;
     getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
   }
@@ -139,13 +140,14 @@ contract SwapHandler {
     return _swaps[swapId].getSeller();
   }
 
+  function getTotalRounds(uint256 swapId) public view returns (uint32) {
+    return _swaps[swapId].totalRounds();
+  }
+
   function getNextPayDate(uint256 swapId) public view returns (uint256) {
     return _nextPayDate[swapId];
   }
 
-  function getTotalRounds(uint256 swapId) public view returns (uint32) {
-    return _swaps[swapId].totalRounds();
-  }
 
   // modifiers
   modifier isBuyer(uint256 swapId) {
