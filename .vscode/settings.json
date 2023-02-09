@@ -10,4 +10,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
+  "yaml.schemas": {
+    "swaggerviewer:openapi": "file:///Users/sdh/Study/BEB_07/projects/CDS/server/swagger.yml"
+  },
 }

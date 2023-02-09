@@ -1,5 +1,5 @@
 // modules
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { IconContext } from 'react-icons';
 
 // apis
@@ -8,8 +8,8 @@ import { getSwapByAddress } from '../apis/request';
 import { postEmailData, postNicknameData } from '../apis/post';
 
 // components
-import ProposedCardType2 from '../components/ProposedCardType2.js';
-import AcceptedCardType2 from '../components/AcceptedCardType2.js';
+import ProposedCard from '../components/ProposedCard.js';
+import AcceptedCard from '../components/AcceptedCard.js';
 import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
@@ -43,6 +43,11 @@ function Mypage() {
   const [emailChange, setEmailChange] = useState('');
   const [nickNameChange, setNickNameChange] = useState('');
 
+  // useEffect의 첫번째 랜더링을 막기 위한 상태를 저장합니다
+  const isMountedGetSwapByAddress = useRef(false);
+  const isMountedEmail = useRef(false);
+  const isMountedNickname = useRef(false);
+
   useEffect(() => {
     requestMyData().then((response) => {
       setUserAddress(response.address);
@@ -58,22 +63,29 @@ function Mypage() {
     });
   }, []);
 
+  ///////////////////////////////////////////////////
   useEffect(() => {
-    const APIdata = getSwapByAddress(userAddress);
-    const getData = () => {
-      APIdata.then((response) => {
-        return response.swaps;
-      }).then((data) => {
-        const pendingFiltered = data.filter(
-          (swap) => swap.status === 'pending',
-        );
-        const activeFiltered = data.filter((swap) => swap.status === 'active');
+    if (isMountedGetSwapByAddress.current) {
+      const APIdata = getSwapByAddress(userAddress);
+      const getData = () => {
+        APIdata.then((response) => {
+          return response.swaps;
+        }).then((data) => {
+          const pendingFiltered = data.filter(
+            (swap) => swap.status === 'pending',
+          );
+          const activeFiltered = data.filter(
+            (swap) => swap.status === 'active',
+          );
 
-        setPendingSwaps(pendingFiltered);
-        setActiveSwaps(activeFiltered);
-      });
-    };
-    getData();
+          setPendingSwaps(pendingFiltered);
+          setActiveSwaps(activeFiltered);
+        });
+      };
+      getData();
+    } else {
+      isMountedGetSwapByAddress.current = true;
+    }
   }, [userAddress]);
 
   // swap card를 추가적으로 불러옵니다
@@ -97,7 +109,7 @@ function Mypage() {
 
   // 사용자가 prompt에 empty value를 입력하거나 cancle을 눌렀을 경우를 처리합니다
   function emailClick() {
-    let promptValue = prompt('Enter the username you want to change.');
+    let promptValue = prompt('Enter the email you want to change.');
     if (promptValue === '') {
       // user pressed OK, but the input field was empty
     } else if (promptValue) {
@@ -120,26 +132,35 @@ function Mypage() {
     }
   }
 
+  ////////////////////////////////////////////
   // Email post요청을 보냅니다
   useEffect(() => {
-    const postData = () => {
-      postEmailData(emailChange).then((response) => {
-        setEmail(response.data.email);
-      });
-    };
+    if (isMountedEmail.current) {
+      const postData = () => {
+        postEmailData(emailChange).then((response) => {
+          setEmail(response.data.email);
+        });
+      };
 
-    postData();
+      postData();
+    } else {
+      isMountedEmail.current = true;
+    }
   }, [emailChange]);
 
   // Nickname post요청을 보냅니다
   useEffect(() => {
-    const postData = () => {
-      postNicknameData(nickNameChange).then((response) => {
-        setNickName(response.data.nickname);
-      });
-    };
+    if (isMountedNickname.current) {
+      const postData = () => {
+        postNicknameData(nickNameChange).then((response) => {
+          setNickName(response.data.nickname);
+        });
+      };
 
-    postData();
+      postData();
+    } else {
+      isMountedNickname.current = true;
+    }
   }, [nickNameChange]);
 
   return (
@@ -219,7 +240,7 @@ function Mypage() {
               {initialPendingSwaps.map((swap) => {
                 return (
                   <div className="" key={swap.swapId}>
-                    <ProposedCardType2
+                    <ProposedCard
                       swapId={swap.swapId}
                       premium={swap.premium}
                       premiumInterval={swap.premiumInterval}
@@ -255,7 +276,7 @@ function Mypage() {
               {initialActiveSwaps.map((swap) => {
                 return (
                   <div className="" key={swap.swapId}>
-                    <AcceptedCardType2
+                    <AcceptedCard
                       swapId={swap.swapId}
                       InitialPrice={swap.initialAssetPrice}
                       ClaimPrice={swap.claimPrice}
