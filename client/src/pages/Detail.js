@@ -45,6 +45,7 @@ function Detail() {
   // CDS Availability
   const [isPayablePremium, setIsPayablePremium] = useState(false);
   const [isClaimable, setIsClaimable] = useState(false);
+  const [isExpired, setIsExpired] = useState(false);
 
   // CDS pay premium Handler
   const premiumButtonHandler = async () => {
@@ -163,7 +164,7 @@ function Detail() {
             <div className="detail-title-group">
               <h1 className="detail-title">Bitcoin Crypto Default Swap</h1>
               <p className="detail-issued">Issued on {swapOnDB? parseUnixtimeToDate(swapOnDB.createdAt) : null}</p>
-              <p className="detail-issued">Remaining Period to Pay: { calculatePeriodByInterval( timeRemainingToPay ) }</p>
+              <p className="detail-period">Remaining Period to Pay: { calculatePeriodByInterval( timeRemainingToPay ) }</p>
             </div>
             <div className="detail-party">
               <div className="party-item">
@@ -252,17 +253,15 @@ function Detail() {
                 </p>
               </div>
               <div className="content-item">
-                <p className="item-name">Premium Interval</p>
+                <p className="item-name">Total Rounds</p>
                 <p className="item-figures">
-                  {swapOnDB
-                    ? `${calculatePeriodByInterval(swapOnDB.premiumInterval)}`
-                    : ''}
+                  {swapOnDB ? `${swapOnDB.totalPremiumRounds} rounds` : ''}
                 </p>
               </div>
               <div className="content-item">
-                <p className="item-name">Premium Rounds</p>
+                <p className="item-name">Remaining Rounds</p>
                 <p className="item-figures">
-                  {swapOnDB ? `${swapOnDB.totalPremiumRounds} rounds` : ''}
+                  {swapOnDB ? `${swapOnDB.remainPremiumRounds} rounds` : ''}
                 </p>
               </div>
             </div>
@@ -333,6 +332,7 @@ function Detail() {
               <button
                 className="button close-button"
                 onClick={expireButtonHandler}
+                disabled={!isExpired}
               >
                 Expire
               </button>
