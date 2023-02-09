@@ -82,7 +82,7 @@ async function createSwap(buyer, seller, isBuyer) {
   try {
     await fusd.methods
       .approve(CDS_CA, isBuyer ? defaultBuyerDeposit : defaultSellerDeposit)
-      .call({ from: isBuyer ? buyer : seller });
+      .send({ from: isBuyer ? buyer : seller });
     const result = await cds.methods
       .create(
         isBuyer,
@@ -93,9 +93,8 @@ async function createSwap(buyer, seller, isBuyer) {
         defaultPremium,
         defaultPremiumRounds,
       )
-      .call({
+      .send({
         from: isBuyer ? buyer : seller,
-        // value: isBuyer ? defaultBuyerDeposit : defaultSellerDeposit,
       });
     const { returnValues } = result.events.Create;
     const { swapId } = returnValues;
@@ -112,17 +111,19 @@ async function cancelSwap(buyer, seller, isBuyer, swapId) {
     from: isBuyer ? buyer : seller,
   });
   console.log(`Create Swap : ${swapId}`);
-  const { returnValues } = result.events.CancelSwap;
+  const { returnValues } = result.events.Cancel;
   return returnValues;
 }
 
 async function acceptSwap(buyer, seller, isBuyer, swapId) {
+  const approveResult = await fusd.methods
+    .approve(CDS_CA, isBuyer ? defaultSellerDeposit : defaultBuyerDeposit)
+    .send({ from: isBuyer ? seller : buyer });
   const result = await cds.methods.accept(defaultInitAssetPrice, swapId).send({
     from: isBuyer ? seller : buyer,
-    value: isBuyer ? defaultSellerDeposit : defaultBuyerDeposit,
   });
   console.log(`Accept Swap : ${swapId}`);
-  const { returnValues } = result.events.AcceptSwap;
+  const { returnValues } = result.events.Accept;
   return returnValues;
 }
 
@@ -131,7 +132,7 @@ async function closeSwap(buyer, swapId) {
     from: buyer,
   });
   console.log(`Close Swap : ${swapId}`);
-  const { returnValues } = result.events.CloseSwap;
+  const { returnValues } = result.events.Close;
   return returnValues;
 }
 
@@ -140,14 +141,16 @@ async function claimSwap(buyer, swapId) {
     from: buyer,
   });
   console.log(`Claim Swap : ${swapId}`);
-  const { returnValues } = result.events.ClaimSwap;
+  const { returnValues } = result.events.Claim;
   return returnValues;
 }
 
 async function payPremium(buyer, swapId) {
+  const approveResult = await fusd.methods
+    .approve(CDS_CA, defaultPremium)
+    .send({ from: buyer });
   const result = await cds.methods.payPremium(swapId).send({
     from: buyer,
-    value: defaultPremium,
   });
   console.log(`PayPremium : ${swapId}`);
   const { returnValues } = result.events.PayPremium;
@@ -260,7 +263,23 @@ async function createAcceptPay() {
   }
 }
 
-// createAccept();
+async function triggerAllSingle() {
+  await createPending();
+  console.log(1);
+  await createAccept();
+  console.log(2);
+  await createCancel();
+  console.log(3);
+  await createAcceptClose();
+  console.log(4);
+  await createAcceptClaim();
+  console.log(5);
+  await createAcceptLiquidate();
+  console.log(6);
+  await createAcceptPay();
+  console.log(7);
+}
+triggerAllSingle();
 
 // let count = 0;
 // const totalSwaps = 20;
@@ -315,8 +334,9 @@ async function approveCreate() {
     .send({ from: seolAccount.address });
   console.log('create success');
 }
-try {
-  approveCreate();
-} catch (err) {
-  console.error(err);
-}
+
+// try {
+//   approveCreate();
+// } catch (err) {
+//   console.error(err);
+// }
