@@ -11,7 +11,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/effect-coverflow';
 
 //components
-import ProposedCardType2 from '../ProposedCardType2';
+import ProposedCard from '../ProposedCard';
 
 // css
 import '../../assets/css/cardScroll.css';
@@ -49,7 +49,7 @@ function ProposedCardScroll(props) {
           {initialProposed.map((swap) => {
             return (
               <SwiperSlide key={swap.swapId}>
-                <ProposedCardType2
+                <ProposedCard
                   swapId={swap.swapId}
                   premium={swap.premium}
                   premiumInterval={swap.premiumInterval}

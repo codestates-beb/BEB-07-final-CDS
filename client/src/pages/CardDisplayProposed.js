@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { getPendingSwapsByOffset } from '../apis/request.js';
 
 // components
-import ProposedCardType2 from '../components/ProposedCardType2.js';
+import ProposedCard from '../components/ProposedCard.js';
 import Pagination from '../components/Pagination.js';
 import Footer from '../components/Footer.js';
 
@@ -67,7 +67,7 @@ function CardDisplayProposed() {
           {proposed.map((swap) => {
             return (
               <div className="mx-auto" key={swap.swapId}>
-                <ProposedCardType2
+                <ProposedCard
                   swapId={swap.swapId}
                   premium={swap.premium}
                   premiumInterval={swap.premiumInterval}
