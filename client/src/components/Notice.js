@@ -61,7 +61,7 @@ function Notice() {
                     <div className='notice-wrapper success'>
                         <img src={success}/>
                         <p>Your Transaction Success</p>
-                        <p>For Swap ID # {swapId}</p>
+                        <p>for Swap ID # {swapId}</p>
                         <p>After 3 Seconds,</p>
                         <p>you will go main.</p>
                     </div>
