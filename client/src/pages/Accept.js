@@ -82,7 +82,7 @@ function Accept() {
       );
 
       console.log(result);
-      dispatch(setSuccess());
+      dispatch(setSuccess(swapId));
 
       setTimeout(() => {
         dispatch(closeModal());
@@ -112,7 +112,7 @@ function Accept() {
 
       const result = await CDS.cancel(swapId, userAddress);
       console.log(result);
-      dispatch(setSuccess());
+      dispatch(setSuccess(swapId));
 
       setTimeout(() => {
         dispatch(closeModal());
