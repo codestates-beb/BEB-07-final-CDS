@@ -7,7 +7,7 @@ import MainLogo from '../assets/img/CDS_Symbol_bright_removebg.png';
 
 // components
 import InfoSlide from '../components/swiper/infoSlide.js';
-import MarketPriceType2 from '../components/MarketPriceType2.js';
+import MarketPrice from '../components/MarketPrice.js';
 import ProposedCardScroll from '../components/swiper/ProposedCardScroll.js';
 import AcceptedCardScroll from '../components/swiper/AcceptedCardScroll.js';
 import ScrollButton from '../components/ScrollButton.js';
@@ -109,7 +109,7 @@ function Main() {
         </div>
       </div>
       <div className="my-[10rem]">
-        <MarketPriceType2 />
+        <MarketPrice />
       </div>
       <div className="flex-col">
         <div className="mt-32 font-bold text-2xl text-center">

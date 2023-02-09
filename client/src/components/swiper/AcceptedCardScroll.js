@@ -11,7 +11,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/effect-coverflow';
 
 //components
-import AcceptedCardType2 from '../AcceptedCardType2';
+import AcceptedCard from '../AcceptedCard';
 
 // css
 import '../../assets/css/cardScroll.css';
@@ -49,7 +49,7 @@ function AcceptedCardScroll(props) {
           {initialAccepted.map((swap) => {
             return (
               <SwiperSlide key={swap.swapId}>
-                <AcceptedCardType2
+                <AcceptedCard
                   swapId={swap.swapId}
                   InitialPrice={swap.initialAssetPrice}
                   ClaimPrice={swap.claimPrice}
