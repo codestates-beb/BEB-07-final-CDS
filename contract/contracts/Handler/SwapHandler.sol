@@ -124,9 +124,9 @@ contract SwapHandler is Ownable {
     return _swaps[swapId].getSeller();
   }
 
-  function getTotalRounds(uint256 swapId) public view returns (uint32) {
-    return _swaps[swapId].totalRounds();
-  }
+  // function getTotalRounds(uint256 swapId) public view returns (uint32) {
+  //   return _swaps[swapId].totalRounds();
+  // }
 
   // modifiers
   modifier isBuyer(uint256 swapId) {
