@@ -9,6 +9,7 @@ export const modalSlice = createSlice({
         isModalOpened: false,
         status: 0,
         timeoutId: null,
+        swapId: null,
     },
     reducers: {
         openModal: (state) =>{
@@ -19,12 +20,14 @@ export const modalSlice = createSlice({
         },
         setWaiting: (state) =>{
             state.status = 0;
+            state.swapId = 0;
         },
         setProcessing: (state) =>{
             state.status = 1;
         },
-        setSuccess: (state) =>{
+        setSuccess: (state, action) =>{
             state.status = 2;
+            state.swapId = action.payload;
         },
         setFail: (state, action) =>{
             state.status = 3;

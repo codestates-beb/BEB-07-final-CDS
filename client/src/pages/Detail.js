@@ -4,8 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 // components
-import ProposedCardType2 from '../components/ProposedCardType2';
-import MarketPriceType2 from '../components/MarketPriceType2';
+import AcceptedCard from '../components/AcceptedCard';
+import MarketPrice from '../components/MarketPrice';
 
 // apis
 import { getSwapById } from '../apis/request';
@@ -28,7 +28,7 @@ function Detail() {
 
   // CDS Info State
   const { swapId } = useParams();
-  const userAddress = useSelector(state=>state.auth.user_addr);
+  const userAddress = useSelector((state) => state.auth.user_addr);
   const [swapOnDB, setSwapOnDB] = useState(null);
   const [swapOnChain, setSwapOnChain] = useState(null);
   const [timeRemainingToPay, setTimeRemainingToPay] = useState(null);
@@ -39,96 +39,94 @@ function Detail() {
   const [isClaimable, setIsClaimable] = useState(false);
 
   // CDS pay premium Handler
-  const premiumButtonHandler = async()=>{
+  const premiumButtonHandler = async () => {
     console.log(swapId);
 
     try {
-      const result = await CDS.payPremium(swapId, userAddress, swapOnChain.premium);
+      const result = await CDS.payPremium(swapId, userAddress);
       
       console.log(result);
-    } catch(err){
+    } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   // CDS Cancel Handler
-  const cancelButtonHandler = async()=>{
+  const cancelButtonHandler = async () => {
     console.log(swapId);
 
     try {
-      const result = await CDS.cancelSwap(
+      const result = await CDS.cancel(
         swapId,
         userAddress,
       );
 
       console.log(result);
       navigate('/');
-    } catch(err) {
+    } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   // CDS Claim Handler
-  const claimButtonHandler = async()=>{
+  const claimButtonHandler = async () => {
     console.log(swapId);
 
     try {
-      const result = await CDS.claimSwap(
+      const result = await CDS.claim(
         swapId,
         userAddress,
       );   
 
       console.log(result);
-    } catch(err) {
+    } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   // CDS Close Handler
-  const closeButtonHandler = async()=>{
+  const closeButtonHandler = async () => {
     console.log(swapId);
 
     try{
-      const result = await CDS.closeSwap(
+      const result = await CDS.close(
         swapId,
         userAddress,
       );
       
       console.log(result);
       navigate('/');
-    } catch(err) {
-      console.log(err)
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
 
-  useEffect(()=>{
-    getSwapById(swapId)
-    .then(result=> {
-      if(result) setSwapOnDB(result);
+  useEffect(() => {
+    getSwapById(swapId).then((result) => {
+      if (result) setSwapOnDB(result);
       else {
-        console.log(result)
-        navigate('/NotFound');
-      };
-    })
-  }, [])
-
-  useEffect(()=>{
-    let intervalId;
-    if (CDS){
-      CDS.getNextPayDate(swapId)
-      .then(result=>{
         console.log(result);
-        intervalId = setInterval(()=>{
+        navigate('/NotFound');
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    let intervalId;
+    if (CDS) {
+      CDS.getNextPayDate(swapId).then((result) => {
+        console.log(result);
+        intervalId = setInterval(() => {
           const current = parseInt(new Date().getTime() / 1000);
-          setTimeRemainingToPay( calculateTimeRemaining( current, result ));
-        }, 1000)
-      })
+          setTimeRemainingToPay(calculateTimeRemaining(current, result));
+        }, 1000);
+      });
     }
 
-    return ()=>{
+    return () => {
       clearInterval(intervalId);
-    }
-  }, [CDS])
+    };
+  }, [CDS]);
 
   return (
     <>
@@ -138,22 +136,35 @@ function Detail() {
             <div className="detail-title-group">
               <h1 className="detail-title">Bitcoin Crypto Default Swap</h1>
               <p className="detail-issued">Issued on Jan 22, 2023</p>
-              <p className='detail-payday'>{timeRemainingToPay}</p>
+              <p className="detail-payday">{timeRemainingToPay}</p>
             </div>
             <div className="detail-party">
               <div className="party-item">
                 <p className="party-role">Buyer Address</p>
                 <p className="party-address">
-                  {swapOnDB? swapOnDB.buyer : ''}
+                  {swapOnDB ? swapOnDB.buyer : ''}
                 </p>
               </div>
               <div className="party-item">
                 <p className="party-role">Seller Address</p>
                 <p className="party-address">
-                  {swapOnDB? swapOnDB.seller : ''}
+                  {swapOnDB ? swapOnDB.seller : ''}
                 </p>
               </div>
             </div>
+          </div>
+          <div className="detail-head-card">
+            {swapOnDB ? (
+              <AcceptedCard
+                swapId={swapOnDB.swapId}
+                InitialPrice={swapOnDB.initialAssetPrice}
+                ClaimPrice={swapOnDB.claimPrice}
+                Liquidation
+                Price={swapOnDB.liquidationPrice}
+              />
+            ) : (
+              <AcceptedCard />
+            )}
           </div>
         </div>
         {/* head */}
@@ -163,15 +174,21 @@ function Detail() {
             <div className="content-box">
               <div className="content-item">
                 <p className="item-name">Initial Price of Assets</p>
-                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.initialAssetPrice}` : ''}</p>
+                <p className="item-figures">
+                  {swapOnDB ? `$ ${swapOnDB.initialAssetPrice}` : ''}
+                </p>
               </div>
               <div className="content-item">
                 <p className="item-name">The Amount of Assets</p>
-                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.amountOfAssets}` : ''}</p>
+                <p className="item-figures">
+                  {swapOnDB ? `$ ${swapOnDB.amountOfAssets}` : ''}
+                </p>
               </div>
               <div className="content-item">
                 <p className="item-name">Total Assets</p>
-                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.totalAssets}` : ''}</p>
+                <p className="item-figures">
+                  {swapOnDB ? `$ ${swapOnDB.totalAssets}` : ''}
+                </p>
               </div>
             </div>
           </div>
@@ -180,11 +197,15 @@ function Detail() {
             <div className="content-box">
               <div className="content-item">
                 <p className="item-name">Claim Price</p>
-                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.claimPrice}` : ''}</p>
+                <p className="item-figures">
+                  {swapOnDB ? `$ ${swapOnDB.claimPrice}` : ''}
+                </p>
               </div>
               <div className="content-item">
                 <p className="item-name">Drop Rate</p>
-                <p className="item-figures">{swapOnDB ? `${swapOnDB.dropRate * 100} %` : ''}</p>
+                <p className="item-figures">
+                  {swapOnDB ? `${swapOnDB.dropRate * 100} %` : ''}
+                </p>
               </div>
             </div>
           </div>
@@ -193,19 +214,29 @@ function Detail() {
             <div className="content-box">
               <div className="content-item">
                 <p className="item-name">Premium Rate</p>
-                <p className="item-figures">{swapOnDB ? `${swapOnDB.premiumRate} %` : ''}</p>
+                <p className="item-figures">
+                  {swapOnDB ? `${swapOnDB.premiumRate} %` : ''}
+                </p>
               </div>
               <div className="content-item">
                 <p className="item-name">Premium Price</p>
-                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.premium}` : ''}</p>
+                <p className="item-figures">
+                  {swapOnDB ? `$ ${swapOnDB.premium}` : ''}
+                </p>
               </div>
               <div className="content-item">
                 <p className="item-name">Premium Interval</p>
-                <p className="item-figures">{swapOnDB ? `${calculateTimeRemaining(0, swapOnDB.premiumInterval)}` : ''}</p>
+                <p className="item-figures">
+                  {swapOnDB
+                    ? `${calculateTimeRemaining(0, swapOnDB.premiumInterval)}`
+                    : ''}
+                </p>
               </div>
               <div className="content-item">
                 <p className="item-name">Premium Rounds</p>
-                <p className="item-figures">{swapOnDB ? `${swapOnDB.totalPremiumRounds} rounds` : ''}</p>
+                <p className="item-figures">
+                  {swapOnDB ? `${swapOnDB.totalPremiumRounds} rounds` : ''}
+                </p>
               </div>
             </div>
           </div>
@@ -214,15 +245,21 @@ function Detail() {
             <div className="content-box">
               <div className="content-item">
                 <p className="item-name">Seller Deposit</p>
-                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.sellerDeposit}` : ''}</p>
+                <p className="item-figures">
+                  {swapOnDB ? `$ ${swapOnDB.sellerDeposit}` : ''}
+                </p>
               </div>
               <div className="content-item">
                 <p className="item-name">Liquidation Price</p>
-                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.liquidationPrice}` : ''}</p>
+                <p className="item-figures">
+                  {swapOnDB ? `$ ${swapOnDB.liquidationPrice}` : ''}
+                </p>
               </div>
               <div className="content-item">
                 <p className="item-name">Buyer Deposit</p>
-                <p className="item-figures">{swapOnDB ? `$ ${swapOnDB.buyerDeposit}` : ''}</p>
+                <p className="item-figures">
+                  {swapOnDB ? `$ ${swapOnDB.buyerDeposit}` : ''}
+                </p>
               </div>
             </div>
           </div>
@@ -232,45 +269,46 @@ function Detail() {
           <ScrollButton />
         </div>
       </div>
-      <div className='detail-tail'>
-        <div className='detail-price'>
-          <MarketPriceType2/>
-          <div className='button-group'>
-            { swapOnDB && swapOnDB.buyer.toLowerCase() === userAddress ?
+      <div className="flex justify-center py-[8rem]">
+        <hr className="line w-[320px] border-b-2 border-primaryColor" />
+      </div>
+      <div className="detail-tail">
+        <div className="detail-price">
+          <MarketPrice />
+          <div className="button-group">
+            {swapOnDB && swapOnDB.buyer.toLowerCase() === userAddress ? (
               <>
                 <button
-                  className='button pay-button'
+                  className="button pay-button"
                   onClick={premiumButtonHandler}
                   disabled={!isPayablePremium}
                 >
                   Pay Premium
                 </button>
-                <button 
-                  className='button claim-button'
+                <button
+                  className="button claim-button"
                   onClick={claimButtonHandler}
                   disabled={!isClaimable}
                 >
-                Claim
+                  Claim
                 </button>
                 <button
-                  className='button cancel-button'
+                  className="button cancel-button"
                   onClick={cancelButtonHandler}
                 >
                   Cancel
                 </button>
                 <button
-                  className='button close-button'
+                  className="button close-button"
                   onClick={closeButtonHandler}
                 >
                   Close
                 </button>
               </>
-              : <></>
-            }
+            ) : (
+              <></>
+            )}
           </div>
-        </div>
-        <div className="flex justify-center py-14">
-          <hr className="line w-[720px] border-b-2 border-primaryColor" />
         </div>
       </div>
       <div>

@@ -127,9 +127,9 @@ function Create() {
       console.log(result);
 
       // get SwapId
-      const swapId = result.events;
+      const swapId = result.events.Create.returnValues.swapId;
       console.log(swapId);
-      dispatch(setSuccess());
+      dispatch(setSuccess(swapId));
 
       // Notice Modal close
       const timeoutId = setTimeout(() => {

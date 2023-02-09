@@ -81,7 +81,6 @@ export async function getSwapByAddress(address) {
     const swaps = await axios.get(requestURL);
     return swaps.data;
   } catch (e) {
-    console.log('An error occurred');
     return addressErrorDummydata;
   }
 }

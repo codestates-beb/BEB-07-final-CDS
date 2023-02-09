@@ -28,6 +28,7 @@ function Notice() {
 
     const isModalOpened = useSelector(state=> state.modal.isModalOpened);
     const status = useSelector(state=> state.modal.status);
+    const swapId = useSelector(state=> state.modal.swapId);
     const timeoutId = useSelector(state=> state.modal.timeoutId);
 
     const closeModalHandler = ()=>{
@@ -60,16 +61,19 @@ function Notice() {
                     <div className='notice-wrapper success'>
                         <img src={success}/>
                         <p>Your Transaction Success</p>
+                        <p>For Swap ID # {swapId}</p>
                         <p>After 3 Seconds,</p>
                         <p>you will go main.</p>
                     </div>
                     : <></>
                 }
                 { status === 3 ?
-                <div className='notice-wrapper fail'>
-                    <img src={fail}/>
-                    <p>Your Transaction Failed</p>
-                </div>
+                    <div className='notice-wrapper fail'>
+                        <img src={fail}/>
+                        <p>Your Transaction Failed</p>
+                        <p>After 3 Seconds,</p>
+                        <p>This modal will be Closed</p>
+                    </div>
                     : <></>
                 }
             </div>
