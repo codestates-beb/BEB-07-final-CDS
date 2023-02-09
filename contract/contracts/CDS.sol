@@ -2,8 +2,6 @@
 pragma solidity ^0.8.7;
 
 import './Handler/AssetHandler.sol';
-import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 interface CDSInterface {
   function create(
@@ -78,7 +76,6 @@ contract CDS is AssetHandler, CDSInterface {
       msg.sender != getBuyer(swapId) && msg.sender != getSeller(swapId),
       'The host can not call the method'
     );
-
     bool isSeller = (getSeller(swapId) == address(0));
     uint256 acceptedSwapId = _accept(isSeller, initAssetPrice, swapId);
     _sendDeposit(swapId, !isSeller);
@@ -87,21 +84,27 @@ contract CDS is AssetHandler, CDSInterface {
     return acceptedSwapId;
   }
 
-  function cancel(uint256 swapId) external override returns (bool) {
+  function cancel(
+    uint256 swapId
+  ) external override isParticipants(swapId) returns (bool) {
     _cancel(swapId);
     _endSwap(swapId);
     emit Cancel(swapId);
     return true;
   }
 
-  function close(uint256 swapId) external override returns (bool) {
+  function close(
+    uint256 swapId
+  ) external override isBuyer(swapId) returns (bool) {
     _close(swapId);
     _endSwap(swapId);
     emit Close(swapId);
     return true;
   }
 
-  function claim(uint256 swapId) external override returns (bool) {
+  function claim(
+    uint256 swapId
+  ) external override isBuyer(swapId) returns (bool) {
     require(
       getSwap(swapId).getClaimReward() != 0,
       'Claim price in CDS should be higher than current price of asset'
@@ -121,27 +124,25 @@ contract CDS is AssetHandler, CDSInterface {
     return true;
   }
 
-  function payPremium(uint256 swapId) external override returns (bool) {
+  function payPremium(
+    uint256 swapId
+  ) external override isBuyer(swapId) returns (bool) {
     require(
       token.allowance(getBuyer(swapId), address(this)) == getPremium(swapId),
       'Need allowance'
     );
     _payPremium(swapId);
-    bool sent = token.transferFrom(
-      getBuyer(swapId),
-      getSeller(swapId),
-      getPremium(swapId)
-    );
-    require(sent, 'Sending premium failed');
+    _sendPremium(swapId);
     emit PayPremium(swapId);
     return true;
   }
 
-  // called by server? seller?
   function payPremiumByDeposit(
     uint256 swapId
   ) external onlyOwner returns (bool) {
     _payPremium(swapId);
+    _sendPremiumByDeposit(swapId);
+    emit PayPremium(swapId);
     return true;
   }
 }

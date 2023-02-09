@@ -1,0 +1,73 @@
+https://dbdiagram.io/
+
+Table "users" {
+  "address" VARCHAR(100) [pk, not null]
+  "email" VARCHAR(100) [default: NULL]
+  "nickname" VARCHAR(50) [default: NULL]
+  "soldCount" INT [not null, default: 0]
+  "boughtCount" INT [not null, default: 0]
+  "lastSold" INT [default: NULL]
+  "lastBought" INT [default: NULL]
+  "nonce" INT [default: NULL]
+  "createdAt" INT [not null]
+  "updatedAt" INT [not null]
+  "deletedAt" INT [default: NULL]
+
+Indexes {
+  address [unique, name: "address"]
+}
+}
+
+Table "swaps" {
+  "swapId" INT [pk, not null]
+  "contractAddress" VARCHAR(100) [not null]
+  "initialAssetPrice" INT [not null]
+  "amountOfAssets" INT [not null]
+  "totalAssets" INT [not null]
+  "premium" INT [not null]
+  "premiumRate" INT [not null]
+  "dropRate" DECIMAL(10,4) [not null]
+  "premiumInterval" INT [not null]
+  "remainPremiumRounds" INT [not null]
+  "totalPremiumRounds" INT [not null]
+  "sellerDeposit" BIGINT [default: NULL]
+  "buyerDeposit" BIGINT [default: NULL]
+  "claimPrice" BIGINT [not null]
+  "liquidationPrice" BIGINT [not null]
+  "status" VARCHAR(20) [not null, default: "pending"]
+  "updatableStatus" VARCHAR(20) [default: NULL]
+  "createdAt" INT [not null]
+  "updatedAt" INT [not null]
+  "lastPaidAt" INT [default: NULL]
+  "terminatedAt" INT [default: NULL]
+  "deletedAt" INT [default: NULL]
+  "seller" VARCHAR(100) [default: NULL]
+  "buyer" VARCHAR(100) [default: NULL]
+
+Indexes {
+  swapId [unique, name: "swapId"]
+  seller [name: "swaps_seller_foreign_idx"]
+  buyer [name: "swaps_buyer_foreign_idx"]
+}
+}
+
+Table "transactions" {
+  "txHash" VARCHAR(100) [pk, not null]
+  "blockNum" INT [not null]
+  "event" VARCHAR(20) [default: NULL]
+  "createdAt" INT [not null]
+  "updatedAt" INT [not null]
+  "deletedAt" INT [default: NULL]
+  "swapId" INT [default: NULL]
+
+Indexes {
+  txHash [unique, name: "txHash"]
+  swapId [name: "transactions_swapId_foreign_idx"]
+}
+}
+
+Ref "FK_9b525e893635bdc87b49a93c1b9":"users"."address" < "swaps"."buyer" [update: cascade, delete: set null]
+
+Ref "FK_afd669e4a99098c75a2aeb22313":"users"."address" < "swaps"."seller" [update: cascade, delete: set null]
+
+Ref "FK_5958c68b528da9fe63fbd40669c":"swaps"."swapId" < "transactions"."swapId" [update: cascade, delete: set null]

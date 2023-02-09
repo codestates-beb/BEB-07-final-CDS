@@ -2,18 +2,15 @@
 pragma solidity ^0.8.7;
 
 import './SwapHandler.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
-contract AssetHandler is Ownable, SwapHandler {
+contract AssetHandler is SwapHandler {
   using SafeMath for uint256;
 
   IERC20 public token;
 
   mapping(uint256 => uint256[2]) public deposits;
-
-  constructor() {}
 
   function setToken(address _tokenAddress) external onlyOwner returns (bool) {
     require(_tokenAddress != address(0));
@@ -21,16 +18,25 @@ contract AssetHandler is Ownable, SwapHandler {
     return true;
   }
 
-  function _sendDeposit(uint256 _swapId, bool _isBuyer) internal returns (bool) {
+  function _sendDeposit(
+    uint256 _swapId,
+    bool _isBuyer
+  ) internal returns (bool) {
     uint256 deposit;
     if (_isBuyer) {
       deposit = getPremium(_swapId).mul(4);
-      require(token.allowance(getBuyer(_swapId), address(this)) == deposit, "Invalid allowance for deposit");
+      require(
+        token.allowance(getBuyer(_swapId), address(this)) == deposit,
+        'Invalid allowance for deposit'
+      );
       token.transferFrom(getBuyer(_swapId), address(this), deposit);
       deposits[_swapId][0] = deposit;
     } else {
       deposit = getSellerDeposit(_swapId);
-      require(token.allowance(getSeller(_swapId), address(this)) == deposit, "Invalid allowance for deposit");
+      require(
+        token.allowance(getSeller(_swapId), address(this)) == deposit,
+        'Invalid allowance for deposit'
+      );
       token.transferFrom(getSeller(_swapId), address(this), deposit);
       deposits[_swapId][1] = deposit;
     }
@@ -76,18 +82,46 @@ contract AssetHandler is Ownable, SwapHandler {
   function _expire(
     uint256 _swapId
   ) internal isSeller(_swapId) isActive(_swapId) {
-    bool byRounds = ((block.timestamp >= getNextPayDate(_swapId)) &&
-      (getTotalRounds(_swapId) == 0));
-    bool byDate = ((block.timestamp >= getNextPayDate(_swapId)) &&
-      (deposits[_swapId][0] == 0));
-    require(byDate || byRounds, 'Buyer deposit / Rounds remaining');
+    // bool byRounds = ((block.timestamp >= getNextPayDate(_swapId)) &&
+    //   (getRounds(_swapId) == 0));
+    // bool byDeposit = ((block.timestamp >= getNextPayDate(_swapId)) &&
+    //   (deposits[_swapId][0] == 0));
+    bool byRounds = (getRounds(_swapId) == 0);
+    bool byDeposit = (deposits[_swapId][0] == 0);
+    require(byDeposit || byRounds, 'Buyer deposit / Rounds remaining');
     getSwap(_swapId).setStatus(Swap.Status.expired);
   }
 
-  function clearDeposit(uint256 swapId) private {
+  function _sendPremiumByDeposit(uint256 _swapId) internal {
+    // uint256 currTime = block.timestamp;
+    // require(
+    //   (nextPayDate[_swapId] <= currTime),
+    //   'Invalid date to pay premium by deposit '
+    // );
+    require(deposits[_swapId][0] >= getPremium(_swapId), 'Not enough deposit');
+    bool sent = token.transfer(getSeller(_swapId), getPremium(_swapId));
+    require(sent, 'Sending premium failed');
+    deposits[_swapId][0] -= getPremium(_swapId);
+  }
+
+  function _sendPremium(uint256 _swapId) internal {
+    // uint256 currTime = block.timestamp;
+    // require(
+    //   (nextPayDate[_swapId] - 1 days <= currTime) &&
+    //     (currTime <= nextPayDate[_swapId]),
+    //   'Invalid date to pay premium'
+    // );
+    bool sent = token.transferFrom(
+      getBuyer(_swapId),
+      getSeller(_swapId),
+      getPremium(_swapId)
+    );
+    require(sent, 'Sending premium failed');
+  }
+
+  function clearDeposit(uint256 _swapId) private {
     for (uint i = 0; i <= 1; i++) {
-      deposits[swapId][i] = 0;
+      deposits[_swapId][i] = 0;
     }
   }
 }
-

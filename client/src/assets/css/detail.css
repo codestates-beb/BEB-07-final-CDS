@@ -10,61 +10,66 @@
   }
 
   /* detail head */
-  .container.container-detail .detail-head{
+  .container.container-detail .detail-head {
     @apply flex justify-between;
   }
 
   .detail-head .detail-title-group {
-    @apply mb-20;
+    @apply mb-16;
   }
 
   .detail-head .detail-title-group .detail-title {
-    @apply mb-5 text-6xl font-bold;
+    @apply mb-5 text-5xl font-bold;
   }
 
   .detail-head .detail-title-group .detail-issued {
-    @apply text-2xl;
+    @apply text-xl;
     color: var(--dark-gray-color);
   }
 
   .detail-head .detail-party .party-item {
-    @apply mb-16 text-2xl;
+    @apply mb-12 text-xl;
   }
 
   .detail-head .detail-party .party-role {
     color: var(--dark-gray-color);
   }
 
+  .detail-head-card {
+    margin-bottom: -4rem;
+    margin-top: -4rem;
+  }
+
   /* detail content */
 
   .detail-content .detail-content-section .content-section-title {
-    @apply text-5xl font-semibold mb-10;
+    @apply text-3xl font-semibold mb-8;
   }
 
   .detail-content .content-box {
-    @apply rounded-xl inline-block mb-20;
+    @apply rounded-xl inline-block mb-16;
     gap: 1rem;
     background-color: var(--black-color);
   }
-  
+
   .detail-content .content-box .content-item {
     @apply py-4 px-16 inline-block;
   }
 
-  .detail-content .content-box .content-item .item-name{
-    @apply py-4 font-semibold text-2xl text-darkGrayColor;
+  .detail-content .content-box .content-item .item-name {
+    @apply py-4 font-semibold text-xl text-darkGrayColor;
   }
 
-  .detail-content .content-box .content-item .item-figures{
-    @apply py-4 font-normal text-2xl;
+  .detail-content .content-box .content-item .item-figures {
+    @apply py-4 font-normal text-xl;
   }
 
   /* detail price */
-  .detail-price .button-group{
+  .detail-price .button-group {
     @apply flex justify-center mt-10;
   }
 
-  .detail-price .button{
+  .detail-price .button {
     @apply py-4 w-[8rem] font-bold bg-secondaryColor rounded-xl mr-5;
   }
 
@@ -72,7 +77,7 @@
     @apply bg-darkGrayColor;
   }
 
-  .detail-price .button:last-child{
+  .detail-price .button:last-child {
     @apply mr-0;
   }
 }
