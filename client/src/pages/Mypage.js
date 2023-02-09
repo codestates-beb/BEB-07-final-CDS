@@ -5,7 +5,7 @@ import { IconContext } from 'react-icons';
 // apis
 import { requestMyData } from '../apis/auth';
 import { getSwapByAddress } from '../apis/request';
-import { postEmailData } from '../apis/post';
+import { postEmailData, postNicknameData } from '../apis/post';
 
 // components
 import ProposedCardType2 from '../components/ProposedCardType2.js';
@@ -43,16 +43,13 @@ function Mypage() {
   const [emailChange, setEmailChange] = useState('');
   const [nickNameChange, setNickNameChange] = useState('');
 
-  console.log(emailChange);
-  console.log(nickNameChange);
-
   useEffect(() => {
     requestMyData().then((response) => {
-      console.log(response);
       setUserAddress(response.address);
       setBought(response.boughtCount);
       setSold(response.soldCount);
       setNickName(response.nickname);
+
       if (response.email == null) {
         setEmail('setYourEmail@CryptoDefault.com');
       } else {
@@ -65,8 +62,6 @@ function Mypage() {
     const APIdata = getSwapByAddress(userAddress);
     const getData = () => {
       APIdata.then((response) => {
-        console.log(response);
-
         return response.swaps;
       }).then((data) => {
         const pendingFiltered = data.filter(
@@ -99,16 +94,51 @@ function Mypage() {
     }
   };
 
+  function emailClick() {
+    let promptValue = prompt('Enter the username you want to change.');
+    if (promptValue === '') {
+      // user pressed OK, but the input field was empty
+    } else if (promptValue) {
+      // user typed something and hit OK
+      setEmailChange(promptValue);
+    } else {
+      // user hit cancel
+    }
+  }
+
+  function nickNameClick() {
+    let promptValue = prompt('Enter the username you want to change.');
+    if (promptValue === '') {
+      // user pressed OK, but the input field was empty
+    } else if (promptValue) {
+      // user typed something and hit OK
+      setNickNameChange(promptValue);
+    } else {
+      // user hit cancel
+    }
+  }
+
   // Email post요청을 보냅니다
   useEffect(() => {
     const postData = () => {
       postEmailData(emailChange).then((response) => {
-        console.log(response);
+        setEmail(response.data.email);
       });
     };
 
     postData();
   }, [emailChange]);
+
+  // Nickname post요청을 보냅니다
+  useEffect(() => {
+    const postData = () => {
+      postNicknameData(nickNameChange).then((response) => {
+        setNickName(response.data.nickname);
+      });
+    };
+
+    postData();
+  }, [nickNameChange]);
 
   return (
     <>
@@ -135,11 +165,7 @@ function Mypage() {
                 <IconContext.Provider value={{ color: '#FF8B13' }}>
                   <FaEdit
                     className="w-[100%] h-[100%]"
-                    onClick={() =>
-                      setNickNameChange(
-                        prompt('Enter the username you want to change.'),
-                      )
-                    }
+                    onClick={() => nickNameClick()}
                   />
                 </IconContext.Provider>
               </button>
@@ -155,11 +181,7 @@ function Mypage() {
                   <IconContext.Provider value={{ color: '#FF8B13' }}>
                     <FaEdit
                       className="w-[100%] h-[100%]"
-                      onClick={() =>
-                        setEmailChange(
-                          prompt('Enter the email you want to change.'),
-                        )
-                      }
+                      onClick={() => emailClick()}
                     />
                   </IconContext.Provider>
                 </button>
