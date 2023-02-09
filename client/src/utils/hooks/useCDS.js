@@ -117,11 +117,11 @@ function useCDS() {
           return receipt;
         },
 
-        payPremium: async (swapId, address, premium)=>{
-          if(!swapId || !address || premium) return new Error("Invalid Arguments");
+        payPremium: async (swapId, address)=>{
+          if(!swapId || !address) return new Error("Invalid Arguments");
 
           const receipt = await contract.methods.payPremium(swapId)
-          .send({from:address});
+          .send({from: address});
           
           return receipt;
         },

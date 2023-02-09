@@ -25,7 +25,7 @@ import useERC20 from '../utils/hooks/useERC20';
 import { getSwapById } from '../apis/request';
 
 // utils
-import { calculateTimeRemaining } from '../utils/calendar';
+import { calculatePeriodByInterval } from '../utils/calendar';
 
 // css
 import '../assets/css/negotiate.css';
@@ -307,10 +307,7 @@ function Accept() {
                   placeholder="Premium Interval"
                   value={
                     swapOnDB
-                      ? `Premium Interval: ${calculateTimeRemaining(
-                          0,
-                          swapOnDB.premiumInterval,
-                        )}`
+                      ? `Premium Interval: ${calculatePeriodByInterval(swapOnDB.premiumInterval)}`
                       : null
                   }
                   disabled
