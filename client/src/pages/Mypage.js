@@ -1,10 +1,11 @@
 // modules
 import { useEffect, useState } from 'react';
+import { IconContext } from 'react-icons';
 
 // apis
 import { requestMyData } from '../apis/auth';
-
 import { getSwapByAddress } from '../apis/request';
+import { postEmailData, postNicknameData } from '../apis/post';
 
 // components
 import ProposedCardType2 from '../components/ProposedCardType2.js';
@@ -15,6 +16,7 @@ import Footer from '../components/Footer.js';
 //image
 import MyPage_bg from '../assets/img/MyPage_bg.jpg';
 import Profile from '../assets/img/profile.png';
+import { FaEdit } from 'react-icons/fa';
 
 function Mypage() {
   // 해당 user Address의 mydata를 저장합니다
@@ -37,13 +39,17 @@ function Mypage() {
   const [isPendingCompleted, setPendingCompleted] = useState(false);
   const [isActiveCompleted, setActiveCompleted] = useState(false);
 
+  // User가 서버로 post요청을 보낼 데이터를 저장합니다
+  const [emailChange, setEmailChange] = useState('');
+  const [nickNameChange, setNickNameChange] = useState('');
+
   useEffect(() => {
     requestMyData().then((response) => {
-      // console.log(response);
       setUserAddress(response.address);
       setBought(response.boughtCount);
       setSold(response.soldCount);
       setNickName(response.nickname);
+
       if (response.email == null) {
         setEmail('setYourEmail@CryptoDefault.com');
       } else {
@@ -56,8 +62,6 @@ function Mypage() {
     const APIdata = getSwapByAddress(userAddress);
     const getData = () => {
       APIdata.then((response) => {
-        console.log(response);
-
         return response.swaps;
       }).then((data) => {
         const pendingFiltered = data.filter(
@@ -72,6 +76,7 @@ function Mypage() {
     getData();
   }, [userAddress]);
 
+  // swap card를 추가적으로 불러옵니다
   const loadMorePending = () => {
     setIndex(index + 4);
     if (index >= pendingSwaps.length) {
@@ -89,6 +94,53 @@ function Mypage() {
       setActiveCompleted(false);
     }
   };
+
+  // 사용자가 prompt에 empty value를 입력하거나 cancle을 눌렀을 경우를 처리합니다
+  function emailClick() {
+    let promptValue = prompt('Enter the username you want to change.');
+    if (promptValue === '') {
+      // user pressed OK, but the input field was empty
+    } else if (promptValue) {
+      // user typed something and hit OK
+      setEmailChange(promptValue);
+    } else {
+      // user hit cancel
+    }
+  }
+
+  function nickNameClick() {
+    let promptValue = prompt('Enter the username you want to change.');
+    if (promptValue === '') {
+      // user pressed OK, but the input field was empty
+    } else if (promptValue) {
+      // user typed something and hit OK
+      setNickNameChange(promptValue);
+    } else {
+      // user hit cancel
+    }
+  }
+
+  // Email post요청을 보냅니다
+  useEffect(() => {
+    const postData = () => {
+      postEmailData(emailChange).then((response) => {
+        setEmail(response.data.email);
+      });
+    };
+
+    postData();
+  }, [emailChange]);
+
+  // Nickname post요청을 보냅니다
+  useEffect(() => {
+    const postData = () => {
+      postNicknameData(nickNameChange).then((response) => {
+        setNickName(response.data.nickname);
+      });
+    };
+
+    postData();
+  }, [nickNameChange]);
 
   return (
     <>
@@ -109,13 +161,33 @@ function Mypage() {
         </div>
         <div className="bg-blackColor pt-[5%] pb-[5%] rounded-b-3xl px-[7%]">
           <div className="">
-            <div className="text-4xl pb-[2.5%] font-bold">{nickName}</div>
+            <div className="flex pb-[2.5%]">
+              <div className="text-4xl font-bold">{nickName}</div>
+              <button className="w-[1.5rem] h-[1.5rem] ml-[1rem] m-auto">
+                <IconContext.Provider value={{ color: '#FF8B13' }}>
+                  <FaEdit
+                    className="w-[100%] h-[100%]"
+                    onClick={() => nickNameClick()}
+                  />
+                </IconContext.Provider>
+              </button>
+            </div>
             <div className="pt-[2%] overflow-hidden">
               <div className="text-xl font-bold text-lightGray">Address</div>
               <div className="text-sm">{userAddress}</div>
             </div>
             <div className="pt-[2%] overflow-hidden">
-              <div className="text-xl font-bold text-lightGray">Email</div>
+              <div className="flex">
+                <div className="text-xl font-bold text-lightGray">Email</div>
+                <button className="w-[1rem] h-[1rem] ml-[0.5rem] m-auto">
+                  <IconContext.Provider value={{ color: '#FF8B13' }}>
+                    <FaEdit
+                      className="w-[100%] h-[100%]"
+                      onClick={() => emailClick()}
+                    />
+                  </IconContext.Provider>
+                </button>
+              </div>
               <div className="text-sm">{email}</div>
             </div>
             <div className="flex pt-[3%]">
@@ -170,7 +242,7 @@ function Mypage() {
                 <button
                   onClick={loadMorePending}
                   type="button"
-                  className="h-[2rem] w-[7rem] rounded-3xl bg-primaryColor text-center drop-shadow-md transition delay-80 hover:-translate-y-1 hover:bg-mintHover "
+                  className="h-[2rem] w-[7rem] font-semibold rounded-3xl bg-primaryColor text-center drop-shadow-md transition delay-80 hover:-translate-y-1 hover:bg-mintHover "
                 >
                   Load More
                 </button>
@@ -205,7 +277,7 @@ function Mypage() {
                 <button
                   onClick={loadMoreActive}
                   type="button"
-                  className="h-[2rem] w-[7rem] rounded-3xl bg-primaryColor text-center drop-shadow-md transition delay-80 hover:-translate-y-1 hover:bg-mintHover "
+                  className="h-[2rem] w-[7rem] rounded-3xl font-semibold bg-primaryColor text-center drop-shadow-md transition delay-80 hover:-translate-y-1 hover:bg-mintHover "
                 >
                   Load More
                 </button>

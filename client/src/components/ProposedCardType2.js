@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 
 //image
-import BTCCard from '../assets/img/BTC_Card_bg.jpg';
+import BTCCard from '../assets/img/BTC_Card_bg.jpeg';
 
 // css
 import '../assets/css/cdsCard.css';
