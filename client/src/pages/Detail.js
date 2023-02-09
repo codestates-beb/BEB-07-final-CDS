@@ -84,6 +84,23 @@ function Detail() {
     }
   };
 
+  // CDS expire Handler
+  const expireButtonHandler = async() => {
+    console.log(swapId);
+
+    try{
+      const result = await CDS.expire(
+        swapId,
+        userAddress,
+      );
+
+      console.log(result);
+      navigate('/');
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   useEffect(() => {
     getSwapById(swapId).then((result) => {
       if (result) setSwapOnDB(result);
@@ -158,19 +175,19 @@ function Detail() {
               <div className="content-item">
                 <p className="item-name">Initial Price of Assets</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.initialAssetPrice}` : ''}
+                  {swapOnDB ? `$ ${Number( swapOnDB.initialAssetPrice ).toLocaleString()}` : ''}
                 </p>
               </div>
               <div className="content-item">
                 <p className="item-name">The Amount of Assets</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.amountOfAssets}` : ''}
+                  {swapOnDB ? `${Number( swapOnDB.amountOfAssets ).toLocaleString()}` : ''}
                 </p>
               </div>
               <div className="content-item">
                 <p className="item-name">Total Assets</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.totalAssets}` : ''}
+                  {swapOnDB ? `$ ${Number( swapOnDB.totalAssets ).toLocaleString()}` : ''}
                 </p>
               </div>
             </div>
@@ -181,7 +198,7 @@ function Detail() {
               <div className="content-item">
                 <p className="item-name">Claim Price</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.claimPrice}` : ''}
+                  {swapOnDB ? `$ ${Number( swapOnDB.claimPrice ).toLocaleString()}` : ''}
                 </p>
               </div>
               <div className="content-item">
@@ -204,7 +221,7 @@ function Detail() {
               <div className="content-item">
                 <p className="item-name">Premium Price</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.premium}` : ''}
+                  {swapOnDB ? `$ ${Number( swapOnDB.premium ).toLocaleString()}` : ''}
                 </p>
               </div>
               <div className="content-item">
@@ -229,19 +246,19 @@ function Detail() {
               <div className="content-item">
                 <p className="item-name">Seller Deposit</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.sellerDeposit}` : ''}
+                  {swapOnDB ? `$ ${Number( swapOnDB.sellerDeposit ).toLocaleString()}` : ''}
                 </p>
               </div>
               <div className="content-item">
                 <p className="item-name">Liquidation Price</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.liquidationPrice}` : ''}
+                  {swapOnDB ? `$ ${Number( swapOnDB.liquidationPrice ).toLocaleString()}` : ''}
                 </p>
               </div>
               <div className="content-item">
                 <p className="item-name">Buyer Deposit</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.buyerDeposit}` : ''}
+                  {swapOnDB ? `$ ${Number( swapOnDB.buyerDeposit ).toLocaleString()}` : ''}
                 </p>
               </div>
             </div>
@@ -285,6 +302,16 @@ function Detail() {
             ) : (
               <></>
             )}
+            {swapOnDB && swapOnDB.seller.toLowerCase() === userAddress ? 
+              <button
+                className="button close-button"
+                onClick={expireButtonHandler}
+              >
+                Expire
+              </button>
+            :
+              <></>
+            }
           </div>
         </div>
       </div>

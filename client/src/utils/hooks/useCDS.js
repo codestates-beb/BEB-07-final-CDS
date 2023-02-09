@@ -108,6 +108,15 @@ function useCDS() {
           return receipt;
         },
 
+        expire: async(swapId, address)=> {
+          if(!swapId || !address) throw new Error("Invalid Arguments");
+
+          const receipt = await contract.methods.expire(swapId)
+          .send({from:address});
+
+          return receipt;
+        },
+
         payPremium: async (swapId, address, premium)=>{
           if(!swapId || !address || premium) return new Error("Invalid Arguments");
 
@@ -133,7 +142,7 @@ function useCDS() {
         },
 
         getNextPayDate: async (swapId) =>{
-          const receipt = await contract.methods.getNextPayDate(swapId).call();
+          const receipt = await contract.methods.nextPayDate(swapId).call();
           return receipt;
         }
       }
