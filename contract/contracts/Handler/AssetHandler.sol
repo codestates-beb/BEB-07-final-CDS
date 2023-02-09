@@ -84,11 +84,11 @@ contract AssetHandler is SwapHandler {
   ) internal isSeller(_swapId) isActive(_swapId) {
     // bool byRounds = ((block.timestamp >= getNextPayDate(_swapId)) &&
     //   (getRounds(_swapId) == 0));
-    // bool byDate = ((block.timestamp >= getNextPayDate(_swapId)) &&
+    // bool byDeposit = ((block.timestamp >= getNextPayDate(_swapId)) &&
     //   (deposits[_swapId][0] == 0));
     bool byRounds = (getRounds(_swapId) == 0);
-    bool byDate = (deposits[_swapId][0] == 0);
-    require(byDate || byRounds, 'Buyer deposit / Rounds remaining');
+    bool byDeposit = (deposits[_swapId][0] == 0);
+    require(byDeposit || byRounds, 'Buyer deposit / Rounds remaining');
     getSwap(_swapId).setStatus(Swap.Status.expired);
   }
 
