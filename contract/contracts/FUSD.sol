@@ -5,10 +5,10 @@ import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 
 contract FUSD is ERC20('FUSD', 'FUSD') {
   constructor() {
-    // Mint 100 tokens to msg.sender
-    // Similar to how
-    // 1 dollar = 100 cents
-    // 1 token = 1 * (10 ** decimals)
-    _mint(msg.sender, 100 * 10 ** uint256(decimals()));
+    _mint(msg.sender, 100000000);
+  }
+
+  function decimals() public pure override returns (uint8) {
+    return 0;
   }
 }

@@ -19,6 +19,7 @@ import {
 
 // hooks
 import useCDS from '../utils/hooks/useCDS';
+import useERC20 from '../utils/hooks/useERC20';
 
 // apis
 import { getSwapById } from '../apis/request';
@@ -35,6 +36,8 @@ import acceptBackGround from '../assets/img/acceptPage_bg.jpg';
 function Accept() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const CDS = useCDS();
+  const ERC20 = useERC20();
 
   const { swapId } = useParams();
   const [swapOnChain, setSwapOnChain] = useState(null);
@@ -42,9 +45,10 @@ function Accept() {
 
   const [isBuyer, setIsBuyer] = useState(null);
   const [proposer, setProposer] = useState(null);
+  const [premiumOnChain, setPremiumOnChain] = useState(null);
+  const [sellerDepositOnChain, setSellerDepositOnchain] = useState(null);
 
   const userAddress = useSelector((state) => state.auth.user_addr);
-  const CDS = useCDS();
 
   // Accept CDS Handler
   const acceptButtonHandler = async () => {
@@ -57,25 +61,28 @@ function Accept() {
       swapOnDB.seller,
     );
 
-    const deposits = await CDS.getDeposits(swapId);
-    console.log(deposits);
-
-    const deposit = isBuyer ? swapOnDB.sellerDeposit : swapOnDB.buyerDeposit;
-    console.log(deposit);
-
     try {
+      // Notice Modal open
       dispatch(openModal());
       dispatch(setProcessing());
 
-      const result = await CDS.acceptSwap(
+      // Calculate User's Deposit
+      const deposit = isBuyer ? sellerDepositOnChain : premiumOnChain * 4;
+      console.log(deposit);
+
+      // Approve token amount to Contract
+      const approved = await ERC20.approve(deposit, userAddress);
+      console.log(approved);
+
+      // Accept Swap
+      const result = await CDS.accept(
         swapOnDB.initialAssetPrice,
         swapId,
-        deposit,
         userAddress,
       );
 
       console.log(result);
-      dispatch(setSuccess());
+      dispatch(setSuccess(swapId));
 
       setTimeout(() => {
         dispatch(closeModal());
@@ -91,7 +98,7 @@ function Accept() {
         navigate('/');
       }, 3000);
 
-      dispatch(setFail(timeoutId));
+      dispatch( setFail(timeoutId) );
     }
   };
 
@@ -103,9 +110,9 @@ function Accept() {
       dispatch(openModal());
       dispatch(setProcessing());
 
-      const result = await CDS.cancelSwap(swapId, userAddress);
+      const result = await CDS.cancel(swapId, userAddress);
       console.log(result);
-      dispatch(setSuccess());
+      dispatch(setSuccess(swapId));
 
       setTimeout(() => {
         dispatch(closeModal());
@@ -143,8 +150,19 @@ function Accept() {
   useEffect(() => {
     if (CDS) {
       CDS.getSwap(swapId).then((result) => {
+        console.log(`Swap OnChain: ${result}`);
         setSwapOnChain(result);
       });
+
+      CDS.getPremium(swapId).then((result) =>{
+        console.log(`Premium OnChain: ${result}`);
+        setPremiumOnChain(result);
+      })
+
+      CDS.getSellerDeposit(swapId).then(result=>{
+        console.log(`Deposits OnChain: ${result}`);
+        setSellerDepositOnchain(result);
+      })
     }
   }, [CDS]);
 
@@ -181,19 +199,23 @@ function Accept() {
         </div>
         <div className="negotiate-form">
           <div className="form-section">
-            <h2 className="section-title">Address</h2>
+            <h2 className="section-title">Proposer Address</h2>
             <div className="input-group">
-              <div className="input-button">
+              <div className="input-wrapper">
                 {isBuyer ? (
-                  <input
-                    value={swapOnDB ? `Buyer Address: ${proposer}` : null}
-                    disabled
-                  />
+                  <>
+                    <input
+                      value={swapOnDB ? proposer : null}
+                      disabled
+                    />
+                  </>
                 ) : (
-                  <input
-                    value={swapOnDB ? `Seller Address: ${proposer}` : null}
-                    disabled
-                  />
+                  <>
+                    <input
+                      value={swapOnDB ? proposer : null}
+                      disabled
+                    />
+                  </>
                 )}
               </div>
             </div>
@@ -202,32 +224,30 @@ function Accept() {
             <h2 className="section-title">Assets</h2>
             <div className="input-group">
               <div className='input-wrapper'>
+                <div className='input-label'>Initial Price of Assets</div>
                 <input
-                  placeholder="Initial Price of Assets"
-                  value={
-                    swapOnDB
-                      ? `Initial Price of Assets: ${swapOnDB.initialAssetPrice}`
-                      : null
+                  value={ swapOnDB
+                    ? `$ ${Number( swapOnDB.initialAssetPrice ).toLocaleString()}`
+                    : null
                   }
                   disabled
                 />
               </div>
               <div className='input-wrapper'>
+                <div className='input-label'>The Amount of Assets</div>
                 <input
-                  placeholder="The Amount of Assets"
-                  value={
-                    swapOnDB
-                      ? `The Amount of Assets: ${swapOnDB.amountOfAssets}`
-                      : null
-                  }
+                  value={ swapOnDB 
+                    ? `# ${Number( swapOnDB.amountOfAssets ).toLocaleString()}`
+                    : null}
                   disabled
                 />
               </div>
               <div className='input-wrapper'>
+                <div className='input-label'>Total Assets</div>
                 <input
-                  placeholder="Total Assets"
-                  value={
-                    swapOnDB ? `Total Assets: ${swapOnDB.totalAssets}` : null
+                  value={swapOnDB 
+                    ? `$ ${Number(swapOnDB.totalAssets).toLocaleString()}`
+                    : null
                   }
                   disabled
                 />
@@ -238,9 +258,9 @@ function Accept() {
             <h2 className="section-title">Claim</h2>
             <div className="input-group">
               <div className='input-wrapper'>
+                <div className='input-label'>Claim Price</div>
                 <input
-                  placeholder="Claim Price"
-                  value={swapOnDB ? `Claim Price: ${swapOnDB.claimPrice}` : null}
+                  value={swapOnDB ? `$ ${Number(swapOnDB.claimPrice).toLocaleString()}` : null}
                   disabled
                 />
               </div>
@@ -270,15 +290,15 @@ function Accept() {
                 <input
                   placeholder="Premium Rate"
                   value={
-                    swapOnDB ? `Premium Rate: ${swapOnDB.premiumRate}` : null
+                    swapOnDB ? `Premium Rate: ${swapOnDB.premiumRate} %` : null
                   }
                   disabled
                 />
               </div>
               <div className='input-wrapper'>
+                <div className='input-label'>Premium Price</div>
                 <input
-                  placeholder="Premium Price"
-                  value={swapOnDB ? `Premium Price: ${swapOnDB.premium}` : null}
+                  value={swapOnDB ? `$ ${Number(swapOnDB.premium).toLocaleString()}` : null}
                   disabled
                 />
               </div>
@@ -297,11 +317,11 @@ function Accept() {
                 />
               </div>
               <div className='input-wrapper'>
+                <div className='input-label'>Premium Rounds</div>
                 <input
-                  placeholder="Premium Rounds"
                   value={
                     swapOnDB
-                      ? `Premium Rounds: ${swapOnDB.totalPremiumRounds}`
+                      ? Number(swapOnDB.totalPremiumRounds).toLocaleString()
                       : null
                   }
                   disabled
@@ -313,10 +333,10 @@ function Accept() {
             <h2 className="section-title">Liquidation</h2>
             <div className="input-group">
               <div className='input-wrapper'>
+                <div className='input-label'>Seller Deposit</div>
                 <input
-                  placeholder="Seller Deposit"
                   value={
-                    swapOnDB ? `Seller Deposit: ${swapOnDB.sellerDeposit}` : null
+                    swapOnDB ? `$ ${swapOnDB.sellerDeposit}` : null
                   }
                   disabled
                 />
@@ -341,10 +361,10 @@ function Accept() {
                 />
               </div>
               <div className='input-wrapper'>
+                <div className='input-label'>Buyer Deposit</div>
                 <input
-                  placeholder="Buyer Deposit"
                   value={
-                    swapOnDB ? `Buyer Deposit: ${swapOnDB.buyerDeposit}` : null
+                    swapOnDB ? `$ ${swapOnDB.buyerDeposit}` : null
                   }
                   disabled
                 />
@@ -367,7 +387,7 @@ function Accept() {
                 className="negotiate-button hover:bg-mintHover transition delay-80"
                 onClick={acceptButtonHandler}
               >
-                Sign CDS
+                Accept CDS
               </button>
             </div>
           </div>

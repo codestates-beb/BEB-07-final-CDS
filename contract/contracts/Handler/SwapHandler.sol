@@ -2,26 +2,25 @@
 pragma solidity ^0.8.7;
 
 import '../Swaps/Swap.sol';
+import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
-contract SwapHandler {
+contract SwapHandler is Ownable {
   using Counters for Counters.Counter;
   Counters.Counter internal _swapId;
 
   mapping(uint256 => Swap) private _swaps;
 
-  mapping(uint256 => uint256) private _nextPayDate;
+  mapping(uint256 => uint256) public nextPayDate;
 
-  address public priceOracle;
-  
-  constructor () {}
+  // address public priceOracle;
 
   // 고얼리시 oracle 관련된 부분은 모두 삭제 후 Swap에 getPrice.sol 이식
-  function setOracle(address _priceOracleAddress) public returns (bool) {
-    require(_priceOracleAddress != address(0x0), 'Invalid address');
-    priceOracle = _priceOracleAddress;
-    return true;
-  }
+  // function setOracle(address _priceOracleAddress) public returns (bool) {
+  //   require(_priceOracleAddress != address(0x0), 'Invalid address');
+  //   priceOracle = _priceOracleAddress;
+  //   return true;
+  // }
 
   function _create(
     bool _isBuyer,
@@ -30,7 +29,8 @@ contract SwapHandler {
     uint256 _liquidationPrice,
     uint256 _sellerDeposit,
     uint256 _premium,
-    uint32 _totalRounds
+    uint32 _totalRounds,
+    uint32 _assetType
   ) internal returns (uint256) {
     _swapId.increment();
     uint256 newSwapId = _swapId.current();
@@ -42,7 +42,7 @@ contract SwapHandler {
       _premium,
       _sellerDeposit,
       _totalRounds,
-      priceOracle
+      _assetType
     );
     _swaps[newSwapId] = newSwap;
 
@@ -63,42 +63,28 @@ contract SwapHandler {
       ? targetSwap.setSeller(msg.sender)
       : targetSwap.setBuyer(msg.sender);
 
-    // check => 토큰으로 처리시 바로 보내고 이거도 되야함.
-    _nextPayDate[_acceptedSwapId] += 4 weeks;
+    nextPayDate[_acceptedSwapId] = block.timestamp + 4 weeks;
 
     targetSwap.setStatus(Swap.Status.active);
 
     return _acceptedSwapId;
   }
 
-  function _cancel(
-    uint256 _targetSwapId
-  ) internal isParticipants(_targetSwapId) isPending(_targetSwapId) {
+  function _cancel(uint256 _targetSwapId) internal isPending(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.inactive);
   }
 
-  function _close(
-    uint256 _targetSwapId
-  ) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
+  function _close(uint256 _targetSwapId) internal isActive(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.expired);
   }
 
-  function _payPremium(
-    uint256 _targetSwapId
-  ) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
-    // uint256 currTime = block.timestamp;
-    // require(
-    //   (_nextPayDate[_targetSwapId] - 1 days <= currTime) &&
-    //     (currTime <= _nextPayDate[_targetSwapId]),
-    //   'Invalid pay date'
-    // );
-    _nextPayDate[_targetSwapId] += 4 weeks;
+  function _payPremium(uint256 _targetSwapId) internal isActive(_targetSwapId) {
+    require(getRounds(_targetSwapId) > 0, 'Round already ended');
+    nextPayDate[_targetSwapId] += 4 weeks;
     getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
   }
 
-  function _claim(
-    uint256 _targetSwapId
-  ) internal isBuyer(_targetSwapId) isActive(_targetSwapId) {
+  function _claim(uint256 _targetSwapId) internal isActive(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.claimed);
   }
 
@@ -139,13 +125,9 @@ contract SwapHandler {
     return _swaps[swapId].getSeller();
   }
 
-  function getNextPayDate(uint256 swapId) public view returns (uint256) {
-    return _nextPayDate[swapId];
-  }
-
-  function getTotalRounds(uint256 swapId) public view returns (uint32) {
-    return _swaps[swapId].totalRounds();
-  }
+  // function getTotalRounds(uint256 swapId) public view returns (uint32) {
+  //   return _swaps[swapId].totalRounds();
+  // }
 
   // modifiers
   modifier isBuyer(uint256 swapId) {

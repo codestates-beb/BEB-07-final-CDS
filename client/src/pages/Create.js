@@ -21,6 +21,7 @@ import {
 // hooks
 import useMetamask from '../utils/hooks/useMetamask';
 import useCDS from '../utils/hooks/useCDS';
+import useERC20 from '../utils/hooks/useERC20';
 
 // utils
 import {
@@ -43,6 +44,7 @@ import createBackGround from '../assets/img/createPage_bg.jpg';
 function Create() {
   const metamask = useMetamask();
   const CDS = useCDS();
+  const ERC20 = useERC20();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -53,7 +55,6 @@ function Create() {
   const [isBuyer, setIsbuyer] = useState(true);
 
   // CDS Content State Variable
-  const [contractAddress, setContractAddress] = useState('');
   const userAddress = useSelector((state) => state.auth.user_addr);
 
   // Assets State Var
@@ -88,27 +89,52 @@ function Create() {
       liquidationPrice,
       sellerDeposit,
       premiumPrice,
-      premiumInterval: weeksToUnixTime(premiumInterval),
       premiumRounds,
-      userAddress,
+      userAddress: userAddress
     };
     console.log(data);
 
-    dispatch(setSuccess());
+    console.log({
+      initialPriceOfAssets,
+      amountOfAssets,
+      claimPrice,
+      liquidationPrice,
+      premium: premiumPrice,
+      premiumInterval,
+      TotalPremiumRounds: premiumRounds,
+      sellerDeposit,
+    })
 
     try {
+      // Notice Modal open
       dispatch(openModal());
       dispatch(setProcessing());
+      
+      // calculate deposit
+      let deposit;
+      if(isBuyer === true) deposit = 4 * premiumPrice;
+      else deposit = sellerDeposit;
 
-      const result = await CDS.createSwap(data, userAddress);
+      const currentBalance = await ERC20.balanceOf(userAddress);
+      console.log(currentBalance);
+
+      // Approve Token Amount to Contract
+      const approved = await ERC20.approve(deposit, userAddress);
+      console.log(approved);
+
+      // create CDS
+      const result = await CDS.create(data, userAddress);
       console.log(result);
 
-      const swapId = result.events.CreateSwap.returnValues.swapId;
+      // get SwapId
+      const swapId = result.events.Create.returnValues.swapId;
       console.log(swapId);
-      dispatch(setSuccess());
+      dispatch(setSuccess(swapId));
 
+      // Notice Modal close
       const timeoutId = setTimeout(() => {
         dispatch(closeModal());
+        dispatch(setWaiting());
         navigate('/');
       }, 3000);
     } catch (err) {
@@ -122,14 +148,6 @@ function Create() {
       console.log(err);
     }
   };
-
-  // Connect Wallet Handler
-  const connectButtonHandler = async () => {
-    const result = await metamask.request({ method: 'eth_requestAccounts' });
-    console.log(result);
-    if (result && result.length > 0) dispatch(setAuth(result[0]));
-  };
-
   
   /********************/
   //      Effect      //
@@ -141,7 +159,7 @@ function Create() {
       initialPriceOfAssets,
       amountOfAssets,
     );
-    setTotalAssets(totalAssetsCalculated);
+    setTotalAssets( Number(totalAssetsCalculated) );
   }, [initialPriceOfAssets, amountOfAssets]);
 
   // change claimPrice, liquidationPrice, premiumPrice
@@ -150,8 +168,8 @@ function Create() {
       initialPriceOfAssets,
       dropRate,
     );
-    setClaimPrice(claimPriceCalculated);
-    setLiquidationPrice(claimPriceCalculated);
+    setClaimPrice( Number(claimPriceCalculated) );
+    setLiquidationPrice( Number(claimPriceCalculated) );
 
     const premiumPriceCalculated = calculatePremiumPrice(
       initialPriceOfAssets,
@@ -159,18 +177,18 @@ function Create() {
       dropRate,
       premiumRate,
     );
-    setPremiumPrice(premiumPriceCalculated);
+    setPremiumPrice( Number(premiumPriceCalculated) );
   }, [totalAssets, dropRate, premiumRate]);
 
 
   // change sellerDeposit
   useEffect(() => {
     setSellerDeposit(
-      calculateSellerDeposit(
+      Number( calculateSellerDeposit(
         initialPriceOfAssets,
         amountOfAssets,
         liquidationPrice,
-      ),
+      )),
     );
   }, [totalAssets, liquidationPrice]);
 
@@ -210,22 +228,12 @@ function Create() {
                   Seller
                 </label>
               </div>
-              <div className="input-button">
+              <div className="input-wrapper">
+                <div className='input-label'>User Address</div>
                 <input
-                  placeholder="User Address"
                   value={userAddress}
                   disabled
                 />
-                {isLogin ? (
-                  <></>
-                ) : (
-                  <button
-                    onClick={connectButtonHandler}
-                    className="hover:bg-mintHover transition delay-80"
-                  >
-                    Connect Metamask
-                  </button>
-                )}
               </div>
             </div>
           </div>
@@ -233,29 +241,29 @@ function Create() {
             <h2 className="section-title">Assets</h2>
             <div className="input-group">
               <div className='input-wrapper'>
-                <div className='input-label'>Initial Price of Assets: </div>
+                <div className='input-label'>Initial Price of Assets</div>
                 <input
-                  value={initialPriceOfAssets}
+                  value={initialPriceOfAssets.toLocaleString()}
                   onChange={(e) => {
                     const currentValue = onlyNumber(e.target.value);
-                    setInitialPriceOfAssets(currentValue);
+                    setInitialPriceOfAssets( Number(currentValue) );
                   }}
                 />
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>The Amount of Assets: </div>
+                <div className='input-label'>The Amount of Assets</div>
                 <input
-                  value={amountOfAssets}
+                  value={amountOfAssets.toLocaleString()}
                   onChange={(e) => {
                     const currentValue = onlyNumber(e.target.value);
-                    setAmountOfAssets(currentValue);
+                    setAmountOfAssets( Number(currentValue) );
                   }}
                 />
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>Total Assets: </div>
+                <div className='input-label'>Total Assets</div>
                 <input
-                  value={totalAssets}
+                  value={totalAssets.toLocaleString()}
                   readOnly
                   disabled
                 />
@@ -266,9 +274,9 @@ function Create() {
             <h2 className="section-title">Claim</h2>
             <div className="input-group">
               <div className='input-wrapper'>
-                <div className='input-label'>Claim Price: </div>
+                <div className='input-label'>Claim Price</div>
                 <input
-                  value={claimPrice}
+                  value={claimPrice.toLocaleString()}
                   onChange={(e) => {
                     const currentValue = onlyNumber(e.target.value);
                     setClaimPrice(currentValue);
@@ -297,7 +305,7 @@ function Create() {
             </div>
           </div>
           <div className="form-section">
-            <h2 className="section-title">Premium: </h2>
+            <h2 className="section-title">Premium</h2>
             <div className="input-group">
               <div className="input-range">
                 <input
@@ -315,9 +323,9 @@ function Create() {
                 />
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>Premium Price: </div>
+                <div className='input-label'>Premium Price</div>
                 <input
-                  value={premiumPrice}
+                  value={premiumPrice.toLocaleString()}
                   disabled
                 />
               </div>
@@ -328,9 +336,10 @@ function Create() {
                   disabled
                 />
                 <select
-                  placeholder="Premium Interval"
+                  placeholder="Premium Interval"              
                   defaultValue="4"
                   onChange={(e) => setPremiumInterval(e.target.value)}
+                  disabled
                 >
                   <option value="4">4 weeks</option>
                   <option value="8">8 weeks</option>
@@ -338,7 +347,7 @@ function Create() {
                 </select>
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>Premium Rounds: </div>
+                <div className='input-label'>Premium Rounds</div>
                 <input
                   value={premiumRounds}
                   onChange={(e) => {
@@ -355,7 +364,7 @@ function Create() {
               <div className='input-wrapper'>
                 <div className='input-label'>Seller Deposit</div>
                 <input
-                  value={sellerDeposit}
+                  value={sellerDeposit.toLocaleString()}
                   disabled
                 />
               </div>
@@ -363,12 +372,12 @@ function Create() {
                 <input
                   className="value"
                   placeholder="Liquidated Price"
-                  value={`Liquidated Price: ${liquidationPrice}`}
+                  value={`Liquidated Price: ${liquidationPrice.toLocaleString()}`}
                   max={claimPrice || 0}
                   onChange={(e) => {
                     const currentValue = onlyNumber(e.target.value);
                     if (Number(currentValue) > Number(claimPrice)) return;
-                    else setLiquidationPrice(currentValue);
+                    else setLiquidationPrice( Number(currentValue) );
                   }}
                 />
                 <input
@@ -381,9 +390,9 @@ function Create() {
                 />
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>Buyer Deposit:</div>
+                <div className='input-label'>Buyer Deposit</div>
                 <input
-                  value={premiumPrice * 3}
+                  value={Number(premiumPrice * 3).toLocaleString()}
                   disabled
                 />
               </div>

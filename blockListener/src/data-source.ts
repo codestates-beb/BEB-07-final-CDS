@@ -1,6 +1,5 @@
-import path = require('path');
 import * as dotenv from 'dotenv';
-dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
+dotenv.config();
 
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';

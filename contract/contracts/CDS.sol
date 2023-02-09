@@ -2,8 +2,6 @@
 pragma solidity ^0.8.7;
 
 import './Handler/AssetHandler.sol';
-import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 interface CDSInterface {
   function create(
@@ -13,7 +11,8 @@ interface CDSInterface {
     uint256 liquidationPrice,
     uint256 sellerDeposit,
     uint256 premium,
-    uint32 totalRounds
+    uint32 totalRounds,
+    uint32 assetType
   ) external returns (uint256);
 
   function accept(
@@ -35,6 +34,7 @@ interface CDSInterface {
     address indexed hostAddr,
     bool isBuyer,
     uint256 swapId,
+    uint32 assetType,
     address swap
   );
   event Accept(address indexed guestAddr, uint256 swapId);
@@ -54,7 +54,8 @@ contract CDS is AssetHandler, CDSInterface {
     uint256 liquidationPrice,
     uint256 sellerDeposit,
     uint256 premium,
-    uint32 totalRounds
+    uint32 totalRounds,
+    uint32 assetType
   ) external override returns (uint256) {
     uint256 newSwapId = _create(
       isBuyer,
@@ -63,10 +64,11 @@ contract CDS is AssetHandler, CDSInterface {
       liquidationPrice,
       sellerDeposit,
       premium,
-      totalRounds
+      totalRounds,
+      assetType
     );
     _sendDeposit(newSwapId, isBuyer);
-    emit Create(msg.sender, isBuyer, newSwapId, address(getSwap(newSwapId)));
+    emit Create(msg.sender, isBuyer, newSwapId, assetType, address(getSwap(newSwapId)));
     return newSwapId;
   }
 
@@ -78,7 +80,6 @@ contract CDS is AssetHandler, CDSInterface {
       msg.sender != getBuyer(swapId) && msg.sender != getSeller(swapId),
       'The host can not call the method'
     );
-
     bool isSeller = (getSeller(swapId) == address(0));
     uint256 acceptedSwapId = _accept(isSeller, initAssetPrice, swapId);
     _sendDeposit(swapId, !isSeller);
@@ -87,24 +88,30 @@ contract CDS is AssetHandler, CDSInterface {
     return acceptedSwapId;
   }
 
-  function cancel(uint256 swapId) external override returns (bool) {
+  function cancel(
+    uint256 swapId
+  ) external override isParticipants(swapId) returns (bool) {
     _cancel(swapId);
     _endSwap(swapId);
     emit Cancel(swapId);
     return true;
   }
 
-  function close(uint256 swapId) external override returns (bool) {
+  function close(
+    uint256 swapId
+  ) external override isBuyer(swapId) returns (bool) {
     _close(swapId);
     _endSwap(swapId);
     emit Close(swapId);
     return true;
   }
 
-  function claim(uint256 swapId) external override returns (bool) {
+  function claim(
+    uint256 swapId
+  ) external override isBuyer(swapId) returns (bool) {
     require(
       getSwap(swapId).getClaimReward() != 0,
-      'Claim price in CDS should be higher than current price of asset'
+      'Current price is higher than the claim price in CDS'
     );
     _claim(swapId);
     uint256 claimReward = _afterClaim(swapId);
@@ -121,27 +128,25 @@ contract CDS is AssetHandler, CDSInterface {
     return true;
   }
 
-  function payPremium(uint256 swapId) external override returns (bool) {
+  function payPremium(
+    uint256 swapId
+  ) external override isBuyer(swapId) returns (bool) {
     require(
       token.allowance(getBuyer(swapId), address(this)) == getPremium(swapId),
       'Need allowance'
     );
     _payPremium(swapId);
-    bool sent = token.transferFrom(
-      getBuyer(swapId),
-      getSeller(swapId),
-      getPremium(swapId)
-    );
-    require(sent, 'Sending premium failed');
+    _sendPremium(swapId);
     emit PayPremium(swapId);
     return true;
   }
 
-  // called by server? seller?
   function payPremiumByDeposit(
     uint256 swapId
   ) external onlyOwner returns (bool) {
     _payPremium(swapId);
+    _sendPremiumByDeposit(swapId);
+    emit PayPremium(swapId);
     return true;
   }
 }

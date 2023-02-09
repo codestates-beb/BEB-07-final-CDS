@@ -51,7 +51,7 @@ function infoSlide() {
                   To swap the risk of default, buyers buy a CDS from seller.
                 </p>
               </div>
-              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100">
+              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100 drop-shadow-md">
                 <div className="font-semibold ">More Details</div>
               </button>
             </div>
@@ -80,7 +80,7 @@ function infoSlide() {
                   volatility of tokens, on-chain vulnerabilities etc
                 </p>
               </div>
-              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100">
+              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100 drop-shadow-md">
                 <div className="font-semibold">More Details</div>
               </button>
             </div>
@@ -103,7 +103,7 @@ function infoSlide() {
                   in finance, systems engineering, business strategy, and law.
                 </p>
               </div>
-              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100">
+              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100 drop-shadow-md">
                 <div className="font-semibold">More Details</div>
               </button>
             </div>
@@ -130,8 +130,14 @@ function infoSlide() {
                   accumulates.
                 </p>
               </div>
-              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100">
-                <a href='http://snowdelver.iptime.org:43000' target='_blank' className="font-semibold">More Details</a>
+              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100 drop-shadow-md">
+                <a
+                  href="http://snowdelver.iptime.org:43000"
+                  target="_blank"
+                  className="font-semibold"
+                >
+                  More Details
+                </a>
               </button>
             </div>
           </div>

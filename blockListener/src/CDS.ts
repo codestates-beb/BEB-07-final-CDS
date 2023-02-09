@@ -1,61 +1,18 @@
 import Web3 from 'web3';
 import { Contract, EventData } from 'web3-eth-contract';
-import { Transaction } from 'web3-core';
 import { AbiItem } from 'web3-utils';
-import { abi as cdsAbi } from './contractArtifacts/CDS.json';
 import { swapAbi } from './contractArtifacts/Swap.json';
-import { EntityManager, TreeChildren } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { Users } from './entities/Users';
 import { Transactions } from './entities/Transactions';
 import { Swaps } from './entities/Swaps';
 import Swap from './Swap';
-import getEnv from './utils/getEnv';
-const GETH_WEBSOCKET = getEnv('GETH_WEBSOCKET');
-
-interface CreateSwapEvent extends Omit<EventData, 'returnValues'> {
-  returnValues: {
-    hostAddr: string;
-    isBuyer: boolean;
-    swapId: number;
-    swap: string;
-  };
-}
-
-interface CreateSwapReturns {
-  hostAddr: string;
-  isBuyer: boolean;
-  swapId: number;
-  swap: string;
-}
-
-interface AcceptSwapEvent extends EventData {
-  logIndex: number;
-  transactionIndex: number;
-  transactionHash: string;
-  blockHash: string;
-  blockNumber: number;
-  address: string;
-  type: string;
-  removed: false;
-  returnValues: {
-    seller: string;
-    swapId: string;
-    sellerDeposit: string;
-  };
-  event: string;
-  signature: string;
-  raw: any;
-}
-
-interface SwapInfo {
-  initAssetPrice: string;
-  claimPrice: string;
-  liquidationPrice: string;
-  premium: string;
-  sellerDeposit: string;
-  buyer: string | null;
-  seller: string | null;
-}
+import {
+  CreateReturnValue,
+  AcceptReturnValue,
+  OtherReturnValue,
+  SwapInfo,
+} from './types/CDSTypes';
 
 export default class CDS {
   private static instance: CDS;
@@ -64,6 +21,7 @@ export default class CDS {
   private manager: EntityManager = null;
   private fromBlock: number = 0;
   private web3Endpoint: string;
+  private defaultNickName: string = 'anonymous';
 
   private constructor(webSocketURI: string, manager: EntityManager) {
     this.web3 = new Web3(webSocketURI);
@@ -138,30 +96,34 @@ export default class CDS {
     for await (let event of allEvents) {
       const { transactionHash } = event;
       if (await this.isTxProcessed(transactionHash)) continue;
-      if (event.event === 'CreateSwap') {
-        console.log('Create Swap found!');
-        await this.createSwapHandler(event);
-      } else if (event.event === 'AcceptSwap') {
-        console.log('Accept Swap found!');
-        await this.acceptSwapHandler(event);
-      } else if (event.event === 'CancelSwap') {
-        console.log('Cancel Swap found!');
-        await this.cancelSwapHandler(event);
-      } else if (event.event === 'ClaimSwap') {
-        console.log('Claim Swap found!');
-        await this.claimSwapHandler(event);
-      } else if (event.event === 'CloseSwap') {
-        console.log('Close Swap found!');
-        await this.closeSwapHandler(event);
+      if (event.event === 'Create') {
+        console.log('Create Event found!');
+        await this.createEventHandler(event);
+      } else if (event.event === 'Accept') {
+        console.log('Accept Event found!');
+        await this.acceptEventHandler(event);
+      } else if (event.event === 'Cancel') {
+        console.log('Cancel Event found!');
+        await this.cancelEventHandler(event);
+      } else if (event.event === 'Claim') {
+        console.log('Claim Event found!');
+        await this.claimEventHandler(event);
+      } else if (event.event === 'Close') {
+        console.log('Close Event found!');
+        await this.closeEventHandler(event);
+      } else if (event.event === 'Expire') {
+        console.log('Expire Event found!');
+        await this.expireEventHandler(event);
       } else if (event.event === 'PayPremium') {
-        console.log('PayPremium Swap found!');
-        await this.payPremiumHandler(event);
+        console.log('PayPremium Event found!');
+        await this.payPremiumEventHandler(event);
       } else if (event.event === 'OwnershipTransferred') {
         console.log('OwnershipTransferred found!');
         console.log(`Contract Admin addr is : ${event.returnValues.newOwner}`);
       } else {
+        console.error(event);
         console.error(
-          `Not specified Event ${event.event} : ${event.returnValues}`,
+          `Not specified Event ${event}, ${event.event} : ${event.returnValues}`,
         );
       }
     }
@@ -173,44 +135,52 @@ export default class CDS {
       throw new Error('contract not set!');
     }
     this.contract.events
-      .CreateSwap({}, (err: Error, event: CreateSwapEvent) => {
+      .Create({}, (err: Error, event: EventData) => {
         console.log('**Create Swap Emitted**');
       })
-      .on('data', async (event: CreateSwapEvent) => {
+      .on('data', async (event: EventData) => {
         console.log(`** Create Swap Emitted ${event.transactionHash} **`);
-        await this.createSwapHandler(event);
+        await this.createEventHandler(event);
       });
 
     this.contract.events
-      .AcceptSwap({}, (err: Error, event: AcceptSwapEvent) => {
+      .Accept({}, (err: Error, event: EventData) => {
         console.log(`** Accept Swap Emitted ${event.transactionHash} **`);
       })
-      .on('data', async (event: AcceptSwapEvent) => {
-        await this.acceptSwapHandler(event);
+      .on('data', async (event: EventData) => {
+        await this.acceptEventHandler(event);
       });
 
     this.contract.events
-      .CancelSwap({}, (err: Error, event: EventData) => {
+      .Cancel({}, (err: Error, event: EventData) => {
         console.log(`** Cancel Swap Emitted ${event.transactionHash} **`);
       })
       .on('data', async (event: EventData) => {
-        await this.cancelSwapHandler(event);
+        await this.cancelEventHandler(event);
       });
 
     this.contract.events
-      .ClaimSwap({}, (err: Error, event: EventData) => {
-        console.log(`** ClaimSwap Swap Emitted ${event.transactionHash} **`);
+      .Claim({}, (err: Error, event: EventData) => {
+        console.log(`** ClaimSwap  Emitted ${event.transactionHash} **`);
       })
       .on('data', async (event: EventData) => {
-        await this.claimSwapHandler(event);
+        await this.claimEventHandler(event);
       });
 
     this.contract.events
-      .CloseSwap({}, (err: Error, event: EventData) => {
-        console.log(`** CloseSwap Swap Emitted ${event.transactionHash} **`);
+      .Close({}, (err: Error, event: EventData) => {
+        console.log(`** Close Swap Emitted ${event.transactionHash} **`);
       })
       .on('data', async (event: EventData) => {
-        await this.closeSwapHandler(event);
+        await this.closeEventHandler(event);
+      });
+
+    this.contract.events
+      .Expire({}, (err: Error, event: EventData) => {
+        console.log(`** Expire Swap Emitted ${event.transactionHash} **`);
+      })
+      .on('data', async (event: EventData) => {
+        await this.expireEventHandler(event);
       });
 
     this.contract.events
@@ -218,7 +188,7 @@ export default class CDS {
         console.log(`** PayPremium Swap Emitted ${event.transactionHash} **`);
       })
       .on('data', async (event: EventData) => {
-        await this.payPremiumHandler(event);
+        await this.payPremiumEventHandler(event);
       });
   }
 
@@ -258,10 +228,15 @@ export default class CDS {
     return roundsInfo;
   }
 
-  private async createSwapHandler(event: EventData) {
-    const { isBuyer, swapId } = event.returnValues;
-    const hostAddr = event.returnValues.hostAddr.toLowerCase();
-    const swapAddr = event.returnValues.swap.toLowerCase();
+  private async createEventHandler(event: EventData) {
+    const {
+      swap,
+      hostAddr: hostAddrUpper,
+      isBuyer,
+      swapId,
+    } = event.returnValues as CreateReturnValue;
+    const hostAddr = hostAddrUpper.toLowerCase();
+    const swapAddr = swap.toLowerCase();
     const {
       initAssetPrice,
       claimPrice,
@@ -278,8 +253,8 @@ export default class CDS {
       event.transactionHash,
     );
     const buyerDeposit = 3 * +premium;
-    const premiumInterval = await this.getInterval(swapId);
-    const totalPremiumRounds = await this.getRounds(swapId);
+    const premiumInterval = 60 * 60 * 24 * 7 * 4;
+    const totalPremiumRounds = await this.getRounds(+swapId);
 
     try {
       let user = await this.manager.findOneBy(Users, {
@@ -289,7 +264,7 @@ export default class CDS {
         console.log('** no such user **');
         user = new Users();
         user.address = hostAddr;
-        user.nickname = null;
+        user.nickname = this.defaultNickName + '_' + hostAddr.slice(2, 7);
         user.soldCount = 0;
         user.boughtCount = 0;
         user.createdAt = currentTime;
@@ -337,8 +312,8 @@ export default class CDS {
     }
   }
 
-  private async acceptSwapHandler(event: EventData) {
-    const { swapId } = event.returnValues;
+  private async acceptEventHandler(event: EventData) {
+    const { swapId } = event.returnValues as AcceptReturnValue;
     const swapAddr = (await this.getSwapAddr(swapId)).toLowerCase();
     const swapInfo = await this.getSwapInfo(swapAddr);
     const buyerAddr = swapInfo.buyer.toLowerCase();
@@ -371,8 +346,8 @@ export default class CDS {
     }
   }
 
-  private async cancelSwapHandler(event: EventData) {
-    const { swapId } = event.returnValues;
+  private async cancelEventHandler(event: EventData) {
+    const { swapId } = event.returnValues as OtherReturnValue;
     const currentTime: number = await this.getTxTimestamp(
       event.transactionHash,
     );
@@ -398,8 +373,8 @@ export default class CDS {
     }
   }
 
-  private async claimSwapHandler(event: EventData) {
-    const { swapId, claimReward } = event.returnValues;
+  private async claimEventHandler(event: EventData) {
+    const { swapId } = event.returnValues as OtherReturnValue;
     const currentTime: number = await this.getTxTimestamp(
       event.transactionHash,
     );
@@ -425,8 +400,8 @@ export default class CDS {
     }
   }
 
-  private async closeSwapHandler(event: EventData) {
-    const { swapId } = event.returnValues;
+  private async closeEventHandler(event: EventData) {
+    const { swapId } = event.returnValues as OtherReturnValue;
     const currentTime: number = await this.getTxTimestamp(
       event.transactionHash,
     );
@@ -451,8 +426,10 @@ export default class CDS {
     }
   }
 
-  private async payPremiumHandler(event: EventData) {
-    const { swapId } = event.returnValues;
+  private async expireEventHandler(event: EventData) {}
+
+  private async payPremiumEventHandler(event: EventData) {
+    const { swapId } = event.returnValues as OtherReturnValue;
     const currentTime: number = await this.getTxTimestamp(
       event.transactionHash,
     );
@@ -509,7 +486,7 @@ export default class CDS {
       console.log('** no such user, creating**');
       seller = new Users();
       seller.address = sellerAddr;
-      seller.nickname = null;
+      seller.nickname = this.defaultNickName + '_' + sellerAddr.slice(2, 7);
       seller.soldCount = 1;
       seller.boughtCount = 0;
       seller.lastBought = null;
@@ -535,7 +512,7 @@ export default class CDS {
       console.log('** no such user, creating**');
       buyer = new Users();
       buyer.address = buyerAddr;
-      buyer.nickname = null;
+      buyer.nickname = this.defaultNickName + '_' + buyerAddr.slice(2, 7);
       buyer.soldCount = 0;
       buyer.boughtCount = 1;
       buyer.lastBought = currentTime;

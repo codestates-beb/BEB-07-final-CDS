@@ -1,0 +1,443 @@
+openapi: 3.0.3
+info:
+  title: CDS API
+  description: |-
+    This is API Document of CDS API Server based on the OpenAPI 3.0 specification. 
+        
+    Some useful links:
+    - [CDS Github repository](https://github.com/swagger-api/swagger-petstore)
+    - [Deployed CDS Client](https://d999baeavtte2.cloudfront.net/)
+
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: ssalssi1@gmail.com
+  version: 1.0.0
+servers:
+  - url: https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com
+tags:
+  - name: auth
+    description: authorization api
+  - name: users
+    description: user and related swaps and transactions
+  - name: swaps
+    description: swap data
+  - name: transactions
+    description: transaction data
+paths:
+  /users:
+    get:
+      tags:
+        - users
+      summary: Get All user's data
+      description: Get All registered user data
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /users/my:
+    post:
+      tags:
+        - users
+      summary: Update nickname and email (Login required)
+      description: Update nickname and email (Login required)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NicknameEmail'
+      responses:
+        '201':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NicknameEmail'
+    get:
+      tags:
+        - users
+      summary: Get My user data(Login required)
+      description: Get My Data
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /users/my/transactions:
+    get:
+      tags:
+        - users
+      summary: Get My Transactions data(Login required)
+      description: Get My Transactions Data
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyTransaction'
+  /users/my/swaps:
+    get:
+      tags:
+        - users
+      summary: Get My Swaps data(Login required)
+      description: Get Swaps Data
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MySwap'
+  /users/{address}:
+    get:
+      tags:
+        - users
+      summary: Get user data by address
+      description: Get user Data by address
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /users/{address}/swaps:
+    get:
+      tags:
+        - users
+      summary: Get address swaps data
+      description: Get address swaps Data
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /users/{address}/transactions:
+    get:
+      tags:
+        - users
+      summary: Get address transactions data
+      description: Get address transactions Data, only for dev environment
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Get address transactions data
+      description: Get address transactions Data, only for dev environment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                  example: '0x49A1bCC1962D02FD83BC72e1f0ffcCf48B4a476f'
+                signature:
+                  type: string
+                  example: 'signed raw data from metamask'
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /auth/nonce:
+    get:
+      tags:
+        - auth
+      summary: Get random generated nonce for web3 login
+      description: This api must be called prior to login, User must sign this nonce with their private key
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nonce:
+                    type: number
+                    example: 6138970923092
+  /auth/logout:
+    get:
+      tags:
+        - auth
+      summary: Trigger logout, Destory session cookie
+      description: logout
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: logout successful
+  /auth/verify:
+    get:
+      tags:
+        - auth
+      summary: validate session cookie
+      description: to renew login status on client refresh
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: login successful
+  /swaps:
+    get:
+      tags:
+        - swaps
+      summary: Get All swaps data
+      description: get all swaps data
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Swap'
+  /swaps/{swapId}:
+    get:
+      tags:
+        - swaps
+      summary: Get swaps by swapId
+      description: get swap data by swapId
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Swap'
+  /transactions:
+    get:
+      tags:
+        - transactions
+      summary: Get All transactions
+      description: get all transactions
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+  /transactions/{txHash}:
+    get:
+      tags:
+        - transactions
+      summary: Get transaction by txHash
+      description: get swap data by txHash
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        address:
+          type: string
+          example: '0x2ef6e388a4f3ad0d3b11773528705d40b9a0d4ff'
+        email:
+          type: string
+          example: test-email@testMail.com
+        nickname:
+          type: string
+          example: examplenickname
+        soldCount:
+          type: number
+          example: 4
+        boughtCount:
+          type: number
+          example: 9
+        lastSold:
+          type: string
+          example: '1675922419'
+        lastBought:
+          type: string
+          example: '1675922919'
+        nonce:
+          type: string
+          example: '8963209812'
+        createdAt:
+          type: string
+          example: '1675922419'
+        updatedAt:
+          type: string
+          example: '1675922419'
+        deleteAt:
+          type: string
+          example: '1675914519'
+      xml:
+        name: user
+    Transaction:
+      type: object
+      properties:
+        txHash:
+          type: string
+          example: '0x2f7ecb4abaf6115507916c3d5ce9a89436bc2bf380817258d2dc3d3dc3751b37'
+        blockNum:
+          type: number
+          example: 119119
+        event:
+          type: string
+          example: Create
+        createdAt:
+          type: number
+          example: 1675905074
+        updatedAt:
+          type: number
+          example: 1675905074
+        deleteAt:
+          type: number
+          example: null
+        swapId:
+          type: number
+          example: 21
+    Swap:
+      type: object
+      properties:
+        swapId:
+          type: number
+          example: 3
+        contractAddress:
+          type: string
+          example: '0x3ad0073cd6065867fc8aa968f3c9eb94ade7d79a'
+        initialAssetPrice:
+          type: number
+          example: 25000
+        amountOfAssets:
+          type: number
+          example: 10
+        totalAssets:
+          type: number
+          example: 250000
+        premium:
+          type: number
+          example: 750
+        premiumRate:
+          type: number
+          example: 2
+        dropRate:
+          type: number
+          example: 0.1500
+        premiumInterval:
+          type: number
+          example: 2419200
+        remainPremiumRounds:
+          type: number
+          example: 12
+        totalPremiumRounds:
+          type: number
+          example: 12
+        sellerDeposit:
+          type: number
+          example: 50000
+        buyerDeposit:
+          type: number
+          example: 2250
+        claimPrice:
+          type: number
+          example: 21250
+        liquidationPrice:
+          type: number
+          example: 20000
+        status:
+          type: string
+          example: active
+        updatableStatus:
+          type: string
+          example: null
+        createdAt:
+          type: number
+          example: 1675905074
+        updatedAt:
+          type: number
+          example: 1675905074
+        lastPaidAt:
+          type: number
+          example: 1675909584
+        terminatedAt:
+          type: number
+          example: 1675989584
+        deletedAt:
+          type: number
+          example: null
+        seller:
+          type: string
+          example: '0xca361af5cfb3277e1911a412f1deba7855149e8c'
+        buyer:
+          type: string
+          example: '0x49a1bcc1962d02fd83bc72e1f0ffccf48b4a476f'
+    MyTransaction:
+      type: object
+      properties:
+        address:
+          type: string
+          example: '0x49A1bCC1962D02FD83BC72e1f0ffcCf48B4a476f'
+        totaltransactionCount:
+          type: number
+          example: 31
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+    NicknameEmail:
+      type: object
+      properties:
+        nickname:
+          type: string
+          example: parkhacker
+        email:
+          type: string
+          example: parkhacker@codestates.com
+    MySwap:
+      type: object
+      properties:
+        address:
+          type: string
+          example: '0x49A1bCC1962D02FD83BC72e1f0ffcCf48B4a476f'
+        totalSwapCount:
+          type: number
+          example: 13
+        swaps:
+          type: array
+          items:
+            $ref: '#/components/schemas/Swap'
