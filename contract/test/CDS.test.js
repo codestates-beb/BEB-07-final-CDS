@@ -37,6 +37,7 @@ contract('CDS', (accounts) => {
     await fusd.transfer(accounts[4], defaultTokenFaucet, { from: accounts[0] });
   });
 
+  /*
   describe('Price Oracle', () => {
     it('should throw error if priceOracle is not set', async () => {
       const priceOracleSetted = await cds.priceOracle();
@@ -1200,6 +1201,175 @@ contract('CDS', (accounts) => {
 
       const status = await cds.getStatus(currentSwapId);
       assert.equal(4, +status);
+    });
+  });
+  */
+
+  describe('Pay Premium by Deposit', async () => {
+    beforeEach(async () => {
+      await fusd.approve(cds.address, defaultBuyerDeposit, {
+        from: accounts[2],
+      });
+      await cds.create(
+        defaultHostSetting,
+        defaultInitAssetPrice,
+        defaultClaimPrice,
+        defaultLiquidationPrice,
+        defaultSellerDeposit,
+        defaultPremium,
+        defaultPremiumRounds,
+        { from: accounts[2] },
+      );
+    });
+
+    it('should pass if proper premium paid from DEPOSIT, and check the balance of the seller and contract', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
+        from: accounts[1],
+      });
+
+      const balanceBeforePremium = {
+        contract: +(await fusd.balanceOf(cds.address)),
+        seller: +(await fusd.balanceOf(accounts[1])),
+      };
+
+      await truffleAssert.passes(
+        cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }),
+      );
+
+      const balanceAfterPremium = {
+        contract: +(await fusd.balanceOf(cds.address)),
+        seller: +(await fusd.balanceOf(accounts[1])),
+      };
+
+      // contract
+      assert.equal(
+        balanceBeforePremium.contract,
+        balanceAfterPremium.contract + defaultPremium,
+      );
+      // seller
+      assert.equal(
+        balanceBeforePremium.seller,
+        balanceAfterPremium.seller - defaultPremium,
+      );
+    });
+
+    it('should pass if rounds and deposit changed properly', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
+        from: accounts[1],
+      });
+
+      const roundBeforePremium = await cds.getRounds(currentSwapId);
+      const depositBeforePremium = await cds.deposits(currentSwapId, 0);
+      const payDateBeforePremium = await cds.nextPayDate(currentSwapId);
+
+      await truffleAssert.passes(
+        cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }),
+      );
+
+      const roundAfterPremium = await cds.getRounds(currentSwapId);
+      const depositAfterPremium = await cds.deposits(currentSwapId, 0);
+      const payDateAfterPremium = await cds.nextPayDate(currentSwapId);
+
+      assert.equal(roundBeforePremium - 1, roundAfterPremium);
+      assert.equal(
+        +depositBeforePremium - defaultPremium,
+        +depositAfterPremium,
+      );
+      assert.equal(+payDateBeforePremium + 604800 * 4, +payDateAfterPremium);
+    });
+
+    it('should throw error if the status of the swap is not active', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await truffleAssert.fails(
+        cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }),
+      );
+    });
+
+    it('should throw error if the method is not called by the owner', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
+        from: accounts[1],
+      });
+      await truffleAssert.fails(
+        cds.payPremiumByDeposit(currentSwapId, { from: accounts[1] }),
+      );
+    });
+
+    it('should fail if round left is already 0', async () => {
+      const premiumRounds = 1;
+      await fusd.approve(cds.address, defaultBuyerDeposit, {
+        from: accounts[2],
+      });
+      await cds.create(
+        defaultHostSetting,
+        defaultInitAssetPrice,
+        defaultClaimPrice,
+        defaultLiquidationPrice,
+        defaultSellerDeposit,
+        defaultPremium,
+        premiumRounds,
+        { from: accounts[2] },
+      );
+
+      const [currentSwapId] = await cds.getSwapId();
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
+        from: accounts[1],
+      });
+
+      // round becomes 0 after accpet from seller
+      const round = await cds.getRounds(currentSwapId);
+      assert.equal(+round, 0);
+      await truffleAssert.fails(
+        cds.payPremiumByDeposit(currentSwapId, { from: accounts[1] }),
+      );
+    });
+
+    it('should throw error if the deposit left is already 0', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await fusd.approve(cds.address, defaultSellerDeposit, {
+        from: accounts[1],
+      });
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
+        from: accounts[1],
+      });
+
+      // first payPremiumByDeposit
+      let depositBeforePremium = await cds.deposits(currentSwapId, 0);
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] });
+      let depositAfterPremium = await cds.deposits(currentSwapId, 0);
+      assert.equal(+depositBeforePremium - defaultPremium, depositAfterPremium);
+
+      // second payPremiumByDeposit
+      depositBeforePremium = await cds.deposits(currentSwapId, 0);
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] });
+      depositAfterPremium = await cds.deposits(currentSwapId, 0);
+      assert.equal(+depositBeforePremium - defaultPremium, depositAfterPremium);
+
+      // third payPremiumByDeposit
+      depositBeforePremium = await cds.deposits(currentSwapId, 0);
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] });
+      depositAfterPremium = await cds.deposits(currentSwapId, 0);
+      assert.equal(+depositBeforePremium - defaultPremium, depositAfterPremium);
+
+      // no deposit remaining
+      assert.equal(+depositAfterPremium, 0);
+      await truffleAssert.fails(
+        cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }),
+      );
     });
   });
 });

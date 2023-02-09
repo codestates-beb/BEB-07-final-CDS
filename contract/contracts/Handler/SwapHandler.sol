@@ -62,7 +62,6 @@ contract SwapHandler is Ownable {
       ? targetSwap.setSeller(msg.sender)
       : targetSwap.setBuyer(msg.sender);
 
-    // check => 토큰으로 처리시 바로 보내고 이거도 되야함.
     nextPayDate[_acceptedSwapId] = block.timestamp + 4 weeks;
 
     targetSwap.setStatus(Swap.Status.active);
@@ -79,12 +78,6 @@ contract SwapHandler is Ownable {
   }
 
   function _payPremium(uint256 _targetSwapId) internal isActive(_targetSwapId) {
-    // uint256 currTime = block.timestamp;
-    // require(
-    //   (_nextPayDate[_targetSwapId] - 1 days <= currTime) &&
-    //     (currTime <= _nextPayDate[_targetSwapId]),
-    //   'Invalid pay date'
-    // );
     require(getRounds(_targetSwapId) > 0, 'Round already ended');
     nextPayDate[_targetSwapId] += 4 weeks;
     getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
@@ -134,10 +127,6 @@ contract SwapHandler is Ownable {
   function getTotalRounds(uint256 swapId) public view returns (uint32) {
     return _swaps[swapId].totalRounds();
   }
-
-  // function getNextPayDate(uint256 swapId) public view returns (uint256) {
-  //   return _nextPayDate[swapId];
-  // }
 
   // modifiers
   modifier isBuyer(uint256 swapId) {
