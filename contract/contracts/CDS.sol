@@ -137,7 +137,6 @@ contract CDS is AssetHandler, CDSInterface {
     return true;
   }
 
-  // called by server? seller?
   function payPremiumByDeposit(
     uint256 swapId
   ) external onlyOwner returns (bool) {

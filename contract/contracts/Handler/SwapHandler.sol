@@ -11,11 +11,9 @@ contract SwapHandler is Ownable {
 
   mapping(uint256 => Swap) private _swaps;
 
-  mapping(uint256 => uint256) public _nextPayDate;
+  mapping(uint256 => uint256) public nextPayDate;
 
   address public priceOracle;
-
-  constructor() {}
 
   // 고얼리시 oracle 관련된 부분은 모두 삭제 후 Swap에 getPrice.sol 이식
   function setOracle(address _priceOracleAddress) public returns (bool) {
@@ -65,7 +63,7 @@ contract SwapHandler is Ownable {
       : targetSwap.setBuyer(msg.sender);
 
     // check => 토큰으로 처리시 바로 보내고 이거도 되야함.
-    _nextPayDate[_acceptedSwapId] += 4 weeks;
+    nextPayDate[_acceptedSwapId] = block.timestamp + 4 weeks;
 
     targetSwap.setStatus(Swap.Status.active);
 
@@ -88,7 +86,7 @@ contract SwapHandler is Ownable {
     //   'Invalid pay date'
     // );
     require(getRounds(_targetSwapId) > 0, 'Round already ended');
-    _nextPayDate[_targetSwapId] += 4 weeks;
+    nextPayDate[_targetSwapId] += 4 weeks;
     getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
   }
 
