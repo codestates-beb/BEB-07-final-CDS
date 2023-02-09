@@ -7,35 +7,12 @@ import { Users } from './entities/Users';
 import { Transactions } from './entities/Transactions';
 import { Swaps } from './entities/Swaps';
 import Swap from './Swap';
-
-interface CreateReturnValue {
-  isBuyer: boolean;
-  initAssetPrice: string;
-  claimPrice: string;
-  liquidationPrice: string;
-  sellerDeposit: string;
-  premium: string;
-  totalRound: string;
-}
-
-interface AcceptReturnValue {
-  initAssetPrice: string;
-  swapId: string;
-}
-
-interface OtherReturnValue {
-  swapId: string;
-}
-
-interface SwapInfo {
-  initAssetPrice: string;
-  claimPrice: string;
-  liquidationPrice: string;
-  premium: string;
-  sellerDeposit: string;
-  buyer: string | null;
-  seller: string | null;
-}
+import {
+  CreateReturnValue,
+  AcceptReturnValue,
+  OtherReturnValue,
+  SwapInfo,
+} from './types/CDSTypes';
 
 export default class CDS {
   private static instance: CDS;
@@ -252,9 +229,14 @@ export default class CDS {
   }
 
   private async createEventHandler(event: EventData) {
-    const { isBuyer, swapId } = event.returnValues;
-    const hostAddr = event.returnValues.hostAddr.toLowerCase();
-    const swapAddr = event.returnValues.swap.toLowerCase();
+    const {
+      swap,
+      hostAddr: hostAddrUpper,
+      isBuyer,
+      swapId,
+    } = event.returnValues as CreateReturnValue;
+    const hostAddr = hostAddrUpper.toLowerCase();
+    const swapAddr = swap.toLowerCase();
     const {
       initAssetPrice,
       claimPrice,
@@ -272,7 +254,7 @@ export default class CDS {
     );
     const buyerDeposit = 3 * +premium;
     const premiumInterval = 60 * 60 * 24 * 7 * 4;
-    const totalPremiumRounds = await this.getRounds(swapId);
+    const totalPremiumRounds = await this.getRounds(+swapId);
 
     try {
       let user = await this.manager.findOneBy(Users, {
@@ -331,7 +313,7 @@ export default class CDS {
   }
 
   private async acceptEventHandler(event: EventData) {
-    const { swapId } = event.returnValues;
+    const { swapId } = event.returnValues as AcceptReturnValue;
     const swapAddr = (await this.getSwapAddr(swapId)).toLowerCase();
     const swapInfo = await this.getSwapInfo(swapAddr);
     const buyerAddr = swapInfo.buyer.toLowerCase();
@@ -365,7 +347,7 @@ export default class CDS {
   }
 
   private async cancelEventHandler(event: EventData) {
-    const { swapId } = event.returnValues;
+    const { swapId } = event.returnValues as OtherReturnValue;
     const currentTime: number = await this.getTxTimestamp(
       event.transactionHash,
     );
@@ -392,7 +374,7 @@ export default class CDS {
   }
 
   private async claimEventHandler(event: EventData) {
-    const { swapId, claimReward } = event.returnValues;
+    const { swapId } = event.returnValues as OtherReturnValue;
     const currentTime: number = await this.getTxTimestamp(
       event.transactionHash,
     );
@@ -419,7 +401,7 @@ export default class CDS {
   }
 
   private async closeEventHandler(event: EventData) {
-    const { swapId } = event.returnValues;
+    const { swapId } = event.returnValues as OtherReturnValue;
     const currentTime: number = await this.getTxTimestamp(
       event.transactionHash,
     );
@@ -447,7 +429,7 @@ export default class CDS {
   private async expireEventHandler(event: EventData) {}
 
   private async payPremiumEventHandler(event: EventData) {
-    const { swapId } = event.returnValues;
+    const { swapId } = event.returnValues as OtherReturnValue;
     const currentTime: number = await this.getTxTimestamp(
       event.transactionHash,
     );
