@@ -8,10 +8,10 @@ const PriceOracleMock = artifacts.require('PriceOracleMock');
 const FUSD = artifacts.require('FUSD');
 const CDS = artifacts.require('CDS');
 
-contract('CDS', (accounts) => {
-  let priceOracle;
+contract('CDS', async (accounts) => {
+  // let priceOracle;
   let cds;
-  let fusd;
+  // let fusd;
   const defaultHostSetting = true;
   const defaultInitAssetPrice = 25000;
   const defaultClaimPrice = 21250;
@@ -20,38 +20,23 @@ contract('CDS', (accounts) => {
   const defaultPremium = 750;
   const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
   const defaultBuyerDeposit = defaultPremium * (3 + 1);
-  const defaultTokenFaucet = '100000';
-  const defaultBTCPriceOracle = 2500000000000;
-  const defaultETHPriceOracle = 160000000000;
-  const defaultLinkPriceOracle = 750000000;
+  const defaultTokenFaucet = '10000000';
+
   const defaultAssetType = 0; // BTC:0, ETH:1, LINK:2
 
   const priceOracleAddr = '0xe4e0859B42D578B3C8F69EAC10D21b2dF6ef2963';
-  const fusdAddr = '0xd30698365dBBcD0618EA1f727371452895e3A293';
+  const fusdAddr = '0x7c858C801e84dc58caafaa3f6f4dA1eA422C599d';
+
+  const priceOracle = await PriceOracleMock.at(priceOracleAddr);
+  const fusd = await FUSD.at(fusdAddr);
+
+  await fusd.transfer(accounts[1], defaultTokenFaucet, { from: accounts[0] });
+  await fusd.transfer(accounts[2], defaultTokenFaucet, { from: accounts[0] });
+  await fusd.transfer(accounts[3], defaultTokenFaucet, { from: accounts[0] });
+  await fusd.transfer(accounts[4], defaultTokenFaucet, { from: accounts[0] });
 
   beforeEach(async () => {
-    /*
-    priceOracle = await PriceOracleMock.new(
-      defaultBTCPriceOracle,
-      defaultETHPriceOracle,
-      {
-        from: accounts[0],
-      },
-    );
-    fusd = await FUSD.new({ from: accounts[0] }); // 이거도 미리 셋
-    */
-    priceOracle = await PriceOracleMock.at(priceOracleAddr);
-    fusd = await FUSD.at(fusdAddr);
     cds = await CDS.new({ from: accounts[0] });
-    // await cds.setOracle(priceOracle.address, { from: accounts[0] });
-    // await cds.setToken(fusd.address, { from: accounts[0] });
-
-    await fusd.transfer(accounts[1], defaultTokenFaucet, { from: accounts[0] });
-    await fusd.transfer(accounts[2], defaultTokenFaucet, { from: accounts[0] });
-    await fusd.transfer(accounts[3], defaultTokenFaucet, { from: accounts[0] });
-    await fusd.transfer(accounts[4], defaultTokenFaucet, { from: accounts[0] });
-    // 이거 매번 실행되서 오류 나는 경우 있음 => 최초 한번만 실행되게 => 일단 기존의 토큰 수량 다시 맞추기 mint, defaultFaucet.
-    // 맞춰서 토큰, 오라클 geth에 배포하고 그거로 고정된 컨트랙트 넣기.
   });
 
   /*
@@ -685,14 +670,15 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(0, +swapStatus); // inactive => 0
     });
 
-    it('should have decreased amount of TOKEN after seller calling cancel', async () => {
+    it('should have proper amount of TOKEN after seller calling cancel', async () => {
       const before = await fusd.balanceOf(accounts[1]);
       const beforeCA = await fusd.balanceOf(cds.address);
+      console.log(+before, +beforeCA);
 
       const [currentSwapId] = await cds.getSwapId();
       await cds.cancel(currentSwapId, { from: accounts[1] });
 
-      const after = await fusd.balanceOf(accounts[2]);
+      const after = await fusd.balanceOf(accounts[1]);
       const afterCA = await fusd.balanceOf(cds.address);
 
       await assert.strictEqual(+before, +after - defaultSellerDeposit);
