@@ -8,10 +8,10 @@ contract PriceConsumer {
 
   constructor() {}
 
-  function getPriceFromOracle() public view returns (uint256) {
-    uint256 result = priceOracle.getPrice();
-    return result;
-  }
+  // function getPriceFromOracle() public view returns (uint256) {
+  //   uint256 result = priceOracle.getPrice();
+  //   return result;
+  // }
 
   function setOracle(address _priceOracleAddress) public returns (bool) {
     require(_priceOracleAddress != address(0x0), 'Invalid address');

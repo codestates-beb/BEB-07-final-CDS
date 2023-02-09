@@ -2,18 +2,26 @@
 pragma solidity ^0.8.7;
 
 contract PriceOracleMock {
-  uint256 public price;
+  uint256 public btcPrice;
+  uint256 public ethPrice;
+  uint256 public xauPrice;
 
-  constructor(uint256 _initialPrice) {
-    price = _initialPrice;
+  constructor(uint256 _initialBTCPrice) {
+    btcPrice = _initialBTCPrice;
   }
 
-  function getPrice() public view returns (uint256) {
-    return price;
+  function setBTCPrice(uint256 _price) public returns (uint256) {
+    btcPrice = _price;
+    return btcPrice;
   }
 
-  function setPrice(uint256 _price) public returns (uint256) {
-    price = _price;
-    return price;
+  function setETHPrice(uint256 _price) public returns (uint256) {
+    ethPrice = _price;
+    return btcPrice;
+  }
+
+  function setXAUPrice(uint256 _price) public returns (uint256) {
+    xauPrice = _price;
+    return btcPrice;
   }
 }

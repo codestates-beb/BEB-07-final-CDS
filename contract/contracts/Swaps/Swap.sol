@@ -74,7 +74,7 @@ contract Swap is Ownable {
   }
 
   function getClaimReward() public view returns (uint256) {
-    uint256 currPrice = priceOracle.price();
+    uint256 currPrice = priceOracle.btcPrice().div(10 ** 8);
     if (claimPrice < currPrice) {
       return 0;
     }

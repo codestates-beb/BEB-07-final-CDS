@@ -107,7 +107,7 @@ contract CDS is AssetHandler, CDSInterface {
   ) external override isBuyer(swapId) returns (bool) {
     require(
       getSwap(swapId).getClaimReward() != 0,
-      'Claim price in CDS should be higher than current price of asset'
+      'Current price is higher than the claim price in CDS'
     );
     _claim(swapId);
     uint256 claimReward = _afterClaim(swapId);

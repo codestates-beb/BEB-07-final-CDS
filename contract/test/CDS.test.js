@@ -21,9 +21,10 @@ contract('CDS', (accounts) => {
   const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
   const defaultBuyerDeposit = defaultPremium * (3 + 1);
   const defaultTokenFaucet = '10000000';
+  const defaultInitPriceOracle = 2500000000000;
 
   beforeEach(async () => {
-    priceOracle = await PriceOracleMock.new(defaultInitAssetPrice, {
+    priceOracle = await PriceOracleMock.new(defaultInitPriceOracle, {
       from: accounts[0],
     });
     cds = await CDS.new({ from: accounts[0] });
@@ -45,8 +46,8 @@ contract('CDS', (accounts) => {
 
     it('should be able to set priceOracle and get value from it', async () => {
       await truffleAssert.passes(await cds.setOracle(priceOracle.address));
-      const currentPrice = await priceOracle.price();
-      await assert.strictEqual(defaultInitAssetPrice, currentPrice.toNumber());
+      const currentPrice = await priceOracle.btcPrice();
+      await assert.strictEqual(defaultInitPriceOracle, currentPrice.toNumber());
     });
   });
 
@@ -802,8 +803,8 @@ contract('CDS', (accounts) => {
         from: accounts[1],
       });
 
-      const currPrice = 21000;
-      await priceOracle.setPrice(currPrice, { from: accounts[0] });
+      const currPrice = 2100000000000;
+      await priceOracle.setBTCPrice(currPrice, { from: accounts[0] });
       await truffleAssert.fails(
         cds.claim(currentSwapId, { from: accounts[1] }),
       );
@@ -820,8 +821,8 @@ contract('CDS', (accounts) => {
         from: accounts[1],
       });
 
-      const currPrice = 22000;
-      await priceOracle.setPrice(currPrice, { from: accounts[0] });
+      const currPrice = 2200000000000;
+      await priceOracle.setBTCPrice(currPrice, { from: accounts[0] });
 
       await truffleAssert.fails(
         cds.claim(currentSwapId, { from: accounts[2] }),
@@ -838,9 +839,9 @@ contract('CDS', (accounts) => {
         from: accounts[1],
       });
 
-      const changedPrice = 21000;
+      const changedPrice = 2100000000000;
       const claimRewardIntended = 40000;
-      await priceOracle.setPrice(changedPrice);
+      await priceOracle.setBTCPrice(changedPrice);
 
       const balanceBeforeClaim = {
         contract: +(await fusd.balanceOf(cds.address)),
@@ -894,8 +895,8 @@ contract('CDS', (accounts) => {
         from: accounts[1],
       });
 
-      const changedPrice = 19000;
-      await priceOracle.setPrice(changedPrice);
+      const changedPrice = 1900000000000;
+      await priceOracle.setBTCPrice(changedPrice);
 
       const balanceBeforeClaim = {
         contract: +(await fusd.balanceOf(cds.address)),
