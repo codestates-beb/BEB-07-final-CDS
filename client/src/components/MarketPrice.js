@@ -147,7 +147,7 @@ function MarketPriceType2() {
 
   return (
     <>
-      <div className="flex-col">
+      <div className="flex-col bg-backgroundColor">
         <div className="flex justify-center">
           <div className="flex-col w-[25%] mr-[1.25%]">
             <div className="text-center font-extrabold text-3xl my-[2rem]">
