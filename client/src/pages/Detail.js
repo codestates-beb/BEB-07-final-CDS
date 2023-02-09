@@ -4,8 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 // components
-import AcceptedCardType2 from '../components/AcceptedCardType2';
-import MarketPriceType2 from '../components/MarketPriceType2';
+import AcceptedCard from '../components/AcceptedCard';
+import MarketPrice from '../components/MarketPrice';
 
 // apis
 import { getSwapById } from '../apis/request';
@@ -150,7 +150,7 @@ function Detail() {
           </div>
           <div className="detail-head-card">
             {swapOnDB ? (
-              <AcceptedCardType2
+              <AcceptedCard
                 swapId={swapOnDB.swapId}
                 InitialPrice={swapOnDB.initialAssetPrice}
                 ClaimPrice={swapOnDB.claimPrice}
@@ -158,7 +158,7 @@ function Detail() {
                 Price={swapOnDB.liquidationPrice}
               />
             ) : (
-              <AcceptedCardType2 />
+              <AcceptedCard />
             )}
           </div>
         </div>
@@ -269,7 +269,7 @@ function Detail() {
       </div>
       <div className="detail-tail">
         <div className="detail-price">
-          <MarketPriceType2 />
+          <MarketPrice />
           <div className="button-group">
             {swapOnDB && swapOnDB.buyer.toLowerCase() === userAddress ? (
               <>

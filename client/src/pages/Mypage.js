@@ -8,8 +8,8 @@ import { getSwapByAddress } from '../apis/request';
 import { postEmailData, postNicknameData } from '../apis/post';
 
 // components
-import ProposedCardType2 from '../components/ProposedCardType2.js';
-import AcceptedCardType2 from '../components/AcceptedCardType2.js';
+import ProposedCard from '../components/ProposedCard.js';
+import AcceptedCard from '../components/AcceptedCard.js';
 import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
@@ -219,7 +219,7 @@ function Mypage() {
               {initialPendingSwaps.map((swap) => {
                 return (
                   <div className="" key={swap.swapId}>
-                    <ProposedCardType2
+                    <ProposedCard
                       swapId={swap.swapId}
                       premium={swap.premium}
                       premiumInterval={swap.premiumInterval}
@@ -255,7 +255,7 @@ function Mypage() {
               {initialActiveSwaps.map((swap) => {
                 return (
                   <div className="" key={swap.swapId}>
-                    <AcceptedCardType2
+                    <AcceptedCard
                       swapId={swap.swapId}
                       InitialPrice={swap.initialAssetPrice}
                       ClaimPrice={swap.claimPrice}
