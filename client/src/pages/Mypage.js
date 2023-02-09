@@ -76,6 +76,7 @@ function Mypage() {
     getData();
   }, [userAddress]);
 
+  // swap card를 추가적으로 불러옵니다
   const loadMorePending = () => {
     setIndex(index + 4);
     if (index >= pendingSwaps.length) {
@@ -94,6 +95,7 @@ function Mypage() {
     }
   };
 
+  // 사용자가 prompt에 empty value를 입력하거나 cancle을 눌렀을 경우를 처리합니다
   function emailClick() {
     let promptValue = prompt('Enter the username you want to change.');
     if (promptValue === '') {
