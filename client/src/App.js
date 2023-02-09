@@ -1,5 +1,5 @@
 // module
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { Link, Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
@@ -34,22 +34,23 @@ import './App.css';
 function App() {
   const dispatch = useDispatch();
   const metamask = useMetamask();
-  
-  useEffect(()=>{
-    if(metamask){
-      (async ()=>{
+
+  useEffect(() => {
+    if (metamask) {
+      (async () => {
         const isLoginSuccess = await requestVerify();
 
-        if(!isLoginSuccess) {
+        if (!isLoginSuccess) {
           console.log(new Error('Not User Logined'));
           return;
         }
-        
-        const address = await metamask.request({ method: 'eth_requestAccounts' })
-        .then(result=> result[0]);
 
-        dispatch( setAuth(address) );
-      })()
+        const address = await metamask
+          .request({ method: 'eth_requestAccounts' })
+          .then((result) => result[0]);
+
+        dispatch(setAuth(address));
+      })();
     }
   }, [metamask]);
 
@@ -66,7 +67,7 @@ function App() {
         <Route path="/oracleTest" element={<OracleTest />} />
         <Route path="/cardProposed" element={<CardDisplayProposed />} />
         <Route path="/cardAccepted" element={<CardDisplayAccepted />} />
-        <Route path="*" element={<PageNotFound/>}/>
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
       <Notice />
     </div>

@@ -55,7 +55,6 @@ function Create() {
   const [isBuyer, setIsbuyer] = useState(true);
 
   // CDS Content State Variable
-  const [contractAddress, setContractAddress] = useState('');
   const userAddress = useSelector((state) => state.auth.user_addr);
 
   // Assets State Var
@@ -90,9 +89,8 @@ function Create() {
       liquidationPrice,
       sellerDeposit,
       premiumPrice,
-      premiumInterval: weeksToUnixTime(premiumInterval),
       premiumRounds,
-      userAddress,
+      userAddress: userAddress
     };
     console.log(data);
 
@@ -106,8 +104,6 @@ function Create() {
       TotalPremiumRounds: premiumRounds,
       sellerDeposit,
     })
-
-    dispatch(setSuccess());
 
     try {
       // Notice Modal open
@@ -131,13 +127,14 @@ function Create() {
       console.log(result);
 
       // get SwapId
-      const swapId = result.events;
+      const swapId = result.events.Create.returnValues.swapId;
       console.log(swapId);
-      dispatch(setSuccess());
+      dispatch(setSuccess(swapId));
 
       // Notice Modal close
       const timeoutId = setTimeout(() => {
         dispatch(closeModal());
+        dispatch(setWaiting());
         navigate('/');
       }, 3000);
     } catch (err) {
@@ -151,14 +148,6 @@ function Create() {
       console.log(err);
     }
   };
-
-  // Connect Wallet Handler
-  const connectButtonHandler = async () => {
-    const result = await metamask.request({ method: 'eth_requestAccounts' });
-    console.log(result);
-    if (result && result.length > 0) dispatch(setAuth(result[0]));
-  };
-
   
   /********************/
   //      Effect      //
@@ -239,22 +228,12 @@ function Create() {
                   Seller
                 </label>
               </div>
-              <div className="input-button">
+              <div className="input-wrapper">
+                <div className='input-label'>User Address</div>
                 <input
-                  placeholder="User Address"
                   value={userAddress}
                   disabled
                 />
-                {isLogin ? (
-                  <></>
-                ) : (
-                  <button
-                    onClick={connectButtonHandler}
-                    className="hover:bg-mintHover transition delay-80"
-                  >
-                    Connect Metamask
-                  </button>
-                )}
               </div>
             </div>
           </div>
@@ -262,7 +241,7 @@ function Create() {
             <h2 className="section-title">Assets</h2>
             <div className="input-group">
               <div className='input-wrapper'>
-                <div className='input-label'>Initial Price of Assets: </div>
+                <div className='input-label'>Initial Price of Assets</div>
                 <input
                   value={initialPriceOfAssets.toLocaleString()}
                   onChange={(e) => {
@@ -272,7 +251,7 @@ function Create() {
                 />
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>The Amount of Assets: </div>
+                <div className='input-label'>The Amount of Assets</div>
                 <input
                   value={amountOfAssets.toLocaleString()}
                   onChange={(e) => {
@@ -282,7 +261,7 @@ function Create() {
                 />
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>Total Assets: </div>
+                <div className='input-label'>Total Assets</div>
                 <input
                   value={totalAssets.toLocaleString()}
                   readOnly
@@ -295,7 +274,7 @@ function Create() {
             <h2 className="section-title">Claim</h2>
             <div className="input-group">
               <div className='input-wrapper'>
-                <div className='input-label'>Claim Price: </div>
+                <div className='input-label'>Claim Price</div>
                 <input
                   value={claimPrice.toLocaleString()}
                   onChange={(e) => {
@@ -326,7 +305,7 @@ function Create() {
             </div>
           </div>
           <div className="form-section">
-            <h2 className="section-title">Premium: </h2>
+            <h2 className="section-title">Premium</h2>
             <div className="input-group">
               <div className="input-range">
                 <input
@@ -344,7 +323,7 @@ function Create() {
                 />
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>Premium Price: </div>
+                <div className='input-label'>Premium Price</div>
                 <input
                   value={premiumPrice.toLocaleString()}
                   disabled
@@ -357,9 +336,10 @@ function Create() {
                   disabled
                 />
                 <select
-                  placeholder="Premium Interval"
+                  placeholder="Premium Interval"              
                   defaultValue="4"
                   onChange={(e) => setPremiumInterval(e.target.value)}
+                  disabled
                 >
                   <option value="4">4 weeks</option>
                   <option value="8">8 weeks</option>
@@ -367,7 +347,7 @@ function Create() {
                 </select>
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>Premium Rounds: </div>
+                <div className='input-label'>Premium Rounds</div>
                 <input
                   value={premiumRounds}
                   onChange={(e) => {
@@ -410,7 +390,7 @@ function Create() {
                 />
               </div>
               <div className='input-wrapper'>
-                <div className='input-label'>Buyer Deposit:</div>
+                <div className='input-label'>Buyer Deposit</div>
                 <input
                   value={Number(premiumPrice * 3).toLocaleString()}
                   disabled

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { getActiveSwapsByOffset } from '../apis/request.js';
 
 // components
-import AcceptedCardType2 from '../components/AcceptedCardType2.js';
+import AcceptedCard from '../components/AcceptedCard.js';
 import Pagination from '../components/Pagination.js';
 import Footer from '../components/Footer.js';
 
@@ -71,7 +71,7 @@ function CardDisplayAccepted() {
           {accepted.map((swap) => {
             return (
               <div className="mx-auto" key={swap.swapId}>
-                <AcceptedCardType2
+                <AcceptedCard
                   swapId={swap.swapId}
                   InitialPrice={swap.initialAssetPrice}
                   ClaimPrice={swap.claimPrice}

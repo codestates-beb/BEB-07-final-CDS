@@ -34,8 +34,9 @@ const userController = {
         user.email,
       );
     }
+    const result = { email: user.email, nickname: user.nickname };
     await userRepository.save(user);
-    return res.status(200).json('User Update Successful');
+    return res.status(200).json(result);
   },
   getMine: async (req: Request, res: Response, next: NextFunction) => {
     try {

@@ -91,6 +91,12 @@ function Header() {
           ) : (
             <></>
           )}
+          <a href='http://snowdelver.iptime.org:48080/' target='_blank'>
+            <li className='navbar-item mx-[1rem]'>Block Explorer</li>
+          </a>
+          <a href='http://snowdelver.iptime.org:43000/' target='_blank'>
+            <li className='navbar-item mx-[1rem]'>Node Monitor</li>
+          </a>
           <Link>
             <li className="navbar-item mx-[1rem]">About</li>
           </Link>

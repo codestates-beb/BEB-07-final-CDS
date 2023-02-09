@@ -26,7 +26,6 @@ function useCDS() {
             liquidationPrice,
             sellerDeposit,
             premiumPrice,
-            premiumInterval,
             premiumRounds
           } = data;
 
@@ -36,13 +35,14 @@ function useCDS() {
             || !liquidationPrice
             || !sellerDeposit
             || !premiumPrice
-            || !premiumInterval
             || !premiumRounds
             || !userAddress
-          ) return new Error("Not valid inputs");
+          ) {
+            throw new Error("Not valid inputs")
+          };
 
           let deposit;
-          if (isBuyer === true) deposit = premiumPrice * 3;
+          if (isBuyer === true) deposit = premiumPrice * 4;
           else deposit = sellerDeposit;
 
           const receipt = await contract.methods.create(
@@ -52,7 +52,6 @@ function useCDS() {
             liquidationPrice,
             sellerDeposit,
             premiumPrice,
-            premiumInterval,
             premiumRounds
           )
           .send({from: userAddress}, (result)=>{
@@ -69,8 +68,9 @@ function useCDS() {
         },
 
         accept: async (initialPriceOfAssets, swapId, userAddress)=>{          
-          if( !initialPriceOfAssets || !swapId || !userAddress)
-            return new Error("Invalid Arguments");
+          if( !initialPriceOfAssets || !swapId || !userAddress){
+            throw new Error("Invalid Arguments");
+          };
 
           const receipt = await contract.methods.accept(
             initialPriceOfAssets, 
@@ -122,8 +122,8 @@ function useCDS() {
           return receipt
         },
 
-        getDeposits: async (swapId) =>{
-          const receipt = await contract.methods.getDeposits(swapId).call();
+        getSellerDeposit: async (swapId) =>{
+          const receipt = await contract.methods.getSellerDeposit(swapId).call();
           return receipt;
         },
 
@@ -133,7 +133,7 @@ function useCDS() {
         },
 
         getNextPayDate: async (swapId) =>{
-          const receipt = await contract.methods.getPremium(swapId).call();
+          const receipt = await contract.methods.getNextPayDate(swapId).call();
           return receipt;
         }
       }

@@ -7,6 +7,8 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import connectRedis from 'connect-redis';
 
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
 import getEnv from './utils/getEnv';
 import redisClient from './utils/redisClient';
 import routers from './routes';
@@ -57,6 +59,8 @@ app.use(
 );
 app.use(express.static(path.join(__dirname, 'public')));
 
+const swaggerDocument = YAML.load(path.join(__dirname, 'swagger', 'cds.yaml'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
 app.use('/swaps', swapRouter);
