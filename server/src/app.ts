@@ -9,7 +9,6 @@ import connectRedis from 'connect-redis';
 
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
-import { specs } from './swagger';
 import getEnv from './utils/getEnv';
 import redisClient from './utils/redisClient';
 import routers from './routes';
