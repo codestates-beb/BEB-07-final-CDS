@@ -17,6 +17,8 @@ RUN npm install -g pm2
 # 앱 소스 추가
 COPY . .
 RUN npx tsc
+RUN mkdir dist/swagger
+RUN cp src/swagger/cds.yaml dist/swagger
 
 EXPOSE 80
 CMD [ "pm2-runtime", "start", "dist/index.js" ]

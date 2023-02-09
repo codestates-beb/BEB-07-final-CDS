@@ -1,23 +1,14 @@
 import Web3 from 'web3';
-import { Contract, EventData } from 'web3-eth-contract';
-import { Transaction } from 'web3-core';
+import { Contract } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
-import { abi as cdsAbi } from './contractArtifacts/CDS.json';
-import { swapAbi } from './contractArtifacts/Swap.json';
-import { EntityManager, TreeChildren } from 'typeorm';
-import { Users } from './entities/Users';
-import { Transactions } from './entities/Transactions';
-import { Swaps } from './entities/Swaps';
-
-interface SwapInfo {
-  initAssetPrice: string;
-  claimPrice: string;
-  liquidationPrice: string;
-  premium: string;
-  sellerDeposit: string;
-  buyer: string | null;
-  seller: string | null;
-}
+import { SwapInfo } from './types/CDSTypes';
+// import { Transaction } from 'web3-core';
+// import { abi as cdsAbi } from './contractArtifacts/CDS.json';
+// import { swapAbi } from './contractArtifacts/Swap.json';
+// import { EntityManager, TreeChildren } from 'typeorm';
+// import { Users } from './entities/Users';
+// import { Transactions } from './entities/Transactions';
+// import { Swaps } from './entities/Swaps';
 
 export default class Swap {
   private static instance: Swap;
