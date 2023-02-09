@@ -205,14 +205,14 @@ function Accept() {
                 {isBuyer ? (
                   <>
                     <input
-                      value={swapOnDB ? proposer : null}
+                      value={swapOnDB ? proposer : ''}
                       disabled
                     />
                   </>
                 ) : (
                   <>
                     <input
-                      value={swapOnDB ? proposer : null}
+                      value={swapOnDB ? proposer : ''}
                       disabled
                     />
                   </>
@@ -228,7 +228,7 @@ function Accept() {
                 <input
                   value={ swapOnDB
                     ? `$ ${Number( swapOnDB.initialAssetPrice ).toLocaleString()}`
-                    : null
+                    : ''
                   }
                   disabled
                 />
@@ -238,7 +238,7 @@ function Accept() {
                 <input
                   value={ swapOnDB 
                     ? `# ${Number( swapOnDB.amountOfAssets ).toLocaleString()}`
-                    : null}
+                    : ''}
                   disabled
                 />
               </div>
@@ -247,7 +247,7 @@ function Accept() {
                 <input
                   value={swapOnDB 
                     ? `$ ${Number(swapOnDB.totalAssets).toLocaleString()}`
-                    : null
+                    : ''
                   }
                   disabled
                 />
@@ -260,7 +260,7 @@ function Accept() {
               <div className='input-wrapper'>
                 <div className='input-label'>Claim Price</div>
                 <input
-                  value={swapOnDB ? `$ ${Number(swapOnDB.claimPrice).toLocaleString()}` : null}
+                  value={swapOnDB ? `$ ${Number(swapOnDB.claimPrice).toLocaleString()}` : ''}
                   disabled
                 />
               </div>
@@ -268,7 +268,7 @@ function Accept() {
                 <input
                   placeholder="Drop Rate"
                   value={
-                    swapOnDB ? `Drop Rate: ${swapOnDB.dropRate * 100} %` : null
+                    swapOnDB ? `Drop Rate: ${swapOnDB.dropRate * 100} %` : ''
                   }
                   disabled
                 />
@@ -290,7 +290,7 @@ function Accept() {
                 <input
                   placeholder="Premium Rate"
                   value={
-                    swapOnDB ? `Premium Rate: ${swapOnDB.premiumRate} %` : null
+                    swapOnDB ? `Premium Rate: ${swapOnDB.premiumRate} %` : ''
                   }
                   disabled
                 />
@@ -298,7 +298,7 @@ function Accept() {
               <div className='input-wrapper'>
                 <div className='input-label'>Premium Price</div>
                 <input
-                  value={swapOnDB ? `$ ${Number(swapOnDB.premium).toLocaleString()}` : null}
+                  value={swapOnDB ? `$ ${Number(swapOnDB.premium).toLocaleString()}` : ''}
                   disabled
                 />
               </div>
@@ -308,7 +308,7 @@ function Accept() {
                   value={
                     swapOnDB
                       ? `Premium Interval: ${calculatePeriodByInterval(swapOnDB.premiumInterval)}`
-                      : null
+                      : ''
                   }
                   disabled
                 />
@@ -319,7 +319,7 @@ function Accept() {
                   value={
                     swapOnDB
                       ? Number(swapOnDB.totalPremiumRounds).toLocaleString()
-                      : null
+                      : ''
                   }
                   disabled
                 />
@@ -333,7 +333,7 @@ function Accept() {
                 <div className='input-label'>Seller Deposit</div>
                 <input
                   value={
-                    swapOnDB ? `$ ${swapOnDB.sellerDeposit}` : null
+                    swapOnDB ? `$ ${swapOnDB.sellerDeposit}` : ''
                   }
                   disabled
                 />
@@ -344,7 +344,7 @@ function Accept() {
                   value={
                     swapOnDB
                       ? `Liquidated Price: ${swapOnDB.liquidationPrice}`
-                      : null
+                      : ''
                   }
                   disabled
                 />
@@ -361,7 +361,7 @@ function Accept() {
                 <div className='input-label'>Buyer Deposit</div>
                 <input
                   value={
-                    swapOnDB ? `$ ${swapOnDB.buyerDeposit}` : null
+                    swapOnDB ? `$ ${swapOnDB.buyerDeposit}` : ''
                   }
                   disabled
                 />
