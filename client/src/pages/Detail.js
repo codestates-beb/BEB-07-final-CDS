@@ -43,7 +43,7 @@ function Detail() {
     console.log(swapId);
 
     try {
-      const result = await CDS.payPremium(swapId, userAddress, swapOnChain.premium);
+      const result = await CDS.payPremium(swapId, userAddress);
       
       console.log(result);
     } catch(err){
@@ -56,7 +56,7 @@ function Detail() {
     console.log(swapId);
 
     try {
-      const result = await CDS.cancelSwap(
+      const result = await CDS.cancel(
         swapId,
         userAddress,
       );
@@ -73,7 +73,7 @@ function Detail() {
     console.log(swapId);
 
     try {
-      const result = await CDS.claimSwap(
+      const result = await CDS.claim(
         swapId,
         userAddress,
       );   
@@ -89,7 +89,7 @@ function Detail() {
     console.log(swapId);
 
     try{
-      const result = await CDS.closeSwap(
+      const result = await CDS.close(
         swapId,
         userAddress,
       );
