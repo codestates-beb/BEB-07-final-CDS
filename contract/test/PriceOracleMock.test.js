@@ -8,9 +8,14 @@ const PriceOracleMock = artifacts.require('PriceOracleMock');
 contract('PriceOracleMock', (accounts) => {
   const initialPrice = 10000;
   beforeEach(async () => {
-    priceOracle = await PriceOracleMock.new(initialPrice, initialPrice, {
-      from: accounts[0],
-    });
+    priceOracle = await PriceOracleMock.new(
+      initialPrice,
+      initialPrice,
+      initialPrice,
+      {
+        from: accounts[0],
+      },
+    );
   });
 
   describe('Oracle Values', () => {

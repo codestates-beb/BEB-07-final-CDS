@@ -14,25 +14,36 @@ const defaultBuyerDeposit = defaultPremium * (3 + 1);
 const defaultTokenFaucet = '10000000';
 const defaultBTCPriceOracle = 2500000000000;
 const defaultETHPriceOracle = 160000000000;
+const defaultLinkPriceOracle = 750000000;
+const defaultAssetType = 0; // BTC:0, ETH:1, LINK:2
+
+const priceOracleAddr = '0xe4e0859B42D578B3C8F69EAC10D21b2dF6ef2963';
+const fusdAddr = '0xd30698365dBBcD0618EA1f727371452895e3A293';
 
 let currentSwapId;
 module.exports = async function (deployer, network, accounts) {
   console.log(`Triggering Initial TXs ON : ** ${network.toUpperCase()} **`);
   try {
-    const priceOracleMock = await PriceOracleMock.deployed(
-      defaultBTCPriceOracle,
-      defaultETHPriceOracle,
-    );
+    // const priceOracleMock = await PriceOracleMock.deployed(
+    //   defaultBTCPriceOracle,
+    //   defaultETHPriceOracle,
+    //   defaultLinkPriceOracle,
+    // );
+    const priceOracleMock = await PriceOracleMock.at(priceOracleAddr);
     // token faucet
-    const fusd = await FUSD.deployed();
+    // const fusd = await FUSD.deployed();
+    const fusd = await FUSD.at(fusdAddr);
+    const adminBal = await fusd.balanceOf(accounts[0]);
+    console.log('ADMIN HAS -----', +adminBal);
+
     await fusd.transfer(accounts[1], defaultTokenFaucet, { from: accounts[0] });
     await fusd.transfer(accounts[2], defaultTokenFaucet, { from: accounts[0] });
     await fusd.transfer(accounts[3], defaultTokenFaucet, { from: accounts[0] });
     await fusd.transfer(accounts[4], defaultTokenFaucet, { from: accounts[0] });
     // settings
     const cds = await CDS.deployed();
-    await cds.setOracle(priceOracleMock.address);
-    await cds.setToken(fusd.address);
+    // await cds.setOracle(priceOracleMock.address);
+    // await cds.setToken(fusd.address);
     // case1: account[2] create, account[1] accepts
     await fusd.approve(cds.address, defaultBuyerDeposit, {
       from: accounts[2],
@@ -45,6 +56,7 @@ module.exports = async function (deployer, network, accounts) {
       defaultSellerDeposit,
       defaultPremium,
       defaultPremiumRounds,
+      defaultAssetType,
       { from: accounts[2] },
     );
     [currentSwapId] = await cds.getSwapId();
@@ -67,6 +79,7 @@ module.exports = async function (deployer, network, accounts) {
       defaultSellerDeposit,
       defaultPremium,
       defaultPremiumRounds,
+      defaultAssetType,
       { from: accounts[2] },
     );
     [currentSwapId] = await cds.getSwapId();
@@ -84,6 +97,7 @@ module.exports = async function (deployer, network, accounts) {
       defaultSellerDeposit,
       defaultPremium,
       defaultPremiumRounds,
+      defaultAssetType,
       { from: accounts[4] },
     );
     console.log('case 3 created!');
@@ -100,6 +114,7 @@ module.exports = async function (deployer, network, accounts) {
       defaultSellerDeposit,
       defaultPremium,
       defaultPremiumRounds,
+      defaultAssetType,
       { from: accounts[3] },
     );
     [currentSwapId] = await cds.getSwapId();
@@ -125,6 +140,7 @@ module.exports = async function (deployer, network, accounts) {
       defaultSellerDeposit,
       defaultPremium,
       defaultPremiumRounds,
+      defaultAssetType,
       { from: accounts[3] },
     );
     [currentSwapId] = await cds.getSwapId();
@@ -150,6 +166,7 @@ module.exports = async function (deployer, network, accounts) {
       defaultSellerDeposit,
       defaultPremium,
       defaultPremiumRounds,
+      defaultAssetType,
       { from: accounts[1] },
     );
     [currentSwapId] = await cds.getSwapId();
@@ -174,6 +191,7 @@ module.exports = async function (deployer, network, accounts) {
       defaultSellerDeposit,
       defaultPremium,
       defaultPremiumRounds,
+      defaultAssetType,
       { from: accounts[4] },
     );
     [currentSwapId] = await cds.getSwapId();

@@ -20,11 +20,17 @@ contract('CDS', (accounts) => {
   const defaultPremium = 750;
   const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
   const defaultBuyerDeposit = defaultPremium * (3 + 1);
-  const defaultTokenFaucet = '10000000';
+  const defaultTokenFaucet = '100000';
   const defaultBTCPriceOracle = 2500000000000;
   const defaultETHPriceOracle = 160000000000;
+  const defaultLinkPriceOracle = 750000000;
+  const defaultAssetType = 0; // BTC:0, ETH:1, LINK:2
+
+  const priceOracleAddr = '0xe4e0859B42D578B3C8F69EAC10D21b2dF6ef2963';
+  const fusdAddr = '0xd30698365dBBcD0618EA1f727371452895e3A293';
 
   beforeEach(async () => {
+    /*
     priceOracle = await PriceOracleMock.new(
       defaultBTCPriceOracle,
       defaultETHPriceOracle,
@@ -32,21 +38,30 @@ contract('CDS', (accounts) => {
         from: accounts[0],
       },
     );
+    fusd = await FUSD.new({ from: accounts[0] }); // 이거도 미리 셋
+    */
+    priceOracle = await PriceOracleMock.at(priceOracleAddr);
+    fusd = await FUSD.at(fusdAddr);
     cds = await CDS.new({ from: accounts[0] });
-    fusd = await FUSD.new({ from: accounts[0] });
-    await cds.setOracle(priceOracle.address, { from: accounts[0] });
-    await cds.setToken(fusd.address, { from: accounts[0] });
+    // await cds.setOracle(priceOracle.address, { from: accounts[0] });
+    // await cds.setToken(fusd.address, { from: accounts[0] });
 
     await fusd.transfer(accounts[1], defaultTokenFaucet, { from: accounts[0] });
     await fusd.transfer(accounts[2], defaultTokenFaucet, { from: accounts[0] });
     await fusd.transfer(accounts[3], defaultTokenFaucet, { from: accounts[0] });
     await fusd.transfer(accounts[4], defaultTokenFaucet, { from: accounts[0] });
+    // 이거 매번 실행되서 오류 나는 경우 있음 => 최초 한번만 실행되게 => 일단 기존의 토큰 수량 다시 맞추기 mint, defaultFaucet.
+    // 맞춰서 토큰, 오라클 geth에 배포하고 그거로 고정된 컨트랙트 넣기.
   });
 
+  /*
   describe('Price Oracle', () => {
     it('should throw error if priceOracle is not set', async () => {
-      const priceOracleSetted = await cds.priceOracle();
-      await assert.strictEqual(priceOracleSetted, priceOracle.address);
+      // const priceOracleSetted = await cds.priceOracle();
+      await assert.strictEqual(
+        '0x0f7d54966079088eb696f70dcbb309388597a2c9',
+        priceOracle.address,
+      );
     });
 
     it('should be able to set priceOracle and get value from it', async () => {
@@ -55,6 +70,7 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(defaultBTCPriceOracle, currentPrice.toNumber());
     });
   });
+  */
 
   describe('Owner Check', () => {
     it('should throw error if owner is different', async () => {
@@ -66,12 +82,12 @@ contract('CDS', (accounts) => {
   describe('Create', () => {
     it('should throw error when invalid input', async () => {
       await truffleAssert.fails(
-        cds.create(true, 20000, 21250, 20000, 50000, -750, 60 * 10, 12, {
+        cds.create(true, 20000, 21250, 20000, 50000, -750, 60 * 10, 12, 0, {
           from: accounts[2],
         }),
       );
       await truffleAssert.fails(
-        cds.create(true, 20000, 21250, 20000, 100000, 750, 60 * 10, -12, {
+        cds.create(true, 20000, 21250, 20000, 100000, 750, 60 * 10, -12, 0, {
           from: accounts[2],
         }),
       );
@@ -90,6 +106,7 @@ contract('CDS', (accounts) => {
           defaultSellerDeposit,
           defaultPremium,
           defaultPremiumRounds,
+          defaultAssetType,
           { from: accounts[2] },
         ),
       );
@@ -106,6 +123,7 @@ contract('CDS', (accounts) => {
           defaultSellerDeposit,
           defaultPremium,
           defaultPremiumRounds,
+          defaultAssetType,
           { from: accounts[1] },
         ),
       );
@@ -124,6 +142,7 @@ contract('CDS', (accounts) => {
           defaultSellerDeposit,
           defaultPremium,
           defaultPremiumRounds,
+          defaultAssetType,
           { from: accounts[2] },
         ),
       );
@@ -174,6 +193,7 @@ contract('CDS', (accounts) => {
           defaultSellerDeposit,
           defaultPremium,
           defaultPremiumRounds,
+          defaultAssetType,
           { from: accounts[1] },
         ),
       );
@@ -224,6 +244,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
       const after = await fusd.balanceOf(accounts[2]);
@@ -256,6 +277,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[1] },
       );
       const after = await fusd.balanceOf(accounts[1]);
@@ -288,6 +310,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
 
@@ -346,6 +369,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[1] },
       );
 
@@ -404,6 +428,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
 
@@ -429,6 +454,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[1] },
       );
 
@@ -455,6 +481,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
 
@@ -479,6 +506,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[1] },
       );
 
@@ -504,6 +532,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
 
@@ -542,6 +571,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[1] },
       );
 
@@ -579,6 +609,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
     });
@@ -630,6 +661,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[1] },
       );
     });
@@ -681,6 +713,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
     });
@@ -788,6 +821,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
     });
@@ -956,6 +990,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
     });
@@ -1071,6 +1106,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         premiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
 
@@ -1105,6 +1141,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
     });
@@ -1206,6 +1243,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         premiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
 
@@ -1274,6 +1312,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         premiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
       const [currentSwapId] = await cds.getSwapId();
@@ -1390,6 +1429,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
       const [currentSwapId] = await cds.getSwapId();

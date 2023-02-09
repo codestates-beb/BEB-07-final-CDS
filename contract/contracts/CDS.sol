@@ -11,7 +11,8 @@ interface CDSInterface {
     uint256 liquidationPrice,
     uint256 sellerDeposit,
     uint256 premium,
-    uint32 totalRounds
+    uint32 totalRounds,
+    uint32 assetType
   ) external returns (uint256);
 
   function accept(
@@ -33,6 +34,7 @@ interface CDSInterface {
     address indexed hostAddr,
     bool isBuyer,
     uint256 swapId,
+    uint32 assetType,
     address swap
   );
   event Accept(address indexed guestAddr, uint256 swapId);
@@ -52,7 +54,8 @@ contract CDS is AssetHandler, CDSInterface {
     uint256 liquidationPrice,
     uint256 sellerDeposit,
     uint256 premium,
-    uint32 totalRounds
+    uint32 totalRounds,
+    uint32 assetType
   ) external override returns (uint256) {
     uint256 newSwapId = _create(
       isBuyer,
@@ -61,10 +64,11 @@ contract CDS is AssetHandler, CDSInterface {
       liquidationPrice,
       sellerDeposit,
       premium,
-      totalRounds
+      totalRounds,
+      assetType
     );
     _sendDeposit(newSwapId, isBuyer);
-    emit Create(msg.sender, isBuyer, newSwapId, address(getSwap(newSwapId)));
+    emit Create(msg.sender, isBuyer, newSwapId, assetType, address(getSwap(newSwapId)));
     return newSwapId;
   }
 

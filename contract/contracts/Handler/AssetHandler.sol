@@ -12,11 +12,15 @@ contract AssetHandler is SwapHandler {
 
   mapping(uint256 => uint256[2]) public deposits;
 
-  function setToken(address _tokenAddress) external onlyOwner returns (bool) {
-    require(_tokenAddress != address(0));
-    token = IERC20(_tokenAddress);
-    return true;
+  constructor() {
+    token = IERC20(0xd30698365dBBcD0618EA1f727371452895e3A293);
   }
+
+  // function setToken(address _tokenAddress) external onlyOwner returns (bool) {
+  //   require(_tokenAddress != address(0));
+  //   token = IERC20(_tokenAddress);
+  //   return true;
+  // }
 
   function _sendDeposit(
     uint256 _swapId,
@@ -82,9 +86,9 @@ contract AssetHandler is SwapHandler {
   function _expire(
     uint256 _swapId
   ) internal isSeller(_swapId) isActive(_swapId) {
-    // bool byRounds = ((block.timestamp >= getNextPayDate(_swapId)) &&
+    // bool byRounds = ((block.timestamp >= nextPayDate[_swapId]) &&
     //   (getRounds(_swapId) == 0));
-    // bool byDeposit = ((block.timestamp >= getNextPayDate(_swapId)) &&
+    // bool byDeposit = ((block.timestamp >= nextPayDate[_swapId]) &&
     //   (deposits[_swapId][0] == 0));
     bool byRounds = (getRounds(_swapId) == 0);
     bool byDeposit = (deposits[_swapId][0] == 0);
