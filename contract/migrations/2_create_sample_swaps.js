@@ -12,13 +12,16 @@ const defaultPremium = 750;
 const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
 const defaultBuyerDeposit = defaultPremium * (3 + 1);
 const defaultTokenFaucet = '10000000';
+const defaultBTCPriceOracle = 2500000000000;
+const defaultETHPriceOracle = 160000000000;
 
 let currentSwapId;
 module.exports = async function (deployer, network, accounts) {
   console.log(`Triggering Initial TXs ON : ** ${network.toUpperCase()} **`);
   try {
     const priceOracleMock = await PriceOracleMock.deployed(
-      defaultInitAssetPrice,
+      defaultBTCPriceOracle,
+      defaultETHPriceOracle,
     );
     // token faucet
     const fusd = await FUSD.deployed();
@@ -106,7 +109,7 @@ module.exports = async function (deployer, network, accounts) {
     await cds.accept(defaultInitAssetPrice, currentSwapId, {
       from: accounts[1],
     });
-    await priceOracleMock.setPrice(21000, { from: accounts[0] });
+    await priceOracleMock.setBTCPrice(2100000000000, { from: accounts[0] });
     await cds.claim(currentSwapId, { from: accounts[3] });
     console.log('case 4 created!');
     // case5: account[2] creates and account[3] accepts
@@ -131,7 +134,7 @@ module.exports = async function (deployer, network, accounts) {
     await cds.accept(defaultInitAssetPrice, currentSwapId, {
       from: accounts[1],
     });
-    await priceOracleMock.setPrice(19000, { from: accounts[0] });
+    await priceOracleMock.setBTCPrice(1900000000000, { from: accounts[0] });
     await cds.claim(currentSwapId, { from: accounts[3] });
     console.log('case 5 created!');
     // case6: account[1] creates and account[3] accepts

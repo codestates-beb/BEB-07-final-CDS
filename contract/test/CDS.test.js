@@ -21,12 +21,17 @@ contract('CDS', (accounts) => {
   const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
   const defaultBuyerDeposit = defaultPremium * (3 + 1);
   const defaultTokenFaucet = '10000000';
-  const defaultInitPriceOracle = 2500000000000;
+  const defaultBTCPriceOracle = 2500000000000;
+  const defaultETHPriceOracle = 160000000000;
 
   beforeEach(async () => {
-    priceOracle = await PriceOracleMock.new(defaultInitPriceOracle, {
-      from: accounts[0],
-    });
+    priceOracle = await PriceOracleMock.new(
+      defaultBTCPriceOracle,
+      defaultETHPriceOracle,
+      {
+        from: accounts[0],
+      },
+    );
     cds = await CDS.new({ from: accounts[0] });
     fusd = await FUSD.new({ from: accounts[0] });
     await cds.setOracle(priceOracle.address, { from: accounts[0] });
@@ -47,7 +52,7 @@ contract('CDS', (accounts) => {
     it('should be able to set priceOracle and get value from it', async () => {
       await truffleAssert.passes(await cds.setOracle(priceOracle.address));
       const currentPrice = await priceOracle.btcPrice();
-      await assert.strictEqual(defaultInitPriceOracle, currentPrice.toNumber());
+      await assert.strictEqual(defaultBTCPriceOracle, currentPrice.toNumber());
     });
   });
 

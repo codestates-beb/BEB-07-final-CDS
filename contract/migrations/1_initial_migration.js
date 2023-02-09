@@ -6,7 +6,11 @@ const fs = require('fs');
 
 module.exports = async function (deployer, network, accounts) {
   console.log(`Deploying ON : ** ${network.toUpperCase()} **`);
-  const oracleReceipt = await deployer.deploy(PriceOracleMock, 25000);
+  const oracleReceipt = await deployer.deploy(
+    PriceOracleMock,
+    2500000000000,
+    160000000000,
+  );
   const FUSDReceipt = await deployer.deploy(FUSD);
   const CDSreceipt = await deployer.deploy(CDS);
   const currentTime = new Date();
