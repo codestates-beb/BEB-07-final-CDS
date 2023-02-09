@@ -51,23 +51,6 @@ function Detail() {
     }
   };
 
-  // CDS Cancel Handler
-  const cancelButtonHandler = async () => {
-    console.log(swapId);
-
-    try {
-      const result = await CDS.cancel(
-        swapId,
-        userAddress,
-      );
-
-      console.log(result);
-      navigate('/');
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   // CDS Claim Handler
   const claimButtonHandler = async () => {
     console.log(swapId);
@@ -115,7 +98,7 @@ function Detail() {
     let intervalId;
     if (CDS) {
       CDS.getNextPayDate(swapId).then((result) => {
-        console.log(result);
+        // console.log(result);
         intervalId = setInterval(() => {
           const current = parseInt(new Date().getTime() / 1000);
           setTimeRemainingToPay(calculateTimeRemaining(current, result));
@@ -291,12 +274,6 @@ function Detail() {
                   disabled={!isClaimable}
                 >
                   Claim
-                </button>
-                <button
-                  className="button cancel-button"
-                  onClick={cancelButtonHandler}
-                >
-                  Cancel
                 </button>
                 <button
                   className="button close-button"
