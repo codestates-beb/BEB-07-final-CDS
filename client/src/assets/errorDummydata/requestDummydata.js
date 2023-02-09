@@ -103,7 +103,7 @@ const swapIdDummydata = {
   buyer: '0x00000',
 };
 
-const coinGeckoDummydata = {
+const coinGeckoErrorDummydata = {
   bitcoin: {
     usd: 'Data Not Found',
     usd_24h_change: 0,
@@ -121,7 +121,7 @@ const coinGeckoDummydata = {
   },
 };
 
-const chainlinkDummydata = {
+const chainlinkErrorDummydata = {
   bitcoin: {
     usd: 'Data Not Found',
     last_updated_at: 0,
@@ -134,12 +134,72 @@ const chainlinkDummydata = {
     usd: 'Data Not Found',
     last_updated_at: 0,
   },
+};
+
+const addressErrorDummydata = {
+  address: 'Data Not Found',
+  totalSwapCount: 0,
+  swaps: [
+    {
+      swapId: 1,
+      contractAddress: '0x00000',
+      initialAssetPrice: 'Data Not Found',
+      amountOfAssets: 'Data Not Found',
+      totalAssets: 'Data Not Found',
+      premium: 'Data Not Found',
+      premiumRate: 'Data Not Found',
+      dropRate: 'Data Not Found',
+      premiumInterval: 'Data Not Found',
+      remainPremiumRounds: 'Data Not Found',
+      totalPremiumRounds: 'Data Not Found',
+      sellerDeposit: 'Data Not Found',
+      buyerDeposit: 'Data Not Found',
+      claimPrice: 'Data Not Found',
+      liquidationPrice: 'Data Not Found',
+      status: 'pending',
+      updatableStatus: null,
+      createdAt: 0,
+      updatedAt: 0,
+      lastPaidAt: null,
+      terminatedAt: null,
+      deletedAt: null,
+      seller: '0x00000',
+      buyer: '0x00000',
+    },
+    {
+      swapId: 2,
+      contractAddress: '0x00000',
+      initialAssetPrice: 'Data Not Found',
+      amountOfAssets: 'Data Not Found',
+      totalAssets: 'Data Not Found',
+      premium: 'Data Not Found',
+      premiumRate: 'Data Not Found',
+      dropRate: 'Data Not Found',
+      premiumInterval: 'Data Not Found',
+      remainPremiumRounds: 'Data Not Found',
+      totalPremiumRounds: 'Data Not Found',
+      sellerDeposit: 'Data Not Found',
+      buyerDeposit: 'Data Not Found',
+      claimPrice: 'Data Not Found',
+      liquidationPrice: 'Data Not Found',
+      status: 'active',
+      updatableStatus: null,
+      createdAt: 0,
+      updatedAt: 0,
+      lastPaidAt: null,
+      terminatedAt: null,
+      deletedAt: null,
+      seller: '0x00000',
+      buyer: '0x00000',
+    },
+  ],
 };
 
 module.exports = {
   pendingErrorDummy,
   activeErrorDummy,
   swapIdDummydata,
-  coinGeckoDummydata,
-  chainlinkDummydata,
+  coinGeckoErrorDummydata,
+  chainlinkErrorDummydata,
+  addressErrorDummydata,
 };

@@ -15,20 +15,20 @@
   }
 
   .detail-head .detail-title-group {
-    @apply mb-20;
+    @apply mb-16;
   }
 
   .detail-head .detail-title-group .detail-title {
-    @apply mb-5 text-6xl font-bold;
+    @apply mb-5 text-5xl font-bold;
   }
 
   .detail-head .detail-title-group .detail-issued {
-    @apply text-2xl;
+    @apply text-xl;
     color: var(--dark-gray-color);
   }
 
   .detail-head .detail-party .party-item {
-    @apply mb-16 text-2xl;
+    @apply mb-12 text-xl;
   }
 
   .detail-head .detail-party .party-role {
@@ -38,11 +38,11 @@
   /* detail content */
 
   .detail-content .detail-content-section .content-section-title {
-    @apply text-5xl font-semibold mb-10;
+    @apply text-3xl font-semibold mb-8;
   }
 
   .detail-content .content-box {
-    @apply rounded-xl inline-block mb-20;
+    @apply rounded-xl inline-block mb-16;
     gap: 1rem;
     background-color: var(--black-color);
   }
@@ -52,11 +52,11 @@
   }
 
   .detail-content .content-box .content-item .item-name{
-    @apply py-4 font-semibold text-2xl text-darkGrayColor;
+    @apply py-4 font-semibold text-xl text-darkGrayColor;
   }
 
   .detail-content .content-box .content-item .item-figures{
-    @apply py-4 font-normal text-2xl;
+    @apply py-4 font-normal text-xl;
   }
 
   /* detail price */

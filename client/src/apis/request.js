@@ -9,8 +9,9 @@ const {
   pendingErrorDummy,
   activeErrorDummy,
   swapIdDummydata,
-  coinGeckoDummydata,
-  chainlinkDummydata,
+  coinGeckoErrorDummydata,
+  chainlinkErrorDummydata,
+  addressErrorDummydata,
 } = require('../assets/errorDummydata/requestDummydata');
 
 export async function getPendingSwaps() {
@@ -81,7 +82,7 @@ export async function getSwapByAddress(address) {
     return swaps.data;
   } catch (e) {
     console.log('An error occurred');
-    return e;
+    return addressErrorDummydata;
   }
 }
 
@@ -94,7 +95,7 @@ export async function getCoinGeckoAPI() {
     return marketPriceData.data;
   } catch (e) {
     console.log('An error occurred');
-    return coinGeckoDummydata;
+    return coinGeckoErrorDummydata;
   }
 }
 
@@ -107,6 +108,6 @@ export async function getChainLinkAPI() {
     return marketPriceData.data;
   } catch (e) {
     console.log('An error occurred');
-    return chainlinkDummydata;
+    return chainlinkErrorDummydata;
   }
 }

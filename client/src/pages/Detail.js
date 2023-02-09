@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 // components
-import ProposedCard from '../components/ProposedCard';
+import ProposedCardType2 from '../components/ProposedCardType2';
 import MarketPriceType2 from '../components/MarketPriceType2';
 
 // apis
@@ -114,16 +114,16 @@ function Detail() {
 
   useEffect(()=>{
     let intervalId;
-    // if (CDS){
-    //   CDS.getSwap(swapId)
-    //   .then(result=>{
-    //     setSwapOnChain(result);
-    //     intervalId = setInterval(()=>{
-    //       const current = parseInt(new Date().getTime() / 1000);
-    //       setTimeRemainingToPay( calculateTimeRemaining( current, result.buyer.nextPayDate ));
-    //     }, 1000)
-    //   })
-    // }
+    if (CDS){
+      CDS.getNextPayDate(swapId)
+      .then(result=>{
+        console.log(result);
+        intervalId = setInterval(()=>{
+          const current = parseInt(new Date().getTime() / 1000);
+          setTimeRemainingToPay( calculateTimeRemaining( current, result ));
+        }, 1000)
+      })
+    }
 
     return ()=>{
       clearInterval(intervalId);
@@ -138,7 +138,7 @@ function Detail() {
             <div className="detail-title-group">
               <h1 className="detail-title">Bitcoin Crypto Default Swap</h1>
               <p className="detail-issued">Issued on Jan 22, 2023</p>
-              {/* <p className='detail-payday'>{swapOnChain ? timeRemainingToPay:''}</p> */}
+              <p className='detail-payday'>{timeRemainingToPay}</p>
             </div>
             <div className="detail-party">
               <div className="party-item">
@@ -154,9 +154,6 @@ function Detail() {
                 </p>
               </div>
             </div>
-          </div>
-          <div className="detail-head-section">
-            <ProposedCard response={swapOnDB} />
           </div>
         </div>
         {/* head */}
