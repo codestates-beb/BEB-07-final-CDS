@@ -1,1 +1,1 @@
-{"version":3,"file":"queries.js","sourceRoot":"","sources":["../../src/migrations/queries.ts"],"names":[],"mappings":";;;AAAa,QAAA,gBAAgB,GAAG;;;;;;;;;;;;;;GAc7B,CAAC;AAES,QAAA,gBAAgB,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;GAwC7B,CAAC;AACS,QAAA,sBAAsB,GAAG;;;;;;;;;;;;;;;yBAeb,CAAC"}
+{"version":3,"file":"queries.js","sourceRoot":"","sources":["../../src/migrations/queries.ts"],"names":[],"mappings":";;;AAAa,QAAA,gBAAgB,GAAG;;;;;;;;;;;;;;;;GAgB7B,CAAC;AAES,QAAA,gBAAgB,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;GAyC7B,CAAC;AACS,QAAA,sBAAsB,GAAG;;;;;;;;;;;;;;;yBAeb,CAAC"}

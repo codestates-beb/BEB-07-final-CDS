@@ -73,6 +73,14 @@ __decorate([
     __metadata("design:type", Number)
 ], Users.prototype, "deletedAt", void 0);
 __decorate([
+    (0, typeorm_1.Column)('int', { name: 'lastTokenFaucet', unsigned: true, nullable: true }),
+    __metadata("design:type", Number)
+], Users.prototype, "lastTokenFaucet", void 0);
+__decorate([
+    (0, typeorm_1.Column)('int', { name: 'lastEtherFaucet', unsigned: true, nullable: true }),
+    __metadata("design:type", Number)
+], Users.prototype, "lastEtherFaucet", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => Swaps_1.Swaps, (swaps) => swaps.buyer2),
     __metadata("design:type", Array)
 ], Users.prototype, "swaps", void 0);
