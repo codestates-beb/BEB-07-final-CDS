@@ -179,10 +179,11 @@ function Detail() {
     if( CDS ){
       CDS.getPrices(swapId).then(([,claimPrice,liquidationPrice,])=>{
         console.log(claimPrice > priceBTCGecko);
+        console.log(`claimPrice: ${claimPrice} BTCGecko: ${priceBTCGecko}`)
         if ( priceBTCGecko < claimPrice) setIsClaimable(true);
       })
     }
-  }, [priceBTCGecko])
+  }, [CDS, priceBTCGecko])
 
   useEffect(()=>{
     console.log(isClaimable);
