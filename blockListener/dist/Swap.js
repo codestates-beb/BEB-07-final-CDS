@@ -13,13 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const web3_1 = __importDefault(require("web3"));
-// import { Transaction } from 'web3-core';
-// import { abi as cdsAbi } from './contractArtifacts/CDS.json';
-// import { swapAbi } from './contractArtifacts/Swap.json';
-// import { EntityManager, TreeChildren } from 'typeorm';
-// import { Users } from './entities/Users';
-// import { Transactions } from './entities/Transactions';
-// import { Swaps } from './entities/Swaps';
 class Swap {
     constructor(websocketURI) {
         this.contract = null;

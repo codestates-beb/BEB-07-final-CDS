@@ -16,7 +16,7 @@ const yamljs_1 = __importDefault(require("yamljs"));
 const getEnv_1 = __importDefault(require("./utils/getEnv"));
 const redisClient_1 = __importDefault(require("./utils/redisClient"));
 const routes_1 = __importDefault(require("./routes"));
-const { authRouter, userRouter, swapRouter, transactionRouter, priceRouter } = routes_1.default;
+const { authRouter, userRouter, swapRouter, transactionRouter, priceRouter, faucetRouter, } = routes_1.default;
 const port = (0, getEnv_1.default)('PORT', '5050');
 const RedisStore = (0, connect_redis_1.default)(express_session_1.default);
 const app = (0, express_1.default)();
@@ -59,6 +59,7 @@ app.use('/users', userRouter);
 app.use('/swaps', swapRouter);
 app.use('/transactions', transactionRouter);
 app.use('/prices', priceRouter);
+app.use('/faucet', faucetRouter);
 app.use('/health', (req, res, next) => {
     return res.status(200).json({ message: 'health check success!' });
 });

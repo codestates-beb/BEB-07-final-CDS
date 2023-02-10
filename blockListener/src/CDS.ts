@@ -12,6 +12,7 @@ import {
   AcceptReturnValue,
   OtherReturnValue,
   SwapInfo,
+  ClaimReturnValue,
 } from './types/CDSTypes';
 
 export default class CDS {
@@ -119,7 +120,27 @@ export default class CDS {
         await this.payPremiumEventHandler(event);
       } else if (event.event === 'OwnershipTransferred') {
         console.log('OwnershipTransferred found!');
-        console.log(`Contract Admin addr is : ${event.returnValues.newOwner}`);
+        const admin = event.returnValues.newOwner;
+        console.log(`Contract Admin addr is : ${admin}`);
+        let user = await this.manager.findOneBy(Users, {
+          address: admin,
+        });
+        const currentTime: number = await this.getTxTimestamp(
+          event.transactionHash,
+        );
+        if (!user) {
+          console.log('** admin not registered, registering admin**');
+          user = new Users();
+          user.address = admin;
+          user.nickname = 'admin';
+          user.soldCount = 0;
+          user.boughtCount = 0;
+          user.createdAt = currentTime;
+          user.updatedAt = currentTime;
+          await this.manager.save(user);
+        } else {
+          console.log('** admin user found! **');
+        }
       } else {
         console.error(event);
         console.error(
@@ -234,6 +255,7 @@ export default class CDS {
       hostAddr: hostAddrUpper,
       isBuyer,
       swapId,
+      assetType,
     } = event.returnValues as CreateReturnValue;
     const hostAddr = hostAddrUpper.toLowerCase();
     const swapAddr = swap.toLowerCase();
@@ -291,6 +313,15 @@ export default class CDS {
         swap.sellerDeposit = +sellerDeposit;
         swap.createdAt = currentTime;
         swap.updatedAt = currentTime;
+        if (assetType === '0') {
+          swap.assetType = 'bitcoin';
+        } else if (assetType === '1') {
+          swap.assetType = 'ether';
+        } else if (assetType === '2') {
+          swap.assetType = 'link';
+        } else {
+          swap.assetType = 'unregistered asset';
+        }
 
         // derived variables
         swap.amountOfAssets = +amountOfAssets;
@@ -374,7 +405,7 @@ export default class CDS {
   }
 
   private async claimEventHandler(event: EventData) {
-    const { swapId } = event.returnValues as OtherReturnValue;
+    const { swapId } = event.returnValues as ClaimReturnValue;
     const currentTime: number = await this.getTxTimestamp(
       event.transactionHash,
     );

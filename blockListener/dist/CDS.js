@@ -142,7 +142,26 @@ class CDS {
                         }
                         else if (event.event === 'OwnershipTransferred') {
                             console.log('OwnershipTransferred found!');
-                            console.log(`Contract Admin addr is : ${event.returnValues.newOwner}`);
+                            const admin = event.returnValues.newOwner;
+                            console.log(`Contract Admin addr is : ${admin}`);
+                            let user = yield this.manager.findOneBy(Users_1.Users, {
+                                address: admin,
+                            });
+                            const currentTime = yield this.getTxTimestamp(event.transactionHash);
+                            if (!user) {
+                                console.log('** admin not registered, registering admin**');
+                                user = new Users_1.Users();
+                                user.address = admin;
+                                user.nickname = 'admin';
+                                user.soldCount = 0;
+                                user.boughtCount = 0;
+                                user.createdAt = currentTime;
+                                user.updatedAt = currentTime;
+                                yield this.manager.save(user);
+                            }
+                            else {
+                                console.log('** admin user found! **');
+                            }
                         }
                         else {
                             console.error(event);
@@ -264,7 +283,7 @@ class CDS {
     }
     createEventHandler(event) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { swap, hostAddr: hostAddrUpper, isBuyer, swapId, } = event.returnValues;
+            const { swap, hostAddr: hostAddrUpper, isBuyer, swapId, assetType, } = event.returnValues;
             const hostAddr = hostAddrUpper.toLowerCase();
             const swapAddr = swap.toLowerCase();
             const { initAssetPrice, claimPrice, liquidationPrice, premium, sellerDeposit, seller, buyer, } = yield this.getSwapInfo(swapAddr);
@@ -308,6 +327,18 @@ class CDS {
                     swap.sellerDeposit = +sellerDeposit;
                     swap.createdAt = currentTime;
                     swap.updatedAt = currentTime;
+                    if (assetType === '0') {
+                        swap.assetType = 'bitcoin';
+                    }
+                    else if (assetType === '1') {
+                        swap.assetType = 'ether';
+                    }
+                    else if (assetType === '2') {
+                        swap.assetType = 'link';
+                    }
+                    else {
+                        swap.assetType = 'unregistered asset';
+                    }
                     // derived variables
                     swap.amountOfAssets = +amountOfAssets;
                     swap.buyerDeposit = +buyerDeposit;
