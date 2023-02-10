@@ -38,6 +38,7 @@ function Detail() {
   // CDS Info State
   const { swapId } = useParams();
   const userAddress = useSelector((state) => state.auth.user_addr);
+  const [assetType, setAssetType] = useState('bitcoin');
   const [swapOnDB, setSwapOnDB] = useState(null);
   const [timeRemainingToPay, setTimeRemainingToPay] = useState(null);
 
@@ -134,7 +135,11 @@ function Detail() {
         console.log(result);
         navigate('/NotFound');
       }
-    });
+    }).catch(err=>{
+      console.log(err);
+      navigate('/');
+    })
+    ;
   }, []);
 
   useEffect(()=>{
@@ -189,7 +194,7 @@ function Detail() {
         <div className="detail-head">
           <div className="detail-head-section">
             <div className="detail-title-group">
-              <h1 className="detail-title">Bitcoin Crypto Default Swap</h1>
+              <h1 className="detail-title">{assetType} Crypto Default Swap</h1>
               <p className="detail-issued">Issued on {swapOnDB? parseUnixtimeToDate(swapOnDB.createdAt) : null}</p>
               <p className="detail-period">Remaining Period to Pay: { calculatePeriodByInterval( timeRemainingToPay ) }</p>
             </div>
