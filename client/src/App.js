@@ -25,6 +25,9 @@ import Detail from './pages/Detail';
 import Mypage from './pages/Mypage';
 import CardDisplayProposed from './pages/CardDisplayProposed';
 import CardDisplayAccepted from './pages/CardDisplayAccepted';
+import UnderstandingCDS from './pages/UnderstandingCDS';
+import Risks from './pages/Risks';
+import Teams from './pages/Teams';
 import OracleTest from './pages/OracleTest';
 import PageNotFound from './pages/PageNotFound';
 
@@ -67,6 +70,9 @@ function App() {
         <Route path="/oracleTest" element={<OracleTest />} />
         <Route path="/cardProposed" element={<CardDisplayProposed />} />
         <Route path="/cardAccepted" element={<CardDisplayAccepted />} />
+        <Route path="/cds" element={<UnderstandingCDS />} />
+        <Route path="/risks" element={<Risks />} />
+        <Route path="/teams" element={<Teams />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
       <Notice />

@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .riskText {
+    backdrop-filter: blur(10px);
+    border-color: #858584;
+    border-width: 2px;
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
