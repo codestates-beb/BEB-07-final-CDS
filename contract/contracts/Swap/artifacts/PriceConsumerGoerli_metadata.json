@@ -57,13 +57,17 @@
 		},
 		"userdoc": {
 			"kind": "user",
-			"methods": {},
+			"methods": {
+				"getBTCPrice()": {
+					"notice": "Returns the latest price"
+				}
+			},
 			"version": 1
 		}
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/Swap/PriceConsumer.sol": "PriceConsumer"
+			"contracts/Swap/PriceConsumerGoerli.sol": "PriceConsumerGoerli"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -77,20 +81,20 @@
 		"remappings": []
 	},
 	"sources": {
-		"contracts/Oracle/PriceOracleMock.sol": {
-			"keccak256": "0x9bf3702669439e0cfe097a45a2b0eb2b3c7bda403ea131e9ef3ac2e151f4a2cd",
+		"@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol": {
+			"keccak256": "0x6e6e4b0835904509406b070ee173b5bc8f677c19421b76be38aea3b1b3d30846",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://cbdc1c2486976359980f3bd3fdd4c15c6c1d5535709772f13c9360f2a132e8dd",
-				"dweb:/ipfs/QmWsFF9122k5LTLwBTS2YyFabBCQGjuPJrZFiQaeVa71QY"
+				"bzz-raw://b3beaa37ee61e4ab615e250fbf01601ae481de843fd0ef55e6b44fd9d5fff8a7",
+				"dweb:/ipfs/QmeZUVwd26LzK4Mfp8Zba5JbQNkZFfTzFu1A6FVMMZDg9c"
 			]
 		},
-		"contracts/Swap/PriceConsumer.sol": {
-			"keccak256": "0xb4d10caa9d7151a8d5f9ca18a6acdae941cf665313d1407ad2ee139b7074add6",
+		"contracts/Swap/PriceConsumerGoerli.sol": {
+			"keccak256": "0xc6aaa244c548dbbddf595d65709fb7de8a393197bb334201eb88111486b03c60",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://0b44d568080b820ea8fa4522b7fb130cb492e97d1b3e58926e09792e461e8fa2",
-				"dweb:/ipfs/QmSwdQZMGyGfY5n3NCojitSKXuZS7aeeeSTs1DTg8hmqpY"
+				"bzz-raw://37105e82f2c237e8628ae154d3d75a7975567918a0d3a980388edb42ace17d2d",
+				"dweb:/ipfs/QmcWkJYwnjVbDmYwgpT1cftKVG35WiP9Z6XDS7dxLckWZG"
 			]
 		}
 	},
