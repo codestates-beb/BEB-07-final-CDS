@@ -8,10 +8,12 @@ const PriceOracleMock = artifacts.require('PriceOracleMock');
 const FUSD = artifacts.require('FUSD');
 const CDS = artifacts.require('CDS');
 
+require('dotenv').config();
+
 contract('CDS', async (accounts) => {
-  // let priceOracle;
+  let priceOracle;
   let cds;
-  // let fusd;
+  let fusd;
   const defaultHostSetting = true;
   const defaultInitAssetPrice = 25000;
   const defaultClaimPrice = 21250;
@@ -21,21 +23,19 @@ contract('CDS', async (accounts) => {
   const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
   const defaultBuyerDeposit = defaultPremium * (3 + 1);
   const defaultTokenFaucet = '10000000';
-
   const defaultAssetType = 0; // BTC:0, ETH:1, LINK:2
 
-  const priceOracleAddr = '0xe4e0859B42D578B3C8F69EAC10D21b2dF6ef2963';
-  const fusdAddr = '0x7c858C801e84dc58caafaa3f6f4dA1eA422C599d';
+  const { PRICE_ORACLE_ADDRESS, FUSD_ADDRESS } = process.env;
 
-  const priceOracle = await PriceOracleMock.at(priceOracleAddr);
-  const fusd = await FUSD.at(fusdAddr);
-
-  await fusd.transfer(accounts[1], defaultTokenFaucet, { from: accounts[0] });
-  await fusd.transfer(accounts[2], defaultTokenFaucet, { from: accounts[0] });
-  await fusd.transfer(accounts[3], defaultTokenFaucet, { from: accounts[0] });
-  await fusd.transfer(accounts[4], defaultTokenFaucet, { from: accounts[0] });
+  // await fusd.transfer(accounts[1], defaultTokenFaucet, { from: accounts[0] });
+  // await fusd.transfer(accounts[2], defaultTokenFaucet, { from: accounts[0] });
+  // await fusd.transfer(accounts[3], defaultTokenFaucet, { from: accounts[0] });
+  // await fusd.transfer(accounts[4], defaultTokenFaucet, { from: accounts[0] });
 
   beforeEach(async () => {
+    // beforeEach에 deploy 설정 있어야함
+    priceOracle = await PriceOracleMock.at(PRICE_ORACLE_ADDRESS);
+    fusd = await FUSD.at(FUSD_ADDRESS);
     cds = await CDS.new({ from: accounts[0] });
   });
 
@@ -79,7 +79,7 @@ contract('CDS', async (accounts) => {
     });
 
     it('should throw error when invalid deposit approved', async () => {
-      await fusd.approve(cds.address, defaultSellerDeposit, {
+      await fusd.approve(cds.address, defaultBuyerDeposit - 1, {
         from: accounts[2],
       });
       await truffleAssert.fails(
@@ -419,7 +419,7 @@ contract('CDS', async (accounts) => {
 
       const [currentSwapId] = await cds.getSwapId();
 
-      await fusd.approve(cds.address, defaultSellerDeposit + 1, {
+      await fusd.approve(cds.address, defaultSellerDeposit - 1, {
         from: accounts[1],
       });
       await truffleAssert.fails(
@@ -445,7 +445,7 @@ contract('CDS', async (accounts) => {
 
       const [currentSwapId] = await cds.getSwapId();
 
-      await fusd.approve(cds.address, defaultBuyerDeposit + 1, {
+      await fusd.approve(cds.address, defaultBuyerDeposit - 1, {
         from: accounts[2],
       });
 
@@ -673,7 +673,6 @@ contract('CDS', async (accounts) => {
     it('should have proper amount of TOKEN after seller calling cancel', async () => {
       const before = await fusd.balanceOf(accounts[1]);
       const beforeCA = await fusd.balanceOf(cds.address);
-      console.log(+before, +beforeCA);
 
       const [currentSwapId] = await cds.getSwapId();
       await cds.cancel(currentSwapId, { from: accounts[1] });
@@ -1011,7 +1010,7 @@ contract('CDS', async (accounts) => {
       await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
-      await fusd.approve(cds.address, defaultPremium + 1, {
+      await fusd.approve(cds.address, defaultPremium - 1, {
         from: accounts[2],
       });
       await truffleAssert.fails(

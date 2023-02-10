@@ -13,14 +13,8 @@ contract AssetHandler is SwapHandler {
   mapping(uint256 => uint256[2]) public deposits;
 
   constructor() {
-    token = IERC20(0x7c858C801e84dc58caafaa3f6f4dA1eA422C599d);
+    token = IERC20(0xBa63D579512c4AD162cEca81693bBCd8025159e0);
   }
-
-  // function setToken(address _tokenAddress) external onlyOwner returns (bool) {
-  //   require(_tokenAddress != address(0));
-  //   token = IERC20(_tokenAddress);
-  //   return true;
-  // }
 
   function _sendDeposit(
     uint256 _swapId,
@@ -29,18 +23,18 @@ contract AssetHandler is SwapHandler {
     uint256 deposit;
     if (_isBuyer) {
       deposit = getPremium(_swapId).mul(4);
-      require(
-        token.allowance(getBuyer(_swapId), address(this)) == deposit,
-        'Invalid allowance for deposit'
-      );
+      // require(
+      //   token.allowance(getBuyer(_swapId), address(this)) == deposit,
+      //   'Invalid allowance for deposit'
+      // );
       token.transferFrom(getBuyer(_swapId), address(this), deposit);
       deposits[_swapId][0] = deposit;
     } else {
       deposit = getSellerDeposit(_swapId);
-      require(
-        token.allowance(getSeller(_swapId), address(this)) == deposit,
-        'Invalid allowance for deposit'
-      );
+      // require(
+      //   token.allowance(getSeller(_swapId), address(this)) == deposit,
+      //   'Invalid allowance for deposit'
+      // );
       token.transferFrom(getSeller(_swapId), address(this), deposit);
       deposits[_swapId][1] = deposit;
     }

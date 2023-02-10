@@ -68,7 +68,13 @@ contract CDS is AssetHandler, CDSInterface {
       assetType
     );
     _sendDeposit(newSwapId, isBuyer);
-    emit Create(msg.sender, isBuyer, newSwapId, assetType, address(getSwap(newSwapId)));
+    emit Create(
+      msg.sender,
+      isBuyer,
+      newSwapId,
+      assetType,
+      address(getSwap(newSwapId))
+    );
     return newSwapId;
   }
 
@@ -131,10 +137,10 @@ contract CDS is AssetHandler, CDSInterface {
   function payPremium(
     uint256 swapId
   ) external override isBuyer(swapId) returns (bool) {
-    require(
-      token.allowance(getBuyer(swapId), address(this)) == getPremium(swapId),
-      'Need allowance'
-    );
+    // require(
+    //   token.allowance(getBuyer(swapId), address(this)) == getPremium(swapId),
+    //   'Need allowance'
+    // );
     _payPremium(swapId);
     _sendPremium(swapId);
     emit PayPremium(swapId);
