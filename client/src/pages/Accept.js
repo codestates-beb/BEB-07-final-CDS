@@ -26,6 +26,7 @@ import { getSwapById } from '../apis/request';
 
 // utils
 import { calculatePeriodByInterval } from '../utils/calendar';
+import { firstLetterToCapital } from '../utils/CDS';
 
 // css
 import '../assets/css/negotiate.css';
@@ -225,7 +226,7 @@ function Accept() {
             <div className="input-group">
               <div className='input-wrapper'>
                 <div className='input-label'>Asset Type</div>
-                <input value={ swapOnDB? swapOnDB.assetType || '' : ''} disabled/>
+                <input value={ swapOnDB? firstLetterToCapital(swapOnDB.assetType) || '' : ''} disabled/>
               </div>
               <div className='input-wrapper'>
                 <div className='input-label'>Initial Price of Assets</div>

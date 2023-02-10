@@ -23,9 +23,14 @@ import Footer from '../components/Footer.js';
 
 // utils
 import { 
+  calculateRemainingPeriod,
   calculatePeriodByInterval,
   parseUnixtimeToDate
 } from '../utils/calendar';
+
+import {
+  firstLetterToCapital
+} from '../utils/CDS';
 
 // Constant Number
 const DAY = 60 * 60 * 24;
@@ -128,8 +133,10 @@ function Detail() {
   useEffect(() => {
     getSwapById(swapId).then((result) => {
       if (result) {
-        if(result.status !== 'active') navigate(`/`);
+        if(result.status === 'pending') navigate(`/`);
+        console.log(result);
         setSwapOnDB(result);
+        setAssetType(result.assetType);
       }
       else {
         console.log(result);
@@ -148,27 +155,21 @@ function Detail() {
 
   useEffect(() => {
     let intervalId;
-    const nextTimeDummy = parseInt(new Date().getTime() / 1000) + 3600;
-    const current = parseInt(new Date().getTime() / 1000);
-
-    setTimeRemainingToPay( nextTimeDummy - current );
-
     if(CDS){
       CDS.getRounds(swapId).then((rounds)=>{
         console.log(`rounds: ${rounds}`);
         if(rounds <= 0) setIsExpired(true);
-      })
-    }
+      });
 
-    // if (CDS) {
-    //   CDS.getNextPayDate(swapId).then((result) => {
-    //     // console.log(result);
-    //     intervalId = setInterval(() => {
-    //       const current = parseInt(new Date().getTime() / 1000);
-    //       setTimeRemainingToPay(calculateTimeRemaining(current, result));
-    //     }, 1000);
-    //   });
-    // }
+      CDS.getNextPayDate(swapId).then((result) => {
+        const nextPayDate = Number(result);
+        intervalId = setInterval(() => {
+          const current = parseInt(new Date().getTime() / 1000);
+          console.log(`Remaining Period: ${nextPayDate-current}`);
+          setTimeRemainingToPay( calculateRemainingPeriod(current, nextPayDate) );
+        }, 1000);
+      });
+    }
 
     return () => {
       clearInterval(intervalId);
@@ -178,16 +179,12 @@ function Detail() {
   useEffect(()=>{
     if( CDS ){
       CDS.getPrices(swapId).then(([,claimPrice,liquidationPrice,])=>{
-        console.log(claimPrice > priceBTCGecko);
         console.log(`claimPrice: ${claimPrice} BTCGecko: ${priceBTCGecko}`)
         if ( priceBTCGecko < claimPrice) setIsClaimable(true);
+        else setIsClaimable(false);
       })
     }
   }, [CDS, priceBTCGecko])
-
-  useEffect(()=>{
-    console.log(isClaimable);
-  }, [isClaimable])
 
   return (
     <>
@@ -195,9 +192,9 @@ function Detail() {
         <div className="detail-head">
           <div className="detail-head-section">
             <div className="detail-title-group">
-              <h1 className="detail-title">{assetType} Crypto Default Swap</h1>
+              <h1 className="detail-title">{firstLetterToCapital(assetType)} Crypto Default Swap</h1>
               <p className="detail-issued">Issued on {swapOnDB? parseUnixtimeToDate(swapOnDB.createdAt) : null}</p>
-              <p className="detail-period">Remaining Period to Pay: { calculatePeriodByInterval( timeRemainingToPay ) }</p>
+              <p className="detail-period">Remaining Period to Pay: { timeRemainingToPay }</p>
             </div>
             <div className="detail-party">
               <div className="party-item">
