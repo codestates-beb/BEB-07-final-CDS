@@ -12,6 +12,8 @@ Table "users" {
   "createdAt" INT [not null]
   "updatedAt" INT [not null]
   "deletedAt" INT [default: NULL]
+  "lastEtherFaucet" INT [default: NULL]
+  "lastTokenFaucet" INT [default: NULL]
 
 Indexes {
   address [unique, name: "address"]
@@ -21,6 +23,7 @@ Indexes {
 Table "swaps" {
   "swapId" INT [pk, not null]
   "contractAddress" VARCHAR(100) [not null]
+  "assetType" VARCHAR(20) [not null]
   "initialAssetPrice" INT [not null]
   "amountOfAssets" INT [not null]
   "totalAssets" INT [not null]

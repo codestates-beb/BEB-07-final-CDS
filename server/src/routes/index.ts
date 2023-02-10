@@ -3,6 +3,7 @@ import userRouter from './userRouter';
 import swapRouter from './swapRouter';
 import transactionRouter from './transactionRouter';
 import priceRouter from './priceRouter';
+import faucetRouter from './faucetRouter';
 
 export default {
   authRouter,
@@ -10,4 +11,5 @@ export default {
   swapRouter,
   transactionRouter,
   priceRouter,
+  faucetRouter,
 };

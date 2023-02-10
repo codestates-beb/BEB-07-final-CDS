@@ -18,8 +18,14 @@ declare module 'express-session' {
     address: string;
   }
 }
-const { authRouter, userRouter, swapRouter, transactionRouter, priceRouter } =
-  routers;
+const {
+  authRouter,
+  userRouter,
+  swapRouter,
+  transactionRouter,
+  priceRouter,
+  faucetRouter,
+} = routers;
 const port = getEnv('PORT', '5050');
 const RedisStore = connectRedis(session);
 
@@ -69,6 +75,7 @@ app.use('/users', userRouter);
 app.use('/swaps', swapRouter);
 app.use('/transactions', transactionRouter);
 app.use('/prices', priceRouter);
+app.use('/faucet', faucetRouter);
 
 app.use('/health', (req, res, next) => {
   return res.status(200).json({ message: 'health check success!' });
