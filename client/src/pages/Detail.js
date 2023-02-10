@@ -38,14 +38,19 @@ function Detail() {
   // CDS Info State
   const { swapId } = useParams();
   const userAddress = useSelector((state) => state.auth.user_addr);
+  const [assetType, setAssetType] = useState('bitcoin');
   const [swapOnDB, setSwapOnDB] = useState(null);
   const [timeRemainingToPay, setTimeRemainingToPay] = useState(null);
-  
 
   // CDS Availability
   const [isPayablePremium, setIsPayablePremium] = useState(false);
   const [isClaimable, setIsClaimable] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
+
+  // Market Price
+  const priceBTCGecko = useSelector(state=>state.priceByGecko.priceBTCGecko);
+  const priceETHGecko = useSelector(state=>state.priceByGecko.priceETHGecko);
+  const priceLINKGecko = useSelector(state=>state.priceByGecko.priceLINKGecko);
 
   // CDS pay premium Handler
   const premiumButtonHandler = async () => {
@@ -122,12 +127,19 @@ function Detail() {
 
   useEffect(() => {
     getSwapById(swapId).then((result) => {
-      if (result) setSwapOnDB(result);
+      if (result) {
+        if(result.status !== 'active') navigate(`/`);
+        setSwapOnDB(result);
+      }
       else {
         console.log(result);
         navigate('/NotFound');
       }
-    });
+    }).catch(err=>{
+      console.log(err);
+      navigate('/');
+    })
+    ;
   }, []);
 
   useEffect(()=>{
@@ -143,11 +155,8 @@ function Detail() {
 
     if(CDS){
       CDS.getRounds(swapId).then((rounds)=>{
+        console.log(`rounds: ${rounds}`);
         if(rounds <= 0) setIsExpired(true);
-      })
-
-      CDS.getPrices(swapId).then(([,claimPrice,liquidationPrice,])=>{
-        console.log(claimPrice);
       })
     }
 
@@ -166,13 +175,26 @@ function Detail() {
     };
   }, [CDS]);
 
+  useEffect(()=>{
+    if( CDS ){
+      CDS.getPrices(swapId).then(([,claimPrice,liquidationPrice,])=>{
+        console.log(claimPrice > priceBTCGecko);
+        if ( priceBTCGecko < claimPrice) setIsClaimable(true);
+      })
+    }
+  }, [priceBTCGecko])
+
+  useEffect(()=>{
+    console.log(isClaimable);
+  }, [isClaimable])
+
   return (
     <>
       <div className="container container-detail">
         <div className="detail-head">
           <div className="detail-head-section">
             <div className="detail-title-group">
-              <h1 className="detail-title">Bitcoin Crypto Default Swap</h1>
+              <h1 className="detail-title">{assetType} Crypto Default Swap</h1>
               <p className="detail-issued">Issued on {swapOnDB? parseUnixtimeToDate(swapOnDB.createdAt) : null}</p>
               <p className="detail-period">Remaining Period to Pay: { calculatePeriodByInterval( timeRemainingToPay ) }</p>
             </div>
