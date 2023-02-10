@@ -51,6 +51,12 @@ export class Users {
   @Column('int', { name: 'deletedAt', unsigned: true, nullable: true })
   deletedAt: number | null;
 
+  @Column('int', { name: 'lastTokenFaucet', unsigned: true, nullable: true })
+  lastTokenFaucet: number | null;
+
+  @Column('int', { name: 'lastEtherFaucet', unsigned: true, nullable: true })
+  lastEtherFaucet: number | null;
+
   @OneToMany(() => Swaps, (swaps) => swaps.buyer2)
   swaps: Swaps[];
 
