@@ -333,7 +333,7 @@ function Accept() {
                 <div className='input-label'>Seller Deposit</div>
                 <input
                   value={
-                    swapOnDB ? `$ ${swapOnDB.sellerDeposit}` : ''
+                    swapOnDB ? `$ ${Number( swapOnDB.sellerDeposit ).toLocaleString()}` : ''
                   }
                   disabled
                 />
@@ -343,7 +343,7 @@ function Accept() {
                   placeholder="Liquidated Price"
                   value={
                     swapOnDB
-                      ? `Liquidated Price: ${swapOnDB.liquidationPrice}`
+                      ? `Liquidated Price: ${Number( swapOnDB.liquidationPrice ).toLocaleString()}`
                       : ''
                   }
                   disabled
@@ -361,7 +361,7 @@ function Accept() {
                 <div className='input-label'>Buyer Deposit</div>
                 <input
                   value={
-                    swapOnDB ? `$ ${swapOnDB.buyerDeposit}` : ''
+                    swapOnDB ? `$ ${Number( swapOnDB.buyerDeposit ).toLocaleString()}` : ''
                   }
                   disabled
                 />

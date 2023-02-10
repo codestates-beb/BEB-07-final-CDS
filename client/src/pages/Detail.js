@@ -105,7 +105,7 @@ function Detail() {
 
   // CDS expire Handler
   const expireButtonHandler = async() => {
-    console.log(swapId);
+    if (!isExpired) return new Error('Not Expried');
 
     try{
       const result = await CDS.expire(
@@ -131,7 +131,7 @@ function Detail() {
   }, []);
 
   useEffect(()=>{
-    if(timeRemainingToPay < DAY) setIsPayablePremium(true);
+    if(timeRemainingToPay <= DAY) setIsPayablePremium(true);
   }, [timeRemainingToPay])
 
   useEffect(() => {
@@ -140,6 +140,16 @@ function Detail() {
     const current = parseInt(new Date().getTime() / 1000);
 
     setTimeRemainingToPay( nextTimeDummy - current );
+
+    if(CDS){
+      CDS.getRounds(swapId).then((rounds)=>{
+        if(rounds <= 0) setIsExpired(true);
+      })
+
+      CDS.getPrices(swapId).then(([,claimPrice,liquidationPrice,])=>{
+        console.log(claimPrice);
+      })
+    }
 
     // if (CDS) {
     //   CDS.getNextPayDate(swapId).then((result) => {

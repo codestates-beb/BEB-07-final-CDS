@@ -5,9 +5,15 @@ import { useDispatch } from 'react-redux';
 
 // apis
 import { requestVerify } from './apis/auth';
+import { 
+  getCoinGeckoAPI, 
+  getChainLinkAPI,
+} from './apis/request';
 
 // actions
 import { setAuth } from './features/authSlice';
+import { setPriceByGecko } from './features/priceByGeckoSlice';
+import { setPriceByLink } from './features/priceByLinkSlice';
 
 // hooks
 import useMetamask from './utils/hooks/useMetamask';
@@ -35,6 +41,28 @@ function App() {
   const dispatch = useDispatch();
   const metamask = useMetamask();
 
+  const getPrices = async()=>{
+    const priceByGecko = await getCoinGeckoAPI();
+    dispatch( setPriceByGecko(priceByGecko) );
+    
+    const priceByLink = await getChainLinkAPI();
+    dispatch( setPriceByLink(priceByLink) );
+  }
+  
+  // get Market Prices with Interval 20 seconds
+  useEffect(()=>{
+    getPrices()
+
+    let intervalId = setInterval(()=>{
+      getPrices();
+    }, 20 * 1000);
+
+    return ()=>{
+      clearInterval( intervalId );
+    }
+  }, [])
+
+  // Refresh Login
   useEffect(() => {
     if (metamask) {
       (async () => {
@@ -46,8 +74,8 @@ function App() {
         }
 
         const address = await metamask
-          .request({ method: 'eth_requestAccounts' })
-          .then((result) => result[0]);
+        .request({ method: 'eth_requestAccounts' })
+        .then((result) => result[0]);
 
         dispatch(setAuth(address));
       })();
