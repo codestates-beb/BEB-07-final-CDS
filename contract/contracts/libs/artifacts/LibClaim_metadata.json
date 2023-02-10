@@ -1,0 +1,53 @@
+{
+	"compiler": {
+		"version": "0.8.7+commit.e28d00a7"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/libs/LibClaim.sol": "LibClaim"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/utils/math/SafeMath.sol": {
+			"keccak256": "0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://864a40efcffdf408044c332a5aa38ec5618ed7b4eecb8f65faf45671bd6cdc65",
+				"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN"
+			]
+		},
+		"contracts/libs/LibClaim.sol": {
+			"keccak256": "0x55c17c1a275359f259ba6f0b667896e41d2f5ece2f903426a41b1ef69da72aef",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8dd048845b1d7cc4f204657e4b2004fb864c2fe3f479376ade2f4cf5db7de511",
+				"dweb:/ipfs/QmRBjxDEYMewtfybSXNQW4ZQuoA3stvL9s6fr7yD9aYvQm"
+			]
+		}
+	},
+	"version": 1
+}
