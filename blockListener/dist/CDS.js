@@ -133,7 +133,9 @@ class CDS {
                             yield this.closeEventHandler(event);
                         }
                         else if (event.event === 'Expire') {
+                            console.log('##################');
                             console.log('Expire Event found!');
+                            console.log('##################');
                             yield this.expireEventHandler(event);
                         }
                         else if (event.event === 'PayPremium') {
@@ -242,7 +244,7 @@ class CDS {
     getSwapInfo(swapAddr) {
         return __awaiter(this, void 0, void 0, function* () {
             const swapInstance = Swap_1.default.getInstance(this.web3Endpoint);
-            swapInstance.setContract(Swap_json_1.swapAbi, swapAddr);
+            swapInstance.setContract(Swap_json_1.abi, swapAddr);
             const swapInfo = yield swapInstance.getSwapInfo();
             return swapInfo;
         });
