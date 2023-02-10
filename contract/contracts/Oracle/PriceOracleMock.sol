@@ -7,13 +7,10 @@ contract PriceOracleMock {
   uint256 public linkPrice;
 
   constructor(
-    uint256 _initialBTCPrice,
-    uint256 _initialETHPrice,
-    uint256 _initialLinkPrice
   ) {
-    btcPrice = _initialBTCPrice;
-    ethPrice = _initialETHPrice;
-    linkPrice = _initialLinkPrice;
+    btcPrice = 2500000000000;
+    ethPrice = 160000000000;
+    linkPrice = 750000000;
   }
 
   function setBTCPrice(uint256 _price) public returns (uint256) {

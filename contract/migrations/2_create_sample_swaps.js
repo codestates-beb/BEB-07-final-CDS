@@ -3,6 +3,8 @@ const CDS = artifacts.require('CDS');
 const PriceOracleMock = artifacts.require('PriceOracleMock');
 const FUSD = artifacts.require('FUSD');
 
+require('dotenv').config();
+
 const defaultHostSetting = true;
 const defaultInitAssetPrice = 25000;
 const defaultClaimPrice = 21250;
@@ -14,17 +16,14 @@ const defaultBuyerDeposit = defaultPremium * (3 + 1);
 const defaultTokenFaucet = '10000000';
 const defaultAssetType = 0; // BTC:0, ETH:1, LINK:2
 
-const priceOracleAddr = '0xe4e0859B42D578B3C8F69EAC10D21b2dF6ef2963';
-const fusdAddr = '0x7c858C801e84dc58caafaa3f6f4dA1eA422C599d';
+const { PRICE_ORACLE_ADDRESS, FUSD_ADDRESS } = process.env;
 
 let currentSwapId;
 module.exports = async function (deployer, network, accounts) {
   console.log(`Triggering Initial TXs ON : ** ${network.toUpperCase()} **`);
   try {
-    const priceOracleMock = await PriceOracleMock.at(priceOracleAddr);
-    // token faucet
-    const fusd = await FUSD.at(fusdAddr);
-    const adminBal = await fusd.balanceOf(accounts[0]);
+    const priceOracleMock = await PriceOracleMock.at(PRICE_ORACLE_ADDRESS);
+    const fusd = await FUSD.at(FUSD_ADDRESS);
 
     await fusd.transfer(accounts[1], defaultTokenFaucet, { from: accounts[0] });
     await fusd.transfer(accounts[2], defaultTokenFaucet, { from: accounts[0] });
