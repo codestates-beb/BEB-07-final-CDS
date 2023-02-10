@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import { Contract, EventData } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
-import { swapAbi } from './contractArtifacts/Swap.json';
+import { abi } from './contractArtifacts/Swap.json';
 import { EntityManager } from 'typeorm';
 import { Users } from './entities/Users';
 import { Transactions } from './entities/Transactions';
@@ -113,7 +113,9 @@ export default class CDS {
         console.log('Close Event found!');
         await this.closeEventHandler(event);
       } else if (event.event === 'Expire') {
+        console.log('##################');
         console.log('Expire Event found!');
+        console.log('##################');
         await this.expireEventHandler(event);
       } else if (event.event === 'PayPremium') {
         console.log('PayPremium Event found!');
@@ -216,7 +218,7 @@ export default class CDS {
   // get detailed swapinfo from Swap.sol
   private async getSwapInfo(swapAddr: string): Promise<SwapInfo> {
     const swapInstance = Swap.getInstance(this.web3Endpoint);
-    swapInstance.setContract(swapAbi as AbiItem[], swapAddr);
+    swapInstance.setContract(abi as AbiItem[], swapAddr);
     const swapInfo = await swapInstance.getSwapInfo();
     return swapInfo;
   }
