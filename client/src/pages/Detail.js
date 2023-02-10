@@ -40,12 +40,14 @@ function Detail() {
   const userAddress = useSelector((state) => state.auth.user_addr);
   const [swapOnDB, setSwapOnDB] = useState(null);
   const [timeRemainingToPay, setTimeRemainingToPay] = useState(null);
-  
 
   // CDS Availability
   const [isPayablePremium, setIsPayablePremium] = useState(false);
   const [isClaimable, setIsClaimable] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
+
+  // Market Price
+  const priceBTCGecko = useSelector(state=>state.priceByGecko.priceBTCGecko);
 
   // CDS pay premium Handler
   const premiumButtonHandler = async () => {
@@ -145,10 +147,6 @@ function Detail() {
       CDS.getRounds(swapId).then((rounds)=>{
         if(rounds <= 0) setIsExpired(true);
       })
-
-      CDS.getPrices(swapId).then(([,claimPrice,liquidationPrice,])=>{
-        console.log(claimPrice);
-      })
     }
 
     // if (CDS) {
@@ -165,6 +163,15 @@ function Detail() {
       clearInterval(intervalId);
     };
   }, [CDS]);
+
+  useEffect(()=>{
+    if( CDS ){
+      CDS.getPrices(swapId).then(([,claimPrice,liquidationPrice,])=>{
+        console.log(claimPrice);
+        if ( priceBTCGecko < claimPrice) setIsClaimable(true);
+      })
+    }
+  }, [priceBTCGecko])
 
   return (
     <>
