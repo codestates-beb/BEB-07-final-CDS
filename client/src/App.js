@@ -5,9 +5,15 @@ import { useDispatch } from 'react-redux';
 
 // apis
 import { requestVerify } from './apis/auth';
+import { 
+  getCoinGeckoAPI, 
+  getChainLinkAPI,
+} from './apis/request';
 
 // actions
 import { setAuth } from './features/authSlice';
+import { setPriceByGecko } from './features/priceByGeckoSlice';
+import { setPriceByLink } from './features/priceByLinkSlice';
 
 // hooks
 import useMetamask from './utils/hooks/useMetamask';
@@ -34,6 +40,28 @@ import './App.css';
 function App() {
   const dispatch = useDispatch();
   const metamask = useMetamask();
+
+  const getPrices = async()=>{
+    const priceByGecko = await getCoinGeckoAPI();
+    dispatch( setPriceByGecko(priceByGecko) );
+    
+    const priceByLink = await getChainLinkAPI();
+    dispatch( setPriceByLink(priceByLink) );
+  }
+    
+  useEffect(()=>{
+    console.log('working');
+
+    getPrices()
+
+    let intervalId = setInterval(()=>{
+      getPrices();
+    }, 20 * 1000);
+
+    return ()=>{
+      clearInterval( intervalId );
+    }
+  }, [])
 
   useEffect(() => {
     if (metamask) {

@@ -128,7 +128,12 @@ function useCDS() {
 
         getSwap: async (swapId)=>{
           const receipt = await contract.methods.getSwap(swapId).call();
-          return receipt
+          return receipt;
+        },
+
+        getPrices: async (swapId)=>{
+          const receipt = await contract.methods.getPrices(swapId).call();
+          return receipt;
         },
 
         getSellerDeposit: async (swapId) =>{
@@ -138,6 +143,11 @@ function useCDS() {
 
         getPremium: async (swapId) =>{
           const receipt = await contract.methods.getPremium(swapId).call();
+          return receipt;
+        },
+
+        getRounds: async (swapId) =>{
+          const receipt = await contract.methods.getRounds(swapId).call();
           return receipt;
         },
 
