@@ -8,7 +8,7 @@ contract PriceConsumer {
 
   constructor() {
     priceOracle = PriceOracleMock(
-      address(0xB35cB83eA5b247576bCAfE4298aC1211aA4c3BEe)
+      address(0x63AeE035a950875179befa3d298948B0F6061AcF)
     );
   }
 
