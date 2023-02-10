@@ -2,11 +2,17 @@ export interface CreateReturnValue {
   hostAddr: string;
   isBuyer: boolean;
   swapId: string;
+  assetType: string;
   swap: string;
 }
 
 export interface AcceptReturnValue {
-  initAssetPrice: string;
+  guestAddr: string;
+  swapId: string;
+}
+
+export interface ClaimReturnValue {
+  claimReward: string;
   swapId: string;
 }
 
