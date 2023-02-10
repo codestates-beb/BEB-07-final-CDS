@@ -48,6 +48,8 @@ function Detail() {
 
   // Market Price
   const priceBTCGecko = useSelector(state=>state.priceByGecko.priceBTCGecko);
+  const priceETHGecko = useSelector(state=>state.priceByGecko.priceETHGecko);
+  const priceLINKGecko = useSelector(state=>state.priceByGecko.priceLINKGecko);
 
   // CDS pay premium Handler
   const premiumButtonHandler = async () => {
@@ -124,7 +126,10 @@ function Detail() {
 
   useEffect(() => {
     getSwapById(swapId).then((result) => {
-      if (result) setSwapOnDB(result);
+      if (result) {
+        if(result.status !== 'active') navigate(`/`);
+        setSwapOnDB(result);
+      }
       else {
         console.log(result);
         navigate('/NotFound');
@@ -145,6 +150,7 @@ function Detail() {
 
     if(CDS){
       CDS.getRounds(swapId).then((rounds)=>{
+        console.log(`rounds: ${rounds}`);
         if(rounds <= 0) setIsExpired(true);
       })
     }
@@ -167,11 +173,15 @@ function Detail() {
   useEffect(()=>{
     if( CDS ){
       CDS.getPrices(swapId).then(([,claimPrice,liquidationPrice,])=>{
-        console.log(claimPrice);
+        console.log(claimPrice > priceBTCGecko);
         if ( priceBTCGecko < claimPrice) setIsClaimable(true);
       })
     }
   }, [priceBTCGecko])
+
+  useEffect(()=>{
+    console.log(isClaimable);
+  }, [isClaimable])
 
   return (
     <>

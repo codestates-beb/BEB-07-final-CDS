@@ -225,7 +225,7 @@ function Accept() {
             <div className="input-group">
               <div className='input-wrapper'>
                 <div className='input-label'>Asset Type</div>
-                <input value={ swapOnDB? swapOnDB.assetType : ''} disabled/>
+                <input value={ swapOnDB? swapOnDB.assetType || '' : ''} disabled/>
               </div>
               <div className='input-wrapper'>
                 <div className='input-label'>Initial Price of Assets</div>
