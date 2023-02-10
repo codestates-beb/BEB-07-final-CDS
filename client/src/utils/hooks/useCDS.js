@@ -26,7 +26,8 @@ function useCDS() {
             liquidationPrice,
             sellerDeposit,
             premiumPrice,
-            premiumRounds
+            premiumRounds,
+            assetType
           } = data;
 
           if (
@@ -36,6 +37,7 @@ function useCDS() {
             || !sellerDeposit
             || !premiumPrice
             || !premiumRounds
+            || !assetType
             || !userAddress
           ) {
             throw new Error("Not valid inputs")
@@ -52,7 +54,8 @@ function useCDS() {
             liquidationPrice,
             sellerDeposit,
             premiumPrice,
-            premiumRounds
+            premiumRounds,
+            assetType
           )
           .send({from: userAddress}, (result)=>{
             console.log(result);
