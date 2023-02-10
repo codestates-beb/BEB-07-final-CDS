@@ -112,7 +112,6 @@ web_modules/
 .env.production.local
 .env.local
 
-dist
 
 # yarn v2
 .yarn/cache
@@ -127,3 +126,4 @@ CDS_CA.txt
 
 blockListener/src/contractArtifacts/
 blockListener/.vscode
+ec2_template_userdata.sh
