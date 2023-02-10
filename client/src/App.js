@@ -48,10 +48,9 @@ function App() {
     const priceByLink = await getChainLinkAPI();
     dispatch( setPriceByLink(priceByLink) );
   }
-    
+  
+  // get Market Prices with Interval 20 seconds
   useEffect(()=>{
-    console.log('working');
-
     getPrices()
 
     let intervalId = setInterval(()=>{
@@ -63,6 +62,7 @@ function App() {
     }
   }, [])
 
+  // Refresh Login
   useEffect(() => {
     if (metamask) {
       (async () => {
@@ -74,8 +74,8 @@ function App() {
         }
 
         const address = await metamask
-          .request({ method: 'eth_requestAccounts' })
-          .then((result) => result[0]);
+        .request({ method: 'eth_requestAccounts' })
+        .then((result) => result[0]);
 
         dispatch(setAuth(address));
       })();
