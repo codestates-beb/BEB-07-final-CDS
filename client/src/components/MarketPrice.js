@@ -32,7 +32,7 @@ function MarketPriceType2() {
 
   // market data의 updated timed을 저장합니다
   const updatedTimeGecko = useSelector(state => state.priceByGecko.updatedTimeGecko);
-  const updatedTimeLink = useSelector(state => state.priceByGecko.updatedTimeLink);;
+  const updatedTimeLink = useSelector(state => state.priceByLink.updatedTimeLink);
 
   // 크립토 자산의 변화율이 음수인지 판단합니다
   const [negativeBTC, setNegativeBTC] = useState(false);
