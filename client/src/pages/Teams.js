@@ -188,6 +188,12 @@ function Teams() {
           </div>
         </div>
       </div>
+      <div className="fixed bottom-11 right-11">
+        <ScrollButton />
+      </div>
+      <div>
+        <Footer />
+      </div>
     </>
   );
 }
