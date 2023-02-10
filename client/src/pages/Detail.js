@@ -186,6 +186,11 @@ function Detail() {
     }
   }, [CDS, priceBTCGecko])
 
+  useEffect(()=>{
+    if(timeRemainingToPay < 60 * 60 * 24 * 3) setIsPayablePremium(true);
+    else setIsPayablePremium(false);
+  }, [timeRemainingToPay])
+
   return (
     <>
       <div className="container container-detail">
