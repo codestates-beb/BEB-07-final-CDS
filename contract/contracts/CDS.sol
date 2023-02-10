@@ -11,7 +11,8 @@ interface CDSInterface {
     uint256 liquidationPrice,
     uint256 sellerDeposit,
     uint256 premium,
-    uint32 totalRounds
+    uint32 totalRounds,
+    uint32 assetType
   ) external returns (uint256);
 
   function accept(
@@ -29,10 +30,17 @@ interface CDSInterface {
 
   function payPremium(uint256 swapId) external returns (bool);
 
+  function payPremiumByDeposit(
+    uint256 swapId
+  ) external returns (bool);
+
+  function withdraw(uint256 amount) external returns (bool);
+
   event Create(
     address indexed hostAddr,
     bool isBuyer,
     uint256 swapId,
+    uint32 assetType,
     address swap
   );
   event Accept(address indexed guestAddr, uint256 swapId);
@@ -52,7 +60,8 @@ contract CDS is AssetHandler, CDSInterface {
     uint256 liquidationPrice,
     uint256 sellerDeposit,
     uint256 premium,
-    uint32 totalRounds
+    uint32 totalRounds,
+    uint32 assetType
   ) external override returns (uint256) {
     uint256 newSwapId = _create(
       isBuyer,
@@ -61,10 +70,17 @@ contract CDS is AssetHandler, CDSInterface {
       liquidationPrice,
       sellerDeposit,
       premium,
-      totalRounds
+      totalRounds,
+      assetType
     );
     _sendDeposit(newSwapId, isBuyer);
-    emit Create(msg.sender, isBuyer, newSwapId, address(getSwap(newSwapId)));
+    emit Create(
+      msg.sender,
+      isBuyer,
+      newSwapId,
+      assetType,
+      address(getSwap(newSwapId))
+    );
     return newSwapId;
   }
 
@@ -107,7 +123,7 @@ contract CDS is AssetHandler, CDSInterface {
   ) external override isBuyer(swapId) returns (bool) {
     require(
       getSwap(swapId).getClaimReward() != 0,
-      'Claim price in CDS should be higher than current price of asset'
+      'Current price is higher than the claim price in CDS'
     );
     _claim(swapId);
     uint256 claimReward = _afterClaim(swapId);
@@ -115,8 +131,6 @@ contract CDS is AssetHandler, CDSInterface {
     return true;
   }
 
-  // total Rounds 만료시 seller 콜 => 각자 deposit 가져가기. 근데 기간 만료인데 claimable 상태라면?
-  // buyer Deposit = 0 인데, nextPayDate이 이미 지났을 경우 seller 콜 => 각자 deposit 가져가기
   function expire(uint256 swapId) external override returns (bool) {
     _expire(swapId);
     _endSwap(swapId);
@@ -127,10 +141,6 @@ contract CDS is AssetHandler, CDSInterface {
   function payPremium(
     uint256 swapId
   ) external override isBuyer(swapId) returns (bool) {
-    require(
-      token.allowance(getBuyer(swapId), address(this)) == getPremium(swapId),
-      'Need allowance'
-    );
     _payPremium(swapId);
     _sendPremium(swapId);
     emit PayPremium(swapId);
@@ -139,10 +149,15 @@ contract CDS is AssetHandler, CDSInterface {
 
   function payPremiumByDeposit(
     uint256 swapId
-  ) external onlyOwner returns (bool) {
+  ) external override onlyOwner returns (bool) {
     _payPremium(swapId);
     _sendPremiumByDeposit(swapId);
     emit PayPremium(swapId);
+    return true;
+  }
+
+  function withdraw(uint256 amount) external override onlyOwner returns (bool) {
+    token.transfer(owner(), amount);
     return true;
   }
 }

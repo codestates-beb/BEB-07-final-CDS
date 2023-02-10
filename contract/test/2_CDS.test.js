@@ -8,7 +8,9 @@ const PriceOracleMock = artifacts.require('PriceOracleMock');
 const FUSD = artifacts.require('FUSD');
 const CDS = artifacts.require('CDS');
 
-contract('CDS', (accounts) => {
+require('dotenv').config();
+
+contract('CDS', async (accounts) => {
   let priceOracle;
   let cds;
   let fusd;
@@ -21,34 +23,39 @@ contract('CDS', (accounts) => {
   const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
   const defaultBuyerDeposit = defaultPremium * (3 + 1);
   const defaultTokenFaucet = '10000000';
+  const defaultAssetType = 0; // BTC:0, ETH:1, LINK:2
+
+  const { PRICE_ORACLE_ADDRESS, FUSD_ADDRESS } = process.env;
+
+  // await fusd.transfer(accounts[1], defaultTokenFaucet, { from: accounts[0] });
+  // await fusd.transfer(accounts[2], defaultTokenFaucet, { from: accounts[0] });
+  // await fusd.transfer(accounts[3], defaultTokenFaucet, { from: accounts[0] });
+  // await fusd.transfer(accounts[4], defaultTokenFaucet, { from: accounts[0] });
 
   beforeEach(async () => {
-    priceOracle = await PriceOracleMock.new(defaultInitAssetPrice, {
-      from: accounts[0],
-    });
+    // beforeEach에 deploy 설정 있어야함
+    priceOracle = await PriceOracleMock.at(PRICE_ORACLE_ADDRESS);
+    fusd = await FUSD.at(FUSD_ADDRESS);
     cds = await CDS.new({ from: accounts[0] });
-    fusd = await FUSD.new({ from: accounts[0] });
-    await cds.setOracle(priceOracle.address, { from: accounts[0] });
-    await cds.setToken(fusd.address, { from: accounts[0] });
-
-    await fusd.transfer(accounts[1], defaultTokenFaucet, { from: accounts[0] });
-    await fusd.transfer(accounts[2], defaultTokenFaucet, { from: accounts[0] });
-    await fusd.transfer(accounts[3], defaultTokenFaucet, { from: accounts[0] });
-    await fusd.transfer(accounts[4], defaultTokenFaucet, { from: accounts[0] });
   });
 
+  /*
   describe('Price Oracle', () => {
     it('should throw error if priceOracle is not set', async () => {
-      const priceOracleSetted = await cds.priceOracle();
-      await assert.strictEqual(priceOracleSetted, priceOracle.address);
+      // const priceOracleSetted = await cds.priceOracle();
+      await assert.strictEqual(
+        '0x0f7d54966079088eb696f70dcbb309388597a2c9',
+        priceOracle.address,
+      );
     });
 
     it('should be able to set priceOracle and get value from it', async () => {
       await truffleAssert.passes(await cds.setOracle(priceOracle.address));
-      const currentPrice = await priceOracle.price();
-      await assert.strictEqual(defaultInitAssetPrice, currentPrice.toNumber());
+      const currentPrice = await priceOracle.btcPrice();
+      await assert.strictEqual(defaultBTCPriceOracle, currentPrice.toNumber());
     });
   });
+  */
 
   describe('Owner Check', () => {
     it('should throw error if owner is different', async () => {
@@ -60,19 +67,19 @@ contract('CDS', (accounts) => {
   describe('Create', () => {
     it('should throw error when invalid input', async () => {
       await truffleAssert.fails(
-        cds.create(true, 20000, 21250, 20000, 50000, -750, 60 * 10, 12, {
+        cds.create(true, 20000, 21250, 20000, 50000, -750, 60 * 10, 12, 0, {
           from: accounts[2],
         }),
       );
       await truffleAssert.fails(
-        cds.create(true, 20000, 21250, 20000, 100000, 750, 60 * 10, -12, {
+        cds.create(true, 20000, 21250, 20000, 100000, 750, 60 * 10, -12, 0, {
           from: accounts[2],
         }),
       );
     });
 
     it('should throw error when invalid deposit approved', async () => {
-      await fusd.approve(cds.address, defaultSellerDeposit, {
+      await fusd.approve(cds.address, defaultBuyerDeposit - 1, {
         from: accounts[2],
       });
       await truffleAssert.fails(
@@ -84,6 +91,7 @@ contract('CDS', (accounts) => {
           defaultSellerDeposit,
           defaultPremium,
           defaultPremiumRounds,
+          defaultAssetType,
           { from: accounts[2] },
         ),
       );
@@ -100,6 +108,7 @@ contract('CDS', (accounts) => {
           defaultSellerDeposit,
           defaultPremium,
           defaultPremiumRounds,
+          defaultAssetType,
           { from: accounts[1] },
         ),
       );
@@ -118,6 +127,7 @@ contract('CDS', (accounts) => {
           defaultSellerDeposit,
           defaultPremium,
           defaultPremiumRounds,
+          defaultAssetType,
           { from: accounts[2] },
         ),
       );
@@ -168,6 +178,7 @@ contract('CDS', (accounts) => {
           defaultSellerDeposit,
           defaultPremium,
           defaultPremiumRounds,
+          defaultAssetType,
           { from: accounts[1] },
         ),
       );
@@ -218,6 +229,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
       const after = await fusd.balanceOf(accounts[2]);
@@ -250,6 +262,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[1] },
       );
       const after = await fusd.balanceOf(accounts[1]);
@@ -282,6 +295,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
 
@@ -340,6 +354,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[1] },
       );
 
@@ -398,12 +413,13 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
 
       const [currentSwapId] = await cds.getSwapId();
 
-      await fusd.approve(cds.address, defaultSellerDeposit + 1, {
+      await fusd.approve(cds.address, defaultSellerDeposit - 1, {
         from: accounts[1],
       });
       await truffleAssert.fails(
@@ -423,12 +439,13 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[1] },
       );
 
       const [currentSwapId] = await cds.getSwapId();
 
-      await fusd.approve(cds.address, defaultBuyerDeposit + 1, {
+      await fusd.approve(cds.address, defaultBuyerDeposit - 1, {
         from: accounts[2],
       });
 
@@ -449,6 +466,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
 
@@ -473,6 +491,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[1] },
       );
 
@@ -498,6 +517,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
 
@@ -536,6 +556,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[1] },
       );
 
@@ -573,6 +594,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
     });
@@ -624,6 +646,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[1] },
       );
     });
@@ -647,14 +670,14 @@ contract('CDS', (accounts) => {
       await assert.strictEqual(0, +swapStatus); // inactive => 0
     });
 
-    it('should have decreased amount of TOKEN after seller calling cancel', async () => {
+    it('should have proper amount of TOKEN after seller calling cancel', async () => {
       const before = await fusd.balanceOf(accounts[1]);
       const beforeCA = await fusd.balanceOf(cds.address);
 
       const [currentSwapId] = await cds.getSwapId();
       await cds.cancel(currentSwapId, { from: accounts[1] });
 
-      const after = await fusd.balanceOf(accounts[2]);
+      const after = await fusd.balanceOf(accounts[1]);
       const afterCA = await fusd.balanceOf(cds.address);
 
       await assert.strictEqual(+before, +after - defaultSellerDeposit);
@@ -675,6 +698,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
     });
@@ -782,6 +806,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
     });
@@ -802,8 +827,8 @@ contract('CDS', (accounts) => {
         from: accounts[1],
       });
 
-      const currPrice = 21000;
-      await priceOracle.setPrice(currPrice, { from: accounts[0] });
+      const currPrice = 2100000000000;
+      await priceOracle.setBTCPrice(currPrice, { from: accounts[0] });
       await truffleAssert.fails(
         cds.claim(currentSwapId, { from: accounts[1] }),
       );
@@ -820,8 +845,8 @@ contract('CDS', (accounts) => {
         from: accounts[1],
       });
 
-      const currPrice = 22000;
-      await priceOracle.setPrice(currPrice, { from: accounts[0] });
+      const currPrice = 2200000000000;
+      await priceOracle.setBTCPrice(currPrice, { from: accounts[0] });
 
       await truffleAssert.fails(
         cds.claim(currentSwapId, { from: accounts[2] }),
@@ -838,9 +863,9 @@ contract('CDS', (accounts) => {
         from: accounts[1],
       });
 
-      const changedPrice = 21000;
+      const changedPrice = 2100000000000;
       const claimRewardIntended = 40000;
-      await priceOracle.setPrice(changedPrice);
+      await priceOracle.setBTCPrice(changedPrice);
 
       const balanceBeforeClaim = {
         contract: +(await fusd.balanceOf(cds.address)),
@@ -894,8 +919,8 @@ contract('CDS', (accounts) => {
         from: accounts[1],
       });
 
-      const changedPrice = 19000;
-      await priceOracle.setPrice(changedPrice);
+      const changedPrice = 1900000000000;
+      await priceOracle.setBTCPrice(changedPrice);
 
       const balanceBeforeClaim = {
         contract: +(await fusd.balanceOf(cds.address)),
@@ -950,6 +975,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
     });
@@ -984,7 +1010,7 @@ contract('CDS', (accounts) => {
       await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
-      await fusd.approve(cds.address, defaultPremium + 1, {
+      await fusd.approve(cds.address, defaultPremium - 1, {
         from: accounts[2],
       });
       await truffleAssert.fails(
@@ -1065,6 +1091,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         premiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
 
@@ -1099,6 +1126,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
     });
@@ -1200,6 +1228,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         premiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
 
@@ -1268,6 +1297,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         premiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
       const [currentSwapId] = await cds.getSwapId();
@@ -1384,6 +1414,7 @@ contract('CDS', (accounts) => {
         defaultSellerDeposit,
         defaultPremium,
         defaultPremiumRounds,
+        defaultAssetType,
         { from: accounts[2] },
       );
       const [currentSwapId] = await cds.getSwapId();

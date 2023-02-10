@@ -12,10 +12,8 @@ contract AssetHandler is SwapHandler {
 
   mapping(uint256 => uint256[2]) public deposits;
 
-  function setToken(address _tokenAddress) external onlyOwner returns (bool) {
-    require(_tokenAddress != address(0));
-    token = IERC20(_tokenAddress);
-    return true;
+  constructor() {
+    token = IERC20(0xBa63D579512c4AD162cEca81693bBCd8025159e0);
   }
 
   function _sendDeposit(
@@ -25,18 +23,10 @@ contract AssetHandler is SwapHandler {
     uint256 deposit;
     if (_isBuyer) {
       deposit = getPremium(_swapId).mul(4);
-      require(
-        token.allowance(getBuyer(_swapId), address(this)) == deposit,
-        'Invalid allowance for deposit'
-      );
       token.transferFrom(getBuyer(_swapId), address(this), deposit);
       deposits[_swapId][0] = deposit;
     } else {
       deposit = getSellerDeposit(_swapId);
-      require(
-        token.allowance(getSeller(_swapId), address(this)) == deposit,
-        'Invalid allowance for deposit'
-      );
       token.transferFrom(getSeller(_swapId), address(this), deposit);
       deposits[_swapId][1] = deposit;
     }
@@ -82,9 +72,9 @@ contract AssetHandler is SwapHandler {
   function _expire(
     uint256 _swapId
   ) internal isSeller(_swapId) isActive(_swapId) {
-    // bool byRounds = ((block.timestamp >= getNextPayDate(_swapId)) &&
+    // bool byRounds = ((block.timestamp >= nextPayDate[_swapId]) &&
     //   (getRounds(_swapId) == 0));
-    // bool byDeposit = ((block.timestamp >= getNextPayDate(_swapId)) &&
+    // bool byDeposit = ((block.timestamp >= nextPayDate[_swapId]) &&
     //   (deposits[_swapId][0] == 0));
     bool byRounds = (getRounds(_swapId) == 0);
     bool byDeposit = (deposits[_swapId][0] == 0);

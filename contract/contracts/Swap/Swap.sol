@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import '../Oracle/PriceOracleMock.sol';
-import '../libs/LibClaim.sol';
+import './PriceConsumer.sol';
+import '../libs/LibSwap.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
-contract Swap is Ownable {
+contract Swap is Ownable, PriceConsumer {
   using SafeMath for uint256;
-  using LibClaim for uint256;
+  using LibSwap for uint256;
 
   PriceOracleMock private priceOracle;
 
@@ -26,10 +26,12 @@ contract Swap is Ownable {
   uint256 public liquidationPrice;
   uint256 public premium;
   uint256 public sellerDeposit;
+  uint256 public amountOfAsset;
   address private buyer;
   address private seller;
   uint32 public rounds;
   uint32 public totalRounds;
+  uint32 public assetType;
 
   constructor(
     uint256 _initAssetPrice,
@@ -38,7 +40,7 @@ contract Swap is Ownable {
     uint256 _premium,
     uint256 _sellerDeposit,
     uint32 _rounds,
-    address priceOracleAddr
+    uint32 _assetType
   ) {
     initAssetPrice = _initAssetPrice;
     claimPrice = _claimPrice;
@@ -47,12 +49,19 @@ contract Swap is Ownable {
     sellerDeposit = _sellerDeposit;
     rounds = _rounds;
     totalRounds = _rounds;
+    amountOfAsset = initAssetPrice.calcAmountOfAsset(
+      liquidationPrice,
+      sellerDeposit
+    );
+    require(
+      _assetType == 0 || _assetType == 1 || _assetType == 2,
+      'BTC:0, ETH:1, LINK:2'
+    );
+    assetType = _assetType;
 
     buyer = address(0);
     seller = address(0);
     status = Status.pending;
-
-    priceOracle = PriceOracleMock(priceOracleAddr);
   }
 
   function getPrices() public view returns (uint256[5] memory) {
@@ -74,7 +83,7 @@ contract Swap is Ownable {
   }
 
   function getClaimReward() public view returns (uint256) {
-    uint256 currPrice = priceOracle.price();
+    uint256 currPrice = getCurrPrice();
     if (claimPrice < currPrice) {
       return 0;
     }
@@ -109,5 +118,17 @@ contract Swap is Ownable {
   function setRounds(uint32 _rounds) public onlyOwner returns (uint32) {
     rounds = _rounds;
     return rounds;
+  }
+
+  function getCurrPrice() private view returns (uint256) {
+    if (assetType == 0) {
+      return getBTCPrice().div(10 ** 8);
+    } else if (assetType == 1) {
+      return getETHPrice().div(10 ** 8);
+    } else if (assetType == 2) {
+      return getLinkPrice().div(10 ** 8);
+    } else {
+      return 0;
+    }
   }
 }
