@@ -13,15 +13,6 @@ contract SwapHandler is Ownable {
 
   mapping(uint256 => uint256) public nextPayDate;
 
-  // address public priceOracle;
-
-  // 고얼리시 oracle 관련된 부분은 모두 삭제 후 Swap에 getPrice.sol 이식
-  // function setOracle(address _priceOracleAddress) public returns (bool) {
-  //   require(_priceOracleAddress != address(0x0), 'Invalid address');
-  //   priceOracle = _priceOracleAddress;
-  //   return true;
-  // }
-
   function _create(
     bool _isBuyer,
     uint256 _initAssetPrice,

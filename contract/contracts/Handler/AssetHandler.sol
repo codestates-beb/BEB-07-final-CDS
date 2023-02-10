@@ -13,7 +13,7 @@ contract AssetHandler is SwapHandler {
   mapping(uint256 => uint256[2]) public deposits;
 
   constructor() {
-    token = IERC20(0xBa63D579512c4AD162cEca81693bBCd8025159e0);
+    token = IERC20(0xbE4983558F83cF015bE7a68F7F3fE591C151c2b9);
   }
 
   function _sendDeposit(
