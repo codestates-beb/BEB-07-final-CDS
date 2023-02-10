@@ -16,7 +16,6 @@ interface CDSInterface {
   ) external returns (uint256);
 
   function accept(
-    uint256 initAssetPrice,
     uint256 swapId
   ) external returns (uint256);
 
@@ -79,7 +78,6 @@ contract CDS is AssetHandler, CDSInterface {
   }
 
   function accept(
-    uint256 initAssetPrice,
     uint256 swapId
   ) external override returns (uint256) {
     require(
@@ -87,7 +85,7 @@ contract CDS is AssetHandler, CDSInterface {
       'The host can not call the method'
     );
     bool isSeller = (getSeller(swapId) == address(0));
-    uint256 acceptedSwapId = _accept(isSeller, initAssetPrice, swapId);
+    uint256 acceptedSwapId = _accept(isSeller, swapId);
     _sendDeposit(swapId, !isSeller);
     _sendFirstPremium(swapId);
     emit Accept(msg.sender, acceptedSwapId);
@@ -125,8 +123,6 @@ contract CDS is AssetHandler, CDSInterface {
     return true;
   }
 
-  // total Rounds 만료시 seller 콜 => 각자 deposit 가져가기. 근데 기간 만료인데 claimable 상태라면?
-  // buyer Deposit = 0 인데, nextPayDate이 이미 지났을 경우 seller 콜 => 각자 deposit 가져가기
   function expire(uint256 swapId) external override returns (bool) {
     _expire(swapId);
     _endSwap(swapId);
@@ -137,10 +133,6 @@ contract CDS is AssetHandler, CDSInterface {
   function payPremium(
     uint256 swapId
   ) external override isBuyer(swapId) returns (bool) {
-    // require(
-    //   token.allowance(getBuyer(swapId), address(this)) == getPremium(swapId),
-    //   'Need allowance'
-    // );
     _payPremium(swapId);
     _sendPremium(swapId);
     emit PayPremium(swapId);

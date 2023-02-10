@@ -1,16 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import './PriceConsumer.sol';
+import './PriceConsumerGoerli.sol';
 import '../libs/LibSwap.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
-contract Swap is Ownable, PriceConsumer {
+contract Swap is Ownable, PriceConsumerGoerli {
   using SafeMath for uint256;
   using LibSwap for uint256;
-
-  PriceOracleMock private priceOracle;
 
   enum Status {
     inactive,
