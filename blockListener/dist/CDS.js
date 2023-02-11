@@ -473,7 +473,30 @@ class CDS {
         });
     }
     expireEventHandler(event) {
-        return __awaiter(this, void 0, void 0, function* () { });
+        return __awaiter(this, void 0, void 0, function* () {
+            const { swapId } = event.returnValues;
+            const currentTime = yield this.getTxTimestamp(event.transactionHash);
+            try {
+                let transaction = yield this.manager.findOneBy(Transactions_1.Transactions, {
+                    txHash: event.transactionHash,
+                });
+                if (transaction)
+                    throw new Error('This transaction already processed');
+                let swap = yield this.manager.findOneBy(Swaps_1.Swaps, {
+                    swapId: +swapId,
+                });
+                if (!swap)
+                    throw new Error(`swapId ${swapId} is not on database`);
+                swap.updatedAt = currentTime;
+                swap.terminatedAt = currentTime;
+                swap.status = 'expired';
+                yield this.manager.save(swap);
+                yield this.txController(event, currentTime, swapId);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        });
     }
     payPremiumEventHandler(event) {
         return __awaiter(this, void 0, void 0, function* () {
