@@ -56,23 +56,23 @@ function Create() {
 
   // Assets State Var
   const [assetType, setAssetType] = useState('0');
-  const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('');
-  const [amountOfAssets, setAmountOfAssets] = useState('');
+  const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('0');
+  const [amountOfAssets, setAmountOfAssets] = useState('0');
   const [totalAssets, setTotalAssets] = useState('0');
 
   // Claim State Var
-  const [claimPrice, setClaimPrice] = useState('');
+  const [claimPrice, setClaimPrice] = useState('0');
   const [dropRate, setDropRate] = useState('0');
 
   // Premium State Var
   const [premiumRate, setPremiumRate] = useState(2);
-  const [premiumPrice, setPremiumPrice] = useState('');
+  const [premiumPrice, setPremiumPrice] = useState('0');
   const [premiumInterval, setPremiumInterval] = useState('4');
-  const [premiumRounds, setPremiumRounds] = useState('');
+  const [premiumRounds, setPremiumRounds] = useState('0');
 
   // Liqudation State Var
-  const [sellerDeposit, setSellerDeposit] = useState('');
-  const [liquidationPrice, setLiquidationPrice] = useState('');
+  const [sellerDeposit, setSellerDeposit] = useState('0');
+  const [liquidationPrice, setLiquidationPrice] = useState('0');
 
   /********************/
   //     Handler      //
@@ -266,7 +266,7 @@ function Create() {
               </div>
               <div className='input-wrapper'>
                 <div className='input-label'>The Amount of Assets</div>
-                <div className='input-value'>
+                <div className='input-number'>
                   <input
                     value={amountOfAssets.toLocaleString()}
                     onChange={(e) => {
