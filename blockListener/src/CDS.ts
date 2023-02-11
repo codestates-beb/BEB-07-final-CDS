@@ -459,7 +459,30 @@ export default class CDS {
     }
   }
 
-  private async expireEventHandler(event: EventData) {}
+  private async expireEventHandler(event: EventData) {
+    const { swapId } = event.returnValues as OtherReturnValue;
+    const currentTime: number = await this.getTxTimestamp(
+      event.transactionHash,
+    );
+    try {
+      let transaction = await this.manager.findOneBy(Transactions, {
+        txHash: event.transactionHash,
+      });
+      if (transaction) throw new Error('This transaction already processed');
+
+      let swap = await this.manager.findOneBy(Swaps, {
+        swapId: +swapId,
+      });
+      if (!swap) throw new Error(`swapId ${swapId} is not on database`);
+      swap.updatedAt = currentTime;
+      swap.terminatedAt = currentTime;
+      swap.status = 'expired';
+      await this.manager.save(swap);
+      await this.txController(event, currentTime, swapId);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   private async payPremiumEventHandler(event: EventData) {
     const { swapId } = event.returnValues as OtherReturnValue;
