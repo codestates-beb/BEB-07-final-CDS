@@ -76,6 +76,37 @@
     @apply w-full py-2 px-3 outline-0;
   }
 
+  .negotiate-form .input-group .input-value,
+  .negotiate-form .input-group .input-number
+  {
+    @apply relative w-full px-3 outline-0;
+  }
+
+
+
+  .negotiate-form .input-group .input-value.disabled,
+  .negotiate-form .input-group .input-number.disabled
+  {
+    background-color: #848483
+  }
+
+  .negotiate-form .input-group .input-value::after,
+  .negotiate-form .input-group .input-number::after
+  {
+    @apply absolute text-black left-0 ml-2 mt-2;
+    content: '$';
+  }
+
+  .negotiate-form .input-group .input-value::after{
+    content: '$';
+  }
+
+  .negotiate-form .input-group .input-number::after{
+    content: '#';
+  }
+
+  .negotiate-form .input-group .input-value,
+  .negotiate-form .input-group .input-number,
   .negotiate-form .input-group .input-wrapper input,
   .negotiate-form .input-group .input-wrapper select
   {
@@ -95,7 +126,9 @@
     @apply bg-darkGrayColor;
   }
 
-  .negotiate-form .input-group .input-wrapper input{
+  .negotiate-form .input-group .input-wrapper input.value::after{
+    @apply absolute text-black;
+    content: '$';
   }
 
   .negotiate-form button {
