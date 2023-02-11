@@ -1,11 +1,21 @@
 // modules
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 // components
 import AcceptedCard from '../components/AcceptedCard';
 import MarketPrice from '../components/MarketPrice';
+
+// actions
+import { 
+  openModal, 
+  closeModal, 
+  setWaiting, 
+  setProcessing, 
+  setSuccess, 
+  setFail  
+} from '../features/modalSlice';
 
 // apis
 import { getSwapById } from '../apis/request';
@@ -23,14 +33,20 @@ import Footer from '../components/Footer.js';
 
 // utils
 import { 
+  calculateRemainingPeriod,
   calculatePeriodByInterval,
   parseUnixtimeToDate
 } from '../utils/calendar';
+
+import {
+  firstLetterToCapital
+} from '../utils/CDS';
 
 // Constant Number
 const DAY = 60 * 60 * 24;
 
 function Detail() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const CDS = useCDS();
   const ERC20 = useERC20();
@@ -38,14 +54,37 @@ function Detail() {
   // CDS Info State
   const { swapId } = useParams();
   const userAddress = useSelector((state) => state.auth.user_addr);
+  const [assetType, setAssetType] = useState('bitcoin');
   const [swapOnDB, setSwapOnDB] = useState(null);
   const [timeRemainingToPay, setTimeRemainingToPay] = useState(null);
-  
 
   // CDS Availability
   const [isPayablePremium, setIsPayablePremium] = useState(false);
   const [isClaimable, setIsClaimable] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
+
+  // Market Price
+  const prices = useSelector(state=>state.priceByGecko);
+  const priceBTCGecko = useSelector(state=>state.priceByGecko.priceBTCGecko);
+  const priceETHGecko = useSelector(state=>state.priceByGecko.priceETHGecko);
+  const priceLINKGecko = useSelector(state=>state.priceByGecko.priceLINKGecko);
+
+  // Returninig function for Callback
+  const closeNotice = (isRedirect)=>{
+    if (isRedirect) return ()=>{
+      navigate('/')
+      dispatch( closeModal() );
+      dispatch( setWaiting() );
+    }
+    else return ()=>{
+      dispatch( closeModal() );
+      dispatch( setWaiting() );
+    }
+  }
+
+  /********************/
+  //     Handler      //
+  /********************/
 
   // CDS pay premium Handler
   const premiumButtonHandler = async () => {
@@ -54,6 +93,9 @@ function Detail() {
     if (!isPayablePremium) return new Error('Not Payable!');
 
     try {
+      dispatch( openModal() );
+      dispatch( setProcessing() );
+
       const premium = await CDS.getPremium(swapId);
       console.log(premium);
 
@@ -63,8 +105,14 @@ function Detail() {
       const result = await CDS.payPremium(swapId, userAddress);
       
       console.log(result);
+
+      dispatch( setSuccess() );
+      setTimeout(closeNotice(true), 3000);
     } catch (err) {
+      dispatch( setFail() );
       console.log(err);
+
+      setTimeout(closeNotice(false) ,3000);
     }
   };
 
@@ -75,14 +123,23 @@ function Detail() {
     if (!isClaimable) return new Error('Not Claimable!');
 
     try {
+      dispatch( openModal() );
+      dispatch( setProcessing() );
+
       const result = await CDS.claim(
         swapId,
         userAddress,
       );   
 
       console.log(result);
+
+      dispatch( setSuccess() );
+      setTimeout(closeNotice(true), 3000);
     } catch (err) {
+      dispatch( setFail() );
       console.log(err);
+
+      setTimeout(closeNotice(false) ,3000);
     }
   };
 
@@ -91,15 +148,23 @@ function Detail() {
     console.log(swapId);
 
     try{
+      dispatch( openModal() );
+      dispatch( setProcessing() );
+
       const result = await CDS.close(
         swapId,
         userAddress,
       );
-      
+
       console.log(result);
-      navigate('/');
+      
+      dispatch( setSuccess() );
+      setTimeout(closeNotice(true), 3000);
     } catch (err) {
+      dispatch( setFail() );
       console.log(err);
+
+      setTimeout(closeNotice(false) ,3000);
     }
   };
 
@@ -108,63 +173,117 @@ function Detail() {
     if (!isExpired) return new Error('Not Expried');
 
     try{
+      dispatch( openModal() );
+      dispatch( setProcessing() );
+
       const result = await CDS.expire(
         swapId,
         userAddress,
       );
 
       console.log(result);
-      navigate('/');
+      
+      dispatch( setSuccess() );
+      setTimeout(closeNotice(true), 3000)
     } catch (err) {
+      dispatch( setFail() );
       console.log(err);
+
+      setTimeout(closeNotice(false) ,3000);
     }
   }
 
+  // load Server Data for CDS
   useEffect(() => {
     getSwapById(swapId).then((result) => {
-      if (result) setSwapOnDB(result);
+      if (result) {
+        if(result.status === 'pending') navigate(`/`);
+        console.log(result);
+        setSwapOnDB(result);
+        setAssetType(result.assetType);
+      }
       else {
         console.log(result);
         navigate('/NotFound');
       }
-    });
+    }).catch(err=>{
+      console.log(err);
+      navigate('/');
+    })
+    ;
   }, []);
 
-  useEffect(()=>{
-    if(timeRemainingToPay <= DAY) setIsPayablePremium(true);
-  }, [timeRemainingToPay])
-
+  // Set Inveravl to get Remaining Time for Paying Premium
   useEffect(() => {
     let intervalId;
-    const nextTimeDummy = parseInt(new Date().getTime() / 1000) + 3600;
-    const current = parseInt(new Date().getTime() / 1000);
-
-    setTimeRemainingToPay( nextTimeDummy - current );
-
     if(CDS){
       CDS.getRounds(swapId).then((rounds)=>{
+        console.log(`rounds: ${rounds}`);
         if(rounds <= 0) setIsExpired(true);
-      })
+      });
 
-      CDS.getPrices(swapId).then(([,claimPrice,liquidationPrice,])=>{
-        console.log(claimPrice);
-      })
+      CDS.getNextPayDate(swapId).then((result) => {
+        const nextPayDate = Number(result);
+        intervalId = setInterval(() => {
+          const current = parseInt(new Date().getTime() / 1000);
+          console.log(`Remaining Period: ${nextPayDate-current}`);
+          setTimeRemainingToPay( calculateRemainingPeriod(current, nextPayDate) );
+        }, 1000);
+      });
     }
-
-    // if (CDS) {
-    //   CDS.getNextPayDate(swapId).then((result) => {
-    //     // console.log(result);
-    //     intervalId = setInterval(() => {
-    //       const current = parseInt(new Date().getTime() / 1000);
-    //       setTimeRemainingToPay(calculateTimeRemaining(current, result));
-    //     }, 1000);
-    //   });
-    // }
 
     return () => {
       clearInterval(intervalId);
     };
   }, [CDS]);
+
+  // Check current status available to claim
+  useEffect(()=>{
+    if( CDS ){
+      CDS.getPrices(swapId).then(([,claimPrice,liquidationPrice,])=>{
+        console.log(`claimPrice: ${claimPrice}`);
+
+        switch(assetType){
+          case 'bitcoin':
+            console.log(`Market Price: ${prices.priceBTCGecko}`);
+            if ( prices.priceBTCGecko < claimPrice) {
+              setIsClaimable(true);
+              break;
+            };
+            setIsClaimable(false);
+            break;
+          case 'ether': 
+            console.log(`Market Price: ${prices.priceETHGecko}`);
+            if ( prices.priceETHGecko < claimPrice){ 
+              setIsClaimable(true);
+              break;
+            };
+            setIsClaimable(false);
+            break;
+          case 'link': 
+            console.log(`Market Price: ${prices.priceLINKGecko}`);
+            if ( prices.priceLINKGecko < claimPrice){ 
+              setIsClaimable(true);
+              break;
+            };
+            setIsClaimable(false);
+            break;
+          default :
+            setIsClaimable(false);
+        }
+      })
+    }
+  }, [CDS, priceBTCGecko])
+
+  // Check current status available to paying premium
+  useEffect(()=>{
+    if(timeRemainingToPay < DAY * 3) setIsPayablePremium(true);
+    else setIsPayablePremium(false);
+  }, [timeRemainingToPay])
+
+  useEffect(()=>{
+    console.log(prices);
+  }, [prices])
 
   return (
     <>
@@ -172,9 +291,9 @@ function Detail() {
         <div className="detail-head">
           <div className="detail-head-section">
             <div className="detail-title-group">
-              <h1 className="detail-title">Bitcoin Crypto Default Swap</h1>
+              <h1 className="detail-title">{firstLetterToCapital(assetType)} Crypto Default Swap</h1>
               <p className="detail-issued">Issued on {swapOnDB? parseUnixtimeToDate(swapOnDB.createdAt) : null}</p>
-              <p className="detail-period">Remaining Period to Pay: { calculatePeriodByInterval( timeRemainingToPay ) }</p>
+              <p className="detail-period">Remaining Period to Pay: { timeRemainingToPay }</p>
             </div>
             <div className="detail-party">
               <div className="party-item">
@@ -187,6 +306,12 @@ function Detail() {
                 <p className="party-role">Seller Address</p>
                 <p className="party-address">
                   {swapOnDB ? swapOnDB.seller : ''}
+                </p>
+              </div>
+              <div className="party-item">
+                <p className="party-role">Status</p>
+                <p className="party-address">
+                  {swapOnDB ? swapOnDB.status : ''}
                 </p>
               </div>
             </div>

@@ -26,6 +26,7 @@ import { getSwapById } from '../apis/request';
 
 // utils
 import { calculatePeriodByInterval } from '../utils/calendar';
+import { firstLetterToCapital } from '../utils/CDS';
 
 // css
 import '../assets/css/negotiate.css';
@@ -224,6 +225,10 @@ function Accept() {
             <h2 className="section-title">Assets</h2>
             <div className="input-group">
               <div className='input-wrapper'>
+                <div className='input-label'>Asset Type</div>
+                <input value={ swapOnDB? firstLetterToCapital(swapOnDB.assetType) || '' : ''} disabled/>
+              </div>
+              <div className='input-wrapper'>
                 <div className='input-label'>Initial Price of Assets</div>
                 <input
                   value={ swapOnDB
@@ -378,14 +383,13 @@ function Accept() {
                   Cancel CDS
                 </button>
               ) : (
-                <></>
+                <button
+                  className="negotiate-button hover:bg-mintHover transition delay-80"
+                  onClick={acceptButtonHandler}
+                >
+                  Accept CDS
+                </button>
               )}
-              <button
-                className="negotiate-button hover:bg-mintHover transition delay-80"
-                onClick={acceptButtonHandler}
-              >
-                Accept CDS
-              </button>
             </div>
           </div>
         </div>

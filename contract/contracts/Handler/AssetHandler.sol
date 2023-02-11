@@ -97,7 +97,7 @@ contract AssetHandler is SwapHandler {
   function _sendPremium(uint256 _swapId) internal {
     // uint256 currTime = block.timestamp;
     // require(
-    //   (nextPayDate[_swapId] - 1 days <= currTime) &&
+    //   (nextPayDate[_swapId] - 3 days <= currTime) &&
     //     (currTime <= nextPayDate[_swapId]),
     //   'Invalid date to pay premium'
     // );
