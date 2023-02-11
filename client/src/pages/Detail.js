@@ -1,11 +1,21 @@
 // modules
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 // components
 import AcceptedCard from '../components/AcceptedCard';
 import MarketPrice from '../components/MarketPrice';
+
+// actions
+import { 
+  openModal, 
+  closeModal, 
+  setWaiting, 
+  setProcessing, 
+  setSuccess, 
+  setFail  
+} from '../features/modalSlice';
 
 // apis
 import { getSwapById } from '../apis/request';
@@ -36,6 +46,7 @@ import {
 const DAY = 60 * 60 * 24;
 
 function Detail() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const CDS = useCDS();
   const ERC20 = useERC20();
@@ -53,9 +64,26 @@ function Detail() {
   const [isExpired, setIsExpired] = useState(false);
 
   // Market Price
+  const prices = useSelector(state=>state.priceByGecko);
   const priceBTCGecko = useSelector(state=>state.priceByGecko.priceBTCGecko);
   const priceETHGecko = useSelector(state=>state.priceByGecko.priceETHGecko);
   const priceLINKGecko = useSelector(state=>state.priceByGecko.priceLINKGecko);
+
+  const closeNotice = (isRedirect)=>{
+    if (isRedirect) return ()=>{
+      navigate('/')
+      dispatch( closeModal() );
+      dispatch( setWaiting() );
+    }
+    else return ()=>{
+      dispatch( closeModal() );
+      dispatch( setWaiting() );
+    }
+  }
+
+  /********************/
+  //     Handler      //
+  /********************/
 
   // CDS pay premium Handler
   const premiumButtonHandler = async () => {
@@ -73,8 +101,14 @@ function Detail() {
       const result = await CDS.payPremium(swapId, userAddress);
       
       console.log(result);
+
+      dispatch( setSuccess() );
+      setTimeout(closeNotice(true), 3000);
     } catch (err) {
+      dispatch( setFail() );
       console.log(err);
+
+      setTimeout(closeNotice(false) ,3000);
     }
   };
 
@@ -85,14 +119,23 @@ function Detail() {
     if (!isClaimable) return new Error('Not Claimable!');
 
     try {
+      dispatch( openModal() );
+      dispatch( setProcessing() );
+
       const result = await CDS.claim(
         swapId,
         userAddress,
       );   
 
       console.log(result);
+
+      dispatch( setSuccess() );
+      setTimeout(closeNotice(true), 3000);
     } catch (err) {
+      dispatch( setFail() );
       console.log(err);
+
+      setTimeout(closeNotice(false) ,3000);
     }
   };
 
@@ -101,15 +144,23 @@ function Detail() {
     console.log(swapId);
 
     try{
+      dispatch( openModal() );
+      dispatch( setProcessing() );
+
       const result = await CDS.close(
         swapId,
         userAddress,
       );
-      
+
       console.log(result);
-      navigate('/');
+      
+      dispatch( setSuccess() );
+      setTimeout(closeNotice(true), 3000);
     } catch (err) {
+      dispatch( setFail() );
       console.log(err);
+
+      setTimeout(closeNotice(false) ,3000);
     }
   };
 
@@ -118,18 +169,27 @@ function Detail() {
     if (!isExpired) return new Error('Not Expried');
 
     try{
+      dispatch( openModal() );
+      dispatch( setProcessing() );
+
       const result = await CDS.expire(
         swapId,
         userAddress,
       );
 
       console.log(result);
-      navigate('/');
+      
+      dispatch( setSuccess() );
+      setTimeout(closeNotice(true), 3000)
     } catch (err) {
+      dispatch( setFail() );
       console.log(err);
+
+      setTimeout(closeNotice(false) ,3000);
     }
   }
 
+  // load Server Data for CDS
   useEffect(() => {
     getSwapById(swapId).then((result) => {
       if (result) {
@@ -149,10 +209,7 @@ function Detail() {
     ;
   }, []);
 
-  useEffect(()=>{
-    if(timeRemainingToPay <= DAY) setIsPayablePremium(true);
-  }, [timeRemainingToPay])
-
+  // Set Inveravl to get Remaining Time for Paying Premium
   useEffect(() => {
     let intervalId;
     if(CDS){
@@ -176,6 +233,7 @@ function Detail() {
     };
   }, [CDS]);
 
+  // Check current status available to claim
   useEffect(()=>{
     if( CDS ){
       CDS.getPrices(swapId).then(([,claimPrice,liquidationPrice,])=>{
@@ -186,8 +244,9 @@ function Detail() {
     }
   }, [CDS, priceBTCGecko])
 
+  // Check current status available to paying premium
   useEffect(()=>{
-    if(timeRemainingToPay < 60 * 60 * 24 * 3) setIsPayablePremium(true);
+    if(timeRemainingToPay < DAY * 3) setIsPayablePremium(true);
     else setIsPayablePremium(false);
   }, [timeRemainingToPay])
 
@@ -212,6 +271,12 @@ function Detail() {
                 <p className="party-role">Seller Address</p>
                 <p className="party-address">
                   {swapOnDB ? swapOnDB.seller : ''}
+                </p>
+              </div>
+              <div className="party-item">
+                <p className="party-role">Status</p>
+                <p className="party-address">
+                  {swapOnDB ? swapOnDB.status : ''}
                 </p>
               </div>
             </div>
