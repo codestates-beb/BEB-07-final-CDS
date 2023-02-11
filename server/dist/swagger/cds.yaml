@@ -13,7 +13,7 @@ info:
     email: ssalssi1@gmail.com
   version: 1.0.0
 servers:
-  - url: https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com
+  - url: https://dubnjq842z47s.cloudfront.net/
 tags:
   - name: auth
     description: authorization api
