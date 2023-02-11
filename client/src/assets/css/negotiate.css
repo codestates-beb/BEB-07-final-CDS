@@ -42,6 +42,15 @@
     border-color: var(--primary-color);
   }
 
+  /* negotiate-guide */
+  .container-negotiate .negotiate-guide {
+    @apply w-[720px] overflow-hidden rounded-2xl shadow-md;
+  }
+
+  .container-negotiate .negotiate-guide img{
+    @apply w-full;
+  }
+
   /* Create Form */
   .negotiate-form .input-group {
     @apply flex flex-col;
