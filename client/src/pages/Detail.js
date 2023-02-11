@@ -69,6 +69,7 @@ function Detail() {
   const priceETHGecko = useSelector(state=>state.priceByGecko.priceETHGecko);
   const priceLINKGecko = useSelector(state=>state.priceByGecko.priceLINKGecko);
 
+  // Returninig function for Callback
   const closeNotice = (isRedirect)=>{
     if (isRedirect) return ()=>{
       navigate('/')
@@ -92,6 +93,9 @@ function Detail() {
     if (!isPayablePremium) return new Error('Not Payable!');
 
     try {
+      dispatch( openModal() );
+      dispatch( setProcessing() );
+
       const premium = await CDS.getPremium(swapId);
       console.log(premium);
 
@@ -237,9 +241,36 @@ function Detail() {
   useEffect(()=>{
     if( CDS ){
       CDS.getPrices(swapId).then(([,claimPrice,liquidationPrice,])=>{
-        console.log(`claimPrice: ${claimPrice} BTCGecko: ${priceBTCGecko}`)
-        if ( priceBTCGecko < claimPrice) setIsClaimable(true);
-        else setIsClaimable(false);
+        console.log(`claimPrice: ${claimPrice}`);
+
+        switch(assetType){
+          case 'bitcoin':
+            console.log(`Market Price: ${prices.priceBTCGecko}`);
+            if ( prices.priceBTCGecko < claimPrice) {
+              setIsClaimable(true);
+              break;
+            };
+            setIsClaimable(false);
+            break;
+          case 'ether': 
+            console.log(`Market Price: ${prices.priceETHGecko}`);
+            if ( prices.priceETHGecko < claimPrice){ 
+              setIsClaimable(true);
+              break;
+            };
+            setIsClaimable(false);
+            break;
+          case 'link': 
+            console.log(`Market Price: ${prices.priceLINKGecko}`);
+            if ( prices.priceLINKGecko < claimPrice){ 
+              setIsClaimable(true);
+              break;
+            };
+            setIsClaimable(false);
+            break;
+          default :
+            setIsClaimable(false);
+        }
       })
     }
   }, [CDS, priceBTCGecko])
@@ -249,6 +280,10 @@ function Detail() {
     if(timeRemainingToPay < DAY * 3) setIsPayablePremium(true);
     else setIsPayablePremium(false);
   }, [timeRemainingToPay])
+
+  useEffect(()=>{
+    console.log(prices);
+  }, [prices])
 
   return (
     <>
