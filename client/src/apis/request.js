@@ -14,6 +14,18 @@ const {
   addressErrorDummydata,
 } = require('../assets/errorDummydata/requestDummydata');
 
+export async function getUserByAddr(address) {
+  const requestURL = `${config.apiURL}/users/${address}`;
+  
+  const user = await axios.get(requestURL)
+  .then(result=> result.data)
+  .catch(err=>{
+    throw err
+  })
+
+  return user;
+}
+
 export async function getPendingSwaps() {
   try {
     const requestURL = `${config.apiURL}/swaps?status=pending`;
