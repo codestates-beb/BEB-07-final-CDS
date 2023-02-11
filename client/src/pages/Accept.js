@@ -52,6 +52,10 @@ function Accept() {
 
   const userAddress = useSelector((state) => state.auth.user_addr);
 
+  /********************/
+  /*     Handler      */
+  /********************/
+
   // Accept CDS Handler
   const acceptButtonHandler = async () => {
     console.log(
@@ -134,6 +138,14 @@ function Accept() {
     }
   };
 
+  const addressClickHandler = ()=>{
+    navigate(`/user/${proposer}`);
+  };
+
+  /********************/
+  /*      Effect      */
+  /********************/
+
   useEffect(() => {
     getSwapById(swapId).then((result) => {
       if (result === null) navigate('/NotFound');
@@ -207,21 +219,21 @@ function Accept() {
             <h2 className="section-title">Proposer Address</h2>
             <div className="input-group">
               <div className="input-wrapper">
-                {isBuyer ? (
-                  <>
-                    <input
-                      value={swapOnDB ? proposer : ''}
-                      disabled
-                    />
-                  </>
-                ) : (
-                  <>
-                    <input
-                      value={swapOnDB ? proposer : ''}
-                      disabled
-                    />
-                  </>
-                )}
+                {isBuyer ? 
+                    <div
+                      className='address'
+                      onClick={addressClickHandler}
+                    >
+                      {swapOnDB ? proposer : ''}
+                    </div>
+                 : 
+                    <div
+                      className='address'
+                      onClick={addressClickHandler}
+                    >
+                      {swapOnDB ? proposer : ''}
+                    </div>
+                }
               </div>
             </div>
           </div>

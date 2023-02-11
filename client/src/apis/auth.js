@@ -72,6 +72,6 @@ export async function requestMyData() {
     const result = await axios.get(requestURL.toString(), {withCredentials:true})
     .then(result=>result.data)
     .catch(err=>err);
-
+    
     return result;
 }
