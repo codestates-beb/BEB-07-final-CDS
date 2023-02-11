@@ -193,6 +193,13 @@ function Detail() {
     }
   }
 
+  // go to User Info Handler
+  const addressClickHandler = (address)=>{
+    return ()=>{
+      navigate(`/user/${address}`);
+    }
+  };
+
   // load Server Data for CDS
   useEffect(() => {
     getSwapById(swapId).then((result) => {
@@ -298,13 +305,13 @@ function Detail() {
             <div className="detail-party">
               <div className="party-item">
                 <p className="party-role">Buyer Address</p>
-                <p className="party-address">
+                <p className="party-address" onClick={addressClickHandler(swapOnDB && swapOnDB.buyer)}>
                   {swapOnDB ? swapOnDB.buyer : ''}
                 </p>
               </div>
               <div className="party-item">
                 <p className="party-role">Seller Address</p>
-                <p className="party-address">
+                <p className="party-address" onClick={addressClickHandler(swapOnDB && swapOnDB.seller)}>
                   {swapOnDB ? swapOnDB.seller : ''}
                 </p>
               </div>

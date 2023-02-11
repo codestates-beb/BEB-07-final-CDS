@@ -39,6 +39,10 @@
     color: var(--dark-gray-color);
   }
 
+  .detail-head .detail-party .party-address {
+    @apply underline cursor-pointer;
+  }
+
   .detail-head-card {
     margin-bottom: -4rem;
     margin-top: -4rem;

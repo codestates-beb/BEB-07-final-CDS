@@ -66,6 +66,10 @@
     overflow-hidden;
   }
 
+  .negotiate-form .input-group .input-wrapper .address{
+    @apply cursor-pointer text-black underline bg-[#848483];
+  }
+
   .negotiate-form .input-group .input-radio input,
   .negotiate-form .input-group .input-button input,
   .negotiate-form .input-group .input-range input,
@@ -79,6 +83,7 @@
     text-black;
   }
 
+  .negotiate-form .input-group .address,
   .negotiate-form .input-group input,
   .negotiate-form .input-group select
   {
