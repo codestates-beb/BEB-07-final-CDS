@@ -383,14 +383,13 @@ function Accept() {
                   Cancel CDS
                 </button>
               ) : (
-                <></>
+                <button
+                  className="negotiate-button hover:bg-mintHover transition delay-80"
+                  onClick={acceptButtonHandler}
+                >
+                  Accept CDS
+                </button>
               )}
-              <button
-                className="negotiate-button hover:bg-mintHover transition delay-80"
-                onClick={acceptButtonHandler}
-              >
-                Accept CDS
-              </button>
             </div>
           </div>
         </div>
