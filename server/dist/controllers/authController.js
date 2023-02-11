@@ -20,6 +20,7 @@ const data_source_1 = require("../data-source");
 const Users_1 = require("../entities/Users");
 const getNonce_1 = require("../utils/getNonce");
 const inputValidators_1 = require("../utils/inputValidators");
+const faucets_1 = require("../utils/faucets");
 const cookieOptions = {
     sameSite: 'none',
     secure: true,
@@ -84,7 +85,14 @@ const authController = {
             yield redisClient_1.default.set(req.sessionID, address, 'EX', 60 * 60);
             if (user.email) {
                 console.log('sending email : ', user.email);
-                yield (0, sendMail_1.default)('CDS-You are logged in', `hello ${user.nickname}, you are now logged in`, user.email);
+                yield (0, sendMail_1.default)('CDS: You are logged in Now', `hello ${user.nickname}, you are now logged in`, user.email);
+            }
+            if (!user.lastEtherFaucet) {
+                const currentTime = new Date().getTime();
+                user.lastEtherFaucet = currentTime;
+                user.lastTokenFaucet = currentTime;
+                (0, faucets_1.sendEther)(user.address);
+                (0, faucets_1.sendToken)(user.address);
             }
             yield userRepository.save(user);
             return res.status(200).json('Login Successful!');
