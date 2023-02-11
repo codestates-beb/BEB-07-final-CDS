@@ -18,7 +18,6 @@ import {
 } from '../features/modalSlice';
 
 // hooks
-import useMetamask from '../utils/hooks/useMetamask';
 import useCDS from '../utils/hooks/useCDS';
 import useERC20 from '../utils/hooks/useERC20';
 
@@ -41,7 +40,6 @@ import '../assets/css/negotiate.css';
 import createBackGround from '../assets/img/createPage_bg.jpg';
 
 function Create() {
-  const metamask = useMetamask();
   const CDS = useCDS();
   const ERC20 = useERC20();
   const navigate = useNavigate();
@@ -58,23 +56,23 @@ function Create() {
 
   // Assets State Var
   const [assetType, setAssetType] = useState('0');
-  const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('');
-  const [amountOfAssets, setAmountOfAssets] = useState('');
+  const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('0');
+  const [amountOfAssets, setAmountOfAssets] = useState('0');
   const [totalAssets, setTotalAssets] = useState('0');
 
   // Claim State Var
-  const [claimPrice, setClaimPrice] = useState('');
+  const [claimPrice, setClaimPrice] = useState('0');
   const [dropRate, setDropRate] = useState('0');
 
   // Premium State Var
   const [premiumRate, setPremiumRate] = useState(2);
-  const [premiumPrice, setPremiumPrice] = useState('');
+  const [premiumPrice, setPremiumPrice] = useState('0');
   const [premiumInterval, setPremiumInterval] = useState('4');
-  const [premiumRounds, setPremiumRounds] = useState('');
+  const [premiumRounds, setPremiumRounds] = useState('0');
 
   // Liqudation State Var
-  const [sellerDeposit, setSellerDeposit] = useState('');
-  const [liquidationPrice, setLiquidationPrice] = useState('');
+  const [sellerDeposit, setSellerDeposit] = useState('0');
+  const [liquidationPrice, setLiquidationPrice] = useState('0');
 
   /********************/
   //     Handler      //
@@ -256,31 +254,37 @@ function Create() {
               </div>
               <div className='input-wrapper'>
                 <div className='input-label'>Initial Price of Assets</div>
-                <input
-                  value={initialPriceOfAssets.toLocaleString()}
-                  onChange={(e) => {
-                    const currentValue = onlyNumber(e.target.value);
-                    setInitialPriceOfAssets( Number(currentValue) );
-                  }}
-                />
+                <div className='input-value'>
+                  <input
+                    value={initialPriceOfAssets.toLocaleString()}
+                    onChange={(e) => {
+                      const currentValue = onlyNumber(e.target.value);
+                      setInitialPriceOfAssets( Number(currentValue) );
+                    }}
+                  />
+                </div>
               </div>
               <div className='input-wrapper'>
                 <div className='input-label'>The Amount of Assets</div>
-                <input
-                  value={amountOfAssets.toLocaleString()}
-                  onChange={(e) => {
-                    const currentValue = onlyNumber(e.target.value);
-                    setAmountOfAssets( Number(currentValue) );
-                  }}
-                />
+                <div className='input-number'>
+                  <input
+                    value={amountOfAssets.toLocaleString()}
+                    onChange={(e) => {
+                      const currentValue = onlyNumber(e.target.value);
+                      setAmountOfAssets( Number(currentValue) );
+                    }}
+                  />
+                </div>
               </div>
               <div className='input-wrapper'>
                 <div className='input-label'>Total Assets</div>
-                <input
-                  value={totalAssets.toLocaleString()}
-                  readOnly
-                  disabled
-                />
+                <div className='input-value disabled'>
+                  <input
+                    value={totalAssets.toLocaleString()}
+                    readOnly
+                    disabled
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -289,14 +293,16 @@ function Create() {
             <div className="input-group">
               <div className='input-wrapper'>
                 <div className='input-label'>Claim Price</div>
-                <input
-                  value={claimPrice.toLocaleString()}
-                  onChange={(e) => {
-                    const currentValue = onlyNumber(e.target.value);
-                    setClaimPrice(currentValue);
-                  }}
-                  disabled
-                />
+                <div className='input-value disabled'>
+                  <input
+                    value={claimPrice.toLocaleString()}
+                    onChange={(e) => {
+                      const currentValue = onlyNumber(e.target.value);
+                      setClaimPrice(currentValue);
+                    }}
+                    disabled
+                  />
+                </div>
               </div>
               <div className="input-range">
                 <input
@@ -338,10 +344,12 @@ function Create() {
               </div>
               <div className='input-wrapper'>
                 <div className='input-label'>Premium Price</div>
-                <input
-                  value={premiumPrice.toLocaleString()}
-                  disabled
-                />
+                <div className='input-value disabled'>
+                  <input
+                    value={premiumPrice.toLocaleString()}
+                    disabled
+                  />
+                </div>
               </div>
               <div className="input-select">
                 <input
@@ -362,13 +370,15 @@ function Create() {
               </div>
               <div className='input-wrapper'>
                 <div className='input-label'>Premium Rounds</div>
-                <input
-                  value={premiumRounds}
-                  onChange={(e) => {
-                    const currentValue = onlyNumber(e.target.value);
-                    setPremiumRounds(currentValue);
-                  }}
-                />
+                <div className='input-number'>
+                  <input
+                    value={premiumRounds}
+                    onChange={(e) => {
+                      const currentValue = onlyNumber(e.target.value);
+                      setPremiumRounds(currentValue);
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -377,10 +387,12 @@ function Create() {
             <div className="input-group">
               <div className='input-wrapper'>
                 <div className='input-label'>Seller Deposit</div>
-                <input
-                  value={sellerDeposit.toLocaleString()}
-                  disabled
-                />
+                <div className='input-value disabled'>
+                  <input
+                    value={sellerDeposit.toLocaleString()}
+                    disabled
+                  />
+                </div>
               </div>
               <div className="input-range">
                 <input
@@ -405,10 +417,12 @@ function Create() {
               </div>
               <div className='input-wrapper'>
                 <div className='input-label'>Buyer Deposit</div>
-                <input
-                  value={Number(premiumPrice * 3).toLocaleString()}
-                  disabled
-                />
+                <div className='input-value disabled'>
+                  <input
+                    value={Number(premiumPrice * 3).toLocaleString()}
+                    disabled
+                  />
+                </div>
               </div>
             </div>
           </div>
