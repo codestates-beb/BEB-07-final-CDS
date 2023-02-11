@@ -33,6 +33,7 @@ import '../assets/css/negotiate.css';
 
 // imgage
 import acceptBackGround from '../assets/img/acceptPage_bg.jpg';
+import priceDescribe from '../assets/img/price_describe.jpeg';
 
 function Accept() {
   const navigate = useNavigate();
@@ -197,6 +198,9 @@ function Accept() {
             Check Your Crypto Default Swap Contract in detail and sign it!
           </p>
           <hr className="line w-[150px] color-[var(--primary-color)]" />
+        </div>
+        <div className="negotiate-guide">
+          <img src={priceDescribe}/>
         </div>
         <div className="negotiate-form">
           <div className="form-section">
