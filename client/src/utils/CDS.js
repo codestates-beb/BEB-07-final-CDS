@@ -35,3 +35,7 @@ export default function CDS(_addr) {
 
     return new Contract(_addr);
 }
+
+export function firstLetterToCapital(str) {
+    return str.slice(0,1).toUpperCase() + str.slice(1) ;
+}

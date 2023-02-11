@@ -70,12 +70,21 @@
     text-black;
   }
 
-  .negotiate-form .input-group input{
+  .negotiate-form .input-group input,
+  .negotiate-form .input-group select
+  {
     @apply w-full py-2 px-3 outline-0;
   }
 
-  .negotiate-form .input-group .input-wrapper input{
+  .negotiate-form .input-group .input-wrapper input,
+  .negotiate-form .input-group .input-wrapper select
+  {
     @apply border-l-4 border-[#2b2b2b];
+  }
+
+  .negotiate-form .input-group .input-wrapper select{
+    @apply border-2 border-primaryColor rounded-tr-xl rounded-br-xl border-l-0
+    bg-[#2b2b2b] text-whiteColor;
   }
 
   .negotiate-form .input-group .input-wrapper input:first-child{

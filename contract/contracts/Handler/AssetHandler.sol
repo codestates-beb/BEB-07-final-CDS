@@ -13,7 +13,7 @@ contract AssetHandler is SwapHandler {
   mapping(uint256 => uint256[2]) public deposits;
 
   constructor() {
-    token = IERC20(0x226f570b8554c04F34b64A7d903aB137F39C19be);
+    token = IERC20(0xbE4983558F83cF015bE7a68F7F3fE591C151c2b9);
   }
 
   function _sendDeposit(
@@ -93,12 +93,12 @@ contract AssetHandler is SwapHandler {
   }
 
   function _sendPremium(uint256 _swapId) internal {
-    uint256 currTime = block.timestamp;
-    require(
-      (nextPayDate[_swapId] - 1 days <= currTime) &&
-        (currTime <= nextPayDate[_swapId]),
-      'Invalid date to pay premium'
-    );
+    // uint256 currTime = block.timestamp;
+    // require(
+    //   (nextPayDate[_swapId] - 3 days <= currTime) &&
+    //     (currTime <= nextPayDate[_swapId]),
+    //   'Invalid date to pay premium'
+    // );
     bool sent = token.transferFrom(
       getBuyer(_swapId),
       getSeller(_swapId),

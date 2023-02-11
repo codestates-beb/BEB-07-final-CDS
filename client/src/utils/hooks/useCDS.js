@@ -26,7 +26,8 @@ function useCDS() {
             liquidationPrice,
             sellerDeposit,
             premiumPrice,
-            premiumRounds
+            premiumRounds,
+            assetType
           } = data;
 
           if (
@@ -36,6 +37,7 @@ function useCDS() {
             || !sellerDeposit
             || !premiumPrice
             || !premiumRounds
+            || !assetType
             || !userAddress
           ) {
             throw new Error("Not valid inputs")
@@ -52,7 +54,8 @@ function useCDS() {
             liquidationPrice,
             sellerDeposit,
             premiumPrice,
-            premiumRounds
+            premiumRounds,
+            assetType
           )
           .send({from: userAddress}, (result)=>{
             console.log(result);
@@ -108,18 +111,32 @@ function useCDS() {
           return receipt;
         },
 
-        payPremium: async (swapId, address, premium)=>{
-          if(!swapId || !address || premium) return new Error("Invalid Arguments");
+        expire: async(swapId, address)=> {
+          if(!swapId || !address) throw new Error("Invalid Arguments");
+
+          const receipt = await contract.methods.expire(swapId)
+          .send({from:address});
+
+          return receipt;
+        },
+
+        payPremium: async (swapId, address)=>{
+          if(!swapId || !address) return new Error("Invalid Arguments");
 
           const receipt = await contract.methods.payPremium(swapId)
-          .send({from:address});
+          .send({from: address});
           
           return receipt;
         },
 
         getSwap: async (swapId)=>{
           const receipt = await contract.methods.getSwap(swapId).call();
-          return receipt
+          return receipt;
+        },
+
+        getPrices: async (swapId)=>{
+          const receipt = await contract.methods.getPrices(swapId).call();
+          return receipt;
         },
 
         getSellerDeposit: async (swapId) =>{
@@ -132,8 +149,13 @@ function useCDS() {
           return receipt;
         },
 
+        getRounds: async (swapId) =>{
+          const receipt = await contract.methods.getRounds(swapId).call();
+          return receipt;
+        },
+
         getNextPayDate: async (swapId) =>{
-          const receipt = await contract.methods.getNextPayDate(swapId).call();
+          const receipt = await contract.methods.nextPayDate(swapId).call();
           return receipt;
         }
       }

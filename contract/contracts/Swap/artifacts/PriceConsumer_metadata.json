@@ -86,11 +86,11 @@
 			]
 		},
 		"contracts/Swap/PriceConsumer.sol": {
-			"keccak256": "0xbd010dd30ae99959476d09ae6cdbca1f27987e766b90cdeb5e9a0de13f2343cc",
+			"keccak256": "0x89fca8ff59a18ea0a372677b1d9d3ca64d11b805f868ebb189cb54293aacd623",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://864540809825860d207ab55192f37722c5c86f430a54118a641459a32be41a78",
-				"dweb:/ipfs/QmdmvLyjDngpiY3E4JQJtJpVYTdkwWatuWAXaEaKbE1xvY"
+				"bzz-raw://a6fb37ec8fee8e4eb3ca5bcb8156c942a0581cd3d2a1aa037d830014291212b6",
+				"dweb:/ipfs/QmQbknNP4LbH3ZbWGT7UsbxhS12bGhNVWAJwpLMRH8pFFn"
 			]
 		}
 	},

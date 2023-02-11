@@ -25,7 +25,8 @@ import useERC20 from '../utils/hooks/useERC20';
 import { getSwapById } from '../apis/request';
 
 // utils
-import { calculateTimeRemaining } from '../utils/calendar';
+import { calculatePeriodByInterval } from '../utils/calendar';
+import { firstLetterToCapital } from '../utils/CDS';
 
 // css
 import '../assets/css/negotiate.css';
@@ -205,14 +206,14 @@ function Accept() {
                 {isBuyer ? (
                   <>
                     <input
-                      value={swapOnDB ? proposer : null}
+                      value={swapOnDB ? proposer : ''}
                       disabled
                     />
                   </>
                 ) : (
                   <>
                     <input
-                      value={swapOnDB ? proposer : null}
+                      value={swapOnDB ? proposer : ''}
                       disabled
                     />
                   </>
@@ -224,11 +225,15 @@ function Accept() {
             <h2 className="section-title">Assets</h2>
             <div className="input-group">
               <div className='input-wrapper'>
+                <div className='input-label'>Asset Type</div>
+                <input value={ swapOnDB? firstLetterToCapital(swapOnDB.assetType) || '' : ''} disabled/>
+              </div>
+              <div className='input-wrapper'>
                 <div className='input-label'>Initial Price of Assets</div>
                 <input
                   value={ swapOnDB
                     ? `$ ${Number( swapOnDB.initialAssetPrice ).toLocaleString()}`
-                    : null
+                    : ''
                   }
                   disabled
                 />
@@ -238,7 +243,7 @@ function Accept() {
                 <input
                   value={ swapOnDB 
                     ? `# ${Number( swapOnDB.amountOfAssets ).toLocaleString()}`
-                    : null}
+                    : ''}
                   disabled
                 />
               </div>
@@ -247,7 +252,7 @@ function Accept() {
                 <input
                   value={swapOnDB 
                     ? `$ ${Number(swapOnDB.totalAssets).toLocaleString()}`
-                    : null
+                    : ''
                   }
                   disabled
                 />
@@ -260,7 +265,7 @@ function Accept() {
               <div className='input-wrapper'>
                 <div className='input-label'>Claim Price</div>
                 <input
-                  value={swapOnDB ? `$ ${Number(swapOnDB.claimPrice).toLocaleString()}` : null}
+                  value={swapOnDB ? `$ ${Number(swapOnDB.claimPrice).toLocaleString()}` : ''}
                   disabled
                 />
               </div>
@@ -268,7 +273,7 @@ function Accept() {
                 <input
                   placeholder="Drop Rate"
                   value={
-                    swapOnDB ? `Drop Rate: ${swapOnDB.dropRate * 100} %` : null
+                    swapOnDB ? `Drop Rate: ${swapOnDB.dropRate * 100} %` : ''
                   }
                   disabled
                 />
@@ -290,7 +295,7 @@ function Accept() {
                 <input
                   placeholder="Premium Rate"
                   value={
-                    swapOnDB ? `Premium Rate: ${swapOnDB.premiumRate} %` : null
+                    swapOnDB ? `Premium Rate: ${swapOnDB.premiumRate} %` : ''
                   }
                   disabled
                 />
@@ -298,7 +303,7 @@ function Accept() {
               <div className='input-wrapper'>
                 <div className='input-label'>Premium Price</div>
                 <input
-                  value={swapOnDB ? `$ ${Number(swapOnDB.premium).toLocaleString()}` : null}
+                  value={swapOnDB ? `$ ${Number(swapOnDB.premium).toLocaleString()}` : ''}
                   disabled
                 />
               </div>
@@ -307,11 +312,8 @@ function Accept() {
                   placeholder="Premium Interval"
                   value={
                     swapOnDB
-                      ? `Premium Interval: ${calculateTimeRemaining(
-                          0,
-                          swapOnDB.premiumInterval,
-                        )}`
-                      : null
+                      ? `Premium Interval: ${calculatePeriodByInterval(swapOnDB.premiumInterval)}`
+                      : ''
                   }
                   disabled
                 />
@@ -322,7 +324,7 @@ function Accept() {
                   value={
                     swapOnDB
                       ? Number(swapOnDB.totalPremiumRounds).toLocaleString()
-                      : null
+                      : ''
                   }
                   disabled
                 />
@@ -336,7 +338,7 @@ function Accept() {
                 <div className='input-label'>Seller Deposit</div>
                 <input
                   value={
-                    swapOnDB ? `$ ${swapOnDB.sellerDeposit}` : null
+                    swapOnDB ? `$ ${Number( swapOnDB.sellerDeposit ).toLocaleString()}` : ''
                   }
                   disabled
                 />
@@ -346,8 +348,8 @@ function Accept() {
                   placeholder="Liquidated Price"
                   value={
                     swapOnDB
-                      ? `Liquidated Price: ${swapOnDB.liquidationPrice}`
-                      : null
+                      ? `Liquidated Price: ${Number( swapOnDB.liquidationPrice ).toLocaleString()}`
+                      : ''
                   }
                   disabled
                 />
@@ -364,7 +366,7 @@ function Accept() {
                 <div className='input-label'>Buyer Deposit</div>
                 <input
                   value={
-                    swapOnDB ? `$ ${swapOnDB.buyerDeposit}` : null
+                    swapOnDB ? `$ ${Number( swapOnDB.buyerDeposit ).toLocaleString()}` : ''
                   }
                   disabled
                 />

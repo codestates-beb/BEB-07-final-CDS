@@ -9,6 +9,9 @@ import 'swiper/css/pagination';
 // import required modules
 import { Navigation, Mousewheel, Keyboard } from 'swiper';
 
+// modules
+import { Link } from 'react-router-dom';
+
 // image
 import infoSlide1 from '../../assets/img/infoSlide_bg_1.jpg';
 import infoSlide2 from '../../assets/img/infoSlide_bg_2.jpg';
@@ -51,9 +54,11 @@ function infoSlide() {
                   To swap the risk of default, buyers buy a CDS from seller.
                 </p>
               </div>
-              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100 drop-shadow-md">
-                <div className="font-semibold ">More Details</div>
-              </button>
+              <Link to="/cds">
+                <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100 drop-shadow-md">
+                  <div className="font-semibold ">More Details</div>
+                </button>
+              </Link>
             </div>
           </div>
         </SwiperSlide>
@@ -80,9 +85,11 @@ function infoSlide() {
                   volatility of tokens, on-chain vulnerabilities etc
                 </p>
               </div>
-              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100 drop-shadow-md">
-                <div className="font-semibold">More Details</div>
-              </button>
+              <Link to="/risks">
+                <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100 drop-shadow-md">
+                  <div className="font-semibold ">More Details</div>
+                </button>
+              </Link>
             </div>
           </div>
         </SwiperSlide>
@@ -103,9 +110,11 @@ function infoSlide() {
                   in finance, systems engineering, business strategy, and law.
                 </p>
               </div>
-              <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100 drop-shadow-md">
-                <div className="font-semibold">More Details</div>
-              </button>
+              <Link to="/teams">
+                <button className="w-[9rem] h-[2rem] bg-primaryColor rounded-xl hover:bg-mintHover transition delay-100 drop-shadow-md">
+                  <div className="font-semibold">More Details</div>
+                </button>
+              </Link>
             </div>
           </div>
         </SwiperSlide>
@@ -135,6 +144,7 @@ function infoSlide() {
                   href="http://snowdelver.iptime.org:43000"
                   target="_blank"
                   className="font-semibold"
+                  rel="noreferrer"
                 >
                   More Details
                 </a>

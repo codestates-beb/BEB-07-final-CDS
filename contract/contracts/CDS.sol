@@ -29,6 +29,12 @@ interface CDSInterface {
 
   function payPremium(uint256 swapId) external returns (bool);
 
+  function payPremiumByDeposit(
+    uint256 swapId
+  ) external returns (bool);
+
+  function withdraw(uint256 amount) external returns (bool);
+
   event Create(
     address indexed hostAddr,
     bool isBuyer,
@@ -141,10 +147,15 @@ contract CDS is AssetHandler, CDSInterface {
 
   function payPremiumByDeposit(
     uint256 swapId
-  ) external onlyOwner returns (bool) {
+  ) external override onlyOwner returns (bool) {
     _payPremium(swapId);
     _sendPremiumByDeposit(swapId);
     emit PayPremium(swapId);
+    return true;
+  }
+
+  function withdraw(uint256 amount) external override onlyOwner returns (bool) {
+    token.transfer(owner(), amount);
     return true;
   }
 }

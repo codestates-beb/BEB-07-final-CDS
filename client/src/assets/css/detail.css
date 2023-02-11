@@ -27,6 +27,10 @@
     color: var(--dark-gray-color);
   }
 
+  .detail-head .detail-title-group .detail-period {
+    @apply text-xl text-primaryColor;
+  }
+
   .detail-head .detail-party .party-item {
     @apply mb-12 text-xl;
   }

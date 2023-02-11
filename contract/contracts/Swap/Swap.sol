@@ -30,8 +30,7 @@ contract Swap is Ownable, PriceConsumerGoerli {
   uint32 public rounds;
   uint32 public totalRounds;
   uint32 public assetType;
-  
-  
+
   constructor(
     uint256 _initAssetPrice,
     uint256 _claimPrice,
@@ -48,13 +47,19 @@ contract Swap is Ownable, PriceConsumerGoerli {
     sellerDeposit = _sellerDeposit;
     rounds = _rounds;
     totalRounds = _rounds;
-    amountOfAsset = initAssetPrice.calcAmountOfAsset(liquidationPrice, sellerDeposit);
-    require(_assetType == 0 || _assetType == 1 || _assetType == 2, 'BTC:0, ETH:1, LINK:2');
+    amountOfAsset = initAssetPrice.calcAmountOfAsset(
+      liquidationPrice,
+      sellerDeposit
+    );
+    require(
+      _assetType == 0 || _assetType == 1 || _assetType == 2,
+      'BTC:0, ETH:1, LINK:2'
+    );
     assetType = _assetType;
 
     buyer = address(0);
     seller = address(0);
-    status = Status.pending; 
+    status = Status.pending;
   }
 
   function getPrices() public view returns (uint256[5] memory) {
