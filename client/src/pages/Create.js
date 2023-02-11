@@ -8,7 +8,6 @@ import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
 // actions
-import { setAuth } from '../features/authSlice';
 import {
   openModal,
   closeModal,
@@ -58,6 +57,7 @@ function Create() {
   const userAddress = useSelector((state) => state.auth.user_addr);
 
   // Assets State Var
+  const [assetType, setAssetType] = useState('0');
   const [initialPriceOfAssets, setInitialPriceOfAssets] = useState('');
   const [amountOfAssets, setAmountOfAssets] = useState('');
   const [totalAssets, setTotalAssets] = useState('0');
@@ -90,11 +90,13 @@ function Create() {
       sellerDeposit,
       premiumPrice,
       premiumRounds,
+      assetType,
       userAddress: userAddress
     };
     console.log(data);
 
     console.log({
+      assetType,
       initialPriceOfAssets,
       amountOfAssets,
       claimPrice,
@@ -240,6 +242,18 @@ function Create() {
           <div className="form-section">
             <h2 className="section-title">Assets</h2>
             <div className="input-group">
+              <div className='input-wrapper'>
+                <div className='input-label'>Assets Type</div>
+                <select 
+                  className='select' 
+                  defaultValue={'0'}
+                  onChange={e=>setAssetType(e.target.value)}
+                >
+                  <option value='0'>Bitcoin</option>
+                  <option value='1'>Ethereum</option>
+                  <option value='2'>ChainLink</option>
+                </select>
+              </div>
               <div className='input-wrapper'>
                 <div className='input-label'>Initial Price of Assets</div>
                 <input

@@ -20,5 +20,5 @@ RUN npx tsc
 RUN mkdir dist/swagger
 RUN cp src/swagger/cds.yaml dist/swagger
 
-EXPOSE 80
+EXPOSE 80 8080
 CMD [ "pm2-runtime", "start", "dist/index.js" ]

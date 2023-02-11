@@ -24,6 +24,12 @@ export class Swaps {
   })
   contractAddress: string;
 
+  @Column('varchar', {
+    name: 'assetType',
+    length: 20,
+  })
+  assetType: string;
+
   @Column('int', { name: 'initialAssetPrice', unsigned: true })
   initialAssetPrice: number;
 

@@ -9,7 +9,7 @@ export function unixTimeToWeeks(time) {
 }
 
 // Calculate Time Remaining for paying premium
-export function calculateTimeRemaining(currentTime, nextTime){
+export function calculateRemainingPeriod(currentTime, nextTime){
     const diffSeconds = nextTime - currentTime;
 
     if (diffSeconds <= 0) return `overdue`;
@@ -31,6 +31,30 @@ export function calculateTimeRemaining(currentTime, nextTime){
     }
 }
 
-export function parseUnixtimeToDate(unixtime){
-    
+// Calculate Remaining Period by only Interval
+export function calculatePeriodByInterval(interval){
+
+    if (interval <= 0) return `overdue`;
+    else{
+        if (parseInt(interval / 60) === 0) 
+            return interval === 1 ? `1 second`:`${interval} seconds`;
+        const diffMinutes = parseInt( interval / 60 );
+
+        if (parseInt(diffMinutes / 60) === 0) return `${diffMinutes} minutes`;
+        const diffHours = parseInt( diffMinutes / 60 );
+
+        if (parseInt(diffHours / 24) === 0 ) return `${diffHours} hours`;
+        const diffDays = parseInt( diffHours / 24 );
+
+        if (parseInt(diffDays / 7) === 0) return `${diffDays} days`;
+        const diffWeeks = parseInt( diffDays / 7 );
+
+        return `${diffWeeks} weeks`;
+    }
+}
+
+export function parseUnixtimeToDate(unixtimeOnDB){
+    const currentTime = new Date(unixtimeOnDB * 1000);
+
+    return currentTime.toLocaleString('en-us');
 }

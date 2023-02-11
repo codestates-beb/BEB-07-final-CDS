@@ -12,6 +12,7 @@ import { getSwapById } from '../apis/request';
 
 // hooks
 import useCDS from '../utils/hooks/useCDS';
+import useERC20 from '../utils/hooks/useERC20';
 
 // css
 import '../assets/css/detail.css';
@@ -21,28 +22,54 @@ import ScrollButton from '../components/ScrollButton.js';
 import Footer from '../components/Footer.js';
 
 // utils
-import { calculateTimeRemaining } from '../utils/calendar';
+import { 
+  calculateRemainingPeriod,
+  calculatePeriodByInterval,
+  parseUnixtimeToDate
+} from '../utils/calendar';
+
+import {
+  firstLetterToCapital
+} from '../utils/CDS';
+
+// Constant Number
+const DAY = 60 * 60 * 24;
 
 function Detail() {
   const navigate = useNavigate();
+  const CDS = useCDS();
+  const ERC20 = useERC20();
 
   // CDS Info State
   const { swapId } = useParams();
   const userAddress = useSelector((state) => state.auth.user_addr);
+  const [assetType, setAssetType] = useState('bitcoin');
   const [swapOnDB, setSwapOnDB] = useState(null);
-  const [swapOnChain, setSwapOnChain] = useState(null);
   const [timeRemainingToPay, setTimeRemainingToPay] = useState(null);
-  const CDS = useCDS();
 
   // CDS Availability
   const [isPayablePremium, setIsPayablePremium] = useState(false);
   const [isClaimable, setIsClaimable] = useState(false);
+  const [isExpired, setIsExpired] = useState(false);
+
+  // Market Price
+  const priceBTCGecko = useSelector(state=>state.priceByGecko.priceBTCGecko);
+  const priceETHGecko = useSelector(state=>state.priceByGecko.priceETHGecko);
+  const priceLINKGecko = useSelector(state=>state.priceByGecko.priceLINKGecko);
 
   // CDS pay premium Handler
   const premiumButtonHandler = async () => {
     console.log(swapId);
 
+    if (!isPayablePremium) return new Error('Not Payable!');
+
     try {
+      const premium = await CDS.getPremium(swapId);
+      console.log(premium);
+
+      const approved = await ERC20.approve(premium, userAddress);
+      console.log(approved)
+
       const result = await CDS.payPremium(swapId, userAddress);
       
       console.log(result);
@@ -51,26 +78,11 @@ function Detail() {
     }
   };
 
-  // CDS Cancel Handler
-  const cancelButtonHandler = async () => {
-    console.log(swapId);
-
-    try {
-      const result = await CDS.cancel(
-        swapId,
-        userAddress,
-      );
-
-      console.log(result);
-      navigate('/');
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   // CDS Claim Handler
   const claimButtonHandler = async () => {
     console.log(swapId);
+
+    if (!isClaimable) return new Error('Not Claimable!');
 
     try {
       const result = await CDS.claim(
@@ -101,24 +113,60 @@ function Detail() {
     }
   };
 
+  // CDS expire Handler
+  const expireButtonHandler = async() => {
+    if (!isExpired) return new Error('Not Expried');
+
+    try{
+      const result = await CDS.expire(
+        swapId,
+        userAddress,
+      );
+
+      console.log(result);
+      navigate('/');
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   useEffect(() => {
     getSwapById(swapId).then((result) => {
-      if (result) setSwapOnDB(result);
+      if (result) {
+        if(result.status === 'pending') navigate(`/`);
+        console.log(result);
+        setSwapOnDB(result);
+        setAssetType(result.assetType);
+      }
       else {
         console.log(result);
         navigate('/NotFound');
       }
-    });
+    }).catch(err=>{
+      console.log(err);
+      navigate('/');
+    })
+    ;
   }, []);
+
+  useEffect(()=>{
+    if(timeRemainingToPay <= DAY) setIsPayablePremium(true);
+  }, [timeRemainingToPay])
 
   useEffect(() => {
     let intervalId;
-    if (CDS) {
+    if(CDS){
+      CDS.getRounds(swapId).then((rounds)=>{
+        console.log(`rounds: ${rounds}`);
+        if(rounds <= 0) setIsExpired(true);
+      });
+
       CDS.getNextPayDate(swapId).then((result) => {
-        console.log(result);
+        const nextPayDate = Number(result);
         intervalId = setInterval(() => {
           const current = parseInt(new Date().getTime() / 1000);
-          setTimeRemainingToPay(calculateTimeRemaining(current, result));
+          console.log(`Remaining Period: ${nextPayDate-current}`);
+          setTimeRemainingToPay( calculateRemainingPeriod(current, nextPayDate) );
         }, 1000);
       });
     }
@@ -128,15 +176,30 @@ function Detail() {
     };
   }, [CDS]);
 
+  useEffect(()=>{
+    if( CDS ){
+      CDS.getPrices(swapId).then(([,claimPrice,liquidationPrice,])=>{
+        console.log(`claimPrice: ${claimPrice} BTCGecko: ${priceBTCGecko}`)
+        if ( priceBTCGecko < claimPrice) setIsClaimable(true);
+        else setIsClaimable(false);
+      })
+    }
+  }, [CDS, priceBTCGecko])
+
+  useEffect(()=>{
+    if(timeRemainingToPay < 60 * 60 * 24 * 3) setIsPayablePremium(true);
+    else setIsPayablePremium(false);
+  }, [timeRemainingToPay])
+
   return (
     <>
       <div className="container container-detail">
         <div className="detail-head">
           <div className="detail-head-section">
             <div className="detail-title-group">
-              <h1 className="detail-title">Bitcoin Crypto Default Swap</h1>
-              <p className="detail-issued">Issued on Jan 22, 2023</p>
-              <p className="detail-payday">{timeRemainingToPay}</p>
+              <h1 className="detail-title">{firstLetterToCapital(assetType)} Crypto Default Swap</h1>
+              <p className="detail-issued">Issued on {swapOnDB? parseUnixtimeToDate(swapOnDB.createdAt) : null}</p>
+              <p className="detail-period">Remaining Period to Pay: { timeRemainingToPay }</p>
             </div>
             <div className="detail-party">
               <div className="party-item">
@@ -175,19 +238,19 @@ function Detail() {
               <div className="content-item">
                 <p className="item-name">Initial Price of Assets</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.initialAssetPrice}` : ''}
+                  {swapOnDB ? `$ ${Number( swapOnDB.initialAssetPrice ).toLocaleString()}` : ''}
                 </p>
               </div>
               <div className="content-item">
                 <p className="item-name">The Amount of Assets</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.amountOfAssets}` : ''}
+                  {swapOnDB ? `${Number( swapOnDB.amountOfAssets ).toLocaleString()}` : ''}
                 </p>
               </div>
               <div className="content-item">
                 <p className="item-name">Total Assets</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.totalAssets}` : ''}
+                  {swapOnDB ? `$ ${Number( swapOnDB.totalAssets ).toLocaleString()}` : ''}
                 </p>
               </div>
             </div>
@@ -198,7 +261,7 @@ function Detail() {
               <div className="content-item">
                 <p className="item-name">Claim Price</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.claimPrice}` : ''}
+                  {swapOnDB ? `$ ${Number( swapOnDB.claimPrice ).toLocaleString()}` : ''}
                 </p>
               </div>
               <div className="content-item">
@@ -221,21 +284,19 @@ function Detail() {
               <div className="content-item">
                 <p className="item-name">Premium Price</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.premium}` : ''}
+                  {swapOnDB ? `$ ${Number( swapOnDB.premium ).toLocaleString()}` : ''}
                 </p>
               </div>
               <div className="content-item">
-                <p className="item-name">Premium Interval</p>
-                <p className="item-figures">
-                  {swapOnDB
-                    ? `${calculateTimeRemaining(0, swapOnDB.premiumInterval)}`
-                    : ''}
-                </p>
-              </div>
-              <div className="content-item">
-                <p className="item-name">Premium Rounds</p>
+                <p className="item-name">Total Rounds</p>
                 <p className="item-figures">
                   {swapOnDB ? `${swapOnDB.totalPremiumRounds} rounds` : ''}
+                </p>
+              </div>
+              <div className="content-item">
+                <p className="item-name">Remaining Rounds</p>
+                <p className="item-figures">
+                  {swapOnDB ? `${swapOnDB.remainPremiumRounds} rounds` : ''}
                 </p>
               </div>
             </div>
@@ -246,19 +307,19 @@ function Detail() {
               <div className="content-item">
                 <p className="item-name">Seller Deposit</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.sellerDeposit}` : ''}
+                  {swapOnDB ? `$ ${Number( swapOnDB.sellerDeposit ).toLocaleString()}` : ''}
                 </p>
               </div>
               <div className="content-item">
                 <p className="item-name">Liquidation Price</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.liquidationPrice}` : ''}
+                  {swapOnDB ? `$ ${Number( swapOnDB.liquidationPrice ).toLocaleString()}` : ''}
                 </p>
               </div>
               <div className="content-item">
                 <p className="item-name">Buyer Deposit</p>
                 <p className="item-figures">
-                  {swapOnDB ? `$ ${swapOnDB.buyerDeposit}` : ''}
+                  {swapOnDB ? `$ ${Number( swapOnDB.buyerDeposit ).toLocaleString()}` : ''}
                 </p>
               </div>
             </div>
@@ -293,12 +354,6 @@ function Detail() {
                   Claim
                 </button>
                 <button
-                  className="button cancel-button"
-                  onClick={cancelButtonHandler}
-                >
-                  Cancel
-                </button>
-                <button
                   className="button close-button"
                   onClick={closeButtonHandler}
                 >
@@ -308,6 +363,17 @@ function Detail() {
             ) : (
               <></>
             )}
+            {swapOnDB && swapOnDB.seller.toLowerCase() === userAddress ? 
+              <button
+                className="button close-button"
+                onClick={expireButtonHandler}
+                disabled={!isExpired}
+              >
+                Expire
+              </button>
+            :
+              <></>
+            }
           </div>
         </div>
       </div>
