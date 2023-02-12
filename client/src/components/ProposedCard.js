@@ -11,13 +11,12 @@ import LINKCard from '../assets/img/LINK_Card_bg.png';
 import '../assets/css/cdsCard.css';
 
 function ProposedCard(props) {
+  // 자산 종류에 따라 다른 이름과 image를 보여줍니다
   const [CardName, setCardName] = useState('');
 
   const [BTCPic, setBTCPic] = useState(false);
   const [ETHPic, setETHPic] = useState(false);
   const [LINKPic, setLINKPic] = useState(false);
-
-  console.log(props.assetType);
 
   useEffect(() => {
     if (props.assetType === 'bitcoin') {
@@ -30,7 +29,7 @@ function ProposedCard(props) {
       setCardName('Chainlink');
       setLINKPic(true);
     }
-  }, []);
+  }, [props.assetType]);
 
   return (
     <>

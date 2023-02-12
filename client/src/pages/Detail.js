@@ -342,7 +342,7 @@ function Detail() {
                 Liquidation
                 Price={swapOnDB.liquidationPrice}
                 assetType={assetType}
-                timeRemainingToPayFromDetail={timeRemainingToPay}
+                timeRemainingToPay={timeRemainingToPay}
               />
             ) : (
               <AcceptedCard />
