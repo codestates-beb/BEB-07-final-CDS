@@ -318,7 +318,7 @@ class CDS {
                         emailData.swapId = swapId;
                         emailData.isBuyer = isBuyer;
                         emailData.txHash = event.transactionHash;
-                        emailData.subject = `CDS - ${event.event.toUpperCase()} Event Notification`;
+                        emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${emailData.swapId} Notification`;
                         emailData.message = (0, emailHandler_1.createMessage)(emailData);
                     }
                     console.log('** user found! **');
@@ -396,8 +396,8 @@ class CDS {
                 });
                 if (!swap)
                     throw new Error(`swapId ${swapId} is not on database`);
-                yield this.handleSeller(sellerAddr, currentTime);
-                yield this.handleBuyer(buyerAddr, currentTime);
+                yield this.handleSeller(sellerAddr, event, currentTime, isLive);
+                yield this.handleBuyer(buyerAddr, event, currentTime, isLive);
                 swap.status = 'active';
                 swap.seller = sellerAddr;
                 swap.buyer = buyerAddr;
@@ -453,6 +453,38 @@ class CDS {
                 swap.status = 'claimed';
                 swap.updatedAt = currentTime;
                 swap.terminatedAt = currentTime;
+                const seller = yield this.manager.findOneBy(Users_1.Users, {
+                    address: swap.seller,
+                });
+                if (seller.email && isLive) {
+                    const emailData = {};
+                    emailData.recipient = seller.email;
+                    emailData.nickname = seller.nickname;
+                    emailData.event = event.event;
+                    emailData.timestamp = currentTime.toString();
+                    emailData.swapId = event.returnValues.swapId;
+                    emailData.isBuyer = false;
+                    emailData.txHash = event.transactionHash;
+                    emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${emailData.swapId} Notification`;
+                    emailData.message = (0, emailHandler_1.createMessage)(emailData);
+                    (0, emailHandler_1.sendEmail)(emailData.subject, emailData.message, emailData.recipient);
+                }
+                const buyer = yield this.manager.findOneBy(Users_1.Users, {
+                    address: swap.buyer,
+                });
+                if (buyer.email && isLive) {
+                    const emailData = {};
+                    emailData.recipient = buyer.email;
+                    emailData.nickname = buyer.nickname;
+                    emailData.event = event.event;
+                    emailData.timestamp = currentTime.toString();
+                    emailData.swapId = event.returnValues.swapId;
+                    emailData.isBuyer = true;
+                    emailData.txHash = event.transactionHash;
+                    emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${emailData.swapId} Notification`;
+                    emailData.message = (0, emailHandler_1.createMessage)(emailData);
+                    (0, emailHandler_1.sendEmail)(emailData.subject, emailData.message, emailData.recipient);
+                }
                 yield this.manager.save(swap);
                 yield this.txController(event, currentTime, swapId);
             }
@@ -564,7 +596,7 @@ class CDS {
         });
     }
     // TODO refactor
-    handleSeller(sellerAddr, currentTime) {
+    handleSeller(sellerAddr, event, currentTime, isLive) {
         return __awaiter(this, void 0, void 0, function* () {
             let seller = yield this.manager.findOneBy(Users_1.Users, {
                 address: sellerAddr,
@@ -583,7 +615,19 @@ class CDS {
                 this.manager.save(seller);
             }
             else {
-                console.log('** user found! **');
+                if (seller.email && isLive) {
+                    const emailData = {};
+                    emailData.recipient = seller.email;
+                    emailData.nickname = seller.nickname;
+                    emailData.event = event.event;
+                    emailData.timestamp = currentTime.toString();
+                    emailData.swapId = event.returnValues.swapId;
+                    emailData.isBuyer = false;
+                    emailData.txHash = event.transactionHash;
+                    emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${emailData.swapId} Notification`;
+                    emailData.message = (0, emailHandler_1.createMessage)(emailData);
+                    (0, emailHandler_1.sendEmail)(emailData.subject, emailData.message, emailData.recipient);
+                }
                 seller.soldCount++;
                 seller.lastSold = currentTime;
                 seller.updatedAt = currentTime;
@@ -592,7 +636,7 @@ class CDS {
         });
     }
     // TODO refactor
-    handleBuyer(buyerAddr, currentTime) {
+    handleBuyer(buyerAddr, event, currentTime, isLive) {
         return __awaiter(this, void 0, void 0, function* () {
             let buyer = yield this.manager.findOneBy(Users_1.Users, {
                 address: buyerAddr,
@@ -611,7 +655,19 @@ class CDS {
                 this.manager.save(buyer);
             }
             else {
-                console.log('** user found! **');
+                if (buyer.email && isLive) {
+                    const emailData = {};
+                    emailData.recipient = buyer.email;
+                    emailData.nickname = buyer.nickname;
+                    emailData.event = event.event;
+                    emailData.timestamp = currentTime.toString();
+                    emailData.swapId = event.returnValues.swapId;
+                    emailData.isBuyer = true;
+                    emailData.txHash = event.transactionHash;
+                    emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${emailData.swapId} Notification`;
+                    emailData.message = (0, emailHandler_1.createMessage)(emailData);
+                    (0, emailHandler_1.sendEmail)(emailData.subject, emailData.message, emailData.recipient);
+                }
                 buyer.boughtCount++;
                 buyer.lastBought = currentTime;
                 buyer.updatedAt = currentTime;
