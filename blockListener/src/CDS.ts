@@ -304,7 +304,9 @@ export default class CDS {
           emailData.swapId = swapId;
           emailData.isBuyer = isBuyer;
           emailData.txHash = event.transactionHash;
-          emailData.subject = `CDS - ${event.event.toUpperCase()} Event Notification`;
+          emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${
+            emailData.swapId
+          } Notification`;
           emailData.message = createMessage(emailData);
         }
         console.log('** user found! **');
@@ -383,8 +385,8 @@ export default class CDS {
       });
       if (!swap) throw new Error(`swapId ${swapId} is not on database`);
 
-      await this.handleSeller(sellerAddr, currentTime);
-      await this.handleBuyer(buyerAddr, currentTime);
+      await this.handleSeller(sellerAddr, event, currentTime, isLive);
+      await this.handleBuyer(buyerAddr, event, currentTime, isLive);
 
       swap.status = 'active';
       swap.seller = sellerAddr;
@@ -442,8 +444,46 @@ export default class CDS {
       swap.status = 'claimed';
       swap.updatedAt = currentTime;
       swap.terminatedAt = currentTime;
-      await this.manager.save(swap);
 
+      const seller = await this.manager.findOneBy(Users, {
+        address: swap.seller,
+      });
+      if (seller.email && isLive) {
+        const emailData: EmailData = {};
+        emailData.recipient = seller.email;
+        emailData.nickname = seller.nickname;
+        emailData.event = event.event;
+        emailData.timestamp = currentTime.toString();
+        emailData.swapId = event.returnValues.swapId;
+        emailData.isBuyer = false;
+        emailData.txHash = event.transactionHash;
+        emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${
+          emailData.swapId
+        } Notification`;
+        emailData.message = createMessage(emailData);
+        sendEmail(emailData.subject, emailData.message, emailData.recipient);
+      }
+
+      const buyer = await this.manager.findOneBy(Users, {
+        address: swap.buyer,
+      });
+      if (buyer.email && isLive) {
+        const emailData: EmailData = {};
+        emailData.recipient = buyer.email;
+        emailData.nickname = buyer.nickname;
+        emailData.event = event.event;
+        emailData.timestamp = currentTime.toString();
+        emailData.swapId = event.returnValues.swapId;
+        emailData.isBuyer = true;
+        emailData.txHash = event.transactionHash;
+        emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${
+          emailData.swapId
+        } Notification`;
+        emailData.message = createMessage(emailData);
+        sendEmail(emailData.subject, emailData.message, emailData.recipient);
+      }
+
+      await this.manager.save(swap);
       await this.txController(event, currentTime, swapId);
     } catch (error) {
       console.error(error);
@@ -554,7 +594,12 @@ export default class CDS {
   }
 
   // TODO refactor
-  private async handleSeller(sellerAddr: string, currentTime: number) {
+  private async handleSeller(
+    sellerAddr: string,
+    event: EventData,
+    currentTime: number,
+    isLive: boolean,
+  ) {
     let seller = await this.manager.findOneBy(Users, {
       address: sellerAddr,
     });
@@ -571,7 +616,21 @@ export default class CDS {
       seller.updatedAt = currentTime;
       this.manager.save(seller);
     } else {
-      console.log('** user found! **');
+      if (seller.email && isLive) {
+        const emailData: EmailData = {};
+        emailData.recipient = seller.email;
+        emailData.nickname = seller.nickname;
+        emailData.event = event.event;
+        emailData.timestamp = currentTime.toString();
+        emailData.swapId = event.returnValues.swapId;
+        emailData.isBuyer = false;
+        emailData.txHash = event.transactionHash;
+        emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${
+          emailData.swapId
+        } Notification`;
+        emailData.message = createMessage(emailData);
+        sendEmail(emailData.subject, emailData.message, emailData.recipient);
+      }
       seller.soldCount++;
       seller.lastSold = currentTime;
       seller.updatedAt = currentTime;
@@ -580,7 +639,12 @@ export default class CDS {
   }
 
   // TODO refactor
-  private async handleBuyer(buyerAddr: string, currentTime: number) {
+  private async handleBuyer(
+    buyerAddr: string,
+    event: EventData,
+    currentTime: number,
+    isLive: boolean,
+  ) {
     let buyer = await this.manager.findOneBy(Users, {
       address: buyerAddr,
     });
@@ -597,7 +661,21 @@ export default class CDS {
       buyer.updatedAt = currentTime;
       this.manager.save(buyer);
     } else {
-      console.log('** user found! **');
+      if (buyer.email && isLive) {
+        const emailData: EmailData = {};
+        emailData.recipient = buyer.email;
+        emailData.nickname = buyer.nickname;
+        emailData.event = event.event;
+        emailData.timestamp = currentTime.toString();
+        emailData.swapId = event.returnValues.swapId;
+        emailData.isBuyer = true;
+        emailData.txHash = event.transactionHash;
+        emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${
+          emailData.swapId
+        } Notification`;
+        emailData.message = createMessage(emailData);
+        sendEmail(emailData.subject, emailData.message, emailData.recipient);
+      }
       buyer.boughtCount++;
       buyer.lastBought = currentTime;
       buyer.updatedAt = currentTime;
