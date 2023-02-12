@@ -51,7 +51,7 @@ function Teams() {
             className="teamImg rounded-full w-[6rem] h-[6rem] mx-auto"
           ></img>
           <div className="text-center text-lg font-extrabold my-[1rem]">
-            Duhun Kang
+            Duhoon Kang
           </div>
           <div className="text-center text-[12px] font-semibold mb-[3rem] text-grayForText">
             <p>FrontEnd</p>
@@ -86,25 +86,24 @@ function Teams() {
             className="teamImg rounded-full w-[6rem] h-[6rem] mx-auto"
           ></img>
           <div className="text-center text-lg font-extrabold my-[1rem]">
-            Dongheon Seol
+            Donghun Seol
           </div>
           <div className="text-center text-[12px] font-semibold mb-[3rem] text-grayForText">
             <p>Backend</p>
             <p>Devops Engineer</p>
           </div>
           <div className="text-center text-sm">
-            That motivated Backend-Bro I was born and raise in busan. I’ve been
-            always intereted in influencing outside world with power of my mind.
-            But as I grew up, like many others, I had to reconcile with reality.
-            I put off my dream deep inside of my subconscious, took plain office
-            job at public sector. Spending couple of boring years as normal
-            salaray man, my inner fire led me to the world of programming. Since
-            then I totally fell in love with programming. With a passion for
-            programming, I graduated from Korea National Online University
-            Computer Science Department with honors graduation. Upon completing
-            codestates bootcamp I’ll start my new career as software engineer.
-            As a motivated software engineer I want to spread good influence
-            around the universe through my products.
+            I’ve been always intereted in influencing outside world with power
+            of my mind. But as I grew up, like many others, I had to reconcile
+            with reality. I put off my dream deep inside of my subconscious,
+            took plain office job at public sector. Spending couple of boring
+            years as normal salaray man, my inner fire led me to the world of
+            programming. Since then I totally fell in love with programming.
+            With a passion for programming, I graduated from Korea National
+            Online University Computer Science Department with honors
+            graduation. Upon completing codestates bootcamp I’ll start my new
+            career as software engineer. As a motivated software engineer I want
+            to spread good influence around the universe through my products.
           </div>
           <div className="flex justify-center mt-[3rem]">
             <div className="bg-grayForText text-black text-center text-[10px] font-bold w-[13rem] rounded-2xl">
@@ -123,7 +122,7 @@ function Teams() {
             className="teamImg rounded-full w-[6rem] h-[6rem] mx-auto"
           ></img>
           <div className="text-center text-lg font-extrabold my-[1rem]">
-            Yunsu Kim
+            Yoonsu Kim
           </div>
           <div className="text-center text-[12px] font-semibold mb-[3rem] text-grayForText">
             <p>Smart Contract Engineer</p>
