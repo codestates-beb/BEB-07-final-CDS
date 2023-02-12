@@ -29,3 +29,15 @@ export interface SwapInfo {
   buyer: string | null;
   seller: string | null;
 }
+
+export interface EmailData {
+  recipient?: string | null;
+  nickname?: string | null;
+  event?: string | null;
+  timestamp?: string | null;
+  subject?: string | null;
+  message?: string | null;
+  txHash?: string | null;
+  swapId?: string | null;
+  isBuyer?: boolean;
+}
