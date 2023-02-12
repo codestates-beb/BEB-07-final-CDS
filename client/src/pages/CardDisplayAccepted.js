@@ -77,6 +77,7 @@ function CardDisplayAccepted() {
                   ClaimPrice={swap.claimPrice}
                   Liquidation
                   Price={swap.liquidationPrice}
+                  assetType={swap.assetType}
                 />
               </div>
             );

@@ -17,12 +17,11 @@ import AcceptedCard from '../AcceptedCard';
 import '../../assets/css/cardScroll.css';
 
 function AcceptedCardScroll(props) {
-  const accepted = props.response.filter((swap) => swap.status === 'active');
-  const randomSort = accepted.sort(() => Math.random() - 0.5);
+  const accepted = props.response;
 
   //처음 6개의 Card만 보여주도록 합니다
   const [index, setIndex] = useState(7);
-  const initialAccepted = randomSort.slice(0, index);
+  const initialAccepted = accepted.slice(0, index);
 
   return (
     <>
@@ -55,6 +54,7 @@ function AcceptedCardScroll(props) {
                   ClaimPrice={swap.claimPrice}
                   Liquidation
                   Price={swap.liquidationPrice}
+                  assetType={swap.assetType}
                 />
               </SwiperSlide>
             );

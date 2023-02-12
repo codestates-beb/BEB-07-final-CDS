@@ -17,12 +17,11 @@ import ProposedCard from '../ProposedCard';
 import '../../assets/css/cardScroll.css';
 
 function ProposedCardScroll(props) {
-  const proposed = props.response.filter((swap) => swap.status === 'pending');
-  const randomSort = proposed.sort(() => Math.random() - 0.5);
+  const proposed = props.response;
 
   //처음 6개의 Card만 보여주도록 합니다
   const [index, setIndex] = useState(7);
-  const initialProposed = randomSort.slice(0, index);
+  const initialProposed = proposed.slice(0, index);
 
   return (
     <>
@@ -56,6 +55,7 @@ function ProposedCardScroll(props) {
                   requiredDeposit={swap.sellerDeposit}
                   premiumRounds={swap.totalPremiumRounds}
                   buyerAddress={swap.buyer}
+                  assetType={swap.assetType}
                 />
               </SwiperSlide>
             );
