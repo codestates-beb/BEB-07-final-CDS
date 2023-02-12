@@ -110,7 +110,33 @@ function Create() {
       // Notice Modal open
       dispatch(openModal());
       dispatch(setProcessing());
-      
+
+      // check input validation
+      if (
+        !initialPriceOfAssets
+        || !claimPrice
+        || !liquidationPrice
+        || !sellerDeposit
+        || !premiumPrice
+        || !premiumRounds
+        || !assetType
+        || !userAddress
+      ) {
+        throw new Error("Not valid inputs")
+      };
+
+      // check input zero value
+      if ( initialPriceOfAssets <= 0
+        || amountOfAssets <= 0
+        || claimPrice <= 0
+        || liquidationPrice <= 0
+        || sellerDeposit <= 0
+        || premiumPrice <= 0
+        || premiumRounds <= 0
+      ) {
+        throw new Error("There is a number less than zero");
+      }
+
       // calculate deposit
       let deposit;
       if(isBuyer === true) deposit = 4 * premiumPrice;

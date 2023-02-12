@@ -339,7 +339,7 @@ function Accept() {
                 <input
                   value={
                     swapOnDB
-                      ? Number(swapOnDB.totalPremiumRounds).toLocaleString()
+                      ? `# ${Number(swapOnDB.totalPremiumRounds).toLocaleString()}`
                       : ''
                   }
                   disabled
