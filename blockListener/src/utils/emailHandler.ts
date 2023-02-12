@@ -71,7 +71,7 @@ export function createMessage(emailData: EmailData): string {
   let message = '';
   if (emailData.event === 'Create') {
     message = `Dear ${emailData.nickname}
-  You just triggered ${emailData.event} Event on ${emailData.timestamp}
+  You just created swap #${emailData.swapId} on ${emailData.timestamp}
   swapId: ${emailData.swapId}
   txHash : ${emailData.txHash}
   swapInfo : ${swapURI}
@@ -80,14 +80,14 @@ export function createMessage(emailData: EmailData): string {
   } else if (emailData.event === 'Accept') {
     if (emailData.isBuyer) {
       message = `Dear ${emailData.nickname}
-  You just bought ${emailData.swapId} swap on ${emailData.timestamp}
+  You just bought swap #${emailData.swapId} on ${emailData.timestamp}
   swapId: ${emailData.swapId}
   txHash : ${emailData.txHash}
   swapInfo : ${swapURI}
   txInfo : ${txURI} `;
     } else {
       message = `Dear ${emailData.nickname}
-  You just sold ${emailData.swapId} swap on ${emailData.timestamp}
+  You just sold swap #${emailData.swapId} on ${emailData.timestamp}
   swapId: ${emailData.swapId}
   txHash : ${emailData.txHash}
   swapInfo : ${swapURI}
