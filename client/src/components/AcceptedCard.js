@@ -1,7 +1,6 @@
 // modules
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
 
 //image
 import BTCCard from '../assets/img/BTC_Card_bg.jpeg';
@@ -38,6 +37,35 @@ function AcceptedCard(props) {
     }
   }, [props.assetType]);
 
+  // Set Inveravl to get Remaining Time for Paying Premium
+  const [isExpired, setIsExpired] = useState(false);
+  const [timeRemainingToPay, setTimeRemainingToPay] = useState(null);
+  const [timeRemainingFromCard, settimeRemainingFromCard] = useState(false);
+
+  const CDS = useCDS();
+
+  useEffect(() => {
+    let intervalId;
+    if (CDS) {
+      CDS.getRounds(props.swapId).then((rounds) => {
+        if (rounds <= 0) setIsExpired(true);
+      });
+
+      CDS.getNextPayDate(props.swapId).then((result) => {
+        const nextPayDate = Number(result);
+        intervalId = setInterval(() => {
+          const current = parseInt(new Date().getTime() / 1000);
+          setTimeRemainingToPay(calculateRemainingPeriod(current, nextPayDate));
+          settimeRemainingFromCard(true);
+        }, 1000);
+      });
+    }
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [CDS, props.swapId]);
+
   return (
     <>
       <div className="card my-[4rem] w-[15rem] h-[25rem] rounded-2xl border-color-white drop-shadow-md">
@@ -65,7 +93,13 @@ function AcceptedCard(props) {
           <div className="mb-[4%] flex font-semibold text-[9px]">
             <p>Remaining Period to Pay:</p>
             <p className="text-mint text-[9px]">&nbsp;</p>
-            <p className="text-mint text-[10px]">{props.timeRemainingToPay}</p>
+            {timeRemainingFromCard ? (
+              <p className="text-mint text-[10px]">{timeRemainingToPay}</p>
+            ) : (
+              <p className="text-mint text-[10px]">
+                {props.timeRemainingToPay}
+              </p>
+            )}
           </div>
 
           <div className="mb-[2%]">
