@@ -1,7 +1,9 @@
-//image
-import Logo from '../assets/img/CDS_Symbol-removebg.png';
+// modules
+import { Link } from 'react-router-dom';
 
 function Footer() {
+  const gihub = 'https://github.com/codestates-beb/BEB-07-final-CDS';
+
   return (
     <div className="w-screen bg-ligthGrayColor h-[22rem] mt-[10rem]">
       <div className="px-[10rem] pt-[2rem]">
@@ -17,21 +19,35 @@ function Footer() {
           </div>
         </div>
         <div className="w-[35rem] h-[3.5rem] mt-[1rem] mb-[2.5rem] text-black">
-          We provide blockchain-based decentralized derivatives. Our team is
-          innovative, challenging and towards decentralization. Hedge and
-          protect your crypto asset from here.
+          <p>We provide blockchain-based decentralized derivatives.</p>
+          <p>
+            Our team is innovative, challenging and towards decentralization.
+          </p>
+          <p>Hedge and protect your crypto asset from here.</p>
         </div>
         <div className="flex text-black">
           <div>
             <div className="font-semibold pb-[0.55rem]">Join</div>
-            <div>GitHub</div>
+            <button
+              onClick={() => {
+                window.open(gihub);
+              }}
+            >
+              GitHub
+            </button>
           </div>
           <div className="ml-[40rem]">
             <div className="font-semibold mr-[3rem] pb-[0.5rem]">About</div>
             <div className="flex">
-              <div className="mr-[2rem]">Understanding CDS</div>
-              <div className="mr-[2rem]">Risks</div>
-              <div>Teams</div>
+              <Link to="/cds">
+                <div className="mr-[2rem]">Understanding CDS</div>
+              </Link>
+              <Link to="/risks">
+                <div className="mr-[2rem]">Risks</div>
+              </Link>
+              <Link to="/teams">
+                <div>Teams</div>
+              </Link>
             </div>
           </div>
         </div>
