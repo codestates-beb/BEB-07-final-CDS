@@ -24,6 +24,7 @@ const Swap_json_1 = require("./contractArtifacts/Swap.json");
 const Users_1 = require("./entities/Users");
 const Transactions_1 = require("./entities/Transactions");
 const Swaps_1 = require("./entities/Swaps");
+const emailHandler_1 = require("./utils/emailHandler");
 const Swap_1 = __importDefault(require("./Swap"));
 class CDS {
     constructor(webSocketURI, manager) {
@@ -114,33 +115,31 @@ class CDS {
                             continue;
                         if (event.event === 'Create') {
                             console.log('Create Event found!');
-                            yield this.createEventHandler(event);
+                            yield this.createEventHandler(event, false);
                         }
                         else if (event.event === 'Accept') {
                             console.log('Accept Event found!');
-                            yield this.acceptEventHandler(event);
+                            yield this.acceptEventHandler(event, false);
                         }
                         else if (event.event === 'Cancel') {
                             console.log('Cancel Event found!');
-                            yield this.cancelEventHandler(event);
+                            yield this.cancelEventHandler(event, false);
                         }
                         else if (event.event === 'Claim') {
                             console.log('Claim Event found!');
-                            yield this.claimEventHandler(event);
+                            yield this.claimEventHandler(event, false);
                         }
                         else if (event.event === 'Close') {
                             console.log('Close Event found!');
-                            yield this.closeEventHandler(event);
+                            yield this.closeEventHandler(event, false);
                         }
                         else if (event.event === 'Expire') {
-                            console.log('##################');
                             console.log('Expire Event found!');
-                            console.log('##################');
-                            yield this.expireEventHandler(event);
+                            yield this.expireEventHandler(event, false);
                         }
                         else if (event.event === 'PayPremium') {
                             console.log('PayPremium Event found!');
-                            yield this.payPremiumEventHandler(event);
+                            yield this.payPremiumEventHandler(event, false);
                         }
                         else if (event.event === 'OwnershipTransferred') {
                             console.log('OwnershipTransferred found!');
@@ -283,8 +282,9 @@ class CDS {
             return roundsInfo;
         });
     }
-    createEventHandler(event) {
+    createEventHandler(event, isLive = true) {
         return __awaiter(this, void 0, void 0, function* () {
+            const emailData = {};
             const { swap, hostAddr: hostAddrUpper, isBuyer, swapId, assetType, } = event.returnValues;
             const hostAddr = hostAddrUpper.toLowerCase();
             const swapAddr = swap.toLowerCase();
@@ -310,6 +310,17 @@ class CDS {
                     yield this.manager.save(user);
                 }
                 else {
+                    if (user.email) {
+                        emailData.recipient = user.email;
+                        emailData.nickname = user.nickname;
+                        emailData.event = event.event;
+                        emailData.timestamp = currentTime.toString();
+                        emailData.swapId = swapId;
+                        emailData.isBuyer = isBuyer;
+                        emailData.txHash = event.transactionHash;
+                        emailData.subject = `CDS - ${event.event.toUpperCase()} Event Notification`;
+                        emailData.message = (0, emailHandler_1.createMessage)(emailData);
+                    }
                     console.log('** user found! **');
                     user.updatedAt = currentTime;
                     yield this.manager.save(user);
@@ -356,13 +367,17 @@ class CDS {
                     yield this.manager.save(swap);
                 }
                 yield this.txController(event, currentTime, swapId);
+                if (isLive) {
+                    console.log('sending create noficiation email');
+                    (0, emailHandler_1.sendEmail)(emailData.subject, emailData.message, emailData.recipient);
+                }
             }
             catch (error) {
                 console.error(error);
             }
         });
     }
-    acceptEventHandler(event) {
+    acceptEventHandler(event, isLive = true) {
         return __awaiter(this, void 0, void 0, function* () {
             const { swapId } = event.returnValues;
             const swapAddr = (yield this.getSwapAddr(swapId)).toLowerCase();
@@ -394,7 +409,7 @@ class CDS {
             }
         });
     }
-    cancelEventHandler(event) {
+    cancelEventHandler(event, isLive = true) {
         return __awaiter(this, void 0, void 0, function* () {
             const { swapId } = event.returnValues;
             const currentTime = yield this.getTxTimestamp(event.transactionHash);
@@ -420,7 +435,7 @@ class CDS {
             }
         });
     }
-    claimEventHandler(event) {
+    claimEventHandler(event, isLive = true) {
         return __awaiter(this, void 0, void 0, function* () {
             const { swapId } = event.returnValues;
             const currentTime = yield this.getTxTimestamp(event.transactionHash);
@@ -446,7 +461,7 @@ class CDS {
             }
         });
     }
-    closeEventHandler(event) {
+    closeEventHandler(event, isLive = true) {
         return __awaiter(this, void 0, void 0, function* () {
             const { swapId } = event.returnValues;
             const currentTime = yield this.getTxTimestamp(event.transactionHash);
@@ -472,7 +487,7 @@ class CDS {
             }
         });
     }
-    expireEventHandler(event) {
+    expireEventHandler(event, isLive = true) {
         return __awaiter(this, void 0, void 0, function* () {
             const { swapId } = event.returnValues;
             const currentTime = yield this.getTxTimestamp(event.transactionHash);
@@ -498,7 +513,7 @@ class CDS {
             }
         });
     }
-    payPremiumEventHandler(event) {
+    payPremiumEventHandler(event, isLive = true) {
         return __awaiter(this, void 0, void 0, function* () {
             const { swapId } = event.returnValues;
             const currentTime = yield this.getTxTimestamp(event.transactionHash);

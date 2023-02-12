@@ -353,7 +353,10 @@ export default class CDS {
         await this.manager.save(swap);
       }
       await this.txController(event, currentTime, swapId);
-      sendEmail(emailData.subject, emailData.message, emailData.recipient);
+      if (isLive) {
+        console.log('sending create noficiation email');
+        sendEmail(emailData.subject, emailData.message, emailData.recipient);
+      }
     } catch (error) {
       console.error(error);
     }
