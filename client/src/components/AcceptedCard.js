@@ -1,6 +1,6 @@
 // modules
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 
 //image
@@ -18,14 +18,12 @@ import useCDS from '../utils/hooks/useCDS';
 import { calculateRemainingPeriod } from '../utils/calendar';
 
 function AcceptedCard(props) {
-  // 자산 종류에 따라 다른 image를 보여줍니다
+  // 자산 종류에 따라 다른 이름과 image를 보여줍니다
   const [CardName, setCardName] = useState('');
 
   const [BTCPic, setBTCPic] = useState(false);
   const [ETHPic, setETHPic] = useState(false);
   const [LINKPic, setLINKPic] = useState(false);
-
-  console.log(props.assetType);
 
   useEffect(() => {
     if (props.assetType === 'bitcoin') {
@@ -39,36 +37,6 @@ function AcceptedCard(props) {
       setLINKPic(true);
     }
   }, [props.assetType]);
-
-  // accepted card component의 remaining perioid를 계산합니다
-  const CDS = useCDS();
-
-  const [timeRemainingToPay, setTimeRemainingToPay] = useState(null);
-  const [getFromDetail, setGetFromDetail] = useState(true);
-  const [isExpired, setIsExpired] = useState(false);
-
-  // Set Inveravl to get Remaining Time for Paying Premium
-  useEffect(() => {
-    let intervalId;
-    if (CDS) {
-      CDS.getRounds(props.swapId).then((rounds) => {
-        if (rounds <= 0) setIsExpired(true);
-      });
-
-      CDS.getNextPayDate(props.swapId).then((result) => {
-        const nextPayDate = Number(result);
-        intervalId = setInterval(() => {
-          const current = parseInt(new Date().getTime() / 1000);
-          setTimeRemainingToPay(calculateRemainingPeriod(current, nextPayDate));
-          setGetFromDetail(false);
-        }, 1000);
-      });
-    }
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [CDS]);
 
   return (
     <>
@@ -97,13 +65,7 @@ function AcceptedCard(props) {
           <div className="mb-[4%] flex font-semibold text-[9px]">
             <p>Remaining Period to Pay:</p>
             <p className="text-mint text-[9px]">&nbsp;</p>
-            {getFromDetail ? (
-              <p className="text-mint text-[10px]">
-                {props.timeRemainingToPayFromDetail}
-              </p>
-            ) : (
-              <p className="text-mint text-[10px]">{timeRemainingToPay}</p>
-            )}
+            <p className="text-mint text-[10px]">{props.timeRemainingToPay}</p>
           </div>
 
           <div className="mb-[2%]">
