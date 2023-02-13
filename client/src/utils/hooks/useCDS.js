@@ -26,20 +26,9 @@ function useCDS() {
             liquidationPrice,
             sellerDeposit,
             premiumPrice,
-            premiumRounds
+            premiumRounds,
+            assetType
           } = data;
-
-          if (
-            !initialPriceOfAssets
-            || !claimPrice
-            || !liquidationPrice
-            || !sellerDeposit
-            || !premiumPrice
-            || !premiumRounds
-            || !userAddress
-          ) {
-            throw new Error("Not valid inputs")
-          };
 
           let deposit;
           if (isBuyer === true) deposit = premiumPrice * 4;
@@ -52,7 +41,8 @@ function useCDS() {
             liquidationPrice,
             sellerDeposit,
             premiumPrice,
-            premiumRounds
+            premiumRounds,
+            assetType
           )
           .send({from: userAddress}, (result)=>{
             console.log(result);

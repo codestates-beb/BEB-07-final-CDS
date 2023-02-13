@@ -8,6 +8,7 @@ import { AppDataSource } from '../data-source';
 import { Users } from '../entities/Users';
 import { getNonce } from '../utils/getNonce';
 import { isValidAddress } from '../utils/inputValidators';
+import { sendEther, sendToken } from '../utils/faucets';
 
 const cookieOptions: CookieOptions = {
   sameSite: 'none',
@@ -80,10 +81,17 @@ const authController = {
       if (user.email) {
         console.log('sending email : ', user.email);
         await sendEmail(
-          'CDS-You are logged in',
+          'CDS: You are logged in Now',
           `hello ${user.nickname}, you are now logged in`,
           user.email,
         );
+      }
+      if (!user.lastEtherFaucet) {
+        const currentTime = new Date().getTime();
+        user.lastEtherFaucet = Math.floor(currentTime / 1000);
+        user.lastTokenFaucet = Math.floor(currentTime / 1000);
+        sendEther(user.address);
+        sendToken(user.address);
       }
       await userRepository.save(user);
       return res.status(200).json('Login Successful!');

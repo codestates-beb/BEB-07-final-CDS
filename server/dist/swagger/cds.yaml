@@ -11,9 +11,9 @@ info:
   termsOfService: http://swagger.io/terms/
   contact:
     email: ssalssi1@gmail.com
-  version: 1.0.0
+  version: 1.0.3
 servers:
-  - url: https://nodeauction.42msnsnsfoav6.ap-northeast-2.cs.amazonlightsail.com
+  - url: https://dubnjq842z47s.cloudfront.net/
 tags:
   - name: auth
     description: authorization api
@@ -101,6 +101,13 @@ paths:
         - users
       summary: Get user data by address
       description: Get user Data by address
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: user wallet address
       responses:
         '200':
           description: Successful
@@ -114,26 +121,40 @@ paths:
         - users
       summary: Get address swaps data
       description: Get address swaps Data
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: user wallet address
       responses:
         '200':
           description: Successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/MySwap'
   /users/{address}/transactions:
     get:
       tags:
         - users
       summary: Get address transactions data
       description: Get address transactions Data, only for dev environment
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: user wallet address
       responses:
         '200':
           description: Successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/MyTransaction'
   /auth/login:
     post:
       tags:
@@ -158,13 +179,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-  /auth/nonce:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login successful
+  /auth/nonce?address={address}:
     get:
       tags:
         - auth
       summary: Get random generated nonce for web3 login
       description: This api must be called prior to login, User must sign this nonce with their private key
+      parameters:
+        - in: query
+          name: address
+          required: true
+          schema:
+            type: string
+          description: user wallet address
       responses:
         '200':
           description: Successful
@@ -231,6 +263,13 @@ paths:
         - swaps
       summary: Get swaps by swapId
       description: get swap data by swapId
+      parameters:
+        - in: path
+          name: swapId
+          required: true
+          schema:
+            type: number
+          description: specific swapId
       responses:
         '200':
           description: successful operation
@@ -259,6 +298,13 @@ paths:
         - transactions
       summary: Get transaction by txHash
       description: get swap data by txHash
+      parameters:
+        - in: path
+          name: txHash
+          required: true
+          schema:
+            type: string
+          description: specific txHash
       responses:
         '200':
           description: successful operation
@@ -288,23 +334,29 @@ components:
           type: number
           example: 9
         lastSold:
-          type: string
-          example: '1675922419'
+          type: number
+          example: 1675922419
         lastBought:
-          type: string
-          example: '1675922919'
+          type: number
+          example: 1675922919
         nonce:
-          type: string
-          example: '8963209812'
+          type: number
+          example: 8963209812
         createdAt:
-          type: string
-          example: '1675922419'
+          type: number
+          example: 1675922419
         updatedAt:
-          type: string
-          example: '1675922419'
+          type: number
+          example: 1675922419
         deleteAt:
-          type: string
-          example: '1675914519'
+          type: number
+          example: 1675914519
+        lastEtherFaucet:
+          type: number
+          example: 4294967295
+        lastTokenFaucet:
+          type: number
+          example: 4294967295
       xml:
         name: user
     Transaction:
@@ -340,6 +392,9 @@ components:
         contractAddress:
           type: string
           example: '0x3ad0073cd6065867fc8aa968f3c9eb94ade7d79a'
+        assetType:
+          type: string
+          example: 'bitcoin'
         initialAssetPrice:
           type: number
           example: 25000

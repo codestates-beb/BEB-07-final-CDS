@@ -247,6 +247,7 @@ function Mypage() {
                       requiredDeposit={swap.sellerDeposit}
                       premiumRounds={swap.totalPremiumRounds}
                       buyerAddress={swap.buyer}
+                      assetType={swap.assetType}
                     />
                   </div>
                 );
@@ -282,6 +283,7 @@ function Mypage() {
                       ClaimPrice={swap.claimPrice}
                       Liquidation
                       Price={swap.liquidationPrice}
+                      assetType={swap.assetType}
                     />
                   </div>
                 );

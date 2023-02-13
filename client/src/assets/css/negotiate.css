@@ -42,6 +42,15 @@
     border-color: var(--primary-color);
   }
 
+  /* negotiate-guide */
+  .container-negotiate .negotiate-guide {
+    @apply w-[720px] overflow-hidden rounded-2xl shadow-md;
+  }
+
+  .container-negotiate .negotiate-guide img{
+    @apply w-full;
+  }
+
   /* Create Form */
   .negotiate-form .input-group {
     @apply flex flex-col;
@@ -57,6 +66,10 @@
     overflow-hidden;
   }
 
+  .negotiate-form .input-group .input-wrapper .address{
+    @apply cursor-pointer text-black underline bg-[#848483];
+  }
+
   .negotiate-form .input-group .input-radio input,
   .negotiate-form .input-group .input-button input,
   .negotiate-form .input-group .input-range input,
@@ -70,12 +83,53 @@
     text-black;
   }
 
-  .negotiate-form .input-group input{
+  .negotiate-form .input-group .address,
+  .negotiate-form .input-group input,
+  .negotiate-form .input-group select
+  {
     @apply w-full py-2 px-3 outline-0;
   }
 
-  .negotiate-form .input-group .input-wrapper input{
+  .negotiate-form .input-group .input-value,
+  .negotiate-form .input-group .input-number
+  {
+    @apply relative w-full px-3 outline-0;
+  }
+
+
+
+  .negotiate-form .input-group .input-value.disabled,
+  .negotiate-form .input-group .input-number.disabled
+  {
+    background-color: #848483
+  }
+
+  .negotiate-form .input-group .input-value::after,
+  .negotiate-form .input-group .input-number::after
+  {
+    @apply absolute text-black left-0 ml-2 mt-2;
+    content: '$';
+  }
+
+  .negotiate-form .input-group .input-value::after{
+    content: '$';
+  }
+
+  .negotiate-form .input-group .input-number::after{
+    content: '#';
+  }
+
+  .negotiate-form .input-group .input-value,
+  .negotiate-form .input-group .input-number,
+  .negotiate-form .input-group .input-wrapper input,
+  .negotiate-form .input-group .input-wrapper select
+  {
     @apply border-l-4 border-[#2b2b2b];
+  }
+
+  .negotiate-form .input-group .input-wrapper select{
+    @apply border-2 border-primaryColor rounded-tr-xl rounded-br-xl border-l-0
+    bg-[#2b2b2b] text-whiteColor;
   }
 
   .negotiate-form .input-group .input-wrapper input:first-child{
@@ -86,7 +140,9 @@
     @apply bg-darkGrayColor;
   }
 
-  .negotiate-form .input-group .input-wrapper input{
+  .negotiate-form .input-group .input-wrapper input.value::after{
+    @apply absolute text-black;
+    content: '$';
   }
 
   .negotiate-form button {

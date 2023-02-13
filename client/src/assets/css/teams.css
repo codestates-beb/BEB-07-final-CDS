@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .teamCard {
+    backdrop-filter: blur(10px);
+    border-color: #858584;
+    border-width: 2px;
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .teamImg {
+    border-color: #858584;
+    border-width: 1px;
+  }
+}

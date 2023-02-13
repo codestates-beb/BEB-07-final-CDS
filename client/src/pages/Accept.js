@@ -26,12 +26,14 @@ import { getSwapById } from '../apis/request';
 
 // utils
 import { calculatePeriodByInterval } from '../utils/calendar';
+import { firstLetterToCapital } from '../utils/CDS';
 
 // css
 import '../assets/css/negotiate.css';
 
 // imgage
 import acceptBackGround from '../assets/img/acceptPage_bg.jpg';
+import priceDescribe from '../assets/img/price_describe.jpeg';
 
 function Accept() {
   const navigate = useNavigate();
@@ -49,6 +51,10 @@ function Accept() {
   const [sellerDepositOnChain, setSellerDepositOnchain] = useState(null);
 
   const userAddress = useSelector((state) => state.auth.user_addr);
+
+  /********************/
+  /*     Handler      */
+  /********************/
 
   // Accept CDS Handler
   const acceptButtonHandler = async () => {
@@ -132,6 +138,14 @@ function Accept() {
     }
   };
 
+  const addressClickHandler = ()=>{
+    navigate(`/user/${proposer}`);
+  };
+
+  /********************/
+  /*      Effect      */
+  /********************/
+
   useEffect(() => {
     getSwapById(swapId).then((result) => {
       if (result === null) navigate('/NotFound');
@@ -197,32 +211,39 @@ function Accept() {
           </p>
           <hr className="line w-[150px] color-[var(--primary-color)]" />
         </div>
+        <div className="negotiate-guide">
+          <img src={priceDescribe}/>
+        </div>
         <div className="negotiate-form">
           <div className="form-section">
             <h2 className="section-title">Proposer Address</h2>
             <div className="input-group">
               <div className="input-wrapper">
-                {isBuyer ? (
-                  <>
-                    <input
-                      value={swapOnDB ? proposer : ''}
-                      disabled
-                    />
-                  </>
-                ) : (
-                  <>
-                    <input
-                      value={swapOnDB ? proposer : ''}
-                      disabled
-                    />
-                  </>
-                )}
+                {isBuyer ? 
+                    <div
+                      className='address'
+                      onClick={addressClickHandler}
+                    >
+                      {swapOnDB ? proposer : ''}
+                    </div>
+                 : 
+                    <div
+                      className='address'
+                      onClick={addressClickHandler}
+                    >
+                      {swapOnDB ? proposer : ''}
+                    </div>
+                }
               </div>
             </div>
           </div>
           <div className="form-section">
             <h2 className="section-title">Assets</h2>
             <div className="input-group">
+              <div className='input-wrapper'>
+                <div className='input-label'>Asset Type</div>
+                <input value={ swapOnDB? firstLetterToCapital(swapOnDB.assetType) || '' : ''} disabled/>
+              </div>
               <div className='input-wrapper'>
                 <div className='input-label'>Initial Price of Assets</div>
                 <input
@@ -318,7 +339,7 @@ function Accept() {
                 <input
                   value={
                     swapOnDB
-                      ? Number(swapOnDB.totalPremiumRounds).toLocaleString()
+                      ? `# ${Number(swapOnDB.totalPremiumRounds).toLocaleString()}`
                       : ''
                   }
                   disabled
@@ -378,14 +399,13 @@ function Accept() {
                   Cancel CDS
                 </button>
               ) : (
-                <></>
+                <button
+                  className="negotiate-button hover:bg-mintHover transition delay-80"
+                  onClick={acceptButtonHandler}
+                >
+                  Accept CDS
+                </button>
               )}
-              <button
-                className="negotiate-button hover:bg-mintHover transition delay-80"
-                onClick={acceptButtonHandler}
-              >
-                Accept CDS
-              </button>
             </div>
           </div>
         </div>

@@ -29,8 +29,12 @@ import Create from './pages/Create';
 import Accept from './pages/Accept';
 import Detail from './pages/Detail';
 import Mypage from './pages/Mypage';
+import User from './pages/User';
 import CardDisplayProposed from './pages/CardDisplayProposed';
 import CardDisplayAccepted from './pages/CardDisplayAccepted';
+import UnderstandingCDS from './pages/UnderstandingCDS';
+import Risks from './pages/Risks';
+import Teams from './pages/Teams';
 import OracleTest from './pages/OracleTest';
 import PageNotFound from './pages/PageNotFound';
 
@@ -92,9 +96,13 @@ function App() {
         <Route path="/accept/:swapId" element={<Accept />} />
         <Route path="/detail/:swapId" element={<Detail />} />
         <Route path="/mypage" element={<Mypage />} />
+        <Route path='/user/:address' element={<User/>} />
         <Route path="/oracleTest" element={<OracleTest />} />
         <Route path="/cardProposed" element={<CardDisplayProposed />} />
         <Route path="/cardAccepted" element={<CardDisplayAccepted />} />
+        <Route path="/cds" element={<UnderstandingCDS />} />
+        <Route path="/risks" element={<Risks />} />
+        <Route path="/teams" element={<Teams />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
       <Notice />

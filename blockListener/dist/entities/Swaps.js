@@ -27,6 +27,13 @@ __decorate([
     __metadata("design:type", String)
 ], Swaps.prototype, "contractAddress", void 0);
 __decorate([
+    (0, typeorm_1.Column)('varchar', {
+        name: 'assetType',
+        length: 20,
+    }),
+    __metadata("design:type", String)
+], Swaps.prototype, "assetType", void 0);
+__decorate([
     (0, typeorm_1.Column)('int', { name: 'initialAssetPrice', unsigned: true }),
     __metadata("design:type", Number)
 ], Swaps.prototype, "initialAssetPrice", void 0);

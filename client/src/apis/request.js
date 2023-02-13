@@ -14,6 +14,18 @@ const {
   addressErrorDummydata,
 } = require('../assets/errorDummydata/requestDummydata');
 
+export async function getUserByAddr(address) {
+  const requestURL = `${config.apiURL}/users/${address}`;
+  
+  const user = await axios.get(requestURL)
+  .then(result=> result.data)
+  .catch(err=>{
+    throw err
+  })
+
+  return user;
+}
+
 export async function getPendingSwaps() {
   try {
     const requestURL = `${config.apiURL}/swaps?status=pending`;
@@ -87,7 +99,7 @@ export async function getSwapByAddress(address) {
 
 export async function getCoinGeckoAPI() {
   try {
-    const requestURL = `${config.coinGeckoAPI}`;
+    const requestURL = `${config.apiURL}/prices/coingecko`;
 
     const marketPriceData = await axios.get(requestURL);
 
@@ -100,7 +112,7 @@ export async function getCoinGeckoAPI() {
 
 export async function getChainLinkAPI() {
   try {
-    const requestURL = `${config.chainLinkAPI}`;
+    const requestURL = `${config.apiURL}/prices/chainlink`;
 
     const marketPriceData = await axios.get(requestURL);
 

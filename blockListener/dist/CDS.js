@@ -24,6 +24,7 @@ const Swap_json_1 = require("./contractArtifacts/Swap.json");
 const Users_1 = require("./entities/Users");
 const Transactions_1 = require("./entities/Transactions");
 const Swaps_1 = require("./entities/Swaps");
+const emailHandler_1 = require("./utils/emailHandler");
 const Swap_1 = __importDefault(require("./Swap"));
 class CDS {
     constructor(webSocketURI, manager) {
@@ -114,35 +115,54 @@ class CDS {
                             continue;
                         if (event.event === 'Create') {
                             console.log('Create Event found!');
-                            yield this.createEventHandler(event);
+                            yield this.createEventHandler(event, false);
                         }
                         else if (event.event === 'Accept') {
                             console.log('Accept Event found!');
-                            yield this.acceptEventHandler(event);
+                            yield this.acceptEventHandler(event, false);
                         }
                         else if (event.event === 'Cancel') {
                             console.log('Cancel Event found!');
-                            yield this.cancelEventHandler(event);
+                            yield this.cancelEventHandler(event, false);
                         }
                         else if (event.event === 'Claim') {
                             console.log('Claim Event found!');
-                            yield this.claimEventHandler(event);
+                            yield this.claimEventHandler(event, false);
                         }
                         else if (event.event === 'Close') {
                             console.log('Close Event found!');
-                            yield this.closeEventHandler(event);
+                            yield this.closeEventHandler(event, false);
                         }
                         else if (event.event === 'Expire') {
                             console.log('Expire Event found!');
-                            yield this.expireEventHandler(event);
+                            yield this.expireEventHandler(event, false);
                         }
                         else if (event.event === 'PayPremium') {
                             console.log('PayPremium Event found!');
-                            yield this.payPremiumEventHandler(event);
+                            yield this.payPremiumEventHandler(event, false);
                         }
                         else if (event.event === 'OwnershipTransferred') {
                             console.log('OwnershipTransferred found!');
-                            console.log(`Contract Admin addr is : ${event.returnValues.newOwner}`);
+                            const admin = event.returnValues.newOwner;
+                            console.log(`Contract Admin addr is : ${admin}`);
+                            let user = yield this.manager.findOneBy(Users_1.Users, {
+                                address: admin,
+                            });
+                            const currentTime = yield this.getTxTimestamp(event.transactionHash);
+                            if (!user) {
+                                console.log('** admin not registered, registering admin**');
+                                user = new Users_1.Users();
+                                user.address = admin;
+                                user.nickname = 'admin';
+                                user.soldCount = 0;
+                                user.boughtCount = 0;
+                                user.createdAt = currentTime;
+                                user.updatedAt = currentTime;
+                                yield this.manager.save(user);
+                            }
+                            else {
+                                console.log('** admin user found! **');
+                            }
                         }
                         else {
                             console.error(event);
@@ -223,7 +243,7 @@ class CDS {
     getSwapInfo(swapAddr) {
         return __awaiter(this, void 0, void 0, function* () {
             const swapInstance = Swap_1.default.getInstance(this.web3Endpoint);
-            swapInstance.setContract(Swap_json_1.swapAbi, swapAddr);
+            swapInstance.setContract(Swap_json_1.abi, swapAddr);
             const swapInfo = yield swapInstance.getSwapInfo();
             return swapInfo;
         });
@@ -262,9 +282,10 @@ class CDS {
             return roundsInfo;
         });
     }
-    createEventHandler(event) {
+    createEventHandler(event, isLive = true) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { swap, hostAddr: hostAddrUpper, isBuyer, swapId, } = event.returnValues;
+            const emailData = {};
+            const { swap, hostAddr: hostAddrUpper, isBuyer, swapId, assetType, } = event.returnValues;
             const hostAddr = hostAddrUpper.toLowerCase();
             const swapAddr = swap.toLowerCase();
             const { initAssetPrice, claimPrice, liquidationPrice, premium, sellerDeposit, seller, buyer, } = yield this.getSwapInfo(swapAddr);
@@ -289,6 +310,17 @@ class CDS {
                     yield this.manager.save(user);
                 }
                 else {
+                    if (user.email) {
+                        emailData.recipient = user.email;
+                        emailData.nickname = user.nickname;
+                        emailData.event = event.event;
+                        emailData.timestamp = currentTime.toString();
+                        emailData.swapId = swapId;
+                        emailData.isBuyer = isBuyer;
+                        emailData.txHash = event.transactionHash;
+                        emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${emailData.swapId} Notification`;
+                        emailData.message = (0, emailHandler_1.createMessage)(emailData);
+                    }
                     console.log('** user found! **');
                     user.updatedAt = currentTime;
                     yield this.manager.save(user);
@@ -308,6 +340,18 @@ class CDS {
                     swap.sellerDeposit = +sellerDeposit;
                     swap.createdAt = currentTime;
                     swap.updatedAt = currentTime;
+                    if (assetType === '0') {
+                        swap.assetType = 'bitcoin';
+                    }
+                    else if (assetType === '1') {
+                        swap.assetType = 'ether';
+                    }
+                    else if (assetType === '2') {
+                        swap.assetType = 'link';
+                    }
+                    else {
+                        swap.assetType = 'unregistered asset';
+                    }
                     // derived variables
                     swap.amountOfAssets = +amountOfAssets;
                     swap.buyerDeposit = +buyerDeposit;
@@ -323,13 +367,17 @@ class CDS {
                     yield this.manager.save(swap);
                 }
                 yield this.txController(event, currentTime, swapId);
+                if (isLive) {
+                    console.log('sending create noficiation email');
+                    (0, emailHandler_1.sendEmail)(emailData.subject, emailData.message, emailData.recipient);
+                }
             }
             catch (error) {
                 console.error(error);
             }
         });
     }
-    acceptEventHandler(event) {
+    acceptEventHandler(event, isLive = true) {
         return __awaiter(this, void 0, void 0, function* () {
             const { swapId } = event.returnValues;
             const swapAddr = (yield this.getSwapAddr(swapId)).toLowerCase();
@@ -348,8 +396,8 @@ class CDS {
                 });
                 if (!swap)
                     throw new Error(`swapId ${swapId} is not on database`);
-                yield this.handleSeller(sellerAddr, currentTime);
-                yield this.handleBuyer(buyerAddr, currentTime);
+                yield this.handleSeller(sellerAddr, event, currentTime, isLive);
+                yield this.handleBuyer(buyerAddr, event, currentTime, isLive);
                 swap.status = 'active';
                 swap.seller = sellerAddr;
                 swap.buyer = buyerAddr;
@@ -361,7 +409,7 @@ class CDS {
             }
         });
     }
-    cancelEventHandler(event) {
+    cancelEventHandler(event, isLive = true) {
         return __awaiter(this, void 0, void 0, function* () {
             const { swapId } = event.returnValues;
             const currentTime = yield this.getTxTimestamp(event.transactionHash);
@@ -387,7 +435,7 @@ class CDS {
             }
         });
     }
-    claimEventHandler(event) {
+    claimEventHandler(event, isLive = true) {
         return __awaiter(this, void 0, void 0, function* () {
             const { swapId } = event.returnValues;
             const currentTime = yield this.getTxTimestamp(event.transactionHash);
@@ -405,6 +453,38 @@ class CDS {
                 swap.status = 'claimed';
                 swap.updatedAt = currentTime;
                 swap.terminatedAt = currentTime;
+                const seller = yield this.manager.findOneBy(Users_1.Users, {
+                    address: swap.seller,
+                });
+                if (seller.email && isLive) {
+                    const emailData = {};
+                    emailData.recipient = seller.email;
+                    emailData.nickname = seller.nickname;
+                    emailData.event = event.event;
+                    emailData.timestamp = currentTime.toString();
+                    emailData.swapId = event.returnValues.swapId;
+                    emailData.isBuyer = false;
+                    emailData.txHash = event.transactionHash;
+                    emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${emailData.swapId} Notification`;
+                    emailData.message = (0, emailHandler_1.createMessage)(emailData);
+                    (0, emailHandler_1.sendEmail)(emailData.subject, emailData.message, emailData.recipient);
+                }
+                const buyer = yield this.manager.findOneBy(Users_1.Users, {
+                    address: swap.buyer,
+                });
+                if (buyer.email && isLive) {
+                    const emailData = {};
+                    emailData.recipient = buyer.email;
+                    emailData.nickname = buyer.nickname;
+                    emailData.event = event.event;
+                    emailData.timestamp = currentTime.toString();
+                    emailData.swapId = event.returnValues.swapId;
+                    emailData.isBuyer = true;
+                    emailData.txHash = event.transactionHash;
+                    emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${emailData.swapId} Notification`;
+                    emailData.message = (0, emailHandler_1.createMessage)(emailData);
+                    (0, emailHandler_1.sendEmail)(emailData.subject, emailData.message, emailData.recipient);
+                }
                 yield this.manager.save(swap);
                 yield this.txController(event, currentTime, swapId);
             }
@@ -413,7 +493,7 @@ class CDS {
             }
         });
     }
-    closeEventHandler(event) {
+    closeEventHandler(event, isLive = true) {
         return __awaiter(this, void 0, void 0, function* () {
             const { swapId } = event.returnValues;
             const currentTime = yield this.getTxTimestamp(event.transactionHash);
@@ -439,10 +519,33 @@ class CDS {
             }
         });
     }
-    expireEventHandler(event) {
-        return __awaiter(this, void 0, void 0, function* () { });
+    expireEventHandler(event, isLive = true) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { swapId } = event.returnValues;
+            const currentTime = yield this.getTxTimestamp(event.transactionHash);
+            try {
+                let transaction = yield this.manager.findOneBy(Transactions_1.Transactions, {
+                    txHash: event.transactionHash,
+                });
+                if (transaction)
+                    throw new Error('This transaction already processed');
+                let swap = yield this.manager.findOneBy(Swaps_1.Swaps, {
+                    swapId: +swapId,
+                });
+                if (!swap)
+                    throw new Error(`swapId ${swapId} is not on database`);
+                swap.updatedAt = currentTime;
+                swap.terminatedAt = currentTime;
+                swap.status = 'expired';
+                yield this.manager.save(swap);
+                yield this.txController(event, currentTime, swapId);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        });
     }
-    payPremiumEventHandler(event) {
+    payPremiumEventHandler(event, isLive = true) {
         return __awaiter(this, void 0, void 0, function* () {
             const { swapId } = event.returnValues;
             const currentTime = yield this.getTxTimestamp(event.transactionHash);
@@ -493,7 +596,7 @@ class CDS {
         });
     }
     // TODO refactor
-    handleSeller(sellerAddr, currentTime) {
+    handleSeller(sellerAddr, event, currentTime, isLive) {
         return __awaiter(this, void 0, void 0, function* () {
             let seller = yield this.manager.findOneBy(Users_1.Users, {
                 address: sellerAddr,
@@ -512,7 +615,19 @@ class CDS {
                 this.manager.save(seller);
             }
             else {
-                console.log('** user found! **');
+                if (seller.email && isLive) {
+                    const emailData = {};
+                    emailData.recipient = seller.email;
+                    emailData.nickname = seller.nickname;
+                    emailData.event = event.event;
+                    emailData.timestamp = currentTime.toString();
+                    emailData.swapId = event.returnValues.swapId;
+                    emailData.isBuyer = false;
+                    emailData.txHash = event.transactionHash;
+                    emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${emailData.swapId} Notification`;
+                    emailData.message = (0, emailHandler_1.createMessage)(emailData);
+                    (0, emailHandler_1.sendEmail)(emailData.subject, emailData.message, emailData.recipient);
+                }
                 seller.soldCount++;
                 seller.lastSold = currentTime;
                 seller.updatedAt = currentTime;
@@ -521,7 +636,7 @@ class CDS {
         });
     }
     // TODO refactor
-    handleBuyer(buyerAddr, currentTime) {
+    handleBuyer(buyerAddr, event, currentTime, isLive) {
         return __awaiter(this, void 0, void 0, function* () {
             let buyer = yield this.manager.findOneBy(Users_1.Users, {
                 address: buyerAddr,
@@ -540,7 +655,19 @@ class CDS {
                 this.manager.save(buyer);
             }
             else {
-                console.log('** user found! **');
+                if (buyer.email && isLive) {
+                    const emailData = {};
+                    emailData.recipient = buyer.email;
+                    emailData.nickname = buyer.nickname;
+                    emailData.event = event.event;
+                    emailData.timestamp = currentTime.toString();
+                    emailData.swapId = event.returnValues.swapId;
+                    emailData.isBuyer = true;
+                    emailData.txHash = event.transactionHash;
+                    emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${emailData.swapId} Notification`;
+                    emailData.message = (0, emailHandler_1.createMessage)(emailData);
+                    (0, emailHandler_1.sendEmail)(emailData.subject, emailData.message, emailData.recipient);
+                }
                 buyer.boughtCount++;
                 buyer.lastBought = currentTime;
                 buyer.updatedAt = currentTime;

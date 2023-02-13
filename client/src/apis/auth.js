@@ -12,7 +12,9 @@ export async function getNonce(address) {
 
     const result = await axios.get(requestURL.toString())
     .then(result=>result.data.nonce)
-    .catch(err=>err);
+    .catch(err=> {
+        throw err;
+    });
 
     return result;
 }
@@ -28,7 +30,7 @@ export async function requestLogin(address, signature) {
     )
     .then(result=>result)
     .catch(err=>{
-        console.log(err.response)
+        console.log(err)
         return false;
     });
 
@@ -70,6 +72,6 @@ export async function requestMyData() {
     const result = await axios.get(requestURL.toString(), {withCredentials:true})
     .then(result=>result.data)
     .catch(err=>err);
-
+    
     return result;
 }

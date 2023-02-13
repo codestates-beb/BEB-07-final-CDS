@@ -1,17 +1,20 @@
 import Web3 from 'web3';
 import { Contract, EventData } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
-import { swapAbi } from './contractArtifacts/Swap.json';
+import { abi } from './contractArtifacts/Swap.json';
 import { EntityManager } from 'typeorm';
 import { Users } from './entities/Users';
 import { Transactions } from './entities/Transactions';
 import { Swaps } from './entities/Swaps';
+import { sendEmail, createMessage } from './utils/emailHandler';
 import Swap from './Swap';
 import {
   CreateReturnValue,
   AcceptReturnValue,
   OtherReturnValue,
   SwapInfo,
+  ClaimReturnValue,
+  EmailData,
 } from './types/CDSTypes';
 
 export default class CDS {
@@ -98,28 +101,48 @@ export default class CDS {
       if (await this.isTxProcessed(transactionHash)) continue;
       if (event.event === 'Create') {
         console.log('Create Event found!');
-        await this.createEventHandler(event);
+        await this.createEventHandler(event, false);
       } else if (event.event === 'Accept') {
         console.log('Accept Event found!');
-        await this.acceptEventHandler(event);
+        await this.acceptEventHandler(event, false);
       } else if (event.event === 'Cancel') {
         console.log('Cancel Event found!');
-        await this.cancelEventHandler(event);
+        await this.cancelEventHandler(event, false);
       } else if (event.event === 'Claim') {
         console.log('Claim Event found!');
-        await this.claimEventHandler(event);
+        await this.claimEventHandler(event, false);
       } else if (event.event === 'Close') {
         console.log('Close Event found!');
-        await this.closeEventHandler(event);
+        await this.closeEventHandler(event, false);
       } else if (event.event === 'Expire') {
         console.log('Expire Event found!');
-        await this.expireEventHandler(event);
+        await this.expireEventHandler(event, false);
       } else if (event.event === 'PayPremium') {
         console.log('PayPremium Event found!');
-        await this.payPremiumEventHandler(event);
+        await this.payPremiumEventHandler(event, false);
       } else if (event.event === 'OwnershipTransferred') {
         console.log('OwnershipTransferred found!');
-        console.log(`Contract Admin addr is : ${event.returnValues.newOwner}`);
+        const admin = event.returnValues.newOwner;
+        console.log(`Contract Admin addr is : ${admin}`);
+        let user = await this.manager.findOneBy(Users, {
+          address: admin,
+        });
+        const currentTime: number = await this.getTxTimestamp(
+          event.transactionHash,
+        );
+        if (!user) {
+          console.log('** admin not registered, registering admin**');
+          user = new Users();
+          user.address = admin;
+          user.nickname = 'admin';
+          user.soldCount = 0;
+          user.boughtCount = 0;
+          user.createdAt = currentTime;
+          user.updatedAt = currentTime;
+          await this.manager.save(user);
+        } else {
+          console.log('** admin user found! **');
+        }
       } else {
         console.error(event);
         console.error(
@@ -195,7 +218,7 @@ export default class CDS {
   // get detailed swapinfo from Swap.sol
   private async getSwapInfo(swapAddr: string): Promise<SwapInfo> {
     const swapInstance = Swap.getInstance(this.web3Endpoint);
-    swapInstance.setContract(swapAbi as AbiItem[], swapAddr);
+    swapInstance.setContract(abi as AbiItem[], swapAddr);
     const swapInfo = await swapInstance.getSwapInfo();
     return swapInfo;
   }
@@ -228,12 +251,14 @@ export default class CDS {
     return roundsInfo;
   }
 
-  private async createEventHandler(event: EventData) {
+  private async createEventHandler(event: EventData, isLive: boolean = true) {
+    const emailData: EmailData = {};
     const {
       swap,
       hostAddr: hostAddrUpper,
       isBuyer,
       swapId,
+      assetType,
     } = event.returnValues as CreateReturnValue;
     const hostAddr = hostAddrUpper.toLowerCase();
     const swapAddr = swap.toLowerCase();
@@ -271,6 +296,19 @@ export default class CDS {
         user.updatedAt = currentTime;
         await this.manager.save(user);
       } else {
+        if (user.email) {
+          emailData.recipient = user.email;
+          emailData.nickname = user.nickname;
+          emailData.event = event.event;
+          emailData.timestamp = currentTime.toString();
+          emailData.swapId = swapId;
+          emailData.isBuyer = isBuyer;
+          emailData.txHash = event.transactionHash;
+          emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${
+            emailData.swapId
+          } Notification`;
+          emailData.message = createMessage(emailData);
+        }
         console.log('** user found! **');
         user.updatedAt = currentTime;
         await this.manager.save(user);
@@ -291,6 +329,15 @@ export default class CDS {
         swap.sellerDeposit = +sellerDeposit;
         swap.createdAt = currentTime;
         swap.updatedAt = currentTime;
+        if (assetType === '0') {
+          swap.assetType = 'bitcoin';
+        } else if (assetType === '1') {
+          swap.assetType = 'ether';
+        } else if (assetType === '2') {
+          swap.assetType = 'link';
+        } else {
+          swap.assetType = 'unregistered asset';
+        }
 
         // derived variables
         swap.amountOfAssets = +amountOfAssets;
@@ -304,15 +351,20 @@ export default class CDS {
         swap.totalAssets = +initAssetPrice * +amountOfAssets;
         swap.dropRate = (+initAssetPrice - +claimPrice) / +initAssetPrice;
         swap.status = 'pending';
+
         await this.manager.save(swap);
       }
       await this.txController(event, currentTime, swapId);
+      if (isLive) {
+        console.log('sending create noficiation email');
+        sendEmail(emailData.subject, emailData.message, emailData.recipient);
+      }
     } catch (error) {
       console.error(error);
     }
   }
 
-  private async acceptEventHandler(event: EventData) {
+  private async acceptEventHandler(event: EventData, isLive: boolean = true) {
     const { swapId } = event.returnValues as AcceptReturnValue;
     const swapAddr = (await this.getSwapAddr(swapId)).toLowerCase();
     const swapInfo = await this.getSwapInfo(swapAddr);
@@ -333,8 +385,8 @@ export default class CDS {
       });
       if (!swap) throw new Error(`swapId ${swapId} is not on database`);
 
-      await this.handleSeller(sellerAddr, currentTime);
-      await this.handleBuyer(buyerAddr, currentTime);
+      await this.handleSeller(sellerAddr, event, currentTime, isLive);
+      await this.handleBuyer(buyerAddr, event, currentTime, isLive);
 
       swap.status = 'active';
       swap.seller = sellerAddr;
@@ -346,7 +398,7 @@ export default class CDS {
     }
   }
 
-  private async cancelEventHandler(event: EventData) {
+  private async cancelEventHandler(event: EventData, isLive: boolean = true) {
     const { swapId } = event.returnValues as OtherReturnValue;
     const currentTime: number = await this.getTxTimestamp(
       event.transactionHash,
@@ -373,8 +425,8 @@ export default class CDS {
     }
   }
 
-  private async claimEventHandler(event: EventData) {
-    const { swapId } = event.returnValues as OtherReturnValue;
+  private async claimEventHandler(event: EventData, isLive: boolean = true) {
+    const { swapId } = event.returnValues as ClaimReturnValue;
     const currentTime: number = await this.getTxTimestamp(
       event.transactionHash,
     );
@@ -392,15 +444,53 @@ export default class CDS {
       swap.status = 'claimed';
       swap.updatedAt = currentTime;
       swap.terminatedAt = currentTime;
-      await this.manager.save(swap);
 
+      const seller = await this.manager.findOneBy(Users, {
+        address: swap.seller,
+      });
+      if (seller.email && isLive) {
+        const emailData: EmailData = {};
+        emailData.recipient = seller.email;
+        emailData.nickname = seller.nickname;
+        emailData.event = event.event;
+        emailData.timestamp = currentTime.toString();
+        emailData.swapId = event.returnValues.swapId;
+        emailData.isBuyer = false;
+        emailData.txHash = event.transactionHash;
+        emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${
+          emailData.swapId
+        } Notification`;
+        emailData.message = createMessage(emailData);
+        sendEmail(emailData.subject, emailData.message, emailData.recipient);
+      }
+
+      const buyer = await this.manager.findOneBy(Users, {
+        address: swap.buyer,
+      });
+      if (buyer.email && isLive) {
+        const emailData: EmailData = {};
+        emailData.recipient = buyer.email;
+        emailData.nickname = buyer.nickname;
+        emailData.event = event.event;
+        emailData.timestamp = currentTime.toString();
+        emailData.swapId = event.returnValues.swapId;
+        emailData.isBuyer = true;
+        emailData.txHash = event.transactionHash;
+        emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${
+          emailData.swapId
+        } Notification`;
+        emailData.message = createMessage(emailData);
+        sendEmail(emailData.subject, emailData.message, emailData.recipient);
+      }
+
+      await this.manager.save(swap);
       await this.txController(event, currentTime, swapId);
     } catch (error) {
       console.error(error);
     }
   }
 
-  private async closeEventHandler(event: EventData) {
+  private async closeEventHandler(event: EventData, isLive: boolean = true) {
     const { swapId } = event.returnValues as OtherReturnValue;
     const currentTime: number = await this.getTxTimestamp(
       event.transactionHash,
@@ -426,9 +516,35 @@ export default class CDS {
     }
   }
 
-  private async expireEventHandler(event: EventData) {}
+  private async expireEventHandler(event: EventData, isLive: boolean = true) {
+    const { swapId } = event.returnValues as OtherReturnValue;
+    const currentTime: number = await this.getTxTimestamp(
+      event.transactionHash,
+    );
+    try {
+      let transaction = await this.manager.findOneBy(Transactions, {
+        txHash: event.transactionHash,
+      });
+      if (transaction) throw new Error('This transaction already processed');
 
-  private async payPremiumEventHandler(event: EventData) {
+      let swap = await this.manager.findOneBy(Swaps, {
+        swapId: +swapId,
+      });
+      if (!swap) throw new Error(`swapId ${swapId} is not on database`);
+      swap.updatedAt = currentTime;
+      swap.terminatedAt = currentTime;
+      swap.status = 'expired';
+      await this.manager.save(swap);
+      await this.txController(event, currentTime, swapId);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  private async payPremiumEventHandler(
+    event: EventData,
+    isLive: boolean = true,
+  ) {
     const { swapId } = event.returnValues as OtherReturnValue;
     const currentTime: number = await this.getTxTimestamp(
       event.transactionHash,
@@ -478,7 +594,12 @@ export default class CDS {
   }
 
   // TODO refactor
-  private async handleSeller(sellerAddr: string, currentTime: number) {
+  private async handleSeller(
+    sellerAddr: string,
+    event: EventData,
+    currentTime: number,
+    isLive: boolean,
+  ) {
     let seller = await this.manager.findOneBy(Users, {
       address: sellerAddr,
     });
@@ -495,7 +616,21 @@ export default class CDS {
       seller.updatedAt = currentTime;
       this.manager.save(seller);
     } else {
-      console.log('** user found! **');
+      if (seller.email && isLive) {
+        const emailData: EmailData = {};
+        emailData.recipient = seller.email;
+        emailData.nickname = seller.nickname;
+        emailData.event = event.event;
+        emailData.timestamp = currentTime.toString();
+        emailData.swapId = event.returnValues.swapId;
+        emailData.isBuyer = false;
+        emailData.txHash = event.transactionHash;
+        emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${
+          emailData.swapId
+        } Notification`;
+        emailData.message = createMessage(emailData);
+        sendEmail(emailData.subject, emailData.message, emailData.recipient);
+      }
       seller.soldCount++;
       seller.lastSold = currentTime;
       seller.updatedAt = currentTime;
@@ -504,7 +639,12 @@ export default class CDS {
   }
 
   // TODO refactor
-  private async handleBuyer(buyerAddr: string, currentTime: number) {
+  private async handleBuyer(
+    buyerAddr: string,
+    event: EventData,
+    currentTime: number,
+    isLive: boolean,
+  ) {
     let buyer = await this.manager.findOneBy(Users, {
       address: buyerAddr,
     });
@@ -521,7 +661,21 @@ export default class CDS {
       buyer.updatedAt = currentTime;
       this.manager.save(buyer);
     } else {
-      console.log('** user found! **');
+      if (buyer.email && isLive) {
+        const emailData: EmailData = {};
+        emailData.recipient = buyer.email;
+        emailData.nickname = buyer.nickname;
+        emailData.event = event.event;
+        emailData.timestamp = currentTime.toString();
+        emailData.swapId = event.returnValues.swapId;
+        emailData.isBuyer = true;
+        emailData.txHash = event.transactionHash;
+        emailData.subject = `CDS - ${event.event.toUpperCase()} Event on swap #${
+          emailData.swapId
+        } Notification`;
+        emailData.message = createMessage(emailData);
+        sendEmail(emailData.subject, emailData.message, emailData.recipient);
+      }
       buyer.boughtCount++;
       buyer.lastBought = currentTime;
       buyer.updatedAt = currentTime;

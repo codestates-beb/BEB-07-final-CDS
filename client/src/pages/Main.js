@@ -1,6 +1,6 @@
 // modules
 import { useState, useEffect } from 'react';
-import { Link, Route } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 //image
 import MainLogo from '../assets/img/CDS_Symbol_bright_removebg.png';

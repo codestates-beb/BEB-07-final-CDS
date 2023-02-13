@@ -13,6 +13,8 @@ module.exports = {
       blackColor: '#4F4F4F',
       whiteColor: '#ffffff',
       darkGrayColor: '#858584',
+      moreDarkGrayColor: '#464646',
+      grayForText: '#D1D1D1',
       ligthGrayColor: '#EFF0F4',
       ligthGrayColorHover: '#474A56',
       black: '#000000',

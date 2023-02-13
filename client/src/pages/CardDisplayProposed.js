@@ -74,6 +74,7 @@ function CardDisplayProposed() {
                   requiredDeposit={swap.sellerDeposit}
                   premiumRounds={swap.totalPremiumRounds}
                   buyerAddress={swap.buyer}
+                  assetType={swap.assetType}
                 />
               </div>
             );
