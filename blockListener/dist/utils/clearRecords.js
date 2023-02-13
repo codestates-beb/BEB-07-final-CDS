@@ -36,7 +36,9 @@ function clearRecords(appDataSource) {
                                 try {
                                     let user = _f;
                                     user.email = user.email ? user.email : null;
-                                    user.nickname = user.nickname ? user.nickname : null;
+                                    user.nickname = user.nickname
+                                        ? user.nickname
+                                        : 'anonymous_' + user.address.slice(2, 7);
                                     user.soldCount = 0;
                                     user.boughtCount = 0;
                                     user.lastSold = null;
