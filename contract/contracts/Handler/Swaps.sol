@@ -2,18 +2,17 @@
 pragma solidity ^0.8.7;
 
 import '../Swap/Swap.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
-contract SwapHandler is Ownable {
+contract Swaps {
   using Counters for Counters.Counter;
   Counters.Counter internal _swapId;
 
   mapping(uint256 => Swap) private _swaps;
 
-  mapping(uint256 => uint256) public nextPayDate;
+  mapping(uint256 => uint256) private _nextPayDate;
 
-  function _create(
+  function create(
     bool _isBuyer,
     uint256 _initAssetPrice,
     uint256 _claimPrice,
@@ -22,7 +21,7 @@ contract SwapHandler is Ownable {
     uint256 _premium,
     uint32 _totalRounds,
     uint32 _assetType
-  ) internal returns (uint256) {
+  ) external returns (uint256) {
     _swapId.increment();
     uint256 newSwapId = _swapId.current();
 
@@ -42,11 +41,11 @@ contract SwapHandler is Ownable {
     return newSwapId;
   }
 
-  function _accept(
+  function accept(
     bool _isBuyerHost,
     uint256 _initAssetPrice,
     uint256 _acceptedSwapId
-  ) internal isPending(_acceptedSwapId) returns (uint256) {
+  ) external isPending(_acceptedSwapId) returns (uint256) {
     Swap targetSwap = _swaps[_acceptedSwapId];
     targetSwap.setInitAssetPrice(_initAssetPrice);
 
@@ -54,28 +53,28 @@ contract SwapHandler is Ownable {
       ? targetSwap.setSeller(msg.sender)
       : targetSwap.setBuyer(msg.sender);
 
-    nextPayDate[_acceptedSwapId] = block.timestamp + 4 weeks;
+    _nextPayDate[_acceptedSwapId] = block.timestamp + 4 weeks;
 
     targetSwap.setStatus(Swap.Status.active);
 
     return _acceptedSwapId;
   }
 
-  function _cancel(uint256 _targetSwapId) internal isPending(_targetSwapId) {
+  function cancel(uint256 _targetSwapId) external isPending(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.inactive);
   }
 
-  function _close(uint256 _targetSwapId) internal isActive(_targetSwapId) {
+  function close(uint256 _targetSwapId) external isActive(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.expired);
   }
 
-  function _payPremium(uint256 _targetSwapId) internal isActive(_targetSwapId) {
+  function payPremium(uint256 _targetSwapId) external isActive(_targetSwapId) {
     require(getRounds(_targetSwapId) > 0, 'Round already ended');
-    nextPayDate[_targetSwapId] += 4 weeks;
+    _nextPayDate[_targetSwapId] += 4 weeks;
     getSwap(_targetSwapId).setRounds(getRounds(_targetSwapId) - 1);
   }
 
-  function _claim(uint256 _targetSwapId) internal isActive(_targetSwapId) {
+  function claim(uint256 _targetSwapId) external isActive(_targetSwapId) {
     getSwap(_targetSwapId).setStatus(Swap.Status.claimed);
   }
 
@@ -116,25 +115,11 @@ contract SwapHandler is Ownable {
     return _swaps[swapId].getSeller();
   }
 
+  function getNextPayDate(uint256 swapId) public view returns (uint256) {
+    return _nextPayDate[swapId];
+  }
+
   // modifiers
-  modifier isBuyer(uint256 swapId) {
-    require(msg.sender == getBuyer(swapId), 'Only buyer of the CDS can call');
-    _;
-  }
-
-  modifier isSeller(uint256 swapId) {
-    require(msg.sender == getSeller(swapId), 'Only seller of the CDS can call');
-    _;
-  }
-
-  modifier isParticipants(uint256 swapId) {
-    require(
-      msg.sender == getBuyer(swapId) || msg.sender == getSeller(swapId),
-      'Only buyer/seller of the CDS can call'
-    );
-    _;
-  }
-
   modifier isPending(uint256 swapId) {
     require(
       getStatus(swapId) == Swap.Status.pending,

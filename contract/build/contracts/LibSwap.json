@@ -10,7 +10,7 @@
   "sourceMap": "116:681:29:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
   "deployedSourceMap": "116:681:29:-:0;;;;;;;;",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.7;\n\nimport '@openzeppelin/contracts/utils/math/SafeMath.sol';\n\nlibrary LibSwap {\n  using SafeMath for uint256;\n\n  function calcClaimReward(\n    uint256 _deposit,\n    uint256 _liquidation,\n    uint256 _initial,\n    uint256 _current\n  ) internal pure returns (uint256) {\n    uint256 claimReward;\n    if (_liquidation >= _current) {\n      claimReward = _deposit;\n    } else {\n      uint256 numOfAsset = _deposit.div(_initial.sub(_liquidation));\n      claimReward = numOfAsset.mul(_initial.sub(_current));\n    }\n    return claimReward;\n  }\n\n  function calcAmountOfAsset(\n    uint256 _initial,\n    uint256 _liquidation,\n    uint256 _sellerDeposit\n  ) internal pure returns (uint256) {\n    return _sellerDeposit.div(_initial.sub(_liquidation));\n  }\n}\n",
-  "sourcePath": "/Users/sdh/Study/BEB_07/projects/CDS/contract/contracts/libs/LibSwap.sol",
+  "sourcePath": "/Users/yoonsoo/codestates/BEB-07-final-CDS/contract/contracts/libs/LibSwap.sol",
   "ast": {
     "absolutePath": "project:/contracts/libs/LibSwap.sol",
     "exportedSymbols": {
@@ -1002,8 +1002,8 @@
     "version": "0.8.16+commit.07a7930e.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.4.9",
-  "updatedAt": "2023-02-10T09:57:25.007Z",
+  "schemaVersion": "3.4.11",
+  "updatedAt": "2023-02-13T00:59:17.985Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

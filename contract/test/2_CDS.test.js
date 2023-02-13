@@ -7,6 +7,7 @@ const truffleAssert = require('truffle-assertions');
 const PriceOracleMock = artifacts.require('PriceOracleMock');
 const FUSD = artifacts.require('FUSD');
 const CDS = artifacts.require('CDS');
+const Swaps = artifacts.require('Swaps');
 
 require('dotenv').config();
 
@@ -14,6 +15,7 @@ contract('CDS', async (accounts) => {
   let priceOracle;
   let cds;
   let fusd;
+  let swaps;
   const defaultHostSetting = true;
   const defaultInitAssetPrice = 25000;
   const defaultClaimPrice = 21250;
@@ -36,6 +38,7 @@ contract('CDS', async (accounts) => {
     // beforeEach에 deploy 설정 있어야함
     priceOracle = await PriceOracleMock.at(PRICE_ORACLE_ADDRESS);
     fusd = await FUSD.at(FUSD_ADDRESS);
+    swaps = await Swaps.at('0x712F138Bb2401b654aE9B3824047dCB6F6FFCD0C');
     cds = await CDS.new({ from: accounts[0] });
   });
 

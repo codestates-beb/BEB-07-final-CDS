@@ -17,7 +17,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -30,7 +31,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -43,7 +45,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -817,7 +820,7 @@
   "sourceMap": "57:570:12:-:0;;;169:108;;;;;;;;;;203:13;192:8;:24;;;;233:12;222:8;:23;;;;263:9;251;:21;;;;57:570;;;;;;",
   "deployedSourceMap": "57:570:12:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;281:111;;;;;;;;;;;;;:::i;:::-;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;140:24;;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;86:23;;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;396:111;;;;;;;;;;;;;:::i;:::-;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;511:114;;;;;;;;;;;;;:::i;:::-;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;113:23;;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;281:111;334:7;360:6;349:8;:17;;;;379:8;;372:15;;281:111;;;:::o;140:24::-;;;;:::o;86:23::-;;;;:::o;396:111::-;449:7;475:6;464:8;:17;;;;494:8;;487:15;;396:111;;;:::o;511:114::-;565:7;592:6;580:9;:18;;;;611:9;;604:16;;511:114;;;:::o;113:23::-;;;;:::o;88:117:36:-;197:1;194;187:12;334:77;371:7;400:5;389:16;;334:77;;;:::o;417:122::-;490:24;508:5;490:24;:::i;:::-;483:5;480:35;470:63;;529:1;526;519:12;470:63;417:122;:::o;545:139::-;591:5;629:6;616:20;607:29;;645:33;672:5;645:33;:::i;:::-;545:139;;;;:::o;690:329::-;749:6;798:2;786:9;777:7;773:23;769:32;766:119;;;804:79;;:::i;:::-;766:119;924:1;949:53;994:7;985:6;974:9;970:22;949:53;:::i;:::-;939:63;;895:117;690:329;;;;:::o;1025:118::-;1112:24;1130:5;1112:24;:::i;:::-;1107:3;1100:37;1025:118;;:::o;1149:222::-;1242:4;1280:2;1269:9;1265:18;1257:26;;1293:71;1361:1;1350:9;1346:17;1337:6;1293:71;:::i;:::-;1149:222;;;;:::o",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.7;\n\ncontract PriceOracleMock {\n  uint256 public btcPrice;\n  uint256 public ethPrice;\n  uint256 public linkPrice;\n\n  constructor(\n  ) {\n    btcPrice = 2500000000000;\n    ethPrice = 160000000000;\n    linkPrice = 750000000;\n  }\n\n  function setBTCPrice(uint256 _price) public returns (uint256) {\n    btcPrice = _price;\n    return btcPrice;\n  }\n\n  function setETHPrice(uint256 _price) public returns (uint256) {\n    ethPrice = _price;\n    return ethPrice;\n  }\n\n  function setLinkPrice(uint256 _price) public returns (uint256) {\n    linkPrice = _price;\n    return linkPrice;\n  }\n}\n",
-  "sourcePath": "/Users/sdh/Study/BEB_07/projects/CDS/contract/contracts/Oracle/PriceOracleMock.sol",
+  "sourcePath": "/Users/yoonsoo/codestates/BEB-07-final-CDS/contract/contracts/Oracle/PriceOracleMock.sol",
   "ast": {
     "absolutePath": "project:/contracts/Oracle/PriceOracleMock.sol",
     "exportedSymbols": {
@@ -1579,8 +1582,9 @@
     "version": "0.8.16+commit.07a7930e.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.4.9",
-  "updatedAt": "2023-02-10T09:57:24.999Z",
+  "schemaVersion": "3.4.11",
+  "updatedAt": "2023-02-13T01:06:02.979Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},
