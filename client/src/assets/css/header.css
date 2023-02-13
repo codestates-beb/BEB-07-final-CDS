@@ -3,31 +3,51 @@
 @tailwind utilities;
 
 @layer components {
-    .header {
-        @apply font-bold;
-        background-color: var(--black-color);
-        color: var(--white-color);
-    }
+  .header {
+    @apply font-bold;
+    background-color: var(--black-color);
+    color: var(--white-color);
+  }
 
-    .header .container.container-header {
-        width: 1440px;
-    }
+  .header .container.container-header {
+    width: 1440px;
+  }
 
-    .header .logo-link {
-        @apply flex items-center;
-    }
+  .header .logo-link {
+    @apply flex items-center;
+  }
 
-    .header .logo-link * {
-        @apply mr-5;
-    }
+  .header .logo-link * {
+    @apply mr-5;
+  }
 
-    .navbar .navbar-item {
-        @apply mx-2
-    }
+  .navbar .navbar-item {
+    @apply mx-2;
+  }
 
-    .navbar .navbar-button {
-        @apply py-2 px-4 rounded-xl;
-        background-color: var(--primary-color);
-    }
+  .navbar .navbar-button {
+    @apply py-2 px-4 rounded-xl;
+    background-color: var(--primary-color);
+  }
 
+  .ballon {
+    position: relative;
+    background: #b2b2b2;
+    padding: 0.5rem;
+    border-radius: 0.3rem;
+  }
+  .ballon:after {
+    bottom: 100%;
+    left: 20%;
+    border: solid transparent;
+    content: '';
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-color: rgba(136, 183, 213, 0);
+    border-bottom-color: #b2b2b2;
+    border-width: 10px;
+    margin-left: -10px;
+  }
 }
