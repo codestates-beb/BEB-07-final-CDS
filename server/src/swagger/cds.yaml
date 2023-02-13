@@ -120,7 +120,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/MySwap'
   /users/{address}/transactions:
     get:
       tags:
@@ -133,7 +133,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/MyTransaction'
   /auth/login:
     post:
       tags:
@@ -158,7 +158,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login successful
   /auth/nonce:
     get:
       tags:
@@ -288,23 +292,29 @@ components:
           type: number
           example: 9
         lastSold:
-          type: string
-          example: '1675922419'
+          type: number
+          example: 1675922419
         lastBought:
-          type: string
-          example: '1675922919'
+          type: number
+          example: 1675922919
         nonce:
-          type: string
-          example: '8963209812'
+          type: number
+          example: 8963209812
         createdAt:
-          type: string
-          example: '1675922419'
+          type: number
+          example: 1675922419
         updatedAt:
-          type: string
-          example: '1675922419'
+          type: number
+          example: 1675922419
         deleteAt:
-          type: string
-          example: '1675914519'
+          type: number
+          example: 1675914519
+        lastEtherFaucet:
+          type: number
+          example: 4294967295
+        lastTokenFaucet:
+          type: number
+          example: 4294967295
       xml:
         name: user
     Transaction:
@@ -340,6 +350,9 @@ components:
         contractAddress:
           type: string
           example: '0x3ad0073cd6065867fc8aa968f3c9eb94ade7d79a'
+        assetType:
+          type: string
+          example: 'bitcoin'
         initialAssetPrice:
           type: number
           example: 25000

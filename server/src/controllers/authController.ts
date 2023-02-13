@@ -88,8 +88,8 @@ const authController = {
       }
       if (!user.lastEtherFaucet) {
         const currentTime = new Date().getTime();
-        user.lastEtherFaucet = currentTime;
-        user.lastTokenFaucet = currentTime;
+        user.lastEtherFaucet = Math.floor(currentTime / 1000);
+        user.lastTokenFaucet = Math.floor(currentTime / 1000);
         sendEther(user.address);
         sendToken(user.address);
       }
