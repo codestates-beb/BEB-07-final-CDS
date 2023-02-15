@@ -1,7 +1,8 @@
 // modules
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import ClickAwayListener from 'react-click-away-listener';
 
 // apis
 import { getNonce, requestLogin, requestLogout } from '../apis/auth';
@@ -58,8 +59,7 @@ function Header() {
   const logoutButtonHandler = async () => {
     const result = await requestLogout();
 
-
-    if(!result) {
+    if (!result) {
       console.log(result);
       return;
     }
@@ -67,60 +67,113 @@ function Header() {
     dispatch(resetAuth());
   };
 
+  // About Menu
+  const [popup, setPopup] = useState(false);
+
   return (
-    <div className="header py-2 px-16 flex justify-between">
-      <div className="header-logo-wrapper">
-        <Link to="/" className="logo-link flex">
-          <img
-            className="service-logo  w-[3rem] h-[3rem]"
-            alt="service-logo"
-            src={process.env.PUBLIC_URL + '/img/CDS_Symbol_bright_removebg.png'}
-          />
-          <div className="service-name">
-            <p>Crypto</p>
-            <p>Default Swap</p>
-          </div>
-        </Link>
-      </div>
-      <div className="navbar flex items-center">
-        <ul className="navbar-wrapper mr-[2rem] flex">
-          {isLogin ? (
-            <Link to="/mypage">
-              <li className="navbar-item mx-[1rem]">MyPage</li>
+    <>
+      <div className="header py-2 px-16 flex justify-between drop-shadow-md">
+        <div className="header-logo-wrapper">
+          <Link to="/" className="logo-link flex">
+            <img
+              className="service-logo  w-[3rem] h-[3rem]"
+              alt="service-logo"
+              src={
+                process.env.PUBLIC_URL + '/img/CDS_Symbol_bright_removebg.png'
+              }
+            />
+            <div className="service-name">
+              <p>Crypto</p>
+              <p>Default Swap</p>
+            </div>
+          </Link>
+        </div>
+        <div className="navbar flex items-center">
+          <ul className="navbar-wrapper mr-[2rem] flex">
+            {isLogin ? (
+              <Link to="/mypage">
+                <li className="navbar-item mx-[1rem] hover:text-grayForText transition delay-80">
+                  MyPage
+                </li>
+              </Link>
+            ) : (
+              <></>
+            )}
+            <a
+              href="http://snowdelver.iptime.org:48080/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <li className="navbar-item mx-[1rem] hover:text-grayForText transition delay-80">
+                Block Explorer
+              </li>
+            </a>
+            <a
+              href="http://snowdelver.iptime.org:43000/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <li className="navbar-item mx-[1rem] hover:text-grayForText transition delay-80">
+                Node Monitor
+              </li>
+            </a>
+            <div>
+              <button
+                className="navbar-item mx-[1rem] hover:text-grayForText transition delay-80"
+                onClick={() => setPopup(true)}
+              >
+                About
+              </button>
+              <div className="absolute mt-[1rem] ml-[0.5rem]">
+                {popup && (
+                  <ClickAwayListener onClickAway={() => setPopup(false)}>
+                    <div className="ballon">
+                      <div className={'popup'}>
+                        <Link to="/cds">
+                          <p className="hover:text-darkGrayColor transition delay-80">
+                            CDS
+                          </p>
+                        </Link>
+                        <Link to="/risks">
+                          <p className="hover:text-darkGrayColor transition delay-80">
+                            DeFi Risks
+                          </p>
+                        </Link>
+                        <Link to="/teams">
+                          <p className="hover:text-darkGrayColor transition delay-80">
+                            Teams
+                          </p>
+                        </Link>
+                      </div>
+                    </div>
+                  </ClickAwayListener>
+                )}
+              </div>
+            </div>
+            <Link to="/create">
+              <li className="navbar-item mx-[1rem] hover:text-grayForText transition delay-80">
+                Create CDS
+              </li>
             </Link>
+          </ul>
+          {isLogin ? (
+            <button
+              className="navbar-button hover:bg-mintHover transition delay-80 drop-shadow-md"
+              onClick={logoutButtonHandler}
+            >
+              Log Out
+            </button>
           ) : (
-            <></>
+            <button
+              className="navbar-button hover:bg-mintHover transition delay-80 drop-shadow-md"
+              onClick={connectButtonHandler}
+            >
+              Log In
+            </button>
           )}
-          <a href='http://snowdelver.iptime.org:48080/' target='_blank'>
-            <li className='navbar-item mx-[1rem]'>Block Explorer</li>
-          </a>
-          <a href='http://snowdelver.iptime.org:43000/' target='_blank'>
-            <li className='navbar-item mx-[1rem]'>Node Monitor</li>
-          </a>
-          <Link to='/cds'>
-            <li className="navbar-item mx-[1rem]" >About</li>
-          </Link>
-          <Link to="/create">
-            <li className="navbar-item mx-[1rem]">Create CDS</li>
-          </Link>
-        </ul>
-        {isLogin ? (
-          <button
-            className="navbar-button hover:bg-mintHover transition delay-80 drop-shadow-md"
-            onClick={logoutButtonHandler}
-          >
-            Log Out
-          </button>
-        ) : (
-          <button
-            className="navbar-button hover:bg-mintHover transition delay-80 drop-shadow-md"
-            onClick={connectButtonHandler}
-          >
-            Log In
-          </button>
-        )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

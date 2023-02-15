@@ -68,11 +68,47 @@ export async function sendEmail(
 export function createMessage(emailData: EmailData): string {
   const swapURI = `https://dubnjq842z47s.cloudfront.net/swaps/${emailData.swapId}`;
   const txURI = `http://snowdelver.iptime.org:48080/transactions/${emailData.txHash}`;
-  return `Dear ${emailData.nickname}
-  You just triggered ${emailData.event} Event on ${emailData.timestamp}
+  let message = '';
+  if (emailData.event === 'Create') {
+    message = `Dear ${emailData.nickname}
+  You just created swap #${emailData.swapId} on ${emailData.timestamp}
   swapId: ${emailData.swapId}
   txHash : ${emailData.txHash}
   swapInfo : ${swapURI}
   txInfo : ${txURI}
   `;
+  } else if (emailData.event === 'Accept') {
+    if (emailData.isBuyer) {
+      message = `Dear ${emailData.nickname}
+  You just bought swap #${emailData.swapId} on ${emailData.timestamp}
+  swapId: ${emailData.swapId}
+  txHash : ${emailData.txHash}
+  swapInfo : ${swapURI}
+  txInfo : ${txURI} `;
+    } else {
+      message = `Dear ${emailData.nickname}
+  You just sold swap #${emailData.swapId} on ${emailData.timestamp}
+  swapId: ${emailData.swapId}
+  txHash : ${emailData.txHash}
+  swapInfo : ${swapURI}
+  txInfo : ${txURI} `;
+    }
+  } else if (emailData.event === 'Claim') {
+    if (emailData.isBuyer) {
+      message = `Dear ${emailData.nickname}
+  Swap #${emailData.swapId} you bought was Claimed on ${emailData.timestamp}
+  swapId: ${emailData.swapId}
+  txHash : ${emailData.txHash}
+  swapInfo : ${swapURI}
+  txInfo : ${txURI} `;
+    } else {
+      message = `Dear ${emailData.nickname}
+  Swap #${emailData.swapId} you sold was Claimed on ${emailData.timestamp}
+  swapId: ${emailData.swapId}
+  txHash : ${emailData.txHash}
+  swapInfo : ${swapURI}
+  txInfo : ${txURI} `;
+    }
+  }
+  return message;
 }

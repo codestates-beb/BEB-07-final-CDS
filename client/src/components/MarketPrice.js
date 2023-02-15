@@ -16,23 +16,39 @@ function MarketPriceType2() {
   const linkSymbol = getSymbol('link');
 
   // coinGecko data의 price를 저장합니다
-  const priceBTCGecko = useSelector(state=> state.priceByGecko.priceBTCGecko);
-  const priceETHGecko = useSelector(state=> state.priceByGecko.priceETHGecko);
-  const priceLINKGecko = useSelector(state=> state.priceByGecko.priceLINKGecko);
+  const priceBTCGecko = useSelector(
+    (state) => state.priceByGecko.priceBTCGecko,
+  );
+  const priceETHGecko = useSelector(
+    (state) => state.priceByGecko.priceETHGecko,
+  );
+  const priceLINKGecko = useSelector(
+    (state) => state.priceByGecko.priceLINKGecko,
+  );
 
   // coinGecko market data의 24 hours change rate을 저장합니다
-  const changeRateBTCGecko = useSelector(state => state.priceByGecko.changeRateBTCGecko);
-  const changeRateETHGecko = useSelector(state => state.priceByGecko.changeRateETHGecko);
-  const changeRateLINKGecko = useSelector(state => state.priceByGecko.changeRateLINKGecko);
+  const changeRateBTCGecko = useSelector(
+    (state) => state.priceByGecko.changeRateBTCGecko,
+  );
+  const changeRateETHGecko = useSelector(
+    (state) => state.priceByGecko.changeRateETHGecko,
+  );
+  const changeRateLINKGecko = useSelector(
+    (state) => state.priceByGecko.changeRateLINKGecko,
+  );
 
   // chainlink data의 price를 저장합니다
-  const priceBTCLink = useSelector(state=> state.priceByLink.priceBTCLink);
-  const priceETHLink = useSelector(state=> state.priceByLink.priceETHLink);
-  const priceLINKLink = useSelector(state=> state.priceByLink.priceLINKLink);
+  const priceBTCLink = useSelector((state) => state.priceByLink.priceBTCLink);
+  const priceETHLink = useSelector((state) => state.priceByLink.priceETHLink);
+  const priceLINKLink = useSelector((state) => state.priceByLink.priceLINKLink);
 
   // market data의 updated timed을 저장합니다
-  const updatedTimeGecko = useSelector(state => state.priceByGecko.updatedTimeGecko);
-  const updatedTimeLink = useSelector(state => state.priceByLink.updatedTimeLink);
+  const updatedTimeGecko = useSelector(
+    (state) => state.priceByGecko.updatedTimeGecko,
+  );
+  const updatedTimeLink = useSelector(
+    (state) => state.priceByLink.updatedTimeLink,
+  );
 
   // 크립토 자산의 변화율이 음수인지 판단합니다
   const [negativeBTC, setNegativeBTC] = useState(false);
@@ -89,7 +105,7 @@ function MarketPriceType2() {
               CoinGecko
             </div>
 
-            <div className="marketPriceCard p-[1rem] rounded-2xl mb-[0.5rem]">
+            <div className="marketPriceCard p-[1rem] rounded-2xl mb-[0.5rem] overflow-hidden">
               <div className="flex">
                 <img
                   src={btcSymbol}
@@ -120,7 +136,7 @@ function MarketPriceType2() {
                 </div>
               </div>
             </div>
-            <div className="marketPriceCard p-[1rem] rounded-2xl mb-[0.5rem]">
+            <div className="marketPriceCard p-[1rem] rounded-2xl mb-[0.5rem] overflow-hidden">
               <div className="flex">
                 <img
                   src={ethSymbol}
@@ -151,7 +167,7 @@ function MarketPriceType2() {
                 </div>
               </div>
             </div>
-            <div className="marketPriceCard p-[1rem] rounded-2xl">
+            <div className="marketPriceCard p-[1rem] rounded-2xl overflow-hidden">
               <div className="flex">
                 <img
                   src={linkSymbol}
@@ -188,7 +204,7 @@ function MarketPriceType2() {
               ChainLink
             </div>
 
-            <div className="marketPriceCard p-[1rem] rounded-2xl mb-[0.5rem]">
+            <div className="marketPriceCard p-[1rem] rounded-2xl mb-[0.5rem] overflow-hidden">
               <div className="flex">
                 <img
                   src={btcSymbol}
@@ -220,7 +236,7 @@ function MarketPriceType2() {
                 </div>
               </div>
             </div>
-            <div className="marketPriceCard p-[1rem] rounded-2xl mb-[0.5rem]">
+            <div className="marketPriceCard p-[1rem] rounded-2xl mb-[0.5rem] overflow-hidden">
               <div className="flex">
                 <img
                   src={ethSymbol}
@@ -251,7 +267,7 @@ function MarketPriceType2() {
                 </div>
               </div>
             </div>
-            <div className="marketPriceCard p-[1rem] rounded-2xl">
+            <div className="marketPriceCard p-[1rem] rounded-2xl overflow-hidden">
               <div className="flex">
                 <img
                   src={linkSymbol}
