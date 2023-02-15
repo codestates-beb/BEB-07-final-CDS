@@ -97,7 +97,7 @@ function Header() {
           <a href='http://snowdelver.iptime.org:43000/' target='_blank'>
             <li className='navbar-item mx-[1rem]'>Node Monitor</li>
           </a>
-          <Link to='/UnderstandingCDS'>
+          <Link to='/cds'>
             <li className="navbar-item mx-[1rem]" >About</li>
           </Link>
           <Link to="/create">
