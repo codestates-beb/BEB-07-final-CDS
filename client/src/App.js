@@ -20,6 +20,7 @@ import useMetamask from './utils/hooks/useMetamask';
 
 // components
 import Header from './components/Header';
+import InstallNotice from './components/InstallNotice';
 import Notice from './components/Notice';
 import ScrollToTop from './components/ScrollToTop';
 
@@ -90,6 +91,7 @@ function App() {
     <div className="App">
       <ScrollToTop />
       <Header />
+      {!metamask ? <InstallNotice/> : <></>}
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/create" element={<Create />} />
