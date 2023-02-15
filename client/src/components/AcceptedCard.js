@@ -2,16 +2,16 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 
-//image
+// image
 import BTCCard from '../assets/img/BTC_Card_bg.jpeg';
 import ETHCard from '../assets/img/ETH_Card_bg.jpg';
 import LINKCard from '../assets/img/LINK_Card_bg.png';
 
-// css
-import '../assets/css/cdsCard.css';
-
 // hooks
 import useCDS from '../utils/hooks/useCDS';
+
+// css
+import '../assets/css/cdsCard.css';
 
 // utils
 import { calculateRemainingPeriod } from '../utils/calendar';

@@ -12,7 +12,7 @@ function useCDS() {
 
   useEffect(()=>{
     if ( !window.ethereum ){
-      setCDS( new Error('Not installed wallet!') );
+      setCDS( false );
     } else {
       const {contract} = createCDS( config.contractAddr );
 
