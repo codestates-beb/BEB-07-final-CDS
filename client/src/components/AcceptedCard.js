@@ -11,9 +11,6 @@ import LINKCard from '../assets/img/LINK_Card_bg.png';
 // css
 import '../assets/css/cdsCard.css';
 
-// hooks
-import useCDS from '../utils/hooks/useCDS';
-
 // utils
 import { calculateRemainingPeriod } from '../utils/calendar';
 
