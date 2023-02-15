@@ -1,6 +1,7 @@
 // modules
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
+import useCDS from '../utils/hooks/useCDS';
 
 //image
 import BTCCard from '../assets/img/BTC_Card_bg.jpeg';
