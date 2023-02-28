@@ -1,7 +1,8 @@
 ![banner](https://user-images.githubusercontent.com/18072469/217587508-563cda65-dc17-4609-9eb8-93a834e205a3.jpeg)
 
 ## 소개 영상
-사진을 클릭하면 유튜브 영상으로 연결됩니다.
+👇 사진을 클릭하면 유튜브 영상으로 연결됩니다.
+
 [![introduce](https://i.ytimg.com/vi/37hWP0xpv48/maxresdefault.jpg)](https://youtu.be/37hWP0xpv48)
 
 ### 1. 팀 소개
