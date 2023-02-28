@@ -4,7 +4,7 @@ function InstallNotice() {
             <p className='text-xl text-black'>
                 Please Install 
                 <a 
-                    className='ml-2 text-blue underline' 
+                    className='ml-2 text-sky-600 underline' 
                     href='https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=ko'
                 >
                     Metamask
