@@ -109,8 +109,8 @@
 <div markdown='1'>
 <p>- 역할: 팀원</p>
 <p>- 포지션: 백엔드 / CI/CD</p>
-<p>- 깃허브 링크: </p>
-<p>- 블로그: </p>
+<p>- 깃허브 링크: https://www.github.com/atoye1</p>
+<p>- 블로그: https://velog.io/@atoye1</p>
 <p>- 주요 구현 내용</p>
 
 - 백엔드와 블록체인 관련한 모든 인프라 관리
@@ -140,8 +140,8 @@
 <div markdown='1'>
 <p>- 역할: 팀원</p>
 <p>- 포지션: 프론트엔드 및 기획</p>
-<p>- 깃허브 링크: </p>
-<p>- 블로그: </p>
+<p>- 깃허브 링크: https://github.com/NotoriousHong</p>
+<p>- 블로그: https://velog.io/@notorioushong</p>
 <p>- 주요 구현 내용</p>
 
 - Mainpage
