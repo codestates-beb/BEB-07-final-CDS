@@ -28,15 +28,20 @@
 > GIF 파일을 로딩하는데 시간이 걸립니다.
 
 **[메인페이지 및 로그인]**
+
+
 ![login](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/6101dc09-4da8-488e-9ce6-a1aae25ba9f3/%E1%84%86%E1%85%A6%E1%84%8B%E1%85%B5%E1%86%AB%E1%84%91%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%8C%E1%85%B5%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%B5%E1%86%AB.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230228%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230228T070333Z&X-Amz-Expires=86400&X-Amz-Signature=f3710c08c0e0b3abe92e4d952851c770d914d5ac9e22be3f390aebe3a203844e&X-Amz-SignedHeaders=host&x-id=GetObject)
 
 **[CDS 계약 생성]**
+
 ![Creating CDS](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/56712064-1c44-4779-ad56-fd7f04fb219b/Create%E1%84%89%E1%85%B5%E1%84%85%E1%85%A1%E1%84%90%E1%85%A9.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230228%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230228T070333Z&X-Amz-Expires=86400&X-Amz-Signature=d50ebc4025f443d03166fcc38d667b1407be5dd4f76670fe4333076fe5a7c527&X-Amz-SignedHeaders=host&x-id=GetObject)
 
 **[CDS 계약 체결]**
+
 ![Approve CDS](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/033153ee-987a-4d00-950c-2a755e8fab17/Accept%E1%84%89%E1%85%B5%E1%84%85%E1%85%A1%E1%84%90%E1%85%A9.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230228%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230228T070333Z&X-Amz-Expires=86400&X-Amz-Signature=7fb0e1c09e9648b9d5ca2e3c4e11a7d512c328ffd38988b59bbbc4508be7f7cb&X-Amz-SignedHeaders=host&x-id=GetObject)
 
 **[유저 메일링 서비스 및 신규 회원 Faucet]**
+
 ![Mailing Service](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/93fd37f0-0165-47c2-a8b2-14706339b898/%E1%84%86%E1%85%A6%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%85%E1%85%B5%E1%86%BC%E1%84%91%E1%85%AE%E1%84%89%E1%85%A6%E1%86%BA.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230228%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230228T070333Z&X-Amz-Expires=86400&X-Amz-Signature=798cefe260e92a9c9a254e95fd53049c77a15d53092a8e0b95c9d0a365af2e02&X-Amz-SignedHeaders=host&x-id=GetObject)
 
 ### 3. 팀원 소개
