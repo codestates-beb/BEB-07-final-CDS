@@ -1,0 +1,403 @@
+{
+	"deploy": {
+		"VM:-": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"main:1": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"ropsten:3": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"rinkeby:4": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"kovan:42": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"goerli:5": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"Custom": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		}
+	},
+	"data": {
+		"bytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"deployedBytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"immutableReferences": {},
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"gasEstimates": null,
+		"methodIdentifiers": {
+			"accept(uint256,uint256)": "09358479",
+			"cancel(uint256)": "40e58ee5",
+			"claim(uint256)": "379607f5",
+			"close(uint256)": "0aebeb4e",
+			"create(bool,uint256,uint256,uint256,uint256,uint256,uint32,uint32)": "8a614dd5",
+			"expire(uint256)": "bf81bf43",
+			"payPremium(uint256)": "4364b26e",
+			"payPremiumByDeposit(uint256)": "2926ea2a",
+			"withdraw(uint256)": "2e1a7d4d"
+		}
+	},
+	"abi": [
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "guestAddr",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "cdsId",
+					"type": "uint256"
+				}
+			],
+			"name": "Accept",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "cdsId",
+					"type": "uint256"
+				}
+			],
+			"name": "Cancel",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "cdsId",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "claimReward",
+					"type": "uint256"
+				}
+			],
+			"name": "Claim",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "cdsId",
+					"type": "uint256"
+				}
+			],
+			"name": "Close",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "hostAddr",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "bool",
+					"name": "isBuyer",
+					"type": "bool"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "cdsId",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint32",
+					"name": "assetType",
+					"type": "uint32"
+				},
+				{
+					"indexed": false,
+					"internalType": "address",
+					"name": "swap",
+					"type": "address"
+				}
+			],
+			"name": "Create",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "cdsId",
+					"type": "uint256"
+				}
+			],
+			"name": "Expire",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "cdsId",
+					"type": "uint256"
+				}
+			],
+			"name": "PayPremium",
+			"type": "event"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "initAssetPrice",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "cdsId",
+					"type": "uint256"
+				}
+			],
+			"name": "accept",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "cdsId",
+					"type": "uint256"
+				}
+			],
+			"name": "cancel",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "cdsId",
+					"type": "uint256"
+				}
+			],
+			"name": "claim",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "cdsId",
+					"type": "uint256"
+				}
+			],
+			"name": "close",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "bool",
+					"name": "isBuyer",
+					"type": "bool"
+				},
+				{
+					"internalType": "uint256",
+					"name": "initAssetPrice",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "claimPrice",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "liquidationPrice",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "sellerDeposit",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "premium",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint32",
+					"name": "totalRounds",
+					"type": "uint32"
+				},
+				{
+					"internalType": "uint32",
+					"name": "assetType",
+					"type": "uint32"
+				}
+			],
+			"name": "create",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "cdsId",
+					"type": "uint256"
+				}
+			],
+			"name": "expire",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "cdsId",
+					"type": "uint256"
+				}
+			],
+			"name": "payPremium",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "cdsId",
+					"type": "uint256"
+				}
+			],
+			"name": "payPremiumByDeposit",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "amount",
+					"type": "uint256"
+				}
+			],
+			"name": "withdraw",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		}
+	]
+}

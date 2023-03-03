@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.7+commit.e28d00a7"
+		"version": "0.8.10+commit.fc410830"
 	},
 	"language": "Solidity",
 	"output": {
@@ -345,7 +345,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/Handler/Swaps.sol": "Swaps"
+			"contracts/Handler/CDSFactory.sol": "Swaps"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -391,12 +391,28 @@
 				"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN"
 			]
 		},
-		"contracts/Handler/Swaps.sol": {
-			"keccak256": "0x47bd4551f8a81be12206b72cd615ebb4612a6073e90bc54744b72ba7a76ab544",
+		"contracts/CDS/CDS.sol": {
+			"keccak256": "0xeed02ddc0154bcdfe3f77642b15f7075f3d08b10d704c808f3440ed61da1b084",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://c2044ab168b8955ce896abefb20e1db0fe076f9be71174dc3345f44aa4b38fe2",
-				"dweb:/ipfs/QmZJYGwrhrzvhJUWHS6vZXQ8RFEHb96YedALph5g3zy9UN"
+				"bzz-raw://99dac3f857c96291baaef4a7df8dde775ae6b4e2eece458ff047ab0523035983",
+				"dweb:/ipfs/QmVyEpVhbJr4pRZYYi81Rj1vC625MXGomB4NiboXL4hk8b"
+			]
+		},
+		"contracts/CDS/PriceConsumer.sol": {
+			"keccak256": "0x143f06a41b622c35d2737d8a69edec1f8851261c5db3977e8e8673c63bca93fc",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://4c50d4f086aac7a217a23e14c439b6e195392c05cbd29e4ef3145f320e5c1fa9",
+				"dweb:/ipfs/QmQwfGRWufznd5Nba92rKdMyXSyVVb2z4GhQqvat7t3PqC"
+			]
+		},
+		"contracts/Handler/CDSFactory.sol": {
+			"keccak256": "0x637d802c4f242fe93912ee62ecc587e3ac2dd1658febb765112004829d4c26ad",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://93f783fc327c835b5b69a08fa98eb83b10887263b6f82bc41a9df92e59e36519",
+				"dweb:/ipfs/QmPZM9dLobWVrarLXmBiJMtwxi2XRxipjXvXytduRAqseS"
 			]
 		},
 		"contracts/Oracle/PriceOracleMock.sol": {
@@ -405,22 +421,6 @@
 			"urls": [
 				"bzz-raw://cbdc1c2486976359980f3bd3fdd4c15c6c1d5535709772f13c9360f2a132e8dd",
 				"dweb:/ipfs/QmWsFF9122k5LTLwBTS2YyFabBCQGjuPJrZFiQaeVa71QY"
-			]
-		},
-		"contracts/Swap/PriceConsumer.sol": {
-			"keccak256": "0x143f06a41b622c35d2737d8a69edec1f8851261c5db3977e8e8673c63bca93fc",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://4c50d4f086aac7a217a23e14c439b6e195392c05cbd29e4ef3145f320e5c1fa9",
-				"dweb:/ipfs/QmQwfGRWufznd5Nba92rKdMyXSyVVb2z4GhQqvat7t3PqC"
-			]
-		},
-		"contracts/Swap/Swap.sol": {
-			"keccak256": "0xeed02ddc0154bcdfe3f77642b15f7075f3d08b10d704c808f3440ed61da1b084",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://99dac3f857c96291baaef4a7df8dde775ae6b4e2eece458ff047ab0523035983",
-				"dweb:/ipfs/QmVyEpVhbJr4pRZYYi81Rj1vC625MXGomB4NiboXL4hk8b"
 			]
 		},
 		"contracts/libs/LibSwap.sol": {

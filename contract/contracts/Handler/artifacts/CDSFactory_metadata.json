@@ -1,0 +1,301 @@
+{
+	"compiler": {
+		"version": "0.8.10+commit.fc410830"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getBuyer",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getCDS",
+				"outputs": [
+					{
+						"internalType": "contract CDS",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getCDSId",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "_value",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct Counters.Counter",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getPremium",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getPrices",
+				"outputs": [
+					{
+						"internalType": "uint256[5]",
+						"name": "",
+						"type": "uint256[5]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getRounds",
+				"outputs": [
+					{
+						"internalType": "uint32",
+						"name": "",
+						"type": "uint32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getSeller",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getSellerDeposit",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getStatus",
+				"outputs": [
+					{
+						"internalType": "enum CDS.Status",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "nextPayDate",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/Handler/CDSFactory.sol": "CDSFactory"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/access/Ownable.sol": {
+			"keccak256": "0xa94b34880e3c1b0b931662cb1c09e5dfa6662f31cba80e07c5ee71cd135c9673",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://40fb1b5102468f783961d0af743f91b9980cf66b50d1d12009f6bb1869cea4d2",
+				"dweb:/ipfs/QmYqEbJML4jB1GHbzD4cUZDtJg5wVwNm3vDJq1GbyDus8y"
+			]
+		},
+		"@openzeppelin/contracts/utils/Context.sol": {
+			"keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
+				"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
+			]
+		},
+		"@openzeppelin/contracts/utils/Counters.sol": {
+			"keccak256": "0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee",
+				"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu"
+			]
+		},
+		"@openzeppelin/contracts/utils/math/SafeMath.sol": {
+			"keccak256": "0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://864a40efcffdf408044c332a5aa38ec5618ed7b4eecb8f65faf45671bd6cdc65",
+				"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN"
+			]
+		},
+		"contracts/CDS/CDS.sol": {
+			"keccak256": "0xb4e2ebfc509a6c529362b50eb07cd150a3a548ad73c082b3ff2e1fadc0d4ebfa",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a0a8272bda7cda3729f5847c4affefb6a8d8202806a0e7ef9054d46e1434b82e",
+				"dweb:/ipfs/QmRzUzFsCG42Cg7VtvXwFBqapmLsamtyy4HKknm5HLzYcr"
+			]
+		},
+		"contracts/CDS/PriceConsumer.sol": {
+			"keccak256": "0x7a080d7dfc800bf7106d72a7671211dd0ab0b10740473293ea946315ba6876d4",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6048bef8e13257721c1f84b6f716f7ec1a1a65e55138a3d4dc152f3b4cfb4780",
+				"dweb:/ipfs/QmbMar3rwCBCqXEXtpGSUbNECW6UzmwpQyT6pLCAcQVBRa"
+			]
+		},
+		"contracts/Handler/CDSFactory.sol": {
+			"keccak256": "0x6c6406dbd287bfbc41fc6553dd9ebda93fc2188ce3e5eb96349750c46bbfac52",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ef0f90219408154f2a45bb7f5cb2503cd11b636300238c44e1b662230da60589",
+				"dweb:/ipfs/QmVKM2kdeCGCRfq9ioKMQzyuYX2TFc8o14iwRKaTcpYhNA"
+			]
+		},
+		"contracts/Oracle/PriceOracleMock.sol": {
+			"keccak256": "0x9bf3702669439e0cfe097a45a2b0eb2b3c7bda403ea131e9ef3ac2e151f4a2cd",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://cbdc1c2486976359980f3bd3fdd4c15c6c1d5535709772f13c9360f2a132e8dd",
+				"dweb:/ipfs/QmWsFF9122k5LTLwBTS2YyFabBCQGjuPJrZFiQaeVa71QY"
+			]
+		},
+		"contracts/libs/LibSwap.sol": {
+			"keccak256": "0x652e31965cc7071cdd45938cab1e54863ea1c23452e8cf061371354df664d7dd",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7548caba69eeb940792a2ac78eb5bd889c5a16bb50cfa1ed7a2309a3f926e004",
+				"dweb:/ipfs/QmUmrAoBAQdfyfdYQoZLAiHvspr1F6HK1PY58ttk1X4e6T"
+			]
+		}
+	},
+	"version": 1
+}

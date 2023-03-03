@@ -1,5 +1,5 @@
 // this script migrates EWEToken
-const CDS = artifacts.require('CDS');
+const CDS = artifacts.require('CDSLounge');
 const FUSD = artifacts.require('FUSD');
 const PriceOracleMock = artifacts.require('PriceOracleMock');
 const fs = require('fs');

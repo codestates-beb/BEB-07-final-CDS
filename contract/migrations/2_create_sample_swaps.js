@@ -1,8 +1,8 @@
 // this script migrates EWEToken
-const CDS = artifacts.require('CDS');
+const CDS = artifacts.require('CDSLounge');
 const PriceOracleMock = artifacts.require('PriceOracleMock');
 const FUSD = artifacts.require('FUSD');
-const Swaps = artifacts.require('Swaps');
+// const Swaps = artifacts.require('Swaps');
 
 require('dotenv').config();
 
@@ -40,13 +40,13 @@ const defaultCaseLink = {
 
 const { PRICE_ORACLE_ADDRESS, FUSD_ADDRESS } = process.env;
 
-let currentSwapId;
+let currentCDSId;
 module.exports = async function (deployer, network, accounts) {
   console.log(`Triggering Initial TXs ON : ** ${network.toUpperCase()} **`);
   try {
     const priceOracleMock = await PriceOracleMock.at(PRICE_ORACLE_ADDRESS);
     const fusd = await FUSD.at(FUSD_ADDRESS);
-    const swaps = await Swaps.at('0x712F138Bb2401b654aE9B3824047dCB6F6FFCD0C');
+    // const swaps = await Swaps.at('0x712F138Bb2401b654aE9B3824047dCB6F6FFCD0C');
 
     await fusd.transfer(accounts[1], defaultTokenFaucet, { from: accounts[0] });
     await fusd.transfer(accounts[2], defaultTokenFaucet, { from: accounts[0] });
@@ -70,11 +70,11 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseBTC.defaultAssetType,
       { from: accounts[2] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseBTC.defaultSellerDeposit, {
       from: accounts[1],
     });
-    await cds.accept(defaultCaseBTC.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseBTC.defaultInitAssetPrice, currentCDSId, {
       from: accounts[1],
     });
     console.log('--case 1 of btc created');
@@ -94,11 +94,11 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseETH.defaultAssetType,
       { from: accounts[3] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseETH.defaultSellerDeposit, {
       from: accounts[1],
     });
-    await cds.accept(defaultCaseETH.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseETH.defaultInitAssetPrice, currentCDSId, {
       from: accounts[1],
     });
     console.log('--case 1 of eth created');
@@ -118,11 +118,11 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseLink.defaultAssetType,
       { from: accounts[1] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseLink.defaultSellerDeposit, {
       from: accounts[4],
     });
-    await cds.accept(defaultCaseLink.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseLink.defaultInitAssetPrice, currentCDSId, {
       from: accounts[4],
     });
     console.log('--case 1 of link created');
@@ -143,8 +143,8 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseBTC.defaultAssetType,
       { from: accounts[2] },
     );
-    [currentSwapId] = await cds.getSwapId();
-    await cds.cancel(currentSwapId, { from: accounts[2] });
+    [currentCDSId] = await cds.getCDSId();
+    await cds.cancel(currentCDSId, { from: accounts[2] });
     console.log('--case 2 of btc created');
 
     // case2 - eth: account[2] create and cancel
@@ -162,8 +162,8 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseETH.defaultAssetType,
       { from: accounts[3] },
     );
-    [currentSwapId] = await cds.getSwapId();
-    await cds.cancel(currentSwapId, { from: accounts[3] });
+    [currentCDSId] = await cds.getCDSId();
+    await cds.cancel(currentCDSId, { from: accounts[3] });
     console.log('--case 2 of eth created');
 
     // case2 - link: account[3] create and cancel
@@ -181,8 +181,8 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseLink.defaultAssetType,
       { from: accounts[3] },
     );
-    [currentSwapId] = await cds.getSwapId();
-    await cds.cancel(currentSwapId, { from: accounts[3] });
+    [currentCDSId] = await cds.getCDSId();
+    await cds.cancel(currentCDSId, { from: accounts[3] });
     console.log('--case 2 of link created');
     console.log('case 2 complete!');
 
@@ -254,15 +254,15 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseBTC.defaultAssetType,
       { from: accounts[3] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseBTC.defaultSellerDeposit, {
       from: accounts[1],
     });
-    await cds.accept(defaultCaseBTC.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseBTC.defaultInitAssetPrice, currentCDSId, {
       from: accounts[1],
     });
     await priceOracleMock.setBTCPrice(2100000000000, { from: accounts[0] });
-    await cds.claim(currentSwapId, { from: accounts[3] });
+    await cds.claim(currentCDSId, { from: accounts[3] });
     console.log('--case 4 of btc created');
 
     // case4 - eth: account[1] creates and account[3] accepts
@@ -281,15 +281,15 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseETH.defaultAssetType,
       { from: accounts[1] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseETH.defaultSellerDeposit, {
       from: accounts[3],
     });
-    await cds.accept(defaultCaseETH.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseETH.defaultInitAssetPrice, currentCDSId, {
       from: accounts[3],
     });
     await priceOracleMock.setETHPrice(130000000000, { from: accounts[0] });
-    await cds.claim(currentSwapId, { from: accounts[1] });
+    await cds.claim(currentCDSId, { from: accounts[1] });
     console.log('--case 4 of eth created');
 
     // case4 - btc: account[4] creates and account[2] accepts
@@ -308,16 +308,16 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseLink.defaultAssetType,
       { from: accounts[4] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseLink.defaultSellerDeposit, {
       from: accounts[2],
     });
-    await cds.accept(defaultCaseLink.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseLink.defaultInitAssetPrice, currentCDSId, {
       from: accounts[2],
     });
     await priceOracleMock.setLinkPrice(550000000, { from: accounts[0] });
-    await cds.claim(currentSwapId, { from: accounts[4] });
-    console.log('--case 4 of eth created');
+    await cds.claim(currentCDSId, { from: accounts[4] });
+    console.log('--case 4 of link created');
 
     console.log('case 4 complete');
 
@@ -337,15 +337,15 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseBTC.defaultAssetType,
       { from: accounts[3] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseBTC.defaultSellerDeposit, {
       from: accounts[1],
     });
-    await cds.accept(defaultCaseBTC.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseBTC.defaultInitAssetPrice, currentCDSId, {
       from: accounts[1],
     });
     await priceOracleMock.setBTCPrice(1900000000000, { from: accounts[0] });
-    await cds.claim(currentSwapId, { from: accounts[3] });
+    await cds.claim(currentCDSId, { from: accounts[3] });
     console.log('--case 5 of btc created');
 
     // case5 - eth: account[1] creates and account[2] accepts
@@ -364,15 +364,15 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseETH.defaultAssetType,
       { from: accounts[1] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseETH.defaultSellerDeposit, {
       from: accounts[2],
     });
-    await cds.accept(defaultCaseETH.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseETH.defaultInitAssetPrice, currentCDSId, {
       from: accounts[2],
     });
     await priceOracleMock.setETHPrice(110000000000, { from: accounts[0] });
-    await cds.claim(currentSwapId, { from: accounts[1] });
+    await cds.claim(currentCDSId, { from: accounts[1] });
     console.log('--case 5 of eth created');
 
     // case5 - link: account[4] creates and account[3] accepts
@@ -391,15 +391,15 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseLink.defaultAssetType,
       { from: accounts[4] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseLink.defaultSellerDeposit, {
       from: accounts[3],
     });
-    await cds.accept(defaultCaseLink.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseLink.defaultInitAssetPrice, currentCDSId, {
       from: accounts[3],
     });
     await priceOracleMock.setLinkPrice(400000000, { from: accounts[0] });
-    await cds.claim(currentSwapId, { from: accounts[4] });
+    await cds.claim(currentCDSId, { from: accounts[4] });
     console.log('--case 5 of link created');
     console.log('case 5 complete!');
 
@@ -419,14 +419,14 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseBTC.defaultAssetType,
       { from: accounts[1] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseBTC.defaultSellerDeposit, {
       from: accounts[3],
     });
-    await cds.accept(defaultCaseBTC.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseBTC.defaultInitAssetPrice, currentCDSId, {
       from: accounts[3],
     });
-    await cds.close(currentSwapId, { from: accounts[1] });
+    await cds.close(currentCDSId, { from: accounts[1] });
     console.log('--case 6 of btc created');
 
     // case6 - btc: account[1] creates and account[4] accepts
@@ -445,14 +445,14 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseETH.defaultAssetType,
       { from: accounts[1] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseETH.defaultSellerDeposit, {
       from: accounts[4],
     });
-    await cds.accept(defaultCaseETH.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseETH.defaultInitAssetPrice, currentCDSId, {
       from: accounts[4],
     });
-    await cds.close(currentSwapId, { from: accounts[1] });
+    await cds.close(currentCDSId, { from: accounts[1] });
     console.log('--case 6 of eth created');
 
     // case6 - btc: account[2] creates and account[3] accepts
@@ -471,14 +471,14 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseLink.defaultAssetType,
       { from: accounts[2] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseLink.defaultSellerDeposit, {
       from: accounts[3],
     });
-    await cds.accept(defaultCaseLink.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseLink.defaultInitAssetPrice, currentCDSId, {
       from: accounts[3],
     });
-    await cds.close(currentSwapId, { from: accounts[2] });
+    await cds.close(currentCDSId, { from: accounts[2] });
     console.log('--case 6 of link created');
 
     console.log('case 6 complete!');
@@ -499,17 +499,17 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseBTC.defaultAssetType,
       { from: accounts[4] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseBTC.defaultSellerDeposit, {
       from: accounts[2],
     });
-    await cds.accept(defaultCaseBTC.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseBTC.defaultInitAssetPrice, currentCDSId, {
       from: accounts[2],
     });
     await fusd.approve(cds.address, defaultCaseBTC.defaultPremium, {
       from: accounts[4],
     });
-    await cds.payPremium(currentSwapId, { from: accounts[4] });
+    await cds.payPremium(currentCDSId, { from: accounts[4] });
     console.log('--case 7 of btc created');
 
     // case7 - eth: account[3] creates and account[1] accepts
@@ -528,17 +528,17 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseETH.defaultAssetType,
       { from: accounts[3] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseETH.defaultSellerDeposit, {
       from: accounts[1],
     });
-    await cds.accept(defaultCaseETH.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseETH.defaultInitAssetPrice, currentCDSId, {
       from: accounts[1],
     });
     await fusd.approve(cds.address, defaultCaseETH.defaultPremium, {
       from: accounts[3],
     });
-    await cds.payPremium(currentSwapId, { from: accounts[3] });
+    await cds.payPremium(currentCDSId, { from: accounts[3] });
     console.log('--case 7 of eth created');
 
     // case7 - link: account[2] creates and account[1] accepts
@@ -557,17 +557,17 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseLink.defaultAssetType,
       { from: accounts[2] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseLink.defaultSellerDeposit, {
       from: accounts[1],
     });
-    await cds.accept(defaultCaseLink.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseLink.defaultInitAssetPrice, currentCDSId, {
       from: accounts[1],
     });
     await fusd.approve(cds.address, defaultCaseLink.defaultPremium, {
       from: accounts[2],
     });
-    await cds.payPremium(currentSwapId, { from: accounts[2] });
+    await cds.payPremium(currentCDSId, { from: accounts[2] });
     console.log('--case 7 of link created');
 
     console.log('case 7 complete!');
@@ -589,18 +589,18 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseBTC.defaultAssetType,
       { from: accounts[2] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseBTC.defaultSellerDeposit, {
       from: accounts[4],
     });
-    await cds.accept(defaultCaseBTC.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseBTC.defaultInitAssetPrice, currentCDSId, {
       from: accounts[4],
     }); // current round is 1
     await fusd.approve(cds.address, defaultCaseBTC.defaultPremium, {
       from: accounts[2],
     });
-    await cds.payPremium(currentSwapId, { from: accounts[2] }); // current round is 0
-    await cds.expire(currentSwapId, { from: accounts[4] }); // seller calls expire
+    await cds.payPremium(currentCDSId, { from: accounts[2] }); // current round is 0
+    await cds.expire(currentCDSId, { from: accounts[4] }); // seller calls expire
 
     console.log('--case 8 of btc created');
 
@@ -620,18 +620,18 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseETH.defaultAssetType,
       { from: accounts[1] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseETH.defaultSellerDeposit, {
       from: accounts[4],
     });
-    await cds.accept(defaultCaseETH.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseETH.defaultInitAssetPrice, currentCDSId, {
       from: accounts[4],
     }); // current round is 1
     await fusd.approve(cds.address, defaultCaseETH.defaultPremium, {
       from: accounts[1],
     });
-    await cds.payPremium(currentSwapId, { from: accounts[1] }); // current round is 0
-    await cds.expire(currentSwapId, { from: accounts[4] }); // seller calls expire
+    await cds.payPremium(currentCDSId, { from: accounts[1] }); // current round is 0
+    await cds.expire(currentCDSId, { from: accounts[4] }); // seller calls expire
 
     console.log('--case 8 of eth created');
 
@@ -651,18 +651,18 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseLink.defaultAssetType,
       { from: accounts[3] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseLink.defaultSellerDeposit, {
       from: accounts[4],
     });
-    await cds.accept(defaultCaseLink.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseLink.defaultInitAssetPrice, currentCDSId, {
       from: accounts[4],
     }); // current round is 1
     await fusd.approve(cds.address, defaultCaseLink.defaultPremium, {
       from: accounts[3],
     });
-    await cds.payPremium(currentSwapId, { from: accounts[3] }); // current round is 0
-    await cds.expire(currentSwapId, { from: accounts[4] }); // seller calls expire
+    await cds.payPremium(currentCDSId, { from: accounts[3] }); // current round is 0
+    await cds.expire(currentCDSId, { from: accounts[4] }); // seller calls expire
 
     console.log('--case 8 of link created');
 
@@ -684,18 +684,18 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseBTC.defaultAssetType,
       { from: accounts[3] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseBTC.defaultSellerDeposit, {
       from: accounts[1],
     });
-    await cds.accept(defaultCaseBTC.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseBTC.defaultInitAssetPrice, currentCDSId, {
       from: accounts[1],
     });
 
-    await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 2 * premium
-    await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 1 * premium
-    await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 0 * premium
-    await cds.expire(currentSwapId, { from: accounts[1] }); // seller calls expire
+    await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 2 * premium
+    await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 1 * premium
+    await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 0 * premium
+    await cds.expire(currentCDSId, { from: accounts[1] }); // seller calls expire
 
     console.log('--case 9 of btc created');
 
@@ -715,18 +715,18 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseETH.defaultAssetType,
       { from: accounts[3] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseETH.defaultSellerDeposit, {
       from: accounts[4],
     });
-    await cds.accept(defaultCaseETH.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseETH.defaultInitAssetPrice, currentCDSId, {
       from: accounts[4],
     });
 
-    await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 2 * premium
-    await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 1 * premium
-    await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 0 * premium
-    await cds.expire(currentSwapId, { from: accounts[4] }); // seller calls expire
+    await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 2 * premium
+    await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 1 * premium
+    await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 0 * premium
+    await cds.expire(currentCDSId, { from: accounts[4] }); // seller calls expire
 
     console.log('--case 9 of eth created');
 
@@ -746,22 +746,27 @@ module.exports = async function (deployer, network, accounts) {
       defaultCaseLink.defaultAssetType,
       { from: accounts[1] },
     );
-    [currentSwapId] = await cds.getSwapId();
+    [currentCDSId] = await cds.getCDSId();
     await fusd.approve(cds.address, defaultCaseLink.defaultSellerDeposit, {
       from: accounts[2],
     });
-    await cds.accept(defaultCaseLink.defaultInitAssetPrice, currentSwapId, {
+    await cds.accept(defaultCaseLink.defaultInitAssetPrice, currentCDSId, {
       from: accounts[2],
     });
 
-    await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 2 * premium
-    await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 1 * premium
-    await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 0 * premium
-    await cds.expire(currentSwapId, { from: accounts[2] }); // seller calls expire
+    await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 2 * premium
+    await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 1 * premium
+    await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 0 * premium
+    await cds.expire(currentCDSId, { from: accounts[2] }); // seller calls expire
 
     console.log('--case 9 of link created');
 
     console.log('case 9 complete!');
+
+    await priceOracleMock.setBTCPrice(2500000000000, { from: accounts[0] });
+    await priceOracleMock.setETHPrice(160000000000, { from: accounts[0] });
+    await priceOracleMock.setLinkPrice(750000000, { from: accounts[0] });
+    console.log('set price of orcale to default value');
   } catch (err) {
     console.error(err);
   }
