@@ -23,11 +23,11 @@ contract CDSBank is CDSFactory {
   ) internal returns (bool) {
     uint256 deposit;
     if (_isBuyer) {
-      deposit = getPremium(_cdsId).mul(4);
+      deposit = getCDS(_cdsId).premium().mul(4);
       token.transferFrom(getBuyer(_cdsId), address(this), deposit);
       deposits[_cdsId][0] = deposit;
     } else {
-      deposit = getSellerDeposit(_cdsId);
+      deposit = getCDS(_cdsId).sellerDeposit();
       token.transferFrom(getSeller(_cdsId), address(this), deposit);
       deposits[_cdsId][1] = deposit;
     }
@@ -35,10 +35,12 @@ contract CDSBank is CDSFactory {
   }
 
   function _sendFirstPremium(uint256 _cdsId) internal returns (bool) {
-    bool sent = token.transfer(getSeller(_cdsId), getPremium(_cdsId));
+    uint256 premium = getCDS(_cdsId).premium();
+    bool sent = token.transfer(getSeller(_cdsId), premium);
     require(sent, 'Sending first premium failed');
-    deposits[_cdsId][0] -= getPremium(_cdsId);
-    getCDS(_cdsId).setRounds(getRounds(_cdsId) - 1);
+    deposits[_cdsId][0] -= premium;
+    uint32 currRounds = getCDS(_cdsId).rounds();
+    getCDS(_cdsId).setRounds(currRounds - 1);
     return true;
   }
 
@@ -73,16 +75,13 @@ contract CDSBank is CDSFactory {
 // expire need isActive
   function _expire(
     uint256 _cdsId
-  ) internal isSeller(_cdsId) {
-    require(
-      getStatus(_cdsId) == CDS.Status.active,
-      'The status of the CDS should be active'
-    );
+  ) internal isSeller(_cdsId) isActive(_cdsId) {
     // bool byRounds = ((block.timestamp >= getNextPayDate(_cdsId)) &&
     //   (getRounds(_cdsId) == 0));
     // bool byDeposit = ((block.timestamp >= getNextPayDate(_cdsId)) &&
     //   (deposits[_cdsId][0] == 0));
-    bool byRounds = (getRounds(_cdsId) == 0);
+    uint32 currRounds = getCDS(_cdsId).rounds();
+    bool byRounds = (currRounds == 0);
     bool byDeposit = (deposits[_cdsId][0] == 0);
     require(byDeposit || byRounds, 'Buyer deposit / Rounds remaining');
     getCDS(_cdsId).setStatus(CDS.Status.expired);
@@ -94,10 +93,11 @@ contract CDSBank is CDSFactory {
     //   (getNextPayDate(_cdsId) <= currTime),
     //   'Invalid date to pay premium by deposit '
     // );
-    require(deposits[_cdsId][0] >= getPremium(_cdsId), 'Not enough deposit');
-    bool sent = token.transfer(getSeller(_cdsId), getPremium(_cdsId));
+    uint256 premium = getCDS(_cdsId).premium();
+    require(deposits[_cdsId][0] >= premium, 'Not enough deposit');
+    bool sent = token.transfer(getSeller(_cdsId), premium);
     require(sent, 'Sending premium failed');
-    deposits[_cdsId][0] -= getPremium(_cdsId);
+    deposits[_cdsId][0] -= premium;
   }
 
   function _sendPremium(uint256 _cdsId) internal {
@@ -107,10 +107,11 @@ contract CDSBank is CDSFactory {
     //     (currTime <= getNextPayDate(_cdsId)),
     //   'Invalid date to pay premium'
     // );
+    uint256 premium = getCDS(_cdsId).premium();
     bool sent = token.transferFrom(
       getBuyer(_cdsId),
       getSeller(_cdsId),
-      getPremium(_cdsId)
+      premium
     );
     require(sent, 'Sending premium failed');
   }

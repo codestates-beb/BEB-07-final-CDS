@@ -69,9 +69,10 @@ contract CDSFactory {
   }
 
   function _payPremium(uint256 _targetCDSId) internal isActive(_targetCDSId) {
-    require(getRounds(_targetCDSId) > 0, 'Round already ended');
+    uint32 currRounds = _cdsList[_targetCDSId].rounds();
+    require(currRounds > 0, 'Round already ended');
     nextPayDate[_targetCDSId] += 4 weeks;
-    getCDS(_targetCDSId).setRounds(getRounds(_targetCDSId) - 1);
+    getCDS(_targetCDSId).setRounds(currRounds - 1);
   }
 
   function _claim(uint256 _targetCDSId) internal isActive(_targetCDSId) {
@@ -87,26 +88,6 @@ contract CDSFactory {
     return _cdsList[cdsId];
   }
 
-  function getPrices(uint256 cdsId) public view returns (uint256[5] memory) {
-    return _cdsList[cdsId].getPrices();
-  }
-
-  function getPremium(uint256 cdsId) public view returns (uint256) {
-    return _cdsList[cdsId].premium();
-  }
-
-  function getSellerDeposit(uint256 cdsId) public view returns (uint256) {
-    return _cdsList[cdsId].sellerDeposit();
-  }
-
-  function getStatus(uint256 cdsId) public view returns (CDS.Status) {
-    return _cdsList[cdsId].status();
-  }
-
-  function getRounds(uint256 cdsId) public view returns (uint32) {
-    return _cdsList[cdsId].rounds();
-  }
-
   function getBuyer(uint256 cdsId) public view returns (address) {
     return _cdsList[cdsId].getBuyer();
   }
@@ -118,7 +99,7 @@ contract CDSFactory {
   // modifiers
   modifier isPending(uint256 cdsId) {
     require(
-      getStatus(cdsId) == CDS.Status.pending,
+      _cdsList[cdsId].status() == CDS.Status.pending,
       'The status of the CDS should be pending'
     );
     _;
@@ -126,7 +107,7 @@ contract CDSFactory {
 
   modifier isActive(uint256 cdsId) {
     require(
-      getStatus(cdsId) == CDS.Status.active,
+      _cdsList[cdsId].status() == CDS.Status.active,
       'The status of the CDS should be active'
     );
     _;
