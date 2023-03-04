@@ -62,4 +62,9 @@ export default class Swap {
     const seller = await this.contract.methods.getSeller().call();
     return seller;
   }
+
+  public async getRounds(): Promise<string> {
+    const rounds = await this.contract.methods.rounds().call();
+    return rounds;
+  }
 }
