@@ -436,19 +436,19 @@
 			]
 		},
 		"contracts/Handler/CDSBank.sol": {
-			"keccak256": "0xa0dfdaef94e6accbfdf7a4da2a999f0bc60c6c4c7654525fde46d78e93174749",
+			"keccak256": "0x04a3a812ca81c813c09581f5846821a89cf534a16c065d6874e78a1437b926e9",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://ebf904b498d85063a1c976d6f5856565c4a1297ffd134fcc1ee407f85759e50c",
-				"dweb:/ipfs/QmUJ1Ur5rftWgxUCmLxVJMxrp69gefi3kaHAGrjmupJRHd"
+				"bzz-raw://cd2e92a049df2f4845399ae488b3258ed659f14e3328fd2bb7ff18e719ea9d9c",
+				"dweb:/ipfs/QmdntZJqzdCaAT2Mwhwn7iFQ3BNg8n8LX2KM71ncwSXjQj"
 			]
 		},
 		"contracts/Handler/CDSFactory.sol": {
-			"keccak256": "0x6c6406dbd287bfbc41fc6553dd9ebda93fc2188ce3e5eb96349750c46bbfac52",
+			"keccak256": "0x1487ff9ab45155a61f190d6412490657392b044056a49921d5bc66bd071a85c7",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://ef0f90219408154f2a45bb7f5cb2503cd11b636300238c44e1b662230da60589",
-				"dweb:/ipfs/QmVKM2kdeCGCRfq9ioKMQzyuYX2TFc8o14iwRKaTcpYhNA"
+				"bzz-raw://32e5bf2d6f0d8f327fe80235017272be6a0cc0a5e36f92e78bcd643121bb737f",
+				"dweb:/ipfs/QmT6nB3fDMiVoMmqsbRfc2CU7reEDDLQ8WpgjjGMswvjwd"
 			]
 		},
 		"contracts/Oracle/PriceOracleMock.sol": {

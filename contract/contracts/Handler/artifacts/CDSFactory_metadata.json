@@ -71,107 +71,12 @@
 						"type": "uint256"
 					}
 				],
-				"name": "getPremium",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "cdsId",
-						"type": "uint256"
-					}
-				],
-				"name": "getPrices",
-				"outputs": [
-					{
-						"internalType": "uint256[5]",
-						"name": "",
-						"type": "uint256[5]"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "cdsId",
-						"type": "uint256"
-					}
-				],
-				"name": "getRounds",
-				"outputs": [
-					{
-						"internalType": "uint32",
-						"name": "",
-						"type": "uint32"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "cdsId",
-						"type": "uint256"
-					}
-				],
 				"name": "getSeller",
 				"outputs": [
 					{
 						"internalType": "address",
 						"name": "",
 						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "cdsId",
-						"type": "uint256"
-					}
-				],
-				"name": "getSellerDeposit",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "cdsId",
-						"type": "uint256"
-					}
-				],
-				"name": "getStatus",
-				"outputs": [
-					{
-						"internalType": "enum CDS.Status",
-						"name": "",
-						"type": "uint8"
 					}
 				],
 				"stateMutability": "view",
@@ -273,11 +178,11 @@
 			]
 		},
 		"contracts/Handler/CDSFactory.sol": {
-			"keccak256": "0x6c6406dbd287bfbc41fc6553dd9ebda93fc2188ce3e5eb96349750c46bbfac52",
+			"keccak256": "0x1487ff9ab45155a61f190d6412490657392b044056a49921d5bc66bd071a85c7",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://ef0f90219408154f2a45bb7f5cb2503cd11b636300238c44e1b662230da60589",
-				"dweb:/ipfs/QmVKM2kdeCGCRfq9ioKMQzyuYX2TFc8o14iwRKaTcpYhNA"
+				"bzz-raw://32e5bf2d6f0d8f327fe80235017272be6a0cc0a5e36f92e78bcd643121bb737f",
+				"dweb:/ipfs/QmT6nB3fDMiVoMmqsbRfc2CU7reEDDLQ8WpgjjGMswvjwd"
 			]
 		},
 		"contracts/Oracle/PriceOracleMock.sol": {

@@ -7,7 +7,7 @@ const truffleAssert = require('truffle-assertions');
 const PriceOracleMock = artifacts.require('PriceOracleMock');
 const FUSD = artifacts.require('FUSD');
 const CDS = artifacts.require('CDSLounge');
-// const CDSs = artifacts.require('CDSs');
+const Contract = artifacts.require('CDS');
 
 require('dotenv').config();
 
@@ -15,7 +15,6 @@ contract('CDS', async (accounts) => {
   let priceOracle;
   let cds;
   let fusd;
-  // let CDSs;
   const defaultHostSetting = true;
   const defaultInitAssetPrice = 25000;
   const defaultClaimPrice = 21250;
@@ -28,16 +27,9 @@ contract('CDS', async (accounts) => {
 
   const { PRICE_ORACLE_ADDRESS, FUSD_ADDRESS } = process.env;
 
-  // await fusd.transfer(accounts[1], defaultTokenFaucet, { from: accounts[0] });
-  // await fusd.transfer(accounts[2], defaultTokenFaucet, { from: accounts[0] });
-  // await fusd.transfer(accounts[3], defaultTokenFaucet, { from: accounts[0] });
-  // await fusd.transfer(accounts[4], defaultTokenFaucet, { from: accounts[0] });
-
   beforeEach(async () => {
-    // beforeEach에 deploy 설정 있어야함
     priceOracle = await PriceOracleMock.at(PRICE_ORACLE_ADDRESS);
     fusd = await FUSD.at(FUSD_ADDRESS);
-    // CDSs = await CDSs.at('0x712F138Bb2401b654aE9B3824047dCB6F6FFCD0C');
     cds = await CDS.new({ from: accounts[0] });
   });
 
@@ -165,9 +157,13 @@ contract('CDS', async (accounts) => {
       const seller = await cds.getSeller(currentCDSId);
       const buyerDepositDetail = await cds.deposits(currentCDSId, 0);
       const sellerDepositDetail = await cds.deposits(currentCDSId, 1);
-      const totalRounds = await cds.getRounds(currentCDSId);
 
-      const CDSPrices = await cds.getPrices(currentCDSId);
+      const cdsAddr = await cds.getCDS(currentCDSId);
+      const targetCDS = await Contract.at(cdsAddr);
+
+      const totalRounds = await targetCDS.rounds();
+      const CDSPrices = await targetCDS.getPrices();
+
       const [
         initAssetPrice,
         claimPrice,
@@ -216,9 +212,12 @@ contract('CDS', async (accounts) => {
       const seller = await cds.getSeller(currentCDSId);
       const buyerDepositDetail = await cds.deposits(currentCDSId, 0);
       const sellerDepositDetail = await cds.deposits(currentCDSId, 1);
-      const totalRounds = await cds.getRounds(currentCDSId);
 
-      const CDSPrices = await cds.getPrices(currentCDSId);
+      const cdsAddr = await cds.getCDS(currentCDSId);
+      const targetCDS = await Contract.at(cdsAddr);
+
+      const totalRounds = await targetCDS.rounds();
+      const CDSPrices = await targetCDS.getPrices();
       const [
         initAssetPrice,
         claimPrice,
@@ -342,16 +341,18 @@ contract('CDS', async (accounts) => {
       const seller = await cds.getSeller(currentCDSId);
       const buyerDepositDetail = await cds.deposits(currentCDSId, 0);
       const sellerDepositDetail = await cds.deposits(currentCDSId, 1);
-      const currRounds = await cds.getRounds(currentCDSId);
 
-      const CDSPrices = await cds.getPrices(currentCDSId);
+      const cdsAddr = await cds.getCDS(currentCDSId);
+      const targetCDS = await Contract.at(cdsAddr);
+
+      const currRounds = await targetCDS.rounds();
       const [
         initAssetPrice,
         claimPrice,
         liquidationPrice,
         premium,
         sellerDeposit,
-      ] = CDSPrices;
+      ] = await targetCDS.getPrices();
 
       await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
       await assert.strictEqual(defaultClaimPrice, +claimPrice);
@@ -401,16 +402,18 @@ contract('CDS', async (accounts) => {
       const seller = await cds.getSeller(currentCDSId);
       const buyerDepositDetail = await cds.deposits(currentCDSId, 0);
       const sellerDepositDetail = await cds.deposits(currentCDSId, 1);
-      const currRounds = await cds.getRounds(currentCDSId);
 
-      const CDSPrices = await cds.getPrices(currentCDSId);
+      const cdsAddr = await cds.getCDS(currentCDSId);
+      const targetCDS = await Contract.at(cdsAddr);
+
+      const currRounds = await targetCDS.rounds();
       const [
         initAssetPrice,
         claimPrice,
         liquidationPrice,
         premium,
         sellerDeposit,
-      ] = CDSPrices;
+      ] = await targetCDS.getPrices();
 
       await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
       await assert.strictEqual(defaultClaimPrice, +claimPrice);
@@ -641,7 +644,9 @@ contract('CDS', async (accounts) => {
         cds.cancel(currentCDSId, { from: accounts[2] }),
       );
       const buyerDepositDetail = await cds.deposits(currentCDSId, 0);
-      const cdsStatus = await cds.getStatus(currentCDSId);
+
+      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
+      const cdsStatus = await targetCDS.status();
 
       await assert.strictEqual(+buyerDepositDetail, 0);
       await assert.strictEqual(0, +cdsStatus); // inactive => 0
@@ -693,7 +698,9 @@ contract('CDS', async (accounts) => {
         cds.cancel(currentCDSId, { from: accounts[1] }),
       );
       const sellerDepositDetail = await cds.deposits(currentCDSId, 1);
-      const cdsStatus = await cds.getStatus(currentCDSId);
+
+      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
+      const cdsStatus = await targetCDS.status();
 
       await assert.strictEqual(+sellerDepositDetail, 0);
       await assert.strictEqual(0, +cdsStatus); // inactive => 0
@@ -766,7 +773,9 @@ contract('CDS', async (accounts) => {
 
       const buyerDepositDetail = await cds.deposits(currentCDSId, 0);
       const sellerDepositDetail = await cds.deposits(currentCDSId, 1);
-      const cdsStatus = await cds.getStatus(currentCDSId);
+
+      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
+      const cdsStatus = await targetCDS.status();
 
       await assert.strictEqual(+buyerDepositDetail, 0);
       await assert.strictEqual(+sellerDepositDetail, 0);
@@ -924,8 +933,9 @@ contract('CDS', async (accounts) => {
       );
 
       // status
-      const status = await cds.getStatus(currentCDSId);
-      assert.strictEqual(3, +status);
+      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
+      const cdsStatus = await targetCDS.status();
+      assert.strictEqual(3, +cdsStatus);
     });
 
     // claim when currPrice is below LP => 50
@@ -976,8 +986,9 @@ contract('CDS', async (accounts) => {
       assert.equal(balanceBeforeClaim.seller, balanceAfterClaim.seller);
 
       // status
-      const status = await cds.getStatus(currentCDSId);
-      assert.strictEqual(3, +status);
+      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
+      const cdsStatus = await targetCDS.status();
+      assert.strictEqual(3, +cdsStatus);
     });
   });
 
@@ -1084,7 +1095,8 @@ contract('CDS', async (accounts) => {
         from: accounts[1],
       });
 
-      const roundBeforePremium = await cds.getRounds(currentCDSId);
+      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
+      const roundBeforePremium = await targetCDS.rounds();
 
       await fusd.approve(cds.address, defaultPremium, {
         from: accounts[2],
@@ -1093,7 +1105,7 @@ contract('CDS', async (accounts) => {
         cds.payPremium(currentCDSId, { from: accounts[2] }),
       );
 
-      const roundAfterPremium = await cds.getRounds(currentCDSId);
+      const roundAfterPremium = await targetCDS.rounds();
       assert.equal(roundBeforePremium - 1, roundAfterPremium);
     });
 
@@ -1194,7 +1206,9 @@ contract('CDS', async (accounts) => {
         from: accounts[1],
       });
 
-      const roundBeforePremium = await cds.getRounds(currentCDSId);
+      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
+      const roundBeforePremium = await targetCDS.rounds();
+
       const depositBeforePremium = await cds.deposits(currentCDSId, 0);
       const payDateBeforePremium = await cds.nextPayDate(currentCDSId);
 
@@ -1202,7 +1216,7 @@ contract('CDS', async (accounts) => {
         cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }),
       );
 
-      const roundAfterPremium = await cds.getRounds(currentCDSId);
+      const roundAfterPremium = await targetCDS.rounds();
       const depositAfterPremium = await cds.deposits(currentCDSId, 0);
       const payDateAfterPremium = await cds.nextPayDate(currentCDSId);
 
@@ -1260,7 +1274,9 @@ contract('CDS', async (accounts) => {
       });
 
       // round becomes 0 after accpet from seller
-      const round = await cds.getRounds(currentCDSId);
+      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
+      const round = await targetCDS.rounds();
+
       assert.equal(+round, 0);
       await truffleAssert.fails(
         cds.payPremiumByDeposit(currentCDSId, { from: accounts[1] }),
@@ -1415,8 +1431,9 @@ contract('CDS', async (accounts) => {
       // current round = 0
       await cds.expire(currentCDSId, { from: accounts[1] });
 
-      const status = await cds.getStatus(currentCDSId);
-      assert.equal(4, +status);
+      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
+      const cdsStatus = await targetCDS.status();
+      assert.equal(4, +cdsStatus);
     });
   });
 
@@ -1521,8 +1538,9 @@ contract('CDS', async (accounts) => {
         cds.expire(currentCDSId, { from: accounts[1] }),
       );
 
-      const status = await cds.getStatus(currentCDSId);
-      assert.equal(4, +status);
+      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
+      const cdsStatus = await targetCDS.status();
+      assert.equal(4, +cdsStatus);
     });
   });
 });
