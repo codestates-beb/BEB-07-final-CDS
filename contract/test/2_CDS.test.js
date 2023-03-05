@@ -27,7 +27,7 @@ contract('CDS', async (accounts) => {
 
   const { PRICE_ORACLE_ADDRESS, FUSD_ADDRESS } = process.env;
 
-  beforeEach(async () => {
+  before(async () => {
     priceOracle = await PriceOracleMock.at(PRICE_ORACLE_ADDRESS);
     fusd = await FUSD.at(FUSD_ADDRESS);
     cds = await CDS.new({ from: accounts[0] });

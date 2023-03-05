@@ -105,6 +105,10 @@ contract CDS is Ownable, PriceConsumer {
     return status;
   }
 
+  function setParticipants(address _participants, bool _isBuyer) public onlyOwner {
+    _isBuyer ? setBuyer(_participants) : setSeller(_participants);
+  }
+
   function setBuyer(address _buyer) public onlyOwner returns (address) {
     buyer = _buyer;
     return buyer;

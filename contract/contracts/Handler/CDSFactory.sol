@@ -9,9 +9,10 @@ contract CDSFactory {
   Counters.Counter internal _cdsId;
 
   mapping(uint256 => CDS) private _cdsList;
-
+  mapping(address => address[]) public _ownedCDS;
+  // delete mapping[key]
   mapping(uint256 => uint256) public nextPayDate;
-
+  
   function _create(
     bool _isBuyer,
     uint256 _initAssetPrice,
@@ -35,9 +36,8 @@ contract CDSFactory {
       _assetType
     );
     _cdsList[newCDSId] = newCDS;
-
-    _isBuyer ? newCDS.setBuyer(msg.sender) : newCDS.setSeller(msg.sender);
-
+    // _isBuyer ? newCDS.setBuyer(msg.sender) : newCDS.setSeller(msg.sender);
+    newCDS.setParticipants(msg.sender, _isBuyer);
     return newCDSId;
   }
 
@@ -49,13 +49,15 @@ contract CDSFactory {
     CDS targetCDS = _cdsList[_targetCDSId];
     targetCDS.setInitAssetPrice(_initAssetPrice);
 
-    _isBuyerHost
-      ? targetCDS.setSeller(msg.sender)
-      : targetCDS.setBuyer(msg.sender);
-
+    // _isBuyerHost
+    //   ? targetCDS.setSeller(msg.sender)
+    //   : targetCDS.setBuyer(msg.sender);
     nextPayDate[_targetCDSId] = block.timestamp + 4 weeks;
-
+    targetCDS.setParticipants(msg.sender, !_isBuyerHost);
     targetCDS.setStatus(CDS.Status.active);
+
+    _ownedCDS[targetCDS.getBuyer()].push(address(targetCDS));
+    _ownedCDS[targetCDS.getSeller()].push(address(targetCDS));
 
     return _targetCDSId;
   }
