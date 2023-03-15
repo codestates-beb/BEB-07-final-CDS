@@ -108,7 +108,7 @@
 <summary>설동헌</summary>
 <div markdown='1'>
 <p>- 역할: 팀원</p>
-<p>- 포지션: 백엔드 / CI/CD</p>
+<p>- 포지션: 백엔드 / 데브옵스</p>
 <p>- 깃허브 링크: https://www.github.com/atoye1</p>
 <p>- 블로그: https://velog.io/@atoye1</p>
 <p>- 주요 구현 내용</p>
