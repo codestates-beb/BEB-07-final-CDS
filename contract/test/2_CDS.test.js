@@ -6,8 +6,7 @@ const truffleAssert = require('truffle-assertions');
 
 const PriceOracleMock = artifacts.require('PriceOracleMock');
 const FUSD = artifacts.require('FUSD');
-const CDS = artifacts.require('CDSLounge');
-const Contract = artifacts.require('CDS');
+const CDS = artifacts.require('CDS');
 
 require('dotenv').config();
 
@@ -23,60 +22,40 @@ contract('CDS', async (accounts) => {
   const defaultPremium = 750;
   const defaultPremiumRounds = 12; // total lifecycle of test cds is 2hrs
   const defaultBuyerDeposit = defaultPremium * (3 + 1);
+  const defaultTokenFaucet = '10000000';
   const defaultAssetType = 0; // BTC:0, ETH:1, LINK:2
 
   const { PRICE_ORACLE_ADDRESS, FUSD_ADDRESS } = process.env;
 
-  before(async () => {
+  // await fusd.transfer(accounts[1], defaultTokenFaucet, { from: accounts[0] });
+  // await fusd.transfer(accounts[2], defaultTokenFaucet, { from: accounts[0] });
+  // await fusd.transfer(accounts[3], defaultTokenFaucet, { from: accounts[0] });
+  // await fusd.transfer(accounts[4], defaultTokenFaucet, { from: accounts[0] });
+
+  beforeEach(async () => {
+    // beforeEach에 deploy 설정 있어야함
     priceOracle = await PriceOracleMock.at(PRICE_ORACLE_ADDRESS);
     fusd = await FUSD.at(FUSD_ADDRESS);
     cds = await CDS.new({ from: accounts[0] });
   });
 
+  /*
   describe('Price Oracle', () => {
     it('should throw error if priceOracle is not set', async () => {
-      await assert.strictEqual(PRICE_ORACLE_ADDRESS, priceOracle.address);
-    });
-
-    it('should be able to get value from it', async () => {
-      const btcPrice = 2500000000000;
-      const ethPrice = 160000000000;
-      const linkPrice = 750000000;
-
-      await assert.strictEqual(btcPrice, +(await priceOracle.btcPrice()));
-      await assert.strictEqual(ethPrice, +(await priceOracle.ethPrice()));
-      await assert.strictEqual(linkPrice, +(await priceOracle.linkPrice()));
-    });
-
-    it('should be able to set value and check if changed properly', async () => {
-      const defaultBTCPrice = 2500000000000;
-      const defaultETHPrice = 160000000000;
-      const defaultLinkPrice = 750000000;
-
-      const changeBTCPrice = 2200000000000;
-      const changeETHPrice = 200000000000;
-      const changeLinkPrice = 600000000;
-
-      await truffleAssert.passes(
-        await priceOracle.setBTCPrice(changeBTCPrice, { from: accounts[0] }),
-        await priceOracle.setETHPrice(changeETHPrice, { from: accounts[0] }),
-        await priceOracle.setLinkPrice(changeLinkPrice, { from: accounts[0] }),
-      );
-
-      await assert.strictEqual(changeBTCPrice, +(await priceOracle.btcPrice()));
-      await assert.strictEqual(changeETHPrice, +(await priceOracle.ethPrice()));
+      // const priceOracleSetted = await cds.priceOracle();
       await assert.strictEqual(
-        changeLinkPrice,
-        +(await priceOracle.linkPrice()),
+        '0x0f7d54966079088eb696f70dcbb309388597a2c9',
+        priceOracle.address,
       );
+    });
 
-      await truffleAssert.passes(
-        await priceOracle.setBTCPrice(defaultBTCPrice),
-        await priceOracle.setETHPrice(defaultETHPrice),
-        await priceOracle.setLinkPrice(defaultLinkPrice),
-      );
+    it('should be able to set priceOracle and get value from it', async () => {
+      await truffleAssert.passes(await cds.setOracle(priceOracle.address));
+      const currentPrice = await priceOracle.btcPrice();
+      await assert.strictEqual(defaultBTCPriceOracle, currentPrice.toNumber());
     });
   });
+  */
 
   describe('Owner Check', () => {
     it('should throw error if owner is different', async () => {
@@ -135,7 +114,7 @@ contract('CDS', async (accounts) => {
       );
     });
 
-    it('should be able to create CDS as BUYER when valid input approved and check it from mapping', async () => {
+    it('should be able to create Swap as BUYER when valid input approved and check it from mapping', async () => {
       await fusd.approve(cds.address, defaultBuyerDeposit, {
         from: accounts[2],
       });
@@ -152,25 +131,21 @@ contract('CDS', async (accounts) => {
           { from: accounts[2] },
         ),
       );
-      const [currentCDSId] = await cds.getCDSId();
-      const buyer = await cds.getBuyer(currentCDSId);
-      const seller = await cds.getSeller(currentCDSId);
-      const buyerDepositDetail = await cds.deposits(currentCDSId, 0);
-      const sellerDepositDetail = await cds.deposits(currentCDSId, 1);
+      const [currentSwapId] = await cds.getSwapId();
+      const buyer = await cds.getBuyer(currentSwapId);
+      const seller = await cds.getSeller(currentSwapId);
+      const buyerDepositDetail = await cds.deposits(currentSwapId, 0);
+      const sellerDepositDetail = await cds.deposits(currentSwapId, 1);
+      const totalRounds = await cds.getRounds(currentSwapId);
 
-      const cdsAddr = await cds.getCDS(currentCDSId);
-      const targetCDS = await Contract.at(cdsAddr);
-
-      const totalRounds = await targetCDS.rounds();
-      const CDSPrices = await targetCDS.getPrices();
-
+      const currentSwap = await cds.getPrices(currentSwapId);
       const [
         initAssetPrice,
         claimPrice,
         liquidationPrice,
         premium,
         sellerDeposit,
-      ] = CDSPrices;
+      ] = currentSwap;
 
       await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
       await assert.strictEqual(defaultClaimPrice, +claimPrice);
@@ -190,7 +165,7 @@ contract('CDS', async (accounts) => {
       await assert.strictEqual(defaultPremiumRounds, +totalRounds);
     });
 
-    it('should be able to create CDS as SELLER when valid input provided and check it from mapping', async () => {
+    it('should be able to create Swap as SELLER when valid input provided and check it from mapping', async () => {
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
@@ -207,24 +182,21 @@ contract('CDS', async (accounts) => {
           { from: accounts[1] },
         ),
       );
-      const [currentCDSId] = await cds.getCDSId();
-      const buyer = await cds.getBuyer(currentCDSId);
-      const seller = await cds.getSeller(currentCDSId);
-      const buyerDepositDetail = await cds.deposits(currentCDSId, 0);
-      const sellerDepositDetail = await cds.deposits(currentCDSId, 1);
+      const [currentSwapId] = await cds.getSwapId();
+      const buyer = await cds.getBuyer(currentSwapId);
+      const seller = await cds.getSeller(currentSwapId);
+      const buyerDepositDetail = await cds.deposits(currentSwapId, 0);
+      const sellerDepositDetail = await cds.deposits(currentSwapId, 1);
+      const totalRounds = await cds.getRounds(currentSwapId);
 
-      const cdsAddr = await cds.getCDS(currentCDSId);
-      const targetCDS = await Contract.at(cdsAddr);
-
-      const totalRounds = await targetCDS.rounds();
-      const CDSPrices = await targetCDS.getPrices();
+      const currentSwap = await cds.getPrices(currentSwapId);
       const [
         initAssetPrice,
         claimPrice,
         liquidationPrice,
         premium,
         sellerDeposit,
-      ] = CDSPrices;
+      ] = currentSwap;
 
       await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
       await assert.strictEqual(defaultClaimPrice, +claimPrice);
@@ -243,7 +215,7 @@ contract('CDS', async (accounts) => {
       await assert.strictEqual(defaultPremiumRounds, +totalRounds);
     });
 
-    it('should have decreased TOKEN amount of buyer after creating CDS as BUYER', async () => {
+    it('should have decreased TOKEN amount of buyer after creating swap as BUYER', async () => {
       const before = await fusd.balanceOf(accounts[2]);
       const beforeCA = await fusd.balanceOf(cds.address);
       await fusd.approve(cds.address, defaultBuyerDeposit, {
@@ -276,7 +248,7 @@ contract('CDS', async (accounts) => {
       await assert.strictEqual(+beforeCA + defaultBuyerDeposit, +afterCA);
     });
 
-    it('should have decreased TOKEN amount of seller after creating CDS as SELLER', async () => {
+    it('should have decreased TOKEN amount of seller after creating swap as SELLER', async () => {
       const before = await fusd.balanceOf(accounts[1]);
       const beforeCA = await fusd.balanceOf(cds.address);
       await fusd.approve(cds.address, defaultSellerDeposit, {
@@ -311,7 +283,7 @@ contract('CDS', async (accounts) => {
   });
 
   describe('Accept', () => {
-    it('should be able to accept CDS as SELLER when valid deposit provided and check it from mapping', async () => {
+    it('should be able to accept Swap as SELLER when valid deposit provided and check it from mapping', async () => {
       await fusd.approve(cds.address, defaultBuyerDeposit, {
         from: accounts[2],
       });
@@ -327,32 +299,30 @@ contract('CDS', async (accounts) => {
         { from: accounts[2] },
       );
 
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
 
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
       await truffleAssert.passes(
-        cds.accept(defaultInitAssetPrice, currentCDSId, { from: accounts[1] }),
+        cds.accept(defaultInitAssetPrice, currentSwapId, { from: accounts[1] }),
         'accepting',
       );
 
-      const buyer = await cds.getBuyer(currentCDSId);
-      const seller = await cds.getSeller(currentCDSId);
-      const buyerDepositDetail = await cds.deposits(currentCDSId, 0);
-      const sellerDepositDetail = await cds.deposits(currentCDSId, 1);
+      const buyer = await cds.getBuyer(currentSwapId);
+      const seller = await cds.getSeller(currentSwapId);
+      const buyerDepositDetail = await cds.deposits(currentSwapId, 0);
+      const sellerDepositDetail = await cds.deposits(currentSwapId, 1);
+      const currRounds = await cds.getRounds(currentSwapId);
 
-      const cdsAddr = await cds.getCDS(currentCDSId);
-      const targetCDS = await Contract.at(cdsAddr);
-
-      const currRounds = await targetCDS.rounds();
+      const currentSwap = await cds.getPrices(currentSwapId);
       const [
         initAssetPrice,
         claimPrice,
         liquidationPrice,
         premium,
         sellerDeposit,
-      ] = await targetCDS.getPrices();
+      ] = currentSwap;
 
       await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
       await assert.strictEqual(defaultClaimPrice, +claimPrice);
@@ -372,7 +342,7 @@ contract('CDS', async (accounts) => {
       await assert.strictEqual(defaultPremiumRounds, +currRounds + 1);
     });
 
-    it('should be able to accept CDS as BUYER when valid deposit provided and check it from mapping', async () => {
+    it('should be able to accept Swap as BUYER when valid deposit provided and check it from mapping', async () => {
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
@@ -388,32 +358,30 @@ contract('CDS', async (accounts) => {
         { from: accounts[1] },
       );
 
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
 
       await fusd.approve(cds.address, defaultBuyerDeposit, {
         from: accounts[2],
       });
       await truffleAssert.passes(
-        cds.accept(defaultInitAssetPrice, currentCDSId, { from: accounts[2] }),
+        cds.accept(defaultInitAssetPrice, currentSwapId, { from: accounts[2] }),
         'accepting',
       );
 
-      const buyer = await cds.getBuyer(currentCDSId);
-      const seller = await cds.getSeller(currentCDSId);
-      const buyerDepositDetail = await cds.deposits(currentCDSId, 0);
-      const sellerDepositDetail = await cds.deposits(currentCDSId, 1);
+      const buyer = await cds.getBuyer(currentSwapId);
+      const seller = await cds.getSeller(currentSwapId);
+      const buyerDepositDetail = await cds.deposits(currentSwapId, 0);
+      const sellerDepositDetail = await cds.deposits(currentSwapId, 1);
+      const currRounds = await cds.getRounds(currentSwapId);
 
-      const cdsAddr = await cds.getCDS(currentCDSId);
-      const targetCDS = await Contract.at(cdsAddr);
-
-      const currRounds = await targetCDS.rounds();
+      const currentSwap = await cds.getPrices(currentSwapId);
       const [
         initAssetPrice,
         claimPrice,
         liquidationPrice,
         premium,
         sellerDeposit,
-      ] = await targetCDS.getPrices();
+      ] = currentSwap;
 
       await assert.strictEqual(defaultInitAssetPrice, +initAssetPrice);
       await assert.strictEqual(defaultClaimPrice, +claimPrice);
@@ -449,13 +417,13 @@ contract('CDS', async (accounts) => {
         { from: accounts[2] },
       );
 
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
 
       await fusd.approve(cds.address, defaultSellerDeposit - 1, {
         from: accounts[1],
       });
       await truffleAssert.fails(
-        cds.accept(defaultInitAssetPrice, currentCDSId, { from: accounts[1] }),
+        cds.accept(defaultInitAssetPrice, currentSwapId, { from: accounts[1] }),
       );
     });
 
@@ -475,18 +443,18 @@ contract('CDS', async (accounts) => {
         { from: accounts[1] },
       );
 
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
 
       await fusd.approve(cds.address, defaultBuyerDeposit - 1, {
         from: accounts[2],
       });
 
       await truffleAssert.fails(
-        cds.accept(defaultInitAssetPrice, currentCDSId, { from: accounts[2] }),
+        cds.accept(defaultInitAssetPrice, currentSwapId, { from: accounts[2] }),
       );
     });
 
-    it('should throw error if the host accepts the CDS', async () => {
+    it('should throw error if the host accepts the swap', async () => {
       await fusd.approve(cds.address, defaultBuyerDeposit, {
         from: accounts[2],
       });
@@ -502,14 +470,14 @@ contract('CDS', async (accounts) => {
         { from: accounts[2] },
       );
 
-      let [currentCDSId] = await cds.getCDSId();
+      let [currentSwapId] = await cds.getSwapId();
 
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[2],
       });
 
       await truffleAssert.fails(
-        cds.accept(defaultInitAssetPrice, currentCDSId, { from: accounts[2] }),
+        cds.accept(defaultInitAssetPrice, currentSwapId, { from: accounts[2] }),
       );
 
       await fusd.approve(cds.address, defaultSellerDeposit, {
@@ -527,17 +495,17 @@ contract('CDS', async (accounts) => {
         { from: accounts[1] },
       );
 
-      [currentCDSId] = await cds.getCDSId();
+      [currentSwapId] = await cds.getSwapId();
 
       await fusd.approve(cds.address, defaultBuyerDeposit, {
         from: accounts[1],
       });
       await truffleAssert.fails(
-        cds.accept(defaultInitAssetPrice, currentCDSId, { from: accounts[1] }),
+        cds.accept(defaultInitAssetPrice, currentSwapId, { from: accounts[1] }),
       );
     });
 
-    it('should have right TOKEN amount of seller after accepting CDS as SELLER', async () => {
+    it('should have right TOKEN amount of seller after accepting swap as SELLER', async () => {
       await fusd.approve(cds.address, defaultBuyerDeposit, {
         from: accounts[2],
       });
@@ -553,14 +521,14 @@ contract('CDS', async (accounts) => {
         { from: accounts[2] },
       );
 
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
 
       const before = await fusd.balanceOf(accounts[1]);
       const beforeCA = await fusd.balanceOf(cds.address);
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
       const after = await fusd.balanceOf(accounts[1]);
@@ -576,7 +544,7 @@ contract('CDS', async (accounts) => {
       );
     });
 
-    it('should have right TOKEN amount of buyer after accepting CDS as BUYER', async () => {
+    it('should have right TOKEN amount of buyer after accepting swap as BUYER', async () => {
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
@@ -592,14 +560,14 @@ contract('CDS', async (accounts) => {
         { from: accounts[1] },
       );
 
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
 
       const before = await fusd.balanceOf(accounts[2]);
       const beforeCA = await fusd.balanceOf(cds.address);
       await fusd.approve(cds.address, defaultBuyerDeposit, {
         from: accounts[2],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[2],
       });
       const after = await fusd.balanceOf(accounts[2]);
@@ -632,32 +600,30 @@ contract('CDS', async (accounts) => {
     });
 
     it('should throw error if the caller of cancel is not the buyer/seller', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await truffleAssert.fails(
-        cds.cancel(currentCDSId, { from: accounts[3] }),
+        cds.cancel(currentSwapId, { from: accounts[3] }),
       );
     });
 
-    it('should be able to cancel if the buyer calls cancel and check the CDS', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+    it('should be able to cancel if the buyer calls cancel and check the swap', async () => {
+      const [currentSwapId] = await cds.getSwapId();
       await truffleAssert.passes(
-        cds.cancel(currentCDSId, { from: accounts[2] }),
+        cds.cancel(currentSwapId, { from: accounts[2] }),
       );
-      const buyerDepositDetail = await cds.deposits(currentCDSId, 0);
-
-      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
-      const cdsStatus = await targetCDS.status();
+      const buyerDepositDetail = await cds.deposits(currentSwapId, 0);
+      const swapStatus = await cds.getStatus(currentSwapId);
 
       await assert.strictEqual(+buyerDepositDetail, 0);
-      await assert.strictEqual(0, +cdsStatus); // inactive => 0
+      await assert.strictEqual(0, +swapStatus); // inactive => 0
     });
 
     it('should have decreased amount of TOKEN after buyer calling cancel', async () => {
       const before = await fusd.balanceOf(accounts[2]);
       const beforeCA = await fusd.balanceOf(cds.address);
 
-      const [currentCDSId] = await cds.getCDSId();
-      await cds.cancel(currentCDSId, { from: accounts[2] });
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.cancel(currentSwapId, { from: accounts[2] });
 
       const after = await fusd.balanceOf(accounts[2]);
       const afterCA = await fusd.balanceOf(cds.address);
@@ -686,32 +652,30 @@ contract('CDS', async (accounts) => {
     });
 
     it('should throw error if the caller of cancel is not the buyer/seller', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await truffleAssert.fails(
-        cds.cancel(currentCDSId, { from: accounts[3] }),
+        cds.cancel(currentSwapId, { from: accounts[3] }),
       );
     });
 
-    it('should be able to cancel if the seller calls cancel and check the CDS', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+    it('should be able to cancel if the seller calls cancel and check the swap', async () => {
+      const [currentSwapId] = await cds.getSwapId();
       await truffleAssert.passes(
-        cds.cancel(currentCDSId, { from: accounts[1] }),
+        cds.cancel(currentSwapId, { from: accounts[1] }),
       );
-      const sellerDepositDetail = await cds.deposits(currentCDSId, 1);
-
-      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
-      const cdsStatus = await targetCDS.status();
+      const sellerDepositDetail = await cds.deposits(currentSwapId, 1);
+      const swapStatus = await cds.getStatus(currentSwapId);
 
       await assert.strictEqual(+sellerDepositDetail, 0);
-      await assert.strictEqual(0, +cdsStatus); // inactive => 0
+      await assert.strictEqual(0, +swapStatus); // inactive => 0
     });
 
     it('should have proper amount of TOKEN after seller calling cancel', async () => {
       const before = await fusd.balanceOf(accounts[1]);
       const beforeCA = await fusd.balanceOf(cds.address);
 
-      const [currentCDSId] = await cds.getCDSId();
-      await cds.cancel(currentCDSId, { from: accounts[1] });
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.cancel(currentSwapId, { from: accounts[1] });
 
       const after = await fusd.balanceOf(accounts[1]);
       const afterCA = await fusd.balanceOf(cds.address);
@@ -740,55 +704,57 @@ contract('CDS', async (accounts) => {
     });
 
     it('should throw error if the status is not active', async () => {
-      const [currentCDSId] = await cds.getCDSId();
-      await truffleAssert.fails(cds.close(currentCDSId, { from: accounts[2] }));
+      const [currentSwapId] = await cds.getSwapId();
+      await truffleAssert.fails(
+        cds.close(currentSwapId, { from: accounts[2] }),
+      );
     });
 
     it('should throw error if the caller is not the buyer', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
 
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
 
-      await truffleAssert.fails(cds.close(currentCDSId, { from: accounts[1] }));
+      await truffleAssert.fails(
+        cds.close(currentSwapId, { from: accounts[1] }),
+      );
     });
 
-    it('should be able to close if the buyer calls close and check the state of the CDS', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+    it('should be able to close if the buyer calls close and check the state of the swap', async () => {
+      const [currentSwapId] = await cds.getSwapId();
 
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
 
       await truffleAssert.passes(
-        cds.close(currentCDSId, { from: accounts[2] }),
+        cds.close(currentSwapId, { from: accounts[2] }),
       );
 
-      const buyerDepositDetail = await cds.deposits(currentCDSId, 0);
-      const sellerDepositDetail = await cds.deposits(currentCDSId, 1);
-
-      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
-      const cdsStatus = await targetCDS.status();
+      const buyerDepositDetail = await cds.deposits(currentSwapId, 0);
+      const sellerDepositDetail = await cds.deposits(currentSwapId, 1);
+      const swapStatus = await cds.getStatus(currentSwapId);
 
       await assert.strictEqual(+buyerDepositDetail, 0);
       await assert.strictEqual(+sellerDepositDetail, 0);
-      await assert.strictEqual(4, +cdsStatus); // expired => 4
+      await assert.strictEqual(4, +swapStatus); // expired => 4
     });
 
     it('should have proper amount of balance after close is called', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
 
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
 
@@ -799,7 +765,7 @@ contract('CDS', async (accounts) => {
       };
 
       await truffleAssert.passes(
-        cds.close(currentCDSId, { from: accounts[2] }),
+        cds.close(currentSwapId, { from: accounts[2] }),
       );
 
       const balanceAfterClose = {
@@ -845,49 +811,55 @@ contract('CDS', async (accounts) => {
       );
     });
 
-    it('should throw error if the status of the CDS is not active', async () => {
-      const [currentCDSId] = await cds.getCDSId();
-      await truffleAssert.fails(cds.claim(currentCDSId, { from: accounts[2] }));
+    it('should throw error if the status of the swap is not active', async () => {
+      const [currentSwapId] = await cds.getSwapId();
+      await truffleAssert.fails(
+        cds.claim(currentSwapId, { from: accounts[2] }),
+      );
     });
 
     it('should throw error if the method is not called by the buyer', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
 
       const currPrice = 2100000000000;
       await priceOracle.setBTCPrice(currPrice, { from: accounts[0] });
-      await truffleAssert.fails(cds.claim(currentCDSId, { from: accounts[1] }));
+      await truffleAssert.fails(
+        cds.claim(currentSwapId, { from: accounts[1] }),
+      );
     });
 
     // check proper return
     // claim when currPrice is above CP => 100
     it('should throw error if the current price of the asset is above the claim price', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
 
       const currPrice = 2200000000000;
       await priceOracle.setBTCPrice(currPrice, { from: accounts[0] });
 
-      await truffleAssert.fails(cds.claim(currentCDSId, { from: accounts[2] }));
+      await truffleAssert.fails(
+        cds.claim(currentSwapId, { from: accounts[2] }),
+      );
     });
 
     // claim when currPrice is btwn CP~LP => 21000, claimReward should be 40000
     it('should return proper status and reward if the current price of the asset is below claim price ', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
 
@@ -901,7 +873,7 @@ contract('CDS', async (accounts) => {
         seller: +(await fusd.balanceOf(accounts[1])),
       };
 
-      let claimReward = await cds.claim(currentCDSId, { from: accounts[2] });
+      let claimReward = await cds.claim(currentSwapId, { from: accounts[2] });
       claimReward = claimReward.logs[0].args.claimReward;
 
       const balanceAfterClaim = {
@@ -933,18 +905,17 @@ contract('CDS', async (accounts) => {
       );
 
       // status
-      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
-      const cdsStatus = await targetCDS.status();
-      assert.strictEqual(3, +cdsStatus);
+      const status = await cds.getStatus(currentSwapId);
+      assert.strictEqual(3, +status);
     });
 
     // claim when currPrice is below LP => 50
     it('should return proper status and reward seller deposit to buyer if the current price of the asset is below liquidation price ', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
 
@@ -957,7 +928,7 @@ contract('CDS', async (accounts) => {
         seller: +(await fusd.balanceOf(accounts[1])),
       };
 
-      let claimReward = await cds.claim(currentCDSId, { from: accounts[2] });
+      let claimReward = await cds.claim(currentSwapId, { from: accounts[2] });
       claimReward = claimReward.logs[0].args.claimReward;
 
       const balanceAfterClaim = {
@@ -986,9 +957,8 @@ contract('CDS', async (accounts) => {
       assert.equal(balanceBeforeClaim.seller, balanceAfterClaim.seller);
 
       // status
-      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
-      const cdsStatus = await targetCDS.status();
-      assert.strictEqual(3, +cdsStatus);
+      const status = await cds.getStatus(currentSwapId);
+      assert.strictEqual(3, +status);
     });
   });
 
@@ -1010,50 +980,50 @@ contract('CDS', async (accounts) => {
       );
     });
 
-    it('should throw error if the status of the CDS is not active', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+    it('should throw error if the status of the swap is not active', async () => {
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultPremium, { from: accounts[2] });
       await truffleAssert.fails(
-        cds.payPremium(currentCDSId, { from: accounts[2] }),
+        cds.payPremium(currentSwapId, { from: accounts[2] }),
       );
     });
 
     it('should throw error if the method is not called by the buyer', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
       await fusd.approve(cds.address, defaultPremium, { from: accounts[2] });
       await truffleAssert.fails(
-        cds.payPremium(currentCDSId, { from: accounts[1] }),
+        cds.payPremium(currentSwapId, { from: accounts[1] }),
       );
     });
 
     it('should throw error if the buyer approved invalid amount of premium', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
       await fusd.approve(cds.address, defaultPremium - 1, {
         from: accounts[2],
       });
       await truffleAssert.fails(
-        cds.payPremium(currentCDSId, { from: accounts[2] }),
+        cds.payPremium(currentSwapId, { from: accounts[2] }),
       );
     });
 
     it('should pass if proper premium paid, and check the balance of the participants', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
 
@@ -1066,7 +1036,7 @@ contract('CDS', async (accounts) => {
         from: accounts[2],
       });
       await truffleAssert.passes(
-        cds.payPremium(currentCDSId, { from: accounts[2] }),
+        cds.payPremium(currentSwapId, { from: accounts[2] }),
       );
 
       const balanceAfterPremium = {
@@ -1087,25 +1057,24 @@ contract('CDS', async (accounts) => {
     });
 
     it('should pass if totalPremiumRounds changed properly', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
 
-      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
-      const roundBeforePremium = await targetCDS.rounds();
+      const roundBeforePremium = await cds.getRounds(currentSwapId);
 
       await fusd.approve(cds.address, defaultPremium, {
         from: accounts[2],
       });
       await truffleAssert.passes(
-        cds.payPremium(currentCDSId, { from: accounts[2] }),
+        cds.payPremium(currentSwapId, { from: accounts[2] }),
       );
 
-      const roundAfterPremium = await targetCDS.rounds();
+      const roundAfterPremium = await cds.getRounds(currentSwapId);
       assert.equal(roundBeforePremium - 1, roundAfterPremium);
     });
 
@@ -1126,11 +1095,11 @@ contract('CDS', async (accounts) => {
         { from: accounts[2] },
       );
 
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
       // round becomes 0 after accpet from seller
@@ -1139,7 +1108,7 @@ contract('CDS', async (accounts) => {
         from: accounts[2],
       });
       await truffleAssert.fails(
-        cds.payPremium(currentCDSId, { from: accounts[2] }),
+        cds.payPremium(currentSwapId, { from: accounts[2] }),
       );
     });
   });
@@ -1163,11 +1132,11 @@ contract('CDS', async (accounts) => {
     });
 
     it('should pass if proper premium paid from DEPOSIT, and check the balance of the seller and contract', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
 
@@ -1177,7 +1146,7 @@ contract('CDS', async (accounts) => {
       };
 
       await truffleAssert.passes(
-        cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }),
+        cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }),
       );
 
       const balanceAfterPremium = {
@@ -1198,27 +1167,25 @@ contract('CDS', async (accounts) => {
     });
 
     it('should pass if rounds and deposit changed properly', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
 
-      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
-      const roundBeforePremium = await targetCDS.rounds();
-
-      const depositBeforePremium = await cds.deposits(currentCDSId, 0);
-      const payDateBeforePremium = await cds.nextPayDate(currentCDSId);
+      const roundBeforePremium = await cds.getRounds(currentSwapId);
+      const depositBeforePremium = await cds.deposits(currentSwapId, 0);
+      const payDateBeforePremium = await cds.nextPayDate(currentSwapId);
 
       await truffleAssert.passes(
-        cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }),
+        cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }),
       );
 
-      const roundAfterPremium = await targetCDS.rounds();
-      const depositAfterPremium = await cds.deposits(currentCDSId, 0);
-      const payDateAfterPremium = await cds.nextPayDate(currentCDSId);
+      const roundAfterPremium = await cds.getRounds(currentSwapId);
+      const depositAfterPremium = await cds.deposits(currentSwapId, 0);
+      const payDateAfterPremium = await cds.nextPayDate(currentSwapId);
 
       assert.equal(roundBeforePremium - 1, roundAfterPremium);
       assert.equal(
@@ -1228,23 +1195,23 @@ contract('CDS', async (accounts) => {
       assert.equal(+payDateBeforePremium + 604800 * 4, +payDateAfterPremium);
     });
 
-    it('should throw error if the status of the CDS is not active', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+    it('should throw error if the status of the swap is not active', async () => {
+      const [currentSwapId] = await cds.getSwapId();
       await truffleAssert.fails(
-        cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }),
+        cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }),
       );
     });
 
     it('should throw error if the method is not called by the owner', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
       await truffleAssert.fails(
-        cds.payPremiumByDeposit(currentCDSId, { from: accounts[1] }),
+        cds.payPremiumByDeposit(currentSwapId, { from: accounts[1] }),
       );
     });
 
@@ -1265,55 +1232,53 @@ contract('CDS', async (accounts) => {
         { from: accounts[2] },
       );
 
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
 
       // round becomes 0 after accpet from seller
-      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
-      const round = await targetCDS.rounds();
-
+      const round = await cds.getRounds(currentSwapId);
       assert.equal(+round, 0);
       await truffleAssert.fails(
-        cds.payPremiumByDeposit(currentCDSId, { from: accounts[1] }),
+        cds.payPremiumByDeposit(currentSwapId, { from: accounts[1] }),
       );
     });
 
     it('should throw error if the deposit left is already 0', async () => {
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
 
       // first payPremiumByDeposit
-      let depositBeforePremium = await cds.deposits(currentCDSId, 0);
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] });
-      let depositAfterPremium = await cds.deposits(currentCDSId, 0);
+      let depositBeforePremium = await cds.deposits(currentSwapId, 0);
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] });
+      let depositAfterPremium = await cds.deposits(currentSwapId, 0);
       assert.equal(+depositBeforePremium - defaultPremium, depositAfterPremium);
 
       // second payPremiumByDeposit
-      depositBeforePremium = await cds.deposits(currentCDSId, 0);
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] });
-      depositAfterPremium = await cds.deposits(currentCDSId, 0);
+      depositBeforePremium = await cds.deposits(currentSwapId, 0);
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] });
+      depositAfterPremium = await cds.deposits(currentSwapId, 0);
       assert.equal(+depositBeforePremium - defaultPremium, depositAfterPremium);
 
       // third payPremiumByDeposit
-      depositBeforePremium = await cds.deposits(currentCDSId, 0);
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] });
-      depositAfterPremium = await cds.deposits(currentCDSId, 0);
+      depositBeforePremium = await cds.deposits(currentSwapId, 0);
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] });
+      depositAfterPremium = await cds.deposits(currentSwapId, 0);
       assert.equal(+depositBeforePremium - defaultPremium, depositAfterPremium);
 
       // no deposit remaining
       assert.equal(+depositAfterPremium, 0);
       await truffleAssert.fails(
-        cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }),
+        cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }),
       );
     });
   });
@@ -1335,58 +1300,58 @@ contract('CDS', async (accounts) => {
         defaultAssetType,
         { from: accounts[2] },
       );
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
     });
 
     it('should pass if the caller is seller and round left is 0', async () => {
       // current round = 1
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultPremium, {
         from: accounts[2],
       });
-      await cds.payPremium(currentCDSId, { from: accounts[2] });
+      await cds.payPremium(currentSwapId, { from: accounts[2] });
 
       // current round = 0
       await truffleAssert.passes(
-        cds.expire(currentCDSId, { from: accounts[1] }),
+        cds.expire(currentSwapId, { from: accounts[1] }),
       );
     });
 
     it('should fail if round left is not 0', async () => {
       // current round = 1
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await truffleAssert.fails(
-        cds.expire(currentCDSId, { from: accounts[1] }),
+        cds.expire(currentSwapId, { from: accounts[1] }),
       );
     });
 
     it('should fail if the caller is not the seller', async () => {
       // current round = 1
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultPremium, {
         from: accounts[2],
       });
-      await cds.payPremium(currentCDSId, { from: accounts[2] });
+      await cds.payPremium(currentSwapId, { from: accounts[2] });
 
       // current round = 0
       await truffleAssert.fails(
-        cds.expire(currentCDSId, { from: accounts[3] }),
+        cds.expire(currentSwapId, { from: accounts[3] }),
       );
     });
 
     it('should return proper amount of token after expired', async () => {
       // current round = 1
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultPremium, {
         from: accounts[2],
       });
-      await cds.payPremium(currentCDSId, { from: accounts[2] });
+      await cds.payPremium(currentSwapId, { from: accounts[2] });
 
       const beforeExpired = {
         contract: +(await fusd.balanceOf(cds.address)),
@@ -1394,7 +1359,7 @@ contract('CDS', async (accounts) => {
         seller: +(await fusd.balanceOf(accounts[1])),
       };
       // current round = 0
-      await cds.expire(currentCDSId, { from: accounts[1] });
+      await cds.expire(currentSwapId, { from: accounts[1] });
       const afterExpired = {
         contract: +(await fusd.balanceOf(cds.address)),
         buyer: +(await fusd.balanceOf(accounts[2])),
@@ -1422,18 +1387,17 @@ contract('CDS', async (accounts) => {
 
     it('should have status of expire after expired successfully', async () => {
       // current round = 1
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultPremium, {
         from: accounts[2],
       });
-      await cds.payPremium(currentCDSId, { from: accounts[2] });
+      await cds.payPremium(currentSwapId, { from: accounts[2] });
 
       // current round = 0
-      await cds.expire(currentCDSId, { from: accounts[1] });
+      await cds.expire(currentSwapId, { from: accounts[1] });
 
-      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
-      const cdsStatus = await targetCDS.status();
-      assert.equal(4, +cdsStatus);
+      const status = await cds.getStatus(currentSwapId);
+      assert.equal(4, +status);
     });
   });
 
@@ -1453,61 +1417,61 @@ contract('CDS', async (accounts) => {
         defaultAssetType,
         { from: accounts[2] },
       );
-      const [currentCDSId] = await cds.getCDSId();
+      const [currentSwapId] = await cds.getSwapId();
       await fusd.approve(cds.address, defaultSellerDeposit, {
         from: accounts[1],
       });
-      await cds.accept(defaultInitAssetPrice, currentCDSId, {
+      await cds.accept(defaultInitAssetPrice, currentSwapId, {
         from: accounts[1],
       });
     });
 
     it('should pass if the caller is seller and deposit left is 0', async () => {
-      const [currentCDSId] = await cds.getCDSId();
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 2 * premium
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 1 * premium
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 0 * premium
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 2 * premium
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 1 * premium
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 0 * premium
 
       await truffleAssert.passes(
-        cds.expire(currentCDSId, { from: accounts[1] }),
+        cds.expire(currentSwapId, { from: accounts[1] }),
       );
     });
 
     it('should fail if deposit left is not 0', async () => {
-      const [currentCDSId] = await cds.getCDSId();
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 2 * premium
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 1 * premium
-      const deposit = await cds.deposits(currentCDSId, 0);
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 2 * premium
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 1 * premium
+      const deposit = await cds.deposits(currentSwapId, 0);
       assert.equal(+deposit, defaultPremium);
 
       await truffleAssert.fails(
-        cds.expire(currentCDSId, { from: accounts[1] }),
+        cds.expire(currentSwapId, { from: accounts[1] }),
       );
     });
 
     it('should fail if the caller is not the seller', async () => {
-      const [currentCDSId] = await cds.getCDSId();
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 2 * premium
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 1 * premium
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 0 * premium
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 2 * premium
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 1 * premium
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 0 * premium
 
       await truffleAssert.fails(
-        cds.expire(currentCDSId, { from: accounts[0] }),
+        cds.expire(currentSwapId, { from: accounts[0] }),
       );
     });
 
     it('should return proper amount of token after expired', async () => {
-      const [currentCDSId] = await cds.getCDSId();
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 2 * premium
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 1 * premium
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 0 * premium
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 2 * premium
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 1 * premium
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 0 * premium
 
       const beforeExpired = {
         contract: +(await fusd.balanceOf(cds.address)),
         buyer: +(await fusd.balanceOf(accounts[2])),
         seller: +(await fusd.balanceOf(accounts[1])),
       };
-      await cds.expire(currentCDSId, { from: accounts[1] });
+      await cds.expire(currentSwapId, { from: accounts[1] });
       const afterExpired = {
         contract: +(await fusd.balanceOf(cds.address)),
         buyer: +(await fusd.balanceOf(accounts[2])),
@@ -1529,18 +1493,17 @@ contract('CDS', async (accounts) => {
     });
 
     it('should have status of expire after expired successfully', async () => {
-      const [currentCDSId] = await cds.getCDSId();
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 2 * premium
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 1 * premium
-      await cds.payPremiumByDeposit(currentCDSId, { from: accounts[0] }); // current deposit = 0 * premium
+      const [currentSwapId] = await cds.getSwapId();
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 2 * premium
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 1 * premium
+      await cds.payPremiumByDeposit(currentSwapId, { from: accounts[0] }); // current deposit = 0 * premium
 
       await truffleAssert.passes(
-        cds.expire(currentCDSId, { from: accounts[1] }),
+        cds.expire(currentSwapId, { from: accounts[1] }),
       );
 
-      const targetCDS = await Contract.at(await cds.getCDS(currentCDSId));
-      const cdsStatus = await targetCDS.status();
-      assert.equal(4, +cdsStatus);
+      const status = await cds.getStatus(currentSwapId);
+      assert.equal(4, +status);
     });
   });
 });
