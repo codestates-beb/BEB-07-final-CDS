@@ -13,6 +13,30 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "_ownedCDS",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
@@ -212,11 +236,11 @@
 			]
 		},
 		"contracts/CDS/CDS.sol": {
-			"keccak256": "0xb4e2ebfc509a6c529362b50eb07cd150a3a548ad73c082b3ff2e1fadc0d4ebfa",
+			"keccak256": "0xf16f62e2d14644562a3078f215e66d8c2855738eb84d2b3039e77c2884b8c05a",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a0a8272bda7cda3729f5847c4affefb6a8d8202806a0e7ef9054d46e1434b82e",
-				"dweb:/ipfs/QmRzUzFsCG42Cg7VtvXwFBqapmLsamtyy4HKknm5HLzYcr"
+				"bzz-raw://c78127c5f2d4b0e6c77bb827b1d0191c2498e0d5e319040e702af5f7acc8c957",
+				"dweb:/ipfs/QmXsZ6JxZWTnrNq7bAkUGDj81GHQVLK11MW6mAiMN1uBMU"
 			]
 		},
 		"contracts/CDS/PriceConsumer.sol": {
@@ -236,11 +260,11 @@
 			]
 		},
 		"contracts/Handler/CDSFactory.sol": {
-			"keccak256": "0x1487ff9ab45155a61f190d6412490657392b044056a49921d5bc66bd071a85c7",
+			"keccak256": "0x6493d3733f662af83d8842126589484fdddb3a491568546b2c3f2eb679c5843b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://32e5bf2d6f0d8f327fe80235017272be6a0cc0a5e36f92e78bcd643121bb737f",
-				"dweb:/ipfs/QmT6nB3fDMiVoMmqsbRfc2CU7reEDDLQ8WpgjjGMswvjwd"
+				"bzz-raw://5162e03372c9b3fc7c56f3508c37b77f58a984fa6efd36bbe7822d3256646f96",
+				"dweb:/ipfs/QmX1XKCvcprkioCHcYtWjkC9mxmWB543zjQzcqja6AU5s1"
 			]
 		},
 		"contracts/Oracle/PriceOracleMock.sol": {

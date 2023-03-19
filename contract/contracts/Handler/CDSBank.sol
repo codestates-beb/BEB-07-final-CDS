@@ -13,8 +13,10 @@ contract CDSBank is CDSFactory {
   mapping(uint256 => uint256[2]) public deposits;
 
   constructor() {
-    token = IERC20(0x609b8CED16A83cFf90a3D3b3Cbe7894931e7C382);
+    token = IERC20(0xA00468018E73518B20e3FAE31Fc6cc915A15EAA2);
   }
+
+  // function setToken. oracle.
 
   function _sendDeposit(
     uint256 _cdsId,
@@ -76,22 +78,22 @@ contract CDSBank is CDSFactory {
     uint256 _cdsId
   ) internal isSeller(_cdsId) isActive(_cdsId) {
     uint32 currRounds = getCDS(_cdsId).rounds();
-    bool byRounds = ((block.timestamp >= nextPayDate[_cdsId]) &&
-      (currRounds == 0));
-    bool byDeposit = ((block.timestamp >= nextPayDate[_cdsId]) &&
-      (deposits[_cdsId][0] == 0));
-    // bool byRounds = (currRounds == 0);
-    // bool byDeposit = (deposits[_cdsId][0] == 0);
+    // bool byRounds = ((block.timestamp >= nextPayDate[_cdsId]) &&
+    //   (currRounds == 0));
+    // bool byDeposit = ((block.timestamp >= nextPayDate[_cdsId]) &&
+    //   (deposits[_cdsId][0] == 0));
+    bool byRounds = (currRounds == 0);
+    bool byDeposit = (deposits[_cdsId][0] == 0);
     require(byDeposit || byRounds, 'Buyer deposit / Rounds remaining');
     getCDS(_cdsId).setStatus(CDS.Status.expired);
   }
 
   function _sendPremiumByDeposit(uint256 _cdsId) internal {
     uint256 currTime = block.timestamp;
-    require(
-      (nextPayDate[_cdsId] <= currTime),
-      'Invalid date to pay premium by deposit '
-    );
+    // require(
+    //   (nextPayDate[_cdsId] <= currTime),
+    //   'Invalid date to pay premium by deposit '
+    // );
     uint256 premium = getCDS(_cdsId).premium();
     require(deposits[_cdsId][0] >= premium, 'Not enough deposit');
     bool sent = token.transfer(getSeller(_cdsId), premium);
@@ -101,11 +103,11 @@ contract CDSBank is CDSFactory {
 
   function _sendPremium(uint256 _cdsId) internal {
     uint256 currTime = block.timestamp;
-    require(
-      (nextPayDate[_cdsId] - 3 days <= currTime) &&
-        (currTime <= nextPayDate[_cdsId]),
-      'Invalid date to pay premium'
-    );
+    // require(
+    //   (nextPayDate[_cdsId] - 3 days <= currTime) &&
+    //     (currTime <= nextPayDate[_cdsId]),
+    //   'Invalid date to pay premium'
+    // );
     uint256 premium = getCDS(_cdsId).premium();
     bool sent = token.transferFrom(
       getBuyer(_cdsId),

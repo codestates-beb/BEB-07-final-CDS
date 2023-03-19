@@ -1,44 +1,24 @@
 {
 	"compiler": {
-		"version": "0.8.7+commit.e28d00a7"
+		"version": "0.8.10+commit.fc410830"
 	},
 	"language": "Solidity",
 	"output": {
 		"abi": [
 			{
-				"inputs": [],
+				"inputs": [
+					{
+						"internalType": "uint32",
+						"name": "_assetType",
+						"type": "uint32"
+					}
+				],
 				"stateMutability": "nonpayable",
 				"type": "constructor"
 			},
 			{
 				"inputs": [],
-				"name": "getBTCPrice",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "getETHPrice",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "getLinkPrice",
+				"name": "getCurrPrice",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -58,7 +38,7 @@
 		"userdoc": {
 			"kind": "user",
 			"methods": {
-				"getBTCPrice()": {
+				"getCurrPrice()": {
 					"notice": "Returns the latest price"
 				}
 			},
@@ -67,7 +47,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/Swap/PriceConsumerGoerli.sol": "PriceConsumerGoerli"
+			"contracts/CDS/PriceConsumerGoerli.sol": "PriceConsumerGoerli"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -89,12 +69,12 @@
 				"dweb:/ipfs/QmeZUVwd26LzK4Mfp8Zba5JbQNkZFfTzFu1A6FVMMZDg9c"
 			]
 		},
-		"contracts/Swap/PriceConsumerGoerli.sol": {
-			"keccak256": "0xc6aaa244c548dbbddf595d65709fb7de8a393197bb334201eb88111486b03c60",
+		"contracts/CDS/PriceConsumerGoerli.sol": {
+			"keccak256": "0x5d5b38b68af065c7c5f7714e6e3c010f435206bc4ddb074b19914869dc1a1176",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://37105e82f2c237e8628ae154d3d75a7975567918a0d3a980388edb42ace17d2d",
-				"dweb:/ipfs/QmcWkJYwnjVbDmYwgpT1cftKVG35WiP9Z6XDS7dxLckWZG"
+				"bzz-raw://480344969a240437bd7b1f8ad5144b5879eda1a2e629ad72d283a0d69738c59b",
+				"dweb:/ipfs/QmZ2cam4LJVoaJv91W8b39m4cxjt3iGrfcx7sAuCYBpB7c"
 			]
 		}
 	},

@@ -162,27 +162,27 @@
 			]
 		},
 		"contracts/CDS/CDS.sol": {
-			"keccak256": "0xb4e2ebfc509a6c529362b50eb07cd150a3a548ad73c082b3ff2e1fadc0d4ebfa",
+			"keccak256": "0xfb19e9c1d069d4dda2d5154b53f6934e18fde10c0d97821a4c7693fd7d57bc97",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a0a8272bda7cda3729f5847c4affefb6a8d8202806a0e7ef9054d46e1434b82e",
-				"dweb:/ipfs/QmRzUzFsCG42Cg7VtvXwFBqapmLsamtyy4HKknm5HLzYcr"
+				"bzz-raw://f654030d2fa65176cadf055a8e78b8ce8f301ff465ec1d3fdfb1484203399988",
+				"dweb:/ipfs/QmfGaGVCgburipoXQdvN6N5i6s8qgeVhyZ6EQ3mjV5MwP7"
 			]
 		},
 		"contracts/CDS/PriceConsumer.sol": {
-			"keccak256": "0x7a080d7dfc800bf7106d72a7671211dd0ab0b10740473293ea946315ba6876d4",
+			"keccak256": "0xfe07cbb9aaa093a2d1429b61a86e53eb796e0c2f42e004c867395c5c0559173c",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6048bef8e13257721c1f84b6f716f7ec1a1a65e55138a3d4dc152f3b4cfb4780",
-				"dweb:/ipfs/QmbMar3rwCBCqXEXtpGSUbNECW6UzmwpQyT6pLCAcQVBRa"
+				"bzz-raw://cb2ce7a7ac81ff14edc0eafe2aaa9be5958a0190fa2c27a22c1f16da6a08f70d",
+				"dweb:/ipfs/QmaiVhjXWfXAFrcJqCH84kV2JgbfoxywCLxhs6vfbMh6L5"
 			]
 		},
 		"contracts/Handler/CDSFactory.sol": {
-			"keccak256": "0x1487ff9ab45155a61f190d6412490657392b044056a49921d5bc66bd071a85c7",
+			"keccak256": "0x2bc39da322b5fe3fd960cc58b20ca2f7d3f6de6ae6ce58534f7eba744955d951",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://32e5bf2d6f0d8f327fe80235017272be6a0cc0a5e36f92e78bcd643121bb737f",
-				"dweb:/ipfs/QmT6nB3fDMiVoMmqsbRfc2CU7reEDDLQ8WpgjjGMswvjwd"
+				"bzz-raw://1d3126f841856bcc924907d9c7c8b072b7dce5043da1224fdaf3cff0f0f70b5c",
+				"dweb:/ipfs/Qmcd2atvCbrBNbq7xqQ6ZSV3VSHtJ2tfzP9VfDTLW5cXCo"
 			]
 		},
 		"contracts/Oracle/PriceOracleMock.sol": {

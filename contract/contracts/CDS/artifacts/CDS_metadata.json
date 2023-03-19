@@ -106,19 +106,6 @@
 			},
 			{
 				"inputs": [],
-				"name": "getBTCPrice",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
 				"name": "getBuyer",
 				"outputs": [
 					{
@@ -144,21 +131,14 @@
 				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "getETHPrice",
-				"outputs": [
+				"inputs": [
 					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
+						"internalType": "uint32",
+						"name": "_assetType",
+						"type": "uint32"
 					}
 				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "getLinkPrice",
+				"name": "getCurrPrice",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -321,6 +301,24 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "_participants",
+						"type": "address"
+					},
+					{
+						"internalType": "bool",
+						"name": "_isBuyer",
+						"type": "bool"
+					}
+				],
+				"name": "setParticipants",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "uint32",
 						"name": "_rounds",
 						"type": "uint32"
@@ -477,19 +475,19 @@
 			]
 		},
 		"contracts/CDS/CDS.sol": {
-			"keccak256": "0xb4e2ebfc509a6c529362b50eb07cd150a3a548ad73c082b3ff2e1fadc0d4ebfa",
+			"keccak256": "0xa740a9943fddca8aed32033d85ec0a87005eb9bc6aa198e025572b4f9adc5ff3",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a0a8272bda7cda3729f5847c4affefb6a8d8202806a0e7ef9054d46e1434b82e",
-				"dweb:/ipfs/QmRzUzFsCG42Cg7VtvXwFBqapmLsamtyy4HKknm5HLzYcr"
+				"bzz-raw://d15029a23512eecdc43f0a9d27f9a1f5074a763aedb0550f3538b69cb75172a8",
+				"dweb:/ipfs/QmbUdti4qLqaeRFq51x23bCsPDG1TyDJkikM1sjNdLwB4V"
 			]
 		},
 		"contracts/CDS/PriceConsumer.sol": {
-			"keccak256": "0x143f06a41b622c35d2737d8a69edec1f8851261c5db3977e8e8673c63bca93fc",
+			"keccak256": "0xa00d39d99c70367d872e7c36b436756c8b0e7ae9168dada0a59845ce8e4c2252",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4c50d4f086aac7a217a23e14c439b6e195392c05cbd29e4ef3145f320e5c1fa9",
-				"dweb:/ipfs/QmQwfGRWufznd5Nba92rKdMyXSyVVb2z4GhQqvat7t3PqC"
+				"bzz-raw://934e4946010703a67b270410b78aa8812b4b103543eb0589bca168649235dec7",
+				"dweb:/ipfs/QmbADHYqDq7koyG89rEXFp5suSC28hVr5TJoAQc4QH5BSx"
 			]
 		},
 		"contracts/Oracle/PriceOracleMock.sol": {

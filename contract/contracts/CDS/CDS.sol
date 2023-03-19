@@ -4,10 +4,9 @@ pragma solidity ^0.8.7;
 import './PriceConsumer.sol';
 import '../libs/LibSwap.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
-import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
-contract CDS is Ownable, PriceConsumer {
-  using SafeMath for uint256;
+// PriceConsumberGoerli({assetType})
+contract CDS is Ownable, PriceConsumer(0xF2A3Fa0266A0fEFFA87DA45F0D3C45aC66FE05c5) {
   using LibSwap for uint256;
 
   PriceOracleMock private priceOracle;
@@ -83,7 +82,7 @@ contract CDS is Ownable, PriceConsumer {
   }
 
   function getClaimReward() public view returns (uint256) {
-    uint256 currPrice = getCurrPrice();
+    uint256 currPrice = getCurrPrice(assetType);
     if (claimPrice < currPrice) {
       return 0;
     }
@@ -122,17 +121,5 @@ contract CDS is Ownable, PriceConsumer {
   function setRounds(uint32 _rounds) public onlyOwner returns (uint32) {
     rounds = _rounds;
     return rounds;
-  }
-
-  function getCurrPrice() private view returns (uint256) {
-    if (assetType == 0) {
-      return getBTCPrice().div(10 ** 8);
-    } else if (assetType == 1) {
-      return getETHPrice().div(10 ** 8);
-    } else if (assetType == 2) {
-      return getLinkPrice().div(10 ** 8);
-    } else {
-      return 0;
-    }
   }
 }

@@ -162,3 +162,13 @@ contract CDSLounge is CDSBank, Ownable, CDSInterface {
     return true;
   }
 }
+
+// lounge => factory => cds
+// 지금의 factory => crud로 하고
+// factory는 assembly-create2써서; 참고할만한건 uniswapv2factory <=> uniswapv2pair
+// 작성만 lounge or factory 통하고
+// 수정은 cds에 직접 호출? 일단 approved로 factory or lounge ca 추가하는 방향으로 생각하자. owner는 buyer&seller
+// factory에는 address의 cdsId(or address)기록 하고 싶음
+
+// buyer는 seller 하나 걸어놓으면 좋은데
+// seller는 여러 buyer를 받고 싶을 수도 있음 => 동일 조건의 contract 여러개 배포?

@@ -607,11 +607,11 @@
 			]
 		},
 		"contracts/CDS/CDS.sol": {
-			"keccak256": "0xb4e2ebfc509a6c529362b50eb07cd150a3a548ad73c082b3ff2e1fadc0d4ebfa",
+			"keccak256": "0xf16f62e2d14644562a3078f215e66d8c2855738eb84d2b3039e77c2884b8c05a",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a0a8272bda7cda3729f5847c4affefb6a8d8202806a0e7ef9054d46e1434b82e",
-				"dweb:/ipfs/QmRzUzFsCG42Cg7VtvXwFBqapmLsamtyy4HKknm5HLzYcr"
+				"bzz-raw://c78127c5f2d4b0e6c77bb827b1d0191c2498e0d5e319040e702af5f7acc8c957",
+				"dweb:/ipfs/QmXsZ6JxZWTnrNq7bAkUGDj81GHQVLK11MW6mAiMN1uBMU"
 			]
 		},
 		"contracts/CDS/PriceConsumer.sol": {
@@ -623,27 +623,27 @@
 			]
 		},
 		"contracts/CDSLounge.sol": {
-			"keccak256": "0xca600713eedb600b98071dee135258bb92708744c1e327cf6da1dc1a424a26d0",
+			"keccak256": "0x75e61d82a0fccb7c9b3f47dee3111d57c3ca7cd3651586e7f358307e464f9ad6",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://21c633c920603df04a42496b6403956ac624f3b30563d89887dd3ae445cb5a3a",
-				"dweb:/ipfs/QmU6XohbQgpK7yiX6PXLneuRLLfrLuDrsWynKStGPam7Nn"
+				"bzz-raw://f3f923986df2226be0de4cab35e3997336bfea480a3afc2b9ec9cba824dca15f",
+				"dweb:/ipfs/QmRk9s4FHoj3Bx1VPJa7KrhpS9Aw6qrLa3BJ4ecuixoHSw"
 			]
 		},
 		"contracts/Handler/CDSBank.sol": {
-			"keccak256": "0x04a3a812ca81c813c09581f5846821a89cf534a16c065d6874e78a1437b926e9",
+			"keccak256": "0xa05652e0ca25f0ae917b6c145486ac4dd6febf63ccc146e13dfb3bccc3a394fa",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://cd2e92a049df2f4845399ae488b3258ed659f14e3328fd2bb7ff18e719ea9d9c",
-				"dweb:/ipfs/QmdntZJqzdCaAT2Mwhwn7iFQ3BNg8n8LX2KM71ncwSXjQj"
+				"bzz-raw://4fce1510743ab5f3cc5c95af0facf5be5218b3155118226063c0fdd83df63d71",
+				"dweb:/ipfs/QmeH1VMDZ8nmrvqx8tDqgKfwqoVQZfzo6PVnUe7R8yzinC"
 			]
 		},
 		"contracts/Handler/CDSFactory.sol": {
-			"keccak256": "0x1487ff9ab45155a61f190d6412490657392b044056a49921d5bc66bd071a85c7",
+			"keccak256": "0x14127e5fdf155a90b6522e55f7e42a0abf20dd0dcf480cffd673a6587cb1ea55",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://32e5bf2d6f0d8f327fe80235017272be6a0cc0a5e36f92e78bcd643121bb737f",
-				"dweb:/ipfs/QmT6nB3fDMiVoMmqsbRfc2CU7reEDDLQ8WpgjjGMswvjwd"
+				"bzz-raw://e8aab2459e580e140b214ae94e3e0731d7687bd1a2a42a49fe7aaa6a0b2eaaaa",
+				"dweb:/ipfs/QmUAA8r2VuXZxksPhLYDA8oDMMzTdHLRY9jkt8SMx9r2Bj"
 			]
 		},
 		"contracts/Oracle/PriceOracleMock.sol": {

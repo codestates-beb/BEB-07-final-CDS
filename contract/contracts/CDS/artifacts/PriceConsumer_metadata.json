@@ -6,39 +6,25 @@
 	"output": {
 		"abi": [
 			{
-				"inputs": [],
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_address",
+						"type": "address"
+					}
+				],
 				"stateMutability": "nonpayable",
 				"type": "constructor"
 			},
 			{
-				"inputs": [],
-				"name": "getBTCPrice",
-				"outputs": [
+				"inputs": [
 					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
+						"internalType": "uint32",
+						"name": "_assetType",
+						"type": "uint32"
 					}
 				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "getETHPrice",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "getLinkPrice",
+				"name": "getCurrPrice",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -77,12 +63,20 @@
 		"remappings": []
 	},
 	"sources": {
-		"contracts/CDS/PriceConsumer.sol": {
-			"keccak256": "0x7a080d7dfc800bf7106d72a7671211dd0ab0b10740473293ea946315ba6876d4",
+		"@openzeppelin/contracts/utils/math/SafeMath.sol": {
+			"keccak256": "0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6048bef8e13257721c1f84b6f716f7ec1a1a65e55138a3d4dc152f3b4cfb4780",
-				"dweb:/ipfs/QmbMar3rwCBCqXEXtpGSUbNECW6UzmwpQyT6pLCAcQVBRa"
+				"bzz-raw://864a40efcffdf408044c332a5aa38ec5618ed7b4eecb8f65faf45671bd6cdc65",
+				"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN"
+			]
+		},
+		"contracts/CDS/PriceConsumer.sol": {
+			"keccak256": "0xa00d39d99c70367d872e7c36b436756c8b0e7ae9168dada0a59845ce8e4c2252",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://934e4946010703a67b270410b78aa8812b4b103543eb0589bca168649235dec7",
+				"dweb:/ipfs/QmbADHYqDq7koyG89rEXFp5suSC28hVr5TJoAQc4QH5BSx"
 			]
 		},
 		"contracts/Oracle/PriceOracleMock.sol": {
