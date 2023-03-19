@@ -1,0 +1,494 @@
+{
+	"compiler": {
+		"version": "0.8.10+commit.fc410830"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bool",
+						"name": "_isBuyerHost",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_initAssetPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_targetCDSId",
+						"type": "uint256"
+					}
+				],
+				"name": "accept",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_targetCDSId",
+						"type": "uint256"
+					}
+				],
+				"name": "cancel",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_targetCDSId",
+						"type": "uint256"
+					}
+				],
+				"name": "claim",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_targetCDSId",
+						"type": "uint256"
+					}
+				],
+				"name": "close",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bool",
+						"name": "_isBuyer",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_initAssetPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_claimPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_liquidationPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_sellerDeposit",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_premium",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint32",
+						"name": "_totalRounds",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "_assetType",
+						"type": "uint32"
+					}
+				],
+				"name": "create",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "deposits",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getBuyer",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getCDS",
+				"outputs": [
+					{
+						"internalType": "contract CDS",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getCDSId",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "_value",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct Counters.Counter",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getNextPayDate",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getPremium",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getPrices",
+				"outputs": [
+					{
+						"internalType": "uint256[5]",
+						"name": "",
+						"type": "uint256[5]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getRounds",
+				"outputs": [
+					{
+						"internalType": "uint32",
+						"name": "",
+						"type": "uint32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getSeller",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getSellerDeposit",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getStatus",
+				"outputs": [
+					{
+						"internalType": "enum CDS.Status",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_targetCDSId",
+						"type": "uint256"
+					}
+				],
+				"name": "payPremium",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "token",
+				"outputs": [
+					{
+						"internalType": "contract IERC20",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/Handler/CDSBank.sol": "AssetHandler"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/access/Ownable.sol": {
+			"keccak256": "0xa94b34880e3c1b0b931662cb1c09e5dfa6662f31cba80e07c5ee71cd135c9673",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://40fb1b5102468f783961d0af743f91b9980cf66b50d1d12009f6bb1869cea4d2",
+				"dweb:/ipfs/QmYqEbJML4jB1GHbzD4cUZDtJg5wVwNm3vDJq1GbyDus8y"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+			"keccak256": "0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34",
+				"dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr"
+			]
+		},
+		"@openzeppelin/contracts/utils/Context.sol": {
+			"keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
+				"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
+			]
+		},
+		"@openzeppelin/contracts/utils/Counters.sol": {
+			"keccak256": "0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee",
+				"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu"
+			]
+		},
+		"@openzeppelin/contracts/utils/math/SafeMath.sol": {
+			"keccak256": "0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://864a40efcffdf408044c332a5aa38ec5618ed7b4eecb8f65faf45671bd6cdc65",
+				"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN"
+			]
+		},
+		"contracts/CDS/CDS.sol": {
+			"keccak256": "0xb4e2ebfc509a6c529362b50eb07cd150a3a548ad73c082b3ff2e1fadc0d4ebfa",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a0a8272bda7cda3729f5847c4affefb6a8d8202806a0e7ef9054d46e1434b82e",
+				"dweb:/ipfs/QmRzUzFsCG42Cg7VtvXwFBqapmLsamtyy4HKknm5HLzYcr"
+			]
+		},
+		"contracts/CDS/PriceConsumer.sol": {
+			"keccak256": "0x143f06a41b622c35d2737d8a69edec1f8851261c5db3977e8e8673c63bca93fc",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://4c50d4f086aac7a217a23e14c439b6e195392c05cbd29e4ef3145f320e5c1fa9",
+				"dweb:/ipfs/QmQwfGRWufznd5Nba92rKdMyXSyVVb2z4GhQqvat7t3PqC"
+			]
+		},
+		"contracts/Handler/CDSBank.sol": {
+			"keccak256": "0x278dba91c2ced8e68e1700971734db2a533cbe5c00a6a66f9433b8cfa2a4b6c4",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://88a41834b632c2e434246615d326379f319ce5b9e377e58572220549b85fe975",
+				"dweb:/ipfs/QmcZ48o5NSUTg1FdLrNxbdhUh6gjgjcoi888wJ9dUKdmLE"
+			]
+		},
+		"contracts/Handler/CDSFactory.sol": {
+			"keccak256": "0x0a2c4f48cbbb7ee2d4accc28f57b5304041f179ae06ba9149ba18b5367336379",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://87c0a2c5cd5f86bd8369f18366e0dbc504ed398a35dbfb8ca1abae2028981fef",
+				"dweb:/ipfs/QmbjtiZcwrmaEbQrbwiZjw3zFL2smA9teTFHpK1bCw1HB8"
+			]
+		},
+		"contracts/Oracle/PriceOracleMock.sol": {
+			"keccak256": "0x9bf3702669439e0cfe097a45a2b0eb2b3c7bda403ea131e9ef3ac2e151f4a2cd",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://cbdc1c2486976359980f3bd3fdd4c15c6c1d5535709772f13c9360f2a132e8dd",
+				"dweb:/ipfs/QmWsFF9122k5LTLwBTS2YyFabBCQGjuPJrZFiQaeVa71QY"
+			]
+		},
+		"contracts/libs/LibSwap.sol": {
+			"keccak256": "0x652e31965cc7071cdd45938cab1e54863ea1c23452e8cf061371354df664d7dd",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7548caba69eeb940792a2ac78eb5bd889c5a16bb50cfa1ed7a2309a3f926e004",
+				"dweb:/ipfs/QmUmrAoBAQdfyfdYQoZLAiHvspr1F6HK1PY58ttk1X4e6T"
+			]
+		}
+	},
+	"version": 1
+}

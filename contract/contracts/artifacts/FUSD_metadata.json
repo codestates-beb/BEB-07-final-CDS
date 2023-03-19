@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.7+commit.e28d00a7"
+		"version": "0.8.10+commit.fc410830"
 	},
 	"language": "Solidity",
 	"output": {
@@ -375,11 +375,11 @@
 			]
 		},
 		"contracts/FUSD.sol": {
-			"keccak256": "0x675ed45b7b1a06be15e5a586ec7db52213e11e06be7951f26737d38023072fbc",
+			"keccak256": "0x7b315d481bde65f066bcc47ebdb209c78e8923c7544c03e3aa70084f3fe8330b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://1ac3150ff0a919ebbd9a4508b7a41b68fc1ef9686648b80bb8a5b850a95dd545",
-				"dweb:/ipfs/Qmd9WKopRgkHfJBryg3YTAvTLNGdNRbPkcEqWpGtGCzAeC"
+				"bzz-raw://0eede6fb4647ec961454ec5ea1bf029fb44bd9ace66ad31178f12affcc1fd020",
+				"dweb:/ipfs/QmUAhAsBFVfVUxBFXKucXjEAfoLBXvq7rcQSGYTmcwDHrm"
 			]
 		}
 	},

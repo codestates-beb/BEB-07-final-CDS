@@ -1,0 +1,667 @@
+{
+	"compiler": {
+		"version": "0.8.10+commit.fc410830"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "guestAddr",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "Accept",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "Cancel",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "claimReward",
+						"type": "uint256"
+					}
+				],
+				"name": "Claim",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "Close",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "hostAddr",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "bool",
+						"name": "isBuyer",
+						"type": "bool"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint32",
+						"name": "assetType",
+						"type": "uint32"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "swap",
+						"type": "address"
+					}
+				],
+				"name": "Create",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "Expire",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "previousOwner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "OwnershipTransferred",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "PayPremium",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "initAssetPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "accept",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "cancel",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "claim",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "close",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bool",
+						"name": "isBuyer",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "initAssetPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "claimPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "liquidationPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "sellerDeposit",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "premium",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint32",
+						"name": "totalRounds",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "assetType",
+						"type": "uint32"
+					}
+				],
+				"name": "create",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "deposits",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "expire",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getBuyer",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getCDS",
+				"outputs": [
+					{
+						"internalType": "contract CDS",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getCDSId",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "_value",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct Counters.Counter",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "getSeller",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "nextPayDate",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "payPremium",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "cdsId",
+						"type": "uint256"
+					}
+				],
+				"name": "payPremiumByDeposit",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "token",
+				"outputs": [
+					{
+						"internalType": "contract IERC20",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "transferOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "withdraw",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {
+				"owner()": {
+					"details": "Returns the address of the current owner."
+				},
+				"renounceOwnership()": {
+					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+				},
+				"transferOwnership(address)": {
+					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+				}
+			},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/CDSLounge.sol": "CDSLounge"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/access/Ownable.sol": {
+			"keccak256": "0xa94b34880e3c1b0b931662cb1c09e5dfa6662f31cba80e07c5ee71cd135c9673",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://40fb1b5102468f783961d0af743f91b9980cf66b50d1d12009f6bb1869cea4d2",
+				"dweb:/ipfs/QmYqEbJML4jB1GHbzD4cUZDtJg5wVwNm3vDJq1GbyDus8y"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+			"keccak256": "0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34",
+				"dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr"
+			]
+		},
+		"@openzeppelin/contracts/utils/Context.sol": {
+			"keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
+				"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
+			]
+		},
+		"@openzeppelin/contracts/utils/Counters.sol": {
+			"keccak256": "0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee",
+				"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu"
+			]
+		},
+		"@openzeppelin/contracts/utils/math/SafeMath.sol": {
+			"keccak256": "0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://864a40efcffdf408044c332a5aa38ec5618ed7b4eecb8f65faf45671bd6cdc65",
+				"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN"
+			]
+		},
+		"contracts/CDS/CDS.sol": {
+			"keccak256": "0xf16f62e2d14644562a3078f215e66d8c2855738eb84d2b3039e77c2884b8c05a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c78127c5f2d4b0e6c77bb827b1d0191c2498e0d5e319040e702af5f7acc8c957",
+				"dweb:/ipfs/QmXsZ6JxZWTnrNq7bAkUGDj81GHQVLK11MW6mAiMN1uBMU"
+			]
+		},
+		"contracts/CDS/PriceConsumer.sol": {
+			"keccak256": "0x7a080d7dfc800bf7106d72a7671211dd0ab0b10740473293ea946315ba6876d4",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6048bef8e13257721c1f84b6f716f7ec1a1a65e55138a3d4dc152f3b4cfb4780",
+				"dweb:/ipfs/QmbMar3rwCBCqXEXtpGSUbNECW6UzmwpQyT6pLCAcQVBRa"
+			]
+		},
+		"contracts/CDSLounge.sol": {
+			"keccak256": "0x75e61d82a0fccb7c9b3f47dee3111d57c3ca7cd3651586e7f358307e464f9ad6",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f3f923986df2226be0de4cab35e3997336bfea480a3afc2b9ec9cba824dca15f",
+				"dweb:/ipfs/QmRk9s4FHoj3Bx1VPJa7KrhpS9Aw6qrLa3BJ4ecuixoHSw"
+			]
+		},
+		"contracts/Handler/CDSBank.sol": {
+			"keccak256": "0xa05652e0ca25f0ae917b6c145486ac4dd6febf63ccc146e13dfb3bccc3a394fa",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://4fce1510743ab5f3cc5c95af0facf5be5218b3155118226063c0fdd83df63d71",
+				"dweb:/ipfs/QmeH1VMDZ8nmrvqx8tDqgKfwqoVQZfzo6PVnUe7R8yzinC"
+			]
+		},
+		"contracts/Handler/CDSFactory.sol": {
+			"keccak256": "0x14127e5fdf155a90b6522e55f7e42a0abf20dd0dcf480cffd673a6587cb1ea55",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e8aab2459e580e140b214ae94e3e0731d7687bd1a2a42a49fe7aaa6a0b2eaaaa",
+				"dweb:/ipfs/QmUAA8r2VuXZxksPhLYDA8oDMMzTdHLRY9jkt8SMx9r2Bj"
+			]
+		},
+		"contracts/Oracle/PriceOracleMock.sol": {
+			"keccak256": "0x9bf3702669439e0cfe097a45a2b0eb2b3c7bda403ea131e9ef3ac2e151f4a2cd",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://cbdc1c2486976359980f3bd3fdd4c15c6c1d5535709772f13c9360f2a132e8dd",
+				"dweb:/ipfs/QmWsFF9122k5LTLwBTS2YyFabBCQGjuPJrZFiQaeVa71QY"
+			]
+		},
+		"contracts/libs/LibSwap.sol": {
+			"keccak256": "0x652e31965cc7071cdd45938cab1e54863ea1c23452e8cf061371354df664d7dd",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7548caba69eeb940792a2ac78eb5bd889c5a16bb50cfa1ed7a2309a3f926e004",
+				"dweb:/ipfs/QmUmrAoBAQdfyfdYQoZLAiHvspr1F6HK1PY58ttk1X4e6T"
+			]
+		}
+	},
+	"version": 1
+}

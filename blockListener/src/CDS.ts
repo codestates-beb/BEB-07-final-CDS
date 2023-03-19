@@ -246,9 +246,17 @@ export default class CDS {
     return intervalInfo;
   }
 
+  // private async getRounds(swapId: number): Promise<string> {
+  //   const roundsInfo = await this.contract.methods.getRounds(swapId).call();
+  //   return roundsInfo;
+  // }
+
   private async getRounds(swapId: number): Promise<string> {
-    const roundsInfo = await this.contract.methods.getRounds(swapId).call();
-    return roundsInfo;
+    const swapAddr = await this.contract.methods.getSwap(swapId).call();
+    const swapInstance = Swap.getInstance(this.web3Endpoint);
+    swapInstance.setContract(abi as AbiItem[], swapAddr);
+    const roundInfo = await swapInstance.getRounds();
+    return roundInfo;
   }
 
   private async createEventHandler(event: EventData, isLive: boolean = true) {
