@@ -3,7 +3,6 @@
 // 관련있는 유저의 이메일 주소 등록 여부를 판별한다.
 // 이벤트 종류별로 정해진 템플릿에 따라 이메일을 발송한다.
 import AWS from 'aws-sdk';
-import { EventData } from 'aws-sdk/clients/ssmincidents';
 import { EmailData } from '../types/CDSTypes';
 import getEnv from './getEnv';
 //TODO: remove on production

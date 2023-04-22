@@ -104,6 +104,10 @@ class CDS {
                 fromBlock: this.fromBlock,
                 toBlock: 'latest',
             });
+            const eventWrapper = (eventType) => __awaiter(this, void 0, void 0, function* () {
+                const eventListeners = {};
+                return eventListeners[eventType];
+            });
             try {
                 for (var _d = true, allEvents_1 = __asyncValues(allEvents), allEvents_1_1; allEvents_1_1 = yield allEvents_1.next(), _a = allEvents_1_1.done, !_a;) {
                     _c = allEvents_1_1.value;

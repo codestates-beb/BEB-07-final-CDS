@@ -95,6 +95,10 @@ export default class CDS {
       fromBlock: this.fromBlock,
       toBlock: 'latest',
     });
+    const eventWrapper = async (eventType: string) => {
+      const eventListeners = {};
+      return eventListeners[eventType];
+    };
 
     for await (let event of allEvents) {
       const { transactionHash } = event;
